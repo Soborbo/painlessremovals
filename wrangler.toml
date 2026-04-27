@@ -12,20 +12,20 @@ binding = "ASSETS"
 not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
 
-# KV namespaces — IDs must be filled in from `wrangler kv namespace create` output.
+# KV namespaces (created via `wrangler kv namespace create` / MCP).
 # SESSION is auto-enabled by @astrojs/cloudflare (Astro's built-in session feature).
 # We don't actively use it, but the binding must exist or the worker fails to load.
 [[kv_namespaces]]
 binding = "SESSION"
-id = "PLACEHOLDER_SESSION_KV_ID"
+id = "ce6ead73cf464a6888d567bb96d68b27"
 
 [[kv_namespaces]]
 binding = "RATE_LIMITER"
-id = "PLACEHOLDER_RATE_LIMITER_KV_ID"
+id = "b9ceca436b2d44e0a9d4dca42b998da8"
 
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "PLACEHOLDER_SESSIONS_KV_ID"
+id = "cfc7e5916f054125922731a9ddbce29a"
 
 # Plain env vars (non-secret).
 # Secrets (RESEND_API_KEY, TURNSTILE_SECRET_KEY, GA4_API_SECRET, META_CAPI_ACCESS_TOKEN,
@@ -36,12 +36,15 @@ PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAACs7GfndiZsA_2c4"
 SITE_URL = "https://painlessremovals.com"
 ENVIRONMENT = "production"
 GTM_ID = "GTM-PXTH5JJK"
-# Fill in from existing painlessv3 project config:
-GA4_MEASUREMENT_ID = "PLACEHOLDER_G_XXXXXXXX"
-META_PIXEL_ID = "PLACEHOLDER_META_PIXEL_ID"
+# These can be filled in from the existing painless-calculator worker /
+# painlessremovals2026 Pages project. Until then, server-side mirrors
+# (GA4 MP, Meta CAPI) silently no-op (sendGA4MP / sendMetaCapi early-return
+# when the credential pair is missing) — useful for the initial deploy.
+GA4_MEASUREMENT_ID = ""
+META_PIXEL_ID = ""
 META_CAPI_TEST_EVENT_CODE = ""
-ERROR_SHEETS_ID = "PLACEHOLDER_SHEETS_ID"
-GOOGLE_SERVICE_ACCOUNT_EMAIL = "PLACEHOLDER_SERVICE_ACCOUNT_EMAIL"
-ERROR_EMAIL_TO = "PLACEHOLDER_ERROR_EMAIL"
-ERROR_ALERT_FROM = "PLACEHOLDER_ALERT_FROM"
+ERROR_SHEETS_ID = ""
+GOOGLE_SERVICE_ACCOUNT_EMAIL = ""
+ERROR_EMAIL_TO = ""
+ERROR_ALERT_FROM = ""
 IMVE_API_URL = ""

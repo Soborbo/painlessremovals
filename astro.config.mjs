@@ -52,7 +52,6 @@ export default defineConfig({
   output: 'static',
   trailingSlash: 'always',
   adapter: cloudflare({
-    imageService: 'passthrough',
     platformProxy: { enabled: true },
   }),
   redirects: {
@@ -73,16 +72,6 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
-    ssr: {
-      noExternal: ['nanostores', 'resend'],
-      external: [
-        'node:stream', 'stream',
-        'node:events', 'events',
-        'node:url', 'url',
-        'node:zlib', 'zlib',
-        'node:buffer', 'buffer',
-      ],
-    },
     define: {
       'import.meta.env.PUBLIC_DEPLOY_ID': JSON.stringify(
         process.env.CF_PAGES_COMMIT_SHA || process.env.WORKERS_CI_COMMIT_SHA || 'local'
