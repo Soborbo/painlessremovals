@@ -310,7 +310,7 @@ const phone = siteConfig.company.contact.phone;
 
       try {
         const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
-        const data = await res.json();
+        const data = await res.json() as { status: number; result: { latitude: number; longitude: number } | null };
 
         if (data.status !== 200 || !data.result) {
           postcodeResult.textContent = 'Postcode not found. Please check and try again.';
@@ -535,7 +535,7 @@ const phone = siteConfig.company.contact.phone;
           }),
         });
 
-        const data = await res.json();
+        const data = await res.json() as { error?: string; success?: boolean };
         if (!res.ok || data.error) {
           window.showToast(data.error || `Something went wrong sending your request. Please try again or call us on ${PHONE}.`, 'error');
           submitBtn.disabled = false;
