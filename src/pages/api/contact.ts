@@ -1,32 +1,19 @@
 /**
- * Contact Form — Cloudflare Pages Function
+ * Contact Form API route — Cloudflare Workers + Astro
  *
- * Honeypot + Turnstile + Resend REST API
+ * Honeypot + Turnstile + Resend REST API.
+ * Migrated from functions/api/contact.ts.
  */
 
-interface Env {
-  RESEND_API_KEY: string;
-  TURNSTILE_SECRET_KEY: string;
-}
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
+import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 
-const PHONE = '0117 287 0082';
-const ALLOWED_ORIGINS = ['https://painlessremovals.com', 'https://www.painlessremovals.com'];
-function isAllowedOrigin(origin: string): boolean {
-  return ALLOWED_ORIGINS.includes(origin) || /^https:\/\/[a-z0-9-]+\.painlessremovals2026\.pages\.dev$/.test(origin) || origin === 'https://painlessremovals2026.pages.dev';
-}
+export const prerender = false;
+
 const INTERNAL_SOURCES = ['later-life-lead-magnet', 'later-life-callback', 'later-life-calculator'];
 
-function escapeHtml(str: string): string {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-function stripNewlines(str: string): string {
-  return String(str).replace(/[\r\n]/g, '');
-}
-function json(data: Record<string, unknown>, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
-}
-
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     // Origin check
     const origin = request.headers.get('origin') || '';
@@ -34,7 +21,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return json({ error: 'Forbidden.' }, 403);
     }
 
-    const body: Record<string, string> = await request.json();
+    const body = await request.json() as Record<string, string>;
     const { name, phone, email, message, honeypot, turnstileToken, source } = body;
 
     // Honeypot

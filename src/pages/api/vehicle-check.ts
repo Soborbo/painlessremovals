@@ -1,31 +1,18 @@
 /**
- * Vehicle Check Form — Cloudflare Pages Function
+ * Vehicle Check Form API route — Cloudflare Workers + Astro
  *
- * Daily vehicle inspection with image attachments
+ * Daily vehicle inspection with image attachments.
+ * Migrated from functions/api/vehicle-check.ts.
  */
 
-interface Env {
-  RESEND_API_KEY: string;
-  TURNSTILE_SECRET_KEY: string;
-}
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
+import { isAllowedOrigin, escapeHtml, stripNewlines, json } from '@/lib/forms/utils';
 
-const ALLOWED_ORIGINS = ['https://painlessremovals.com', 'https://www.painlessremovals.com'];
-function isAllowedOrigin(origin: string): boolean {
-  return ALLOWED_ORIGINS.includes(origin) || /^https:\/\/[a-z0-9-]+\.painlessremovals2026\.pages\.dev$/.test(origin) || origin === 'https://painlessremovals2026.pages.dev';
-}
+export const prerender = false;
 
 const REQUIRED_FLUIDS = ['Water levels', 'Oil levels', 'Tyre pressure', 'Lights', 'AdBlue'];
 const REQUIRED_CONDITIONS = ['Cabin is tidy', 'Back is swept', 'Blankets are folded', 'Straps are stowed'];
-
-function escapeHtml(str: string): string {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-function stripNewlines(str: string): string {
-  return String(str).replace(/[\r\n]/g, '');
-}
-function json(data: Record<string, unknown>, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
-}
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -37,7 +24,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(chunks.join(''));
 }
 
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     const origin = request.headers.get('origin') || '';
     if (origin && !isAllowedOrigin(origin)) return json({ error: 'Forbidden.' }, 403);

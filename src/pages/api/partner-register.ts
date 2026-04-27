@@ -1,11 +1,14 @@
 /**
- * Partner Registration — Cloudflare Pages Function
+ * Partner Registration API route — Cloudflare Workers + Astro
  *
  * POST /api/partner-register
+ *
+ * Migrated from functions/api/partner-register.ts.
  */
 
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import {
-  type Env,
   json,
   escapeHtml,
   stripNewlines,
@@ -15,7 +18,9 @@ import {
   emailFooter,
   PHONE,
   FROM_DEFAULT,
-} from '../_shared/utils';
+} from '@/lib/forms/utils';
+
+export const prerender = false;
 
 const businessTypeLabels: Record<string, string> = {
   'estate-agent': 'Estate Agent',
@@ -27,9 +32,9 @@ const businessTypeLabels: Record<string, string> = {
   'other': 'Other',
 };
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
-    const body = (await context.request.json()) as Record<string, string>;
+    const body = (await request.json()) as Record<string, string>;
     const {
       name, companyName, role, businessType, estimatedReferrals,
       whatMatters, email, phone, preferredContact, honeypot, turnstileToken,
@@ -50,7 +55,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!turnstileToken) {
       return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
     }
-    const secret = context.env.TURNSTILE_SECRET_KEY;
+    const secret = env.TURNSTILE_SECRET_KEY;
     if (!secret) {
       console.error('TURNSTILE_SECRET_KEY is not configured');
       return json({ error: 'Security configuration error. Please try again later.' }, 500);
@@ -60,7 +65,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     // 4. Send email via Resend REST API
-    const apiKey = context.env.RESEND_API_KEY;
+    const apiKey = env.RESEND_API_KEY;
     if (!apiKey) {
       console.error('RESEND_API_KEY is not configured');
       return json({ error: `Email service is temporarily unavailable. Please call us on ${PHONE}.` }, 500);

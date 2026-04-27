@@ -1,19 +1,16 @@
 /**
- * Job Application Form — Cloudflare Pages Function
+ * Job Application Form API route — Cloudflare Workers + Astro
  *
- * Honeypot + Turnstile + Resend REST API (with CV attachment)
+ * Honeypot + Turnstile + Resend REST API (with CV attachment).
+ * Migrated from functions/api/jobs.ts.
  */
 
-interface Env {
-  RESEND_API_KEY: string;
-  TURNSTILE_SECRET_KEY: string;
-}
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
+import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 
-const PHONE = '0117 287 0082';
-const ALLOWED_ORIGINS = ['https://painlessremovals.com', 'https://www.painlessremovals.com'];
-function isAllowedOrigin(origin: string): boolean {
-  return ALLOWED_ORIGINS.includes(origin) || /^https:\/\/[a-z0-9-]+\.painlessremovals2026\.pages\.dev$/.test(origin) || origin === 'https://painlessremovals2026.pages.dev';
-}
+export const prerender = false;
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.txt', '.rtf', '.odt'];
 const ALLOWED_MIME_TYPES = [
@@ -22,16 +19,6 @@ const ALLOWED_MIME_TYPES = [
   'text/plain', 'text/rtf', 'application/rtf',
   'application/vnd.oasis.opendocument.text',
 ];
-
-function escapeHtml(str: string): string {
-  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-function stripNewlines(str: string): string {
-  return String(str).replace(/[\r\n]/g, '');
-}
-function json(data: Record<string, unknown>, status = 200) {
-  return new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json' } });
-}
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -44,8 +31,7 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(chunks.join(''));
 }
 
-
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const POST: APIRoute = async ({ request }) => {
   try {
     // Origin check
     const origin = request.headers.get('origin') || '';
@@ -139,12 +125,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       return json({ error: `Failed to send your application. Please try again or call us on ${PHONE}.` }, 500);
     }
 
-    // Send confirmation email to applicant
+    // Send confirmation email to applicant (fire-and-forget)
     const confirmationPayload = {
       from: 'Painless Removals <noreply@painlessremovals.com>',
       to: [email],
       reply_to: 'jay@painlessremovals.com',
-      subject: "We've received your application \u2014 Painless Removals",
+      subject: "We've received your application — Painless Removals",
       html: `
         <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: #0E3C54; padding: 20px 24px; border-radius: 8px 8px 0 0;">
@@ -162,7 +148,6 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
         </div>`,
     };
 
-    // Fire and forget — don't fail the submission if confirmation email fails
     fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },

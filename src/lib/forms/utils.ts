@@ -1,14 +1,27 @@
 /**
- * Shared utilities for Cloudflare Pages Functions
+ * Shared utilities for form-handling Astro API routes.
+ *
+ * Migrated from functions/_shared/utils.ts when we moved off Cloudflare Pages
+ * Functions to Workers + Astro API routes.
  */
-
-export interface Env {
-  RESEND_API_KEY: string;
-  TURNSTILE_SECRET_KEY: string;
-}
 
 export const PHONE = '0117 287 0082';
 export const FROM_DEFAULT = 'Painless Removals Website <noreply@painlessremovals.com>';
+
+const ALLOWED_ORIGINS = [
+  'https://painlessremovals.com',
+  'https://www.painlessremovals.com',
+];
+
+export function isAllowedOrigin(origin: string): boolean {
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  // Workers preview URLs: <name>-<hash>.<account>.workers.dev
+  if (/^https:\/\/[a-z0-9-]+\.workers\.dev$/.test(origin)) return true;
+  // Legacy Pages preview URLs (during transition)
+  if (/^https:\/\/[a-z0-9-]+\.painlessremovals2026\.pages\.dev$/.test(origin)) return true;
+  if (origin === 'https://painlessremovals2026.pages.dev') return true;
+  return false;
+}
 
 export function escapeHtml(str: string): string {
   return String(str)

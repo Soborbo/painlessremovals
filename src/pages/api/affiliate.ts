@@ -1,15 +1,18 @@
 /**
- * Affiliate Referral — Cloudflare Pages Function
+ * Affiliate Referral API route — Cloudflare Workers + Astro
  *
  * POST /api/affiliate
  *
  * Sends two emails:
  *  1. Admin notification to hello@painlessremovals.com
  *  2. Auto-intro email to the referred client
+ *
+ * Migrated from functions/api/affiliate.ts.
  */
 
+import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import {
-  type Env,
   json,
   escapeHtml,
   stripNewlines,
@@ -19,11 +22,13 @@ import {
   emailFooter,
   PHONE,
   FROM_DEFAULT,
-} from '../_shared/utils';
+} from '@/lib/forms/utils';
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
+export const prerender = false;
+
+export const POST: APIRoute = async ({ request }) => {
   try {
-    const body = (await context.request.json()) as Record<string, string>;
+    const body = (await request.json()) as Record<string, string>;
     const { referringAgent, clientName, clientPhone, clientEmail, gdprConsent, honeypot, turnstileToken } = body;
 
     // 1. Honeypot
@@ -44,7 +49,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!turnstileToken) {
       return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
     }
-    const secret = context.env.TURNSTILE_SECRET_KEY;
+    const secret = env.TURNSTILE_SECRET_KEY;
     if (!secret) {
       console.error('TURNSTILE_SECRET_KEY is not configured');
       return json({ error: 'Security configuration error. Please try again later.' }, 500);
@@ -54,7 +59,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     // 4. Send emails via Resend REST API
-    const apiKey = context.env.RESEND_API_KEY;
+    const apiKey = env.RESEND_API_KEY;
     if (!apiKey) {
       console.error('RESEND_API_KEY is not configured');
       return json({ error: `Email service is temporarily unavailable. Please call us on ${PHONE}.` }, 500);
@@ -124,7 +129,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           The easiest way to get started is to grab an instant quote online, or give us a ring and we'll chat through your move together.
         </p>
         <div style="text-align: center; margin: 0 0 24px;">
-          <a href="https://www.painlessremovals.com/instant-quote/" style="display: inline-block; background-color: #ea580c; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Get Your Instant Quote</a>
+          <a href="https://www.painlessremovals.com/instantquote/" style="display: inline-block; background-color: #ea580c; color: #ffffff; padding: 14px 32px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Get Your Instant Quote</a>
         </div>
         <p style="font-size: 16px; line-height: 1.6; margin: 0 0 16px;">
           Or call us directly on <a href="tel:01172870082" style="color: #0E3C54; font-weight: 600; text-decoration: none;">${PHONE}</a> (Mon&ndash;Fri, 9am&ndash;5pm).
