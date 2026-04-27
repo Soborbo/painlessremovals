@@ -43,13 +43,13 @@ function readConsentSnapshot(): ConsentSnapshot {
   const out: ConsentSnapshot = { ad_storage: 'unknown', ad_user_data: 'unknown' };
   if (typeof window === 'undefined') return out;
   try {
-    const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: string; update?: string }> } } }).google_tag_data?.ics;
+    const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: boolean; update?: boolean }> } } }).google_tag_data?.ics;
     const entries = ics?.entries;
     if (entries) {
       const a = entries.ad_storage;
       const b = entries.ad_user_data;
-      if (a) out.ad_storage = ((a.update || a.default) === 'granted') ? 'granted' : 'denied';
-      if (b) out.ad_user_data = ((b.update || b.default) === 'granted') ? 'granted' : 'denied';
+      if (a) out.ad_storage = (a.update ?? a.default) ? 'granted' : 'denied';
+      if (b) out.ad_user_data = (b.update ?? b.default) ? 'granted' : 'denied';
     }
   } catch {
     // ignore — leave as 'unknown'

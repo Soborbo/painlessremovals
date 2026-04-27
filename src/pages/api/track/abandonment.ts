@@ -20,6 +20,7 @@ import { CONFIG } from '@/lib/config';
 import { logger } from '@/lib/utils/logger';
 import { checkRateLimit } from '@/lib/features/security/rate-limit';
 import { deriveClientId, sendGA4MP } from '@/lib/tracking/server';
+import { isAllowedOrigin } from '@/lib/forms/utils';
 
 export const prerender = false;
 
@@ -59,7 +60,7 @@ function sanitize(input: unknown): AbandonmentPayload {
 }
 
 function corsHeaders(origin: string | null): Record<string, string> {
-  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+  if (!origin || !isAllowedOrigin(origin)) {
     return {};
   }
   return {
@@ -107,7 +108,7 @@ export const POST: APIRoute = async (context) => {
   // Origin allowlist — FAIL CLOSED. sendBeacon does set Origin on
   // cross-origin POSTs from the page, so missing-Origin here is
   // suspicious and rejected.
-  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+  if (!origin || !isAllowedOrigin(origin)) {
     return new Response(null, { status: 403 });
   }
 

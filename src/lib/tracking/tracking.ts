@@ -31,11 +31,12 @@ import { generateUUID } from './uuid';
 function adStorageGranted(): boolean {
   if (typeof window === 'undefined') return false;
   try {
-    const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: string; update?: string }> } } }).google_tag_data?.ics;
+    const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: boolean; update?: boolean }> } } }).google_tag_data?.ics;
     const entry = ics?.entries?.ad_storage;
     if (entry) {
-      // ICS reports 'granted' / 'denied' on default and/or update.
-      return (entry.update || entry.default) === 'granted';
+      // ICS reports booleans on default/update; update wins when set.
+      const v = entry.update ?? entry.default;
+      return v === true;
     }
   } catch {
     // ignore

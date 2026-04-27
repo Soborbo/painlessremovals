@@ -29,6 +29,7 @@ import { logger } from '@/lib/utils/logger';
 import { checkRateLimit } from '@/lib/features/security/rate-limit';
 import { sendMetaCapi, type MetaCapiEvent } from '@/lib/tracking/server';
 import { DEFAULT_COUNTRY } from '@/lib/tracking/config';
+import { isAllowedOrigin } from '@/lib/forms/utils';
 
 export const prerender = false;
 
@@ -82,7 +83,7 @@ function clampEventTime(input: unknown): number {
 
 function corsHeaders(origin: string | null): Record<string, string> {
   // Echo only allowed origins. Never `*` — this endpoint reads PII.
-  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+  if (!origin || !isAllowedOrigin(origin)) {
     return {};
   }
   return {
@@ -174,7 +175,7 @@ export const POST: APIRoute = async (context) => {
   // cross-origin POSTs). Same-origin omits Origin per spec, but our
   // custom domain is always cross-origin to the *.workers.dev preview;
   // and on production the page origin matches an allowlist entry.
-  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+  if (!origin || !isAllowedOrigin(origin)) {
     return new Response(null, { status: 403 });
   }
 

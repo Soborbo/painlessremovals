@@ -1,20 +1,25 @@
 /**
  * CORS HELPER
  *
- * Generate CORS headers based on config
- * Never use wildcard (*) in production
+ * Generate CORS headers based on config.
+ * Never use wildcard (*) in production.
+ *
+ * Delegates to `isAllowedOrigin` (lib/forms/utils.ts) so the production
+ * domain, www, Workers preview URLs (*.workers.dev), and legacy Pages
+ * preview URLs all match — keeps a single source of truth for what
+ * "allowed" means across both the calc API routes and the form API
+ * routes.
  */
 
 import { CONFIG } from '@/lib/config';
+import { isAllowedOrigin } from '@/lib/forms/utils';
 
 /**
  * Get CORS headers for response
  */
 export function getCORSHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigins = CONFIG.security.allowedOrigins;
-
   // Check if origin is allowed
-  const isAllowed = origin && allowedOrigins.includes(origin);
+  const isAllowed = !!origin && isAllowedOrigin(origin);
 
   if (isAllowed) {
     return {
