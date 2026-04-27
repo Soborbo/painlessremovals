@@ -32,6 +32,21 @@ function onDocumentClick(e: Event): void {
   if (!link) return;
 
   const href = link.getAttribute('href') || '';
+
+  // Instant Quote CTA click — analytics only, NOT a conversion.
+  // Counts intent on every page that links into the calculator.
+  if (
+    href === '/instantquote/' ||
+    href === '/instantquote' ||
+    href.startsWith('/instantquote/?') ||
+    href.startsWith('/instantquote?')
+  ) {
+    trackEvent('instant_quote_cta_click', {
+      source_page: window.location.pathname,
+    });
+    return;
+  }
+
   let eventName: string | null = null;
   let extras: Record<string, unknown> = {};
 

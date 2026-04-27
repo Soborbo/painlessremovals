@@ -543,10 +543,18 @@ const phone = siteConfig.company.contact.phone;
           return;
         }
 
-        var tracking = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
+        // Analytics-only event (NOT a conversion).
+        const eventId = (window.crypto && window.crypto.randomUUID)
+          ? window.crypto.randomUUID()
+          : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
         (window as any).dataLayer = (window as any).dataLayer || [];
-        (window as any).dataLayer.push({ event: 'form_submission', form_name: 'clearance_callback', utm_source: tracking.utm_source || '', utm_medium: tracking.utm_medium || '', utm_campaign: tracking.utm_campaign || '', gclid: tracking.gclid || '', fbclid: tracking.fbclid || '' });
-        window.location.href = '/house-and-waste-clearance/thank-you';
+        (window as any).dataLayer.push({
+          event: 'form_submission',
+          event_id: eventId,
+          form_name: 'clearance_callback',
+          form_source: 'clearance-calculator',
+        });
+        window.location.href = '/house-and-waste-clearance/thank-you/';
       } catch {
         window.showToast(`Network error — please check your connection and try again, or call us on ${PHONE}.`, 'error');
         submitBtn.disabled = false;

@@ -9,6 +9,8 @@ import { siteConfig } from '@/config/site.config';
 import { ENTITY } from '@/utils/schema';
 import MobileContactBar from '@/components/MobileContactBar.astro';
 import MobileMenu from '@/components/MobileMenu.astro';
+import GTMHead from '@/components/GTMHead.astro';
+import GTMBody from '@/components/GTMBody.astro';
 import '@/styles/global.css';
 
 export interface Props {
@@ -226,6 +228,11 @@ const localBusinessSchema = {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  {/* TRACKING: Consent Mode v2 default + GTM bootstrap.
+      MUST be the first scripts in <head>. See docs/tracking.md rule #5. */}
+  <GTMHead />
+
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
   {noindex && <meta name="robots" content="noindex, nofollow" />}
@@ -269,44 +276,10 @@ const localBusinessSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   )}
 
-  <!-- Google Tag Manager -->
-  <script is:inline>
-    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-PXTH5JJK');
-  </script>
-
-  <!-- Capture UTM params, gclid, fbclid into sessionStorage -->
-  <script is:inline>
-    (function() {
-      var params = new URLSearchParams(window.location.search);
-      var keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'];
-      var stored = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
-      var updated = false;
-      keys.forEach(function(k) {
-        var v = params.get(k);
-        if (v) { stored[k] = v; updated = true; }
-      });
-      if (updated) {
-        stored._landing = window.location.pathname;
-        stored._ts = new Date().toISOString();
-        sessionStorage.setItem('pr_tracking', JSON.stringify(stored));
-      }
-      // Push tracking data to dataLayer for GTM
-      window.dataLayer = window.dataLayer || [];
-      if (Object.keys(stored).length > 0) {
-        window.dataLayer.push({ event: 'tracking_params', tracking: stored });
-      }
-    })();
-  </script>
-
   <slot name="head" />
 </head>
 <body class="bg-warm-white antialiased">
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PXTH5JJK" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <GTMBody />
   <!-- Skip navigation -->
   <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-primary-600 focus:text-white focus:px-4 focus:py-2 focus:rounded">Skip to main content</a>
   <!-- Header -->
@@ -890,6 +863,24 @@ const localBusinessSchema = {
         });
       });
     };
+  </script>
+
+  {/* TRACKING: bootstrap. Resumes quote timer, installs click + scroll listeners. */}
+  <script>
+    import '@/lib/tracking/boot';
+  </script>
+
+  {/* ERROR TRACKING: must be last script before </body>. */}
+  <script>
+    import { initGlobalCatcher } from '@/lib/errors/client-catcher';
+    import { initWebVitals } from '@/lib/errors/web-vitals';
+    initGlobalCatcher({
+      endpoint: '/api/error-report',
+      siteId: import.meta.env.PUBLIC_SITE_ID || 'painless-removals',
+      deployId: import.meta.env.PUBLIC_DEPLOY_ID || '',
+      isDev: import.meta.env.DEV,
+    });
+    initWebVitals();
   </script>
 </body>
 </html>

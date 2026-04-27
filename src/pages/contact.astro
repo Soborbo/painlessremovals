@@ -453,6 +453,27 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
           submitBtn.disabled = true;
           submitBtn.textContent = 'SENDING...';
 
+          // Generate event_id up-front so the server-side conversion
+          // fire and the browser-side dataLayer push share the same
+          // dedup key (Meta CAPI rule).
+          var eventId = (window.crypto && window.crypto.randomUUID)
+            ? window.crypto.randomUUID()
+            : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+
+          // Stash PII on the hidden DOM element so GTM Variables can
+          // read it for the Google Ads UPD tag (browser-side).
+          // PII NEVER goes to dataLayer (CLAUDE.md tracking rule #1).
+          if (window.PR_setUserDataOnDOM) {
+            var nameParts = name.trim().split(/\s+/);
+            window.PR_setUserDataOnDOM({
+              email: email,
+              phone_number: phone,
+              first_name: nameParts[0],
+              last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined,
+              country: 'GB',
+            });
+          }
+
           fetch('/api/contact/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -463,6 +484,8 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
               message: message,
               honeypot: honeypot,
               turnstileToken: turnstileResponse,
+              event_id: eventId,
+              source: 'contact-page',
             }),
           })
           .then(function(res) {
@@ -477,20 +500,22 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
           })
           .then(function(data) {
             if (data.success) {
-              // Push conversion event to GTM dataLayer
-              var tracking = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
               window.dataLayer = window.dataLayer || [];
+              // Analytics: form_submission for the contact form.
               window.dataLayer.push({
                 event: 'form_submission',
+                event_id: eventId,
                 form_name: 'contact',
                 form_source: 'contact-page',
-                utm_source: tracking.utm_source || '',
-                utm_medium: tracking.utm_medium || '',
-                utm_campaign: tracking.utm_campaign || '',
-                gclid: tracking.gclid || '',
-                fbclid: tracking.fbclid || '',
               });
-              window.location.href = '/contact/thank-you';
+              // Conversion: contact_form_conversion (mirror of the server
+              // fire). Same event_id so Meta CAPI dedupes browser + server.
+              window.dataLayer.push({
+                event: 'contact_form_conversion',
+                event_id: eventId,
+                form_source: 'contact-page',
+              });
+              window.location.href = '/contact/thank-you/';
             } else {
               window.showToast(data.error || 'Something went wrong sending your message. Please try again or call us on ' + PHONE + '.', 'error');
               submitBtn.disabled = false;

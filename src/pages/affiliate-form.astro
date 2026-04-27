@@ -232,9 +232,18 @@ const pageSchema = {
           })
           .then(function(data) {
             if (data.success) {
-              var tracking = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
+              // Analytics-only event (NOT a conversion).
+              // event_id satisfies CLAUDE.md tracking rule #2.
+              var eventId = (window.crypto && window.crypto.randomUUID)
+                ? window.crypto.randomUUID()
+                : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
               window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({ event: 'form_submission', form_name: 'affiliate', utm_source: tracking.utm_source || '', utm_medium: tracking.utm_medium || '', utm_campaign: tracking.utm_campaign || '', gclid: tracking.gclid || '', fbclid: tracking.fbclid || '' });
+              window.dataLayer.push({
+                event: 'form_submission',
+                event_id: eventId,
+                form_name: 'affiliate',
+                form_source: 'affiliate-form-page',
+              });
               // Show personalised success message and hide form
               var name = data.clientName || clientName;
               if (data.warning) {

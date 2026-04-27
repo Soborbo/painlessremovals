@@ -525,10 +525,18 @@ const pageSchema = [
           })
           .then(function(data) {
             if (data.success) {
-              var tracking = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
+              // Analytics-only event (NOT a conversion).
+              var eventId = (window.crypto && window.crypto.randomUUID)
+                ? window.crypto.randomUUID()
+                : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
               window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({ event: 'form_submission', form_name: 'job_application', utm_source: tracking.utm_source || '', utm_medium: tracking.utm_medium || '', utm_campaign: tracking.utm_campaign || '', gclid: tracking.gclid || '', fbclid: tracking.fbclid || '' });
-              window.location.href = '/jobs/thank-you';
+              window.dataLayer.push({
+                event: 'form_submission',
+                event_id: eventId,
+                form_name: 'job_application',
+                form_source: 'jobs-page',
+              });
+              window.location.href = '/jobs/thank-you/';
             } else {
               window.showToast(data.error || 'Something went wrong submitting your application. Please try again or call us on ' + PHONE + '.', 'error');
               submitBtn.disabled = false;

@@ -14,8 +14,21 @@
 
 import { resumeQuoteTimer } from './conversion-state';
 import { initGlobalListeners } from './global-listeners';
-import { restoreUserDataFromStorage } from './tracking';
+import { restoreUserDataFromStorage, setUserDataOnDOM } from './tracking';
+import { captureUTMs } from './utm-capture';
 
+captureUTMs();
 restoreUserDataFromStorage();
 resumeQuoteTimer();
 initGlobalListeners();
+
+// Expose setUserDataOnDOM as a window global so legacy `<script is:inline>`
+// blocks (which cannot do ES-module imports) can stash PII on the hidden
+// DOM element. Bundled scripts should import setUserDataOnDOM directly
+// from '@/lib/tracking' instead.
+declare global {
+  interface Window {
+    PR_setUserDataOnDOM?: typeof setUserDataOnDOM;
+  }
+}
+window.PR_setUserDataOnDOM = setUserDataOnDOM;

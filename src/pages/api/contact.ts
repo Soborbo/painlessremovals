@@ -8,10 +8,22 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
 
 export const prerender = false;
 
 const INTERNAL_SOURCES = ['later-life-lead-magnet', 'later-life-callback', 'later-life-calculator'];
+
+interface ContactBody {
+  name?: string;
+  phone?: string;
+  email?: string;
+  message?: string;
+  honeypot?: string;
+  turnstileToken?: string;
+  source?: string;
+  event_id?: string;
+}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -21,8 +33,8 @@ export const POST: APIRoute = async ({ request }) => {
       return json({ error: 'Forbidden.' }, 403);
     }
 
-    const body = await request.json() as Record<string, string>;
-    const { name, phone, email, message, honeypot, turnstileToken, source } = body;
+    const body = await request.json() as ContactBody;
+    const { name, phone, email, message, honeypot, turnstileToken, source, event_id } = body;
 
     // Honeypot
     if (honeypot) return json({ success: true });
@@ -83,7 +95,61 @@ export const POST: APIRoute = async ({ request }) => {
       return json({ error: `Failed to send your message. Please try again or call us on ${PHONE}.` }, 500);
     }
 
-    return json({ success: true });
+    // ──────────────────────────────────────────────────────────────────
+    // CONVERSION fire — server-side, only after Turnstile + Resend OK.
+    // Browser fires the same event with the same event_id; Meta dedupes.
+    // Skipped if no event_id was provided (e.g. an internal/legacy caller).
+    // ──────────────────────────────────────────────────────────────────
+    if (event_id && typeof event_id === 'string') {
+      const fingerprint = event_id.replace(/-/g, '').slice(0, 16);
+      const clientId = deriveClientId(fingerprint);
+      const userAgent = request.headers.get('user-agent') || undefined;
+      const cf = (request as unknown as { cf?: { country?: string } }).cf;
+      const ipAddress = request.headers.get('cf-connecting-ip')
+        || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+        || undefined;
+
+      // Split name into first/last for Meta CAPI
+      const nameParts = name.trim().split(/\s+/);
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
+
+      // Fire-and-forget: don't block the response on tracking
+      void sendGA4MP(
+        env,
+        clientId,
+        [{
+          name: 'contact_form_conversion',
+          params: {
+            form_source: source || 'contact_page',
+            engagement_time_msec: 100,
+          },
+        }],
+        { userAgent, ipOverride: ipAddress },
+      ).catch(() => { /* best-effort */ });
+
+      void sendMetaCapi(env, [{
+        event_name: 'contact_form_conversion',
+        event_id,
+        event_time: Math.floor(Date.now() / 1000),
+        event_source_url: request.headers.get('referer') || `https://painlessremovals.com/contact/`,
+        action_source: 'website',
+        user_data: {
+          email,
+          phone_number: phone,
+          first_name: firstName,
+          last_name: lastName,
+          country: cf?.country,
+          client_user_agent: userAgent,
+          client_ip_address: ipAddress,
+        },
+        custom_data: {
+          form_source: source || 'contact_page',
+        },
+      }]).catch(() => { /* best-effort */ });
+    }
+
+    return json({ success: true, event_id: event_id || null });
   } catch (err) {
     console.error('Contact form error:', err);
     return json({ error: `Something went wrong. Please try again or call us on ${PHONE}.` }, 500);

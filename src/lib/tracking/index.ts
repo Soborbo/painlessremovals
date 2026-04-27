@@ -39,4 +39,6 @@ export { mirrorMetaCapi } from './meta-mirror';
 
 export { generateUUID } from './uuid';
 
+export { captureUTMs, readAttribution, type AttributionParams } from './utm-capture';
+
 export { CURRENCY, DEFAULT_COUNTRY } from './config';
