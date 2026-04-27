@@ -1,0 +1,236 @@
+---
+/**
+ * SurveyOptions — interactive "Choose How" survey picker
+ *
+ * 3 cards (Video Call, In-Person, Send Video) with a mini recommender.
+ * Selecting a recommender option highlights the matching card and dims others.
+ * Micro-interactions: hover lifts, selection glow, smooth transitions.
+ */
+import { siteConfig } from '@/config/site.config';
+
+const waNumber = siteConfig.company.contact.whatsapp;
+const waDisplay = siteConfig.company.contact.whatsappDisplay;
+const waLink = `https://wa.me/${waNumber}`;
+---
+
+<section class="section bg-cream" aria-labelledby="survey-heading" id="survey-options">
+  <div class="container-wide">
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <h2 id="survey-heading">Get Your Accurate Quote — Choose How</h2>
+      <p class="text-warm-gray mt-4">
+        Every move starts with understanding what you have. Pick the option that suits you best — all three are completely free, no obligation.
+      </p>
+    </div>
+
+    <!-- Survey Cards -->
+    <div class="survey-cards-grid mb-10" id="survey-cards">
+      <!-- Card 0: Video Call -->
+      <div class="survey-card" data-index="0">
+        <div class="card-icon-wrap">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+          </svg>
+        </div>
+        <h3 class="!text-lg !text-primary-700 mt-4 mb-2">Video Call</h3>
+        <p class="card-desc text-warm-gray text-[15px] leading-relaxed">
+          Live video survey with your Move Manager. Walk around your home on your phone — about 15 minutes.
+        </p>
+        <div class="card-meta flex items-center gap-2 text-sm text-warm-gray">
+          <svg class="w-4 h-4 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          ~15 minutes
+        </div>
+        <div class="best-if">
+          <span class="best-if-label">Best if you:</span>
+          Want it done today · Comfortable on video · Live far from Bristol
+        </div>
+        <div class="card-cta-wrap">
+          <a href="/instantquote?survey=video" class="survey-cta">Book Video Call →</a>
+        </div>
+      </div>
+
+      <!-- Card 1: In-Person -->
+      <div class="survey-card" data-index="1">
+        <div class="card-icon-wrap">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+        </div>
+        <h3 class="!text-lg !text-primary-700 mt-4 mb-2">We Come to You</h3>
+        <p class="card-desc text-warm-gray text-[15px] leading-relaxed">
+          In-person home visit. We check every room, measure access, spot what cameras miss. Recommended for larger or more complex moves.
+        </p>
+        <div class="card-meta flex items-center gap-2 text-sm text-warm-gray">
+          <svg class="w-4 h-4 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          ~30 minutes
+        </div>
+        <div class="best-if">
+          <span class="best-if-label">Best if you:</span>
+          Have tricky access · 4+ bedrooms · Unusual or high-value items · Prefer face to face
+        </div>
+        <div class="card-cta-wrap">
+          <a href="/contact/?survey=in-person" class="survey-cta">Book Home Visit →</a>
+        </div>
+      </div>
+
+      <!-- Card 2: Send Video -->
+      <div class="survey-card" data-index="2">
+        <div class="card-icon-wrap">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+          </svg>
+        </div>
+        <h3 class="!text-lg !text-primary-700 mt-4 mb-2">Send Us a Video</h3>
+        <p class="card-desc text-warm-gray text-[15px] leading-relaxed">
+          Record a walkthrough on your phone and send it over. Quote back usually same day.
+        </p>
+        <div class="card-meta flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-warm-gray">
+          <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-secondary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Do it whenever
+          </span>
+          <a href={waLink} target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-[#25D366] hover:underline font-medium">
+            <img src="/images/whatsapp-logo.svg" alt="WhatsApp" class="w-4 h-4" width="16" height="16" loading="lazy" />
+            {waDisplay}
+          </a>
+          <a href="https://www.dropbox.com/request/c7s2YBgAkZSXw9eCATzK" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 text-blue-600 hover:underline font-medium">
+            <img src="/images/dropbox-logo.svg" alt="Dropbox" class="w-4 h-4" width="16" height="16" loading="lazy" />
+            Dropbox upload
+          </a>
+        </div>
+        <div class="best-if">
+          <span class="best-if-label">Best if you:</span>
+          Hate scheduling · Want to do it at 10pm in your PJs
+        </div>
+        <div class="card-cta-wrap">
+          <a href="/send-survey-video/" class="survey-cta">Send a Video →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="max-w-2xl mx-auto">
+      <p class="text-warm-gray text-center text-[15px] leading-relaxed">
+        All three options are completely free, no obligation. Jay conducts all surveys personally, and once booked your dedicated Move Manager coordinates everything from there.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Cards grid — subgrid aligns rows across cards */
+  .survey-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  @media (min-width: 768px) {
+    .survey-cards-grid {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: subgrid;
+      grid-row: span 6; /* icon, title, desc, meta, best-if, cta */
+    }
+  }
+
+  /* Survey Cards */
+  .survey-card {
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 32px 28px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  @media (min-width: 768px) {
+    .survey-card {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 6;
+      align-content: start;
+    }
+  }
+  .survey-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-secondary-500);
+    transform: scaleX(0);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left;
+  }
+  .survey-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Icon circle */
+  .card-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: var(--color-primary-50);
+    color: var(--color-primary-600);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Card inner spacing for flex fallback */
+  .card-desc { margin-bottom: 16px; }
+  .card-meta { margin-bottom: 16px; }
+
+  /* Best-if badge */
+  .best-if {
+    font-size: 0.85rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .best-if-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6b6b6b;
+    margin-bottom: 2px;
+  }
+
+  /* CTA wrapper aligns to bottom */
+  .card-cta-wrap {
+    margin-top: auto;
+    align-self: end;
+  }
+  @media (min-width: 768px) {
+    .card-cta-wrap {
+      align-self: start;
+    }
+  }
+
+  /* CTA button inside card */
+  .survey-cta {
+    display: inline-block;
+    background: #c2410c;
+    color: white !important;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+  }
+  .survey-cta:hover {
+    background: #9a3412;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(194, 65, 12, 0.3);
+  }
+</style>
+

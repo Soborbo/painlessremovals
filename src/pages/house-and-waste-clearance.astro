@@ -1,0 +1,472 @@
+---
+/**
+ * House Clearance Service Landing Page
+ *
+ * Eco-friendly house & waste clearance service for Painless Removals Bristol.
+ * Following the same landing page structure as other service pages.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import HowItWorks from '@/components/HowItWorks.astro';
+import ClearanceCalculator from '@/components/ClearanceCalculator.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import ProblemSolution from '@/components/ProblemSolution.astro';
+import { siteConfig } from '@/config/site.config';
+import { bristolNeighbourhoods, neighbourhoodUrl } from '@/config/areas.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'House Clearance Bristol | Eco-Friendly | Painless Removals';
+const pageDescription = 'Professional eco-friendly house clearance in Bristol & Bath. We recycle, donate to charity, and handle hazardous waste responsibly. Get your free quote today.';
+
+// Data structures
+
+const benefits = [
+  {
+    imageName: 'house-clearance/Bristol-clearance-service-5',
+    title: 'Not All Waste Should Go to Waste',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">Save the world: recycle as much as possible.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p>Of course, not everything can end up on charity shelves – many items can no longer be reused. But they can still be recycled!</p>
+        <p>Leave the handling of these items to us. We'll free you from the hassle and make sure everything that can be recycled is recycled, keeping as much as possible out of landfill.</p>
+      </div>`,
+    cta: { text: 'GET YOUR FREE QUOTE', href: '/contact' },
+  },
+  {
+    imageName: 'house-clearance/Bristol-clearance-service-3',
+    title: 'Make the Best of Your Unwanted Belongings',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">Sorting reusable from rubbish – so you don't have to.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p>We help you to only throw away what is truly completely worthless and unusable.</p>
+        <p>We select those items that may still have value to others, and we'll give your once-cherished possessions a second life if it's possible. It's better for the planet and better for your conscience.</p>
+      </div>`,
+  },
+  {
+    imageName: 'house-clearance/Bristol-donate-charity-easily',
+    title: 'Help Those in Need',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">Donate to charity effortlessly.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p>We organise the transport of usable items to the right charities through our connections, so your discarded items can still make a meaningful difference.</p>
+        <p>You don't need to arrange anything – we handle the sorting, the transport, and the donation. Your unwanted belongings get a second life with someone who truly needs them.</p>
+      </div>`,
+    cta: { text: 'GET YOUR FREE QUOTE', href: '/contact' },
+  },
+];
+
+const steps = [
+  {
+    number: 1,
+    title: 'Send a Video',
+    description: `Send us a quick <a href="https://wa.me/${siteConfig.company.contact.whatsapp}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[#25D366] hover:underline font-medium"><img src="/images/whatsapp-logo.svg" alt="" class="w-4 h-4 inline" width="16" height="16" /> WhatsApp (${siteConfig.company.contact.whatsappDisplay})</a> video of what needs clearing. No need to sort anything – just show us the rooms and items as they are.`,
+    icon: 'camera',
+  },
+  {
+    number: 2,
+    title: 'Get Your Price',
+    description: 'We\'ll review your video and send you a clear, honest price. No hidden fees, no surprises.',
+    icon: 'quote',
+  },
+  {
+    number: 3,
+    title: 'Accept & Book',
+    description: 'Happy with the price? Confirm and we\'ll lock in a date that works for you.',
+    icon: 'check',
+  },
+  {
+    number: 4,
+    title: 'We Load Up',
+    description: 'Our team arrives and clears everything efficiently. You don\'t even need to be there – just leave it to us.',
+    icon: 'truck',
+  },
+  {
+    number: 5,
+    title: 'Disposed Responsibly',
+    description: 'Everything is recycled, donated, or disposed of in the most environmentally friendly way possible. You get peace of mind.',
+    icon: 'recycle',
+  },
+];
+
+
+const faqs = [
+  {
+    question: 'What does your house clearance service include?',
+    answer: 'We handle the complete clearance of a property – removing all furniture, belongings, and waste. We sort everything into categories: items for charity donation, recyclables, and waste for responsible disposal. We can also handle hazardous materials like paint, chemicals, and batteries.',
+  },
+  {
+    question: 'How much does a house clearance in Bristol cost?',
+    answer: 'The cost depends on the size of the property and the volume of items to be cleared. Every clearance is different, so we provide a personalised quote after understanding your specific needs. Get in touch for a free, no-obligation estimate.',
+  },
+  {
+    question: 'Do you recycle items from house clearances?',
+    answer: 'Absolutely – recycling is at the heart of what we do. We sort through every item and ensure that as much as possible is recycled or donated to charity rather than going to landfill. We have connections with local charities and recycling facilities across Bristol.',
+  },
+  {
+    question: 'Can you handle hazardous waste?',
+    answer: 'Yes. We can handle hazardous materials including paint, chemicals, batteries, and other items that require special disposal. We take them to approved collection sites so they\'re disposed of in the most environmentally friendly way possible.',
+  },
+  {
+    question: 'How quickly can you clear a property?',
+    answer: 'Most house clearances can be completed within a day, depending on the size of the property and the volume of items. For larger properties, we may need two days. We\'ll give you a clear timeline when we provide your quote.',
+  },
+  {
+    question: 'Do you clear properties after a bereavement?',
+    answer: 'Yes, and we handle these situations with the utmost sensitivity and respect. We understand how difficult this time can be, and our team will work carefully and compassionately to clear the property at your pace.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "House Clearance Bristol",
+    description: pageDescription,
+    serviceType: "House Clearance",
+    url: "/house-and-waste-clearance/",
+    areaServed: [areas.bristol, areas.bath],
+    image: "/img/house-clearance/Bristol-clearance-service-2-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "House Clearance" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/house-clearance/Bristol-clearance-service-2-1200w.webp" preloadImage="/img/house-clearance/Bristol-clearance-service-2-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="house-clearance/Bristol-clearance-service-2"
+        pattern="FULL"
+        alt="Eco-friendly house clearance service in Bristol – Painless Removals team clearing a property"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Eco-Friendly House Clearance in Bristol & Bath
+        </h1>
+
+        <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+          House Clearance – <span class="text-secondary-500">Quick, <span class="text-[#1F9246]">Green</span> & Carefree</span>
+        </h2>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          We conveniently and professionally empty your property, freeing you from clutter and unwanted items in a responsible, eco-friendly way.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/contact/" class="btn-cta-orange">
+            GET YOUR RISK-FREE QUOTE NOW
+          </a>
+          <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="house-clearance/Bristol-clearance-service-2"
+        pattern="FULL"
+        alt="Eco-friendly house clearance service in Bristol – Painless Removals team clearing a property"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USPs - Full width bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: INTRO / EMOTIONAL HOOK
+  ============================================ -->
+  <ProblemSolution
+    heading="Clearing a Property Shouldn't Fall on Your Shoulders"
+    ctaText="Get Your Free Clearance Quote →"
+    ctaHref="/contact"
+  >
+    <p class="text-warm-gray leading-relaxed mb-6 text-lg">
+      <strong class="text-warm-gray">Whether it's a full house, a single room, or a property after a bereavement</strong> – the thought of sorting through everything can feel overwhelming. What gets recycled? What can be donated? What needs special disposal? And who actually does the heavy lifting?
+    </p>
+    <p class="text-warm-gray leading-relaxed mb-6">
+      <strong class="text-warm-gray">We take the entire job off your hands.</strong> Our team sorts through everything, separates what can be donated to charity or recycled, and disposes of the rest responsibly. Hazardous items like paint, chemicals, and batteries are taken to approved collection sites – you don't need to worry about any of it.
+    </p>
+    <p class="text-warm-gray leading-relaxed">
+      <strong class="text-primary-700">You don't even need to be there.</strong> Just show us what needs clearing and we'll handle the rest – efficiently, respectfully, and with as little going to landfill as possible.
+    </p>
+  </ProblemSolution>
+
+  <!-- ============================================
+       SECTION 3: HOW IT WORKS (with intro image)
+  ============================================ -->
+  <div class="relative h-64 lg:h-80 overflow-hidden">
+    <OptimizedPicture
+      name="house-clearance/Bristol-clearance-service"
+      pattern="FULL"
+      alt="Painless Removals team clearing a property in Bristol"
+      loading="lazy"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+  </div>
+
+  <HowItWorks
+    id="hiw-clearance"
+    steps={steps}
+    title="How House Clearance Works With Us"
+    ctaText="GET YOUR FREE QUOTE"
+    ctaHref="/contact"
+  />
+
+  <!-- ============================================
+       SECTION 4: BENEFITS (alternating 50/50 rows)
+  ============================================ -->
+  <section class="bg-cream">
+    <div>
+      {benefits.map((benefit, index) => (
+        <div class="grid lg:grid-cols-2">
+          <!-- Image (50% width, full height) -->
+          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+            <OptimizedPicture
+              name={benefit.imageName}
+              pattern="HALF"
+              alt={benefit.title}
+              loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+          <!-- Text (50% width) -->
+          <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+            <h3 class="text-2xl lg:text-3xl mb-4">{benefit.title}</h3>
+            <div set:html={benefit.content} />
+
+            {benefit.cta && (
+              <a href={benefit.cta.href} class="btn-cta-orange mt-6 self-start">
+                {benefit.cta.text}
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: HAZARDOUS WASTE
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden order-2">
+        <OptimizedPicture
+          name="house-clearance/Bristol-Hazardous-Waste"
+          pattern="HALF"
+          alt="Hazardous waste disposal handled safely and responsibly"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover object-[center_30%] transition-transform duration-500 hover:scale-105"
+        />
+      </div>
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center order-1">
+        <h3 class="text-2xl lg:text-3xl mb-4">Handling Hazardous Waste with Special Care</h3>
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          The most difficult things to handle are hazardous waste – but we can help with that too.
+        </p>
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            Paints, chemicals, batteries, electrical items – these all need special handling and can't simply go in a skip. We take them to approved collection sites so that they can be disposed of in the most environmentally friendly way possible.
+          </p>
+          <p>
+            You don't need to worry about what goes where. We know the regulations, we have the connections, and we'll make sure everything is handled safely and legally.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: CLEARANCE CALCULATOR
+  ============================================ -->
+  <section class="section bg-gray-100" id="calculator">
+    <div class="container-wide">
+      <ClearanceCalculator />
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6a: DEEP CLEANING CROSS-SELL
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden">
+        <OptimizedPicture
+          name="cleaning/cleaning-service"
+          pattern="HALF"
+          alt="Professional deep cleaning service in Bristol by Painless Removals"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+        />
+      </div>
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-6">Need the Property Cleaned Too?</h2>
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            Once a property is cleared, it often needs a thorough clean – whether it's an end-of-tenancy requirement, preparing for sale, or simply starting fresh. We offer deep cleaning alongside our clearance service, so you can solve the whole problem in one go.
+          </p>
+          <p>
+            No need to book a separate company. We clear, we clean, and we hand the property back spotless. One team, one booking, zero hassle.
+          </p>
+        </div>
+        <a href="/cleaning-service/" class="soft-cta mt-8 inline-flex">
+          Learn more about our cleaning service →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6b: HOME REMOVALS CROSS-SELL
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-6">Moving House Too? We Can Handle Both.</h2>
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            If you're clearing a property as part of a house move, we can combine both services into one seamless operation. Our team handles the clearance and the removals – saving you time, money, and the hassle of coordinating multiple companies.
+          </p>
+          <p>
+            With nearly 50 years of home removals experience in Bristol, we know how to make the entire process as smooth as possible.
+          </p>
+        </div>
+        <a href="/home-removals-bristol/" class="soft-cta mt-8 inline-flex">
+          Learn more about our home removals service →
+        </a>
+      </div>
+
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px]">
+        <OptimizedPicture
+          name="house-clearance/Bristol-home-removals-service-1"
+          pattern="HALF"
+          alt="Professional home removals service in Bristol by Painless Removals"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: ABOUT
+  ============================================ -->
+  <JayAuthorBlock
+    heading="Nearly 50 Years of Removals & Clearance in Bristol"
+    quote="We believe that clearing a property should be done responsibly. That means recycling, donating, and only disposing of what truly can't be saved. It's better for the environment and better for the community."
+    description="Painless Removals has been serving Bristol since 1978. We're not a faceless corporate operation – we're an independent, local company with a genuine commitment to doing things the right way."
+  />
+
+  <!-- ============================================
+       SECTION 8: QUOTE CTA
+  ============================================ -->
+  <section class="bg-linear-to-br from-primary-600 to-primary-700 text-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Left: Content -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <div class="max-w-xl">
+          <h2 class="text-white mb-4">Ready to Clear Your Property?</h2>
+          <p class="text-primary-100 mb-8">
+            Get in touch for a free, no-obligation quote. We'll discuss your needs and give you a straightforward price – no hidden fees, no surprises.
+          </p>
+
+          <ul class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-8 text-primary-100">
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> No obligation
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Eco-friendly disposal
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Charity donations included
+            </li>
+          </ul>
+
+          <a href="/contact/" class="inline-block bg-white hover:bg-gray-100 text-primary-600 px-8 py-3 text-lg font-bold uppercase no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            GET YOUR FREE CLEARANCE QUOTE
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="hidden lg:block relative min-h-[400px]">
+        <OptimizedPicture
+          name="house-clearance/Bristol-clearance-service-4"
+          pattern="HALF"
+          alt="Professional house clearance team ready to help in Bristol"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About House Clearance" bgClass="bg-white" />
+
+  <!-- ============================================
+       NEIGHBOURHOOD CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">House Clearance Across Bristol</h2>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10">We handle clearances in every Bristol neighbourhood — from single rooms to entire properties.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {bristolNeighbourhoods.slice(0, 8).map(n => (
+          <a href={neighbourhoodUrl(n.slug)} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            {n.name} <span class="text-warm-gray font-normal">({n.postcode})</span>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/areas/" class="soft-cta">See all areas we cover</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Need a Property Cleared?"
+    description="Get in touch today for a free quote. We'll handle everything – from sorting and recycling to charity donations and responsible disposal."
+    bullets={['Eco-friendly approach', 'Charity donations', 'Hazardous waste handled']}
+    primaryText="GET YOUR FREE QUOTE"
+    primaryHref="/contact"
+    bottomNote="♻️ We recycle and donate as much as possible – keeping your items out of landfill."
+  />
+
+</Layout>

@@ -1,0 +1,732 @@
+---
+/**
+ * FAQ Page
+ *
+ * LLM + SEO optimised FAQ hub with 60 conversational questions.
+ * Uses native <details>/<summary> so all content is in the DOM for crawlers.
+ * Deduplication: unique answers here, brief + link out for topics covered on service pages.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import ReviewQuote from '@/components/ReviewQuote.astro';
+import { siteConfig } from '@/config/site.config';
+import { faqPage, breadcrumbs } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Removals FAQ — Your Moving Questions Answered';
+const pageDescription = 'Got questions about moving house in Bristol? Find honest, straight-talking answers about pricing, moving day, packing, insurance, storage, and more from Painless Removals — serving Bristol since 1978.';
+
+
+// FAQ Categories — colour per category
+// Tailwind classes for question cards; hex values for pill hover/active via CSS vars
+const categories = [
+  { id: 'before-you-move', title: 'Before You Move', text: 'text-sky-700', border: 'border-sky-200', accent: 'border-l-sky-500', pillBg: '#f0f9ff', pillText: '#0369a1', pillBorder: '#7dd3fc' },
+  { id: 'pricing', title: 'Pricing & Paying', text: 'text-emerald-700', border: 'border-emerald-200', accent: 'border-l-emerald-500', pillBg: '#ecfdf5', pillText: '#047857', pillBorder: '#6ee7b7' },
+  { id: 'moving-day', title: 'Moving Day', text: 'text-amber-700', border: 'border-amber-200', accent: 'border-l-amber-500', pillBg: '#fffbeb', pillText: '#b45309', pillBorder: '#fcd34d' },
+  { id: 'packing', title: 'Packing & Prep', text: 'text-violet-700', border: 'border-violet-200', accent: 'border-l-violet-500', pillBg: '#f5f3ff', pillText: '#6d28d9', pillBorder: '#c4b5fd' },
+  { id: 'tricky-stuff', title: 'Tricky Items', text: 'text-rose-700', border: 'border-rose-200', accent: 'border-l-rose-500', pillBg: '#fff1f2', pillText: '#be123c', pillBorder: '#fda4af' },
+  { id: 'insurance', title: 'Insurance & What If', text: 'text-teal-700', border: 'border-teal-200', accent: 'border-l-teal-500', pillBg: '#f0fdfa', pillText: '#0f766e', pillBorder: '#5eead4' },
+  { id: 'storage', title: 'Storage', text: 'text-orange-700', border: 'border-orange-200', accent: 'border-l-orange-500', pillBg: '#fff7ed', pillText: '#c2410c', pillBorder: '#fdba74' },
+  { id: 'about-us', title: 'About Us', text: 'text-indigo-700', border: 'border-indigo-200', accent: 'border-l-indigo-500', pillBg: '#eef2ff', pillText: '#4338ca', pillBorder: '#a5b4fc' },
+];
+
+// All 60 FAQs
+const faqs = [
+  // ===== 1. Before You Move =====
+  {
+    question: 'How far ahead do I need to book a removal company?',
+    answer: `<strong>Short answer:</strong> Painless Removals recommends booking 4–6 weeks in advance, but we can often accommodate shorter notice too.<br><br>During busy periods like school holidays and end-of-month completions, good removal companies fill up fast. If you are flexible on dates, we can sometimes fit you in with just a few days' notice. <a href="/home-removals-bristol/">See our full home removals page</a> for more on how the booking process works.`,
+    category: 'before-you-move',
+  },
+  {
+    question: "This is my first house move — where do I even start?",
+    answer: `<strong>Short answer:</strong> Start with a free home survey from Painless Removals. We'll plan everything from there — you just need to focus on packing (or let us do it).<br><br>Here's a rough timeline: 6 weeks out, book your removal and start decluttering. 3 weeks out, begin packing room by room, starting with things you don't use daily. 1 week out, confirm your date, redirect your post, and pack an essentials box (kettle, chargers, toilet roll, meds). On the day, just be there to let us in and tell us where things go. Our <a href="/packing-guide/">free packing guide</a> walks you through every step, room by room.`,
+    category: 'before-you-move',
+  },
+  {
+    question: "What's the difference between you and a man-with-a-van?",
+    answer: `<strong>Short answer:</strong> Painless Removals carries £15,000 Goods in Transit insurance per van, specialist equipment, and a dedicated Move Manager for every job. Most man-and-van services carry none of that.<br><br>We bring floor runners, mattress covers, sofa bags, wardrobe boxes, and TV cartons as standard. We disassemble and reassemble furniture. Every move is planned by a Move Manager who knows your property, your route, and your belongings. We are Move Assured accredited and have been operating in Bristol since 1978. A man-and-van can be fine for a few boxes — but for a full house move, the risk of damage and stress is significantly higher.`,
+    category: 'before-you-move',
+  },
+  {
+    question: 'Do I need to do anything before you arrive?',
+    answer: `<strong>Short answer:</strong> Yes — a few simple things will make your moving day much smoother.<br><br>Clear pathways through the house so the team can move freely. If you live on a street with limited parking, try to reserve a space outside your front door (a cone or a polite note to neighbours works well). Label each room at the new property so the team knows where to put things. Disconnect appliances like your fridge and freezer at least 24 hours before. And pack an essentials box you keep with you in the car — not on the van.`,
+    category: 'before-you-move',
+  },
+  {
+    question: 'Can I just call and get a rough idea of cost?',
+    answer: `<strong>Short answer:</strong> Absolutely — call Painless Removals on ${siteConfig.company.contact.phone} and we'll give you a ballpark figure based on your home size and distance.<br><br>For an accurate, fixed-price quote, we recommend our <a href="/free-home-survey/">free home survey</a> — either a quick video self-survey from your phone or an in-person visit. It takes 10–15 minutes and there's no obligation.`,
+    category: 'before-you-move',
+  },
+  {
+    question: "I'm in a chain — can you work around my completion date?",
+    answer: `<strong>Short answer:</strong> Yes. Chain moves are one of Painless Removals' specialities, and we handle them every week.<br><br>We allocate a full day to your move with no other jobs scheduled, so you won't be rushed if solicitors are slow with keys. Our team arrives at your current property and starts loading while you wait for confirmation on the new place. If the chain collapses on the day, we can arrange <a href="/storage-service/">temporary storage</a> for your belongings so you're not left stranded. We've been navigating Bristol property chains since 1978.`,
+    category: 'before-you-move',
+  },
+  {
+    question: 'What if I need to change my moving date last minute?',
+    answer: `<strong>Short answer:</strong> Just call your Move Manager as soon as you know. Painless Removals will do our best to accommodate you at no extra charge.<br><br>We understand dates shift — especially with property chains. If your original date has already been taken by another customer, we'll offer you the next available slot. There's no penalty for rescheduling, and your deposit transfers to the new date.`,
+    category: 'before-you-move',
+  },
+  {
+    question: 'Do you move people at weekends or bank holidays?',
+    answer: `<strong>Short answer:</strong> Yes. Painless Removals can schedule moves on Saturdays and bank holidays by arrangement.<br><br>Saturday moves are popular and book up quickly, so we recommend securing your date as early as possible. Weekend and bank holiday moves may carry a small supplement to cover additional staffing costs. Our office is open Monday to Friday 9am–5pm, but the moves themselves can happen outside those hours. Call us on ${siteConfig.company.contact.phone} to check availability.`,
+    category: 'before-you-move',
+  },
+
+  // ===== 2. Pricing & Paying =====
+  {
+    question: 'How much does it actually cost to move a 3-bed house in Bristol?',
+    answer: `<strong>Short answer:</strong> A typical 3-bedroom local move in Bristol with Painless Removals starts from around £800–£1,200, depending on volume, access, and distance.<br><br>Every home is different, so we provide a fixed-price quote after a <a href="/free-home-survey/">free home survey</a>. The quote includes everything: loading, transport, unloading, furniture disassembly and reassembly, and floor protection. See our <a href="/home-removals-bristol/">home removals page</a> for full pricing details.`,
+    category: 'pricing',
+  },
+  {
+    question: 'Are there any hidden fees I should know about?',
+    answer: `<strong>Short answer:</strong> No. Painless Removals quotes are fully transparent — what we quote is what you pay.<br><br>Your quote covers the team, the vans, all equipment (blankets, straps, floor runners), and a full working day up to 5pm. The only scenario where additional charges can apply is if your keys arrive after 2pm on a chain move — and even then, we only charge for the extra wage time at a fair rate per person per half hour. No fuel surcharges, no stair charges, no hidden extras.`,
+    category: 'pricing',
+  },
+  {
+    question: "How do I pay — and when's the balance due?",
+    answer: `<strong>Short answer:</strong> A deposit secures your date, and the balance is due on moving day once everything's been delivered.<br><br>Painless Removals accepts bank transfer, debit card, and credit card. Your quote is confirmed in writing so you know the exact total before you commit. We don't accept cash for the balance — everything goes through proper channels for your protection and ours.`,
+    category: 'pricing',
+  },
+  {
+    question: 'Is it cheaper to book packing and removals together?',
+    answer: `<strong>Short answer:</strong> Yes. A combined removal and packing service with Painless Removals is more cost-effective than booking them separately.<br><br>When you combine both, the same team handles packing day and moving day. They already know your property, your belongings, and any tricky access points — which makes moving day faster and smoother. A combined 3-bedroom removal and <a href="/home-packing-service/">packing service</a> typically costs £1,400–£2,200 depending on volume and distance.`,
+    category: 'pricing',
+  },
+  {
+    question: 'What if the move takes longer than expected — do I pay more?',
+    answer: `<strong>Short answer:</strong> Your Painless Removals quote covers a full working day. If the move runs past 5pm, there's a fair additional charge per person per half hour.<br><br>In practice, most moves finish well within the day. We plan carefully during the home survey to make sure the team size and van count matches your move. Overruns are rare — but if they happen, you'll only pay for the extra time at a transparent hourly rate. No surprises.`,
+    category: 'pricing',
+  },
+  {
+    question: 'Do I need to tip the movers?',
+    answer: `<strong>Short answer:</strong> Tips aren't expected, but they're always appreciated. Honestly, a cup of tea goes just as far.<br><br>Our team are paid a fair wage by Painless Removals. If you feel the team have done a great job and want to show your appreciation, a tip of £10–£20 per person is generous. But the thing our lads appreciate most is a steady supply of tea (milk, two sugars seems to be universal) and being offered the use of the loo. A <a href="/reviews/">5-star Google review</a> afterwards means a lot to them too.`,
+    category: 'pricing',
+  },
+  {
+    question: 'Is the quote actually free? No obligation?',
+    answer: `<strong>Short answer:</strong> Yes — completely free, with absolutely no obligation. Painless Removals will never pressure you to book.<br><br>You can get a quote via our <a href="/free-home-survey/">free home survey</a> — either a quick video self-survey from your phone or an in-person visit from your Move Manager. Both take 10–15 minutes. You'll receive a detailed, written quote you can compare with other companies.`,
+    category: 'pricing',
+  },
+
+  // ===== 3. Moving Day =====
+  {
+    question: 'What time will your team turn up?',
+    answer: `<strong>Short answer:</strong> Your Painless Removals team will arrive between 8am and 9am, unless you've agreed otherwise with your Move Manager.<br><br>Your Move Manager confirms the exact time the day before. For long-distance moves, we may suggest an earlier start to give the team enough time. For chain moves, we arrive at the agreed time and start loading while you wait for keys.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'What actually happens on the day — step by step?',
+    answer: `<strong>Short answer:</strong> Our team arrives, protects your floors and doorframes, loads everything, drives to your new home, and places furniture exactly where you want it.<br><br>Here's the full rundown: The team arrives and does a walkthrough with you to note any special items. They lay floor runners and door protectors, then start loading room by room — heavy furniture first, boxes on top. Once the old place is empty, you do a final check together. The team takes a short break, then heads to your new home. At the new property, they unload and place everything where you direct them. Before leaving, they check you're happy with everything.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'Do I need to be there the whole time?',
+    answer: `<strong>Short answer:</strong> Ideally, yes — especially at the new property, where you'll need to direct the team on where things go.<br><br>At the old property, you can nip out for essentials once loading is underway. But at the new place, it really helps if you're there to say "sofa here, bed there, boxes in bedroom 2." Without direction, the team will make sensible guesses — but it's much easier to get things right first time while the team is there. If you absolutely can't be present, you can ask someone you trust to stand in.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'What if it rains on moving day?',
+    answer: `<strong>Short answer:</strong> Painless Removals moves rain or shine. We're in Bristol — we'd never work if we waited for dry weather.<br><br>We protect your belongings with padded blankets and plastic sheeting during loading and unloading. Your carpets and floors are covered with protective runners to prevent muddy footprints. Mattresses and sofas go into waterproof covers. We move in all weather conditions except genuinely dangerous storms. Don't worry about the rain — we've got it covered (literally).`,
+    category: 'moving-day',
+  },
+  {
+    question: "What if my keys are late and we can't get into the new place?",
+    answer: `<strong>Short answer:</strong> Painless Removals allocates a full day to chain moves, so reasonable key delays are built into the schedule.<br><br>We typically expect keys by 1–2pm. If they arrive later, there's a small additional charge from 2pm onwards — but it's calculated fairly, per person per half hour. Read the full details on our <a href="/home-removals-bristol/">home removals page</a>.`,
+    category: 'moving-day',
+  },
+  {
+    question: "Where do your guys park — what if there's no space?",
+    answer: `<strong>Short answer:</strong> We sort the parking. If your street is tight, your Move Manager will discuss access during the home survey.<br><br>For most Bristol streets, we can park directly outside. On narrower roads (hello, Clifton and Montpelier), we may need to use traffic cones or arrange a temporary parking suspension with the council. If there's a residents' parking zone, let us know and we'll advise on whether you need to arrange a visitor permit or waiver. We've moved people from every corner of Bristol — we know which streets are tricky.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'Do I need to provide tea and snacks for the team?',
+    answer: `<strong>Short answer:</strong> Not at all — our team bring their own food and drink. But a cup of tea is always welcome.<br><br>If the kettle's accessible, the offer of a brew goes a long way. Milk, two sugars is the universal default. The team will bring their own lunch and take a short break (usually 20–30 minutes). You don't need to cater for them. But we won't say no to biscuits.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'Can my kids be around during the move?',
+    answer: `<strong>Short answer:</strong> Yes, but keep them supervised — especially near doorways and stairs where heavy items are being carried.<br><br>Moving day involves open front doors, heavy furniture going through hallways, and team members moving quickly. Young children are safest in a room that's already been cleared, with a responsible adult keeping an eye on them. Older kids can help by labelling boxes or directing the team at the new house. If you can arrange for younger ones to spend the morning with grandparents or friends, it'll reduce your stress too.<br><br>Moving with toddlers brings extra challenges — from explaining the move in terms they understand to keeping bedtime routine consistent during the upheaval. We've put together a dedicated <a href="/moving-with-children/">guide to moving house with children</a> with practical tips for before, during, and after the move.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'Will you put the furniture exactly where I want it?',
+    answer: `<strong>Short answer:</strong> Yes. The Painless Removals team will place every piece of furniture exactly where you point.<br><br>That's why we recommend being at the new property — so you can direct traffic as things come off the van. "Sofa against that wall, dining table by the window, wardrobe in bedroom 2." We'll keep moving things until you're happy. No extra charge for rearranging while we're there.`,
+    category: 'moving-day',
+  },
+  {
+    question: 'What if I change my mind about where something goes?',
+    answer: `<strong>Short answer:</strong> Just ask. The team will rearrange furniture before they leave at no extra cost.<br><br>It's completely normal to change your mind once you see how things look in the new space. While the Painless Removals team is still on site, they'll happily shuffle things around — that's part of the service. Once the team has left, moving heavy furniture on your own is much harder, so make the most of them while they're there.`,
+    category: 'moving-day',
+  },
+
+  // ===== 4. Packing & Preparation =====
+  {
+    question: "Is it okay if I haven't finished packing when you arrive?",
+    answer: `<strong>Short answer:</strong> It happens more than you'd think. The Painless Removals team can help — but it will use up moving time.<br><br>If you're still packing when we arrive, the team will pitch in and help finish. However, this eats into the time allocated for the actual move, which could mean a later finish. To avoid this, aim to have everything boxed up and sealed the night before. Our <a href="/packing-guide/">packing guide</a> has a room-by-room timeline. Or, if the thought of packing fills you with dread, our <a href="/home-packing-service/">packing team</a> can do the whole lot the day before.`,
+    category: 'packing',
+  },
+  {
+    question: 'Do I need to take apart the beds myself?',
+    answer: `<strong>Short answer:</strong> No. Painless Removals disassembles all beds and reassembles them at the new property — it's included in the service.<br><br>Our team carry the right tools and know how most bed frames go together. Strip the bedding and have your bed linen packed or in your essentials bag — the team handles everything else. If you have an unusual bed frame (like a custom-built cabin bed or a hydraulic ottoman), mention it during the <a href="/free-home-survey/">home survey</a> so we can plan accordingly.`,
+    category: 'packing',
+  },
+  {
+    question: 'Can I leave clothes in the drawers?',
+    answer: `<strong>Short answer:</strong> Lightweight clothing like t-shirts and socks — usually yes. Heavy items like books or jeans — take them out.<br><br>Our team will assess each piece of furniture on the day. If the drawers can be removed easily and the unit is sturdy, lightweight contents can stay. If the drawers don't come out, or the unit is wobbly, we'll ask you to empty them. The golden rule: if a drawer makes the furniture too heavy for two people to lift safely, it needs emptying.`,
+    category: 'packing',
+  },
+  {
+    question: 'What about stuff on the walls — pictures, mirrors, curtain rails?',
+    answer: `<strong>Short answer:</strong> Painless Removals will take down and wrap pictures and mirrors. Curtain rails and blinds are usually your responsibility.<br><br>We carefully remove framed artwork and mirrors, wrap them in padded blankets, and transport them in specialist picture cartons. Curtain poles, blinds, and wall-mounted shelving should be taken down before moving day — most people forget this until the last minute. If you need help, mention it during the survey and we can factor it into the plan.`,
+    category: 'packing',
+  },
+  {
+    question: 'Can I pack a suitcase and leave the rest to you?',
+    answer: `<strong>Short answer:</strong> Yes — that's exactly what our professional packing service is designed for.<br><br>Our <a href="/home-packing-service/">packing team</a> arrives the day before your move and packs your entire house, room by room, using professional-grade materials. All you need is a suitcase with a few days' essentials. It's the stress-free option and popular with busy families and professionals.`,
+    category: 'packing',
+  },
+  {
+    question: "I've got loads of books — is that going to be a problem?",
+    answer: `<strong>Short answer:</strong> Not a problem at all, but books are heavier than people expect. Small boxes are essential.<br><br>The biggest packing mistake Painless Removals sees is people filling large boxes with books. A large box of books can weigh 30kg+ and is dangerous to lift. Use small boxes (what the trade calls "book boxes") and fill them only two-thirds full. Mix in some lighter items on top if there's space. Our <a href="/packing-guide/">packing guide</a> covers this in detail.`,
+    category: 'packing',
+  },
+  {
+    question: 'What do I do with half-empty bottles and cleaning products?',
+    answer: `<strong>Short answer:</strong> Seal them tightly, stand them upright in a sturdy box, and label it "liquids — this way up."<br><br>Use cling film or tape around lids to prevent leaks. Put bottles in a plastic bag inside the box as a secondary layer of protection. Don't mix cleaning chemicals together (bleach and ammonia is a bad combination). The Painless Removals team will handle these boxes carefully — but the safer you pack them, the better.`,
+    category: 'packing',
+  },
+  {
+    question: 'How many boxes will I need for a 3-bed house?',
+    answer: `<strong>Short answer:</strong> A typical 3-bedroom house needs around 40–60 boxes, depending on how much stuff you have.<br><br>As a rough guide: 20–30 medium boxes, 10–15 small boxes (for books and heavy items), 5–10 large boxes (for bedding and light bulky things), and a handful of wardrobe boxes. Our <a href="/packing-guide/">packing guide</a> has a full checklist. We can also <a href="/home-packing-service/">supply and deliver all packing materials</a> to your door — just speak to your Move Manager.`,
+    category: 'packing',
+  },
+
+  // ===== 5. Tricky Items & Special Situations =====
+  {
+    question: 'Can you move a piano?',
+    answer: `<strong>Short answer:</strong> Yes. Painless Removals moves upright and grand pianos across Bristol and nationwide.<br><br>Piano moves require specialist equipment — we use piano skids, heavy-duty straps, and padded covers. Grand pianos are transported on their side with the legs removed. Mention the piano during your <a href="/free-home-survey/">home survey</a> so we can bring the right team and equipment. Piano moves are covered by our £15,000 Goods in Transit insurance.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'My sofa barely got in — how are you going to get it out?',
+    answer: `<strong>Short answer:</strong> We deal with tight squeezes every day. Bristol's Victorian terraces are our bread and butter.<br><br>Our team knows every angle trick in the book — tipping, rotating, removing feet and doors where needed. In rare cases, sofas can go out through a window or over a balcony using our equipment. If we spot a potential problem during the <a href="/free-home-survey/">home survey</a>, we'll discuss options with you in advance. We haven't been beaten by a sofa yet.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'Can you get stuff up narrow stairs with no lift?',
+    answer: `<strong>Short answer:</strong> Yes — stairs are standard for most Bristol properties. We plan for them at the survey.<br><br>Victorian terraces, maisonettes, flats above shops — we move people in and out of all of them. Narrow staircases are factored into the quote and the team size. We use stair-climbing techniques and specialist straps for heavy items like safes and appliances. If your property has particularly challenging access (like a spiral staircase or a 4th-floor flat with no lift), let us know during the <a href="/free-home-survey/">survey</a> so we plan the right team.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: "What about plants? I've got about 30.",
+    answer: `<strong>Short answer:</strong> Painless Removals moves plants — we just can't guarantee they won't be a bit grumpy for a few days afterwards.<br><br>Plants travel best on the day in open-topped boxes or crates, standing upright. Water them a day or two before (not on the morning of the move — soggy soil is heavy and messy). We'll load them last and unload them first. For a local Bristol move, your plants will be fine. For a long-distance move, wrap pots in plastic bags to contain any spills and keep them in a well-ventilated spot on the van.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'Will you disconnect and reconnect my washing machine?',
+    answer: `<strong>Short answer:</strong> Painless Removals will disconnect your washing machine as part of the service. Reconnecting involves plumbing, so we recommend a qualified plumber for that.<br><br>Our team will safely disconnect and move your washing machine, dishwasher, and tumble dryer. For reconnection, plumbing connections (especially for washing machines) should be done by a professional to avoid leaks and warranty issues. Freestanding cookers can usually be reconnected by the team, but gas appliances must always be done by a Gas Safe engineer.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'Can you move stuff from the loft?',
+    answer: `<strong>Short answer:</strong> Yes — just mention it during your <a href="/free-home-survey/">home survey</a> so we bring the right number of people.<br><br>Loft clearances are common and completely fine. The key thing is to tell us how much is up there and whether there's a proper loft hatch and ladder or just a ceiling opening. If the loft is packed full, we'll need extra time and possibly an extra team member. Don't try to bring heavy things down yourself before we arrive — that's our job.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'Do you move bikes, gym equipment, or trampolines?',
+    answer: `<strong>Short answer:</strong> Yes — all of it. Painless Removals regularly moves bikes, home gyms, trampolines, and large garden equipment.<br><br>Trampolines and large gym machines are disassembled by our team and reassembled at the new property. Bikes go in padded blankets to protect frames and wheels. Peloton-style bikes are moved as single units with screens covered. Mention everything during the <a href="/free-home-survey/">survey</a> — especially anything in the garage or garden that might be forgotten.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'What about my fish tank?',
+    answer: `<strong>Short answer:</strong> Drain it, bag the fish separately, and the Painless Removals team will move the tank, stand, and equipment.<br><br>Fish tanks need to be drained completely — we can't carry them with water in. Bag your fish in oxygen bags from a local aquarium shop, and transport them in your own car (not on the van) so you can keep an eye on temperature. Remove all gravel and decorations — they'll smash the glass if they shift during transit. Set up the tank at the new place as soon as possible. Let us know the tank size during the <a href="/free-home-survey/">survey</a> so we can plan.`,
+    category: 'tricky-stuff',
+  },
+  {
+    question: 'Can you move a garden shed?',
+    answer: `<strong>Short answer:</strong> We'll move the contents of your shed, but dismantling the structure itself isn't something we typically do.<br><br>If you want to take your shed with you, you'll need to dismantle it before moving day (or hire a handyman). We're happy to load the panels and transport them. We can also arrange a <a href="/house-and-waste-clearance/">house clearance</a> if you'd rather clear the shed out entirely and start fresh at the new place.`,
+    category: 'tricky-stuff',
+  },
+
+  // ===== 6. Insurance & "What If" =====
+  {
+    question: 'What if something gets broken or scratched?',
+    answer: `<strong>Short answer:</strong> Painless Removals carries £15,000 Goods in Transit insurance per van. Report any damage to your Move Manager on the day or within 7 days.<br><br>We take enormous care, but accidents can happen. If anything is damaged, photograph it and let us know. Claims are handled directly by Painless Removals — no third-party insurance companies, no runaround. Items packed by our professional team are automatically covered. Self-packed boxes are not (because we can't verify how they were packed). For that reason alone, our <a href="/home-packing-service/">packing service</a> is worth considering for valuable items.`,
+    category: 'insurance',
+  },
+  {
+    question: 'Are my own packed boxes covered by your insurance?',
+    answer: `<strong>Short answer:</strong> No. Self-packed boxes are not covered by Painless Removals' Goods in Transit insurance.<br><br>This is the single biggest reason customers choose our <a href="/home-packing-service/">professional packing service</a>. When our team packs your belongings, we take responsibility for the contents. When you pack yourself, we can't verify that items were packed safely — so we can't insure them. If you have fragile or high-value items, even a partial packing service for just those items gives you peace of mind.`,
+    category: 'insurance',
+  },
+  {
+    question: 'What if you scratch my floors or damage the walls?',
+    answer: `<strong>Short answer:</strong> Painless Removals uses floor runners and door protectors as standard on every move. If damage does occur, our public liability insurance covers it.<br><br>We lay protective runners on all floors before we start moving anything. Door frames get padded protectors on both sides. We take "before" photos of any existing damage so there are no disputes. If something does get marked, tell the team on the day — most scuffs can be sorted immediately.`,
+    category: 'insurance',
+  },
+  {
+    question: "I've got a really expensive painting — what happens if it's damaged?",
+    answer: `<strong>Short answer:</strong> Declare any individual item worth over £2,000 to Painless Removals before the move. We can arrange additional cover.<br><br>Our standard Goods in Transit policy covers up to £15,000 per van, but high-value individual items (artwork, antiques, jewellery, instruments) need to be declared in writing. Once declared, we can increase coverage through our insurer. We'll also use specialist packing — acid-free tissue, custom picture crates, and padded blankets — to give it the best possible protection.`,
+    category: 'insurance',
+  },
+  {
+    question: 'How do I make a claim if something goes wrong?',
+    answer: `<strong>Short answer:</strong> Call your Move Manager, photograph the damage, and we'll handle it directly. No third parties, no runaround.<br><br>Painless Removals manages all claims in-house. Photograph the damage, note which item and where it was in the van, and contact your Move Manager within 7 days. Most claims are resolved quickly. We've been in business since 1978 because we deal with problems honestly — not because we never have any.`,
+    category: 'insurance',
+  },
+  {
+    question: "What's the difference between your insurance and a man-and-van's?",
+    answer: `<strong>Short answer:</strong> Painless Removals carries £15,000 Goods in Transit insurance per van. Most man-and-van services carry zero.<br><br>Without Goods in Transit insurance, if your belongings are damaged during the move, you have no recourse. You'd need to make a claim on your own home contents insurance — if it even covers removals. With Painless Removals, you're covered from the moment we pick up your first box to the moment we place the last one. Being Move Assured accredited means we're held accountable by an independent body too.`,
+    category: 'insurance',
+  },
+
+  // ===== 7. Storage & In-Between Moves =====
+  {
+    question: "My new place isn't ready yet — what do I do?",
+    answer: `<strong>Short answer:</strong> Painless Removals loads your belongings, takes them to secure storage, and delivers them to your new home when it's ready. One team, no double handling.<br><br>This is more common than you'd think — especially with chain moves where completion dates slip. We load your belongings onto the van, transport them to our secure <a href="/storage-service/">storage facility</a>, and keep them safe until your new property is ready. When the time comes, the same team delivers everything. You avoid paying for two separate collections.`,
+    category: 'storage',
+  },
+  {
+    question: "Can I get to my stuff while it's in storage?",
+    answer: `<strong>Short answer:</strong> Yes — you can access your stored belongings by arrangement with Painless Removals.<br><br>Our <a href="/storage-service/">storage page</a> has full details on access, security, and how to book a visit.`,
+    category: 'storage',
+  },
+  {
+    question: "How much does storage cost if I'm already using you for the move?",
+    answer: `<strong>Short answer:</strong> Painless Removals customers get 50% off storage for the first 2 months.<br><br>Unit sizes and full pricing are on our <a href="/storage-service/">storage service page</a>. Starting from around £41 per month for a 25 sq ft unit, up to £157 per month for 200+ sq ft. The 50% discount applies to the first 2 months when combined with a removal booking.`,
+    category: 'storage',
+  },
+  {
+    question: "Can you store just a few things — like one room's worth?",
+    answer: `<strong>Short answer:</strong> Yes — Painless Removals offers flexible storage unit sizes, starting from just 25 sq ft.<br><br>You don't need to fill a whole container. We'll help you choose the right size during your <a href="/free-home-survey/">survey</a>. See all unit sizes and pricing on our <a href="/storage-service/">storage page</a>.`,
+    category: 'storage',
+  },
+  {
+    question: 'What if I end up needing storage longer than I planned?',
+    answer: `<strong>Short answer:</strong> No problem. Painless Removals storage is month-to-month with no long-term contracts.<br><br>Life doesn't always go to plan — renovations overrun, chains collapse, plans change. You can keep your belongings in storage for as long as you need. Just let us know roughly when you'd like delivery, and we'll schedule it. There's no penalty for extending.`,
+    category: 'storage',
+  },
+
+  // ===== 8. About Painless Removals =====
+  {
+    question: 'How long have you actually been doing this?',
+    answer: `<strong>Short answer:</strong> Painless Removals has been moving people in and around Bristol since 1978 — that's 47 years and counting.<br><br>The company was founded by Steve, a Bristol musician who started moving his bandmates between gigs and flats. It's grown a bit since then. Today, Painless Removals is led by Director <a href="/about/jay-newton/">Jay Newton</a>, who has personally overseen more than 2,000 completed moves. We're still based in Bristol, still independent, and still doing things properly.`,
+    category: 'about-us',
+  },
+  {
+    question: 'Will I deal with the same person the whole way through?',
+    answer: `<strong>Short answer:</strong> Yes. Jay personally conducts every home survey, and once you're booked your dedicated Move Manager takes over — planning the logistics, confirming the details, and overseeing the team on the day.<br><br>One person who already knows your move, so you never have to repeat yourself. It's one of the main reasons our customers rate us ${siteConfig.company.rating.value} out of 5.`,
+    category: 'about-us',
+  },
+  {
+    question: "Who's Jay Newton?",
+    answer: `<strong>Short answer:</strong> <a href="/about/jay-newton/">Jay Newton</a> is the Director of Painless Removals. He's hands-on, personally trains the team, and has overseen more than 2,000 completed moves.<br><br>Jay took over the running of Painless Removals and has maintained the company's reputation for personal, no-nonsense service. He still gets involved in complex moves and is available to speak to customers directly. You can reach Jay through our <a href="/contact/">contact page</a> or by calling ${siteConfig.company.contact.phone}.`,
+    category: 'about-us',
+  },
+  {
+    question: 'Are your reviews real?',
+    answer: `<strong>Short answer:</strong> Yes — all ${siteConfig.company.rating.count} of them. Painless Removals has a ${siteConfig.company.rating.value} average star rating on Google, and every review is from a verified customer.<br><br>We don't buy reviews, incentivise them, or cherry-pick the good ones. After every move, we simply ask customers if they'd mind leaving honest feedback. The results speak for themselves. You can read them all on <a href="/reviews/">our reviews page</a> or directly on our <a href="https://g.page/painlessremovals" target="_blank" rel="noopener">Google Business profile</a>.`,
+    category: 'about-us',
+  },
+  {
+    question: 'Do you do removals outside Bristol?',
+    answer: `<strong>Short answer:</strong> Yes — Painless Removals covers the whole of the UK. We regularly move customers from Bristol to London, Cardiff, Manchester, Edinburgh, and everywhere in between.<br><br>Bristol's location on the M4 and M5 corridors makes us well-placed for moves in any direction. The same dedicated team handles your entire move from start to finish — we never subcontract. Routes passing through or near Bristol are where we're most competitive on price, but we'll quote for any UK destination.`,
+    category: 'about-us',
+  },
+  {
+    question: 'Do you cover Portishead, Clevedon, Bath, and Weston?',
+    answer: `<strong>Short answer:</strong> Yes — Painless Removals covers all of these areas and more across the South West.<br><br>We serve <a href="/removals-portishead/">Portishead</a>, <a href="/removals-clevedon/">Clevedon</a>, <a href="/removals-bath/">Bath</a>, <a href="/removals-weston-super-mare/">Weston-super-Mare</a>, <a href="/removals-keynsham/">Keynsham</a>, <a href="/removals-yate/">Yate</a>, <a href="/removals-thornbury/">Thornbury</a>, <a href="/removals-nailsea/">Nailsea</a>, <a href="/removals-chepstow/">Chepstow</a>, and every neighbourhood in Bristol from <a href="/removals-bristol/clifton/">Clifton</a> to <a href="/removals-bristol/fishponds/">Fishponds</a>. See our complete <a href="/areas/">area coverage page</a> for the full list.`,
+    category: 'about-us',
+  },
+  {
+    question: 'What happens to all the cardboard and packing waste?',
+    answer: `<strong>Short answer:</strong> Painless Removals collects and recycles used packing materials. If you used our packing service, collection is free.<br><br>Once you've finished unpacking, give us a call and we'll arrange a convenient time to collect boxes, paper, and bubble wrap. We reuse sturdy boxes where possible and recycle the rest. We're working to reduce plastic packaging by switching to paper-based alternatives wherever they offer equivalent protection. If you packed yourself, we can still collect — just ask.`,
+    category: 'about-us',
+  },
+];
+
+// Helper: strip HTML for schema plain text
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+// Build schemas
+const domain = siteConfig.brand.domain;
+
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": pageTitle,
+  "description": pageDescription,
+  "url": `${domain}/faq`,
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": siteConfig.brand.name,
+    "url": domain,
+  },
+  "mainEntity": {
+    "@type": "MovingCompany",
+    "@id": `${domain}/#business`,
+  },
+};
+
+const pageSchema = [faqPage(faqs.map(f => ({ question: f.question, answer: stripHtml(f.answer) }))), breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "FAQ" },
+]), webPageSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       HERO — Compact, centered
+  ============================================ -->
+  <section class="gradient-hero py-6 lg:py-14">
+    <div class="container-wide text-center">
+      <!-- Breadcrumbs -->
+      <nav aria-label="Breadcrumb" class="mb-6">
+        <ol class="flex items-center justify-center gap-2 text-sm text-warm-gray">
+          <li><a href="/" class="hover:text-primary-600 transition-colors no-underline">Home</a></li>
+          <li><span class="text-gray-400">/</span></li>
+          <li class="text-primary-600 font-medium">FAQ</li>
+        </ol>
+      </nav>
+
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">
+        Got Questions About Moving?<br class="hidden sm:block" /> <span class="text-secondary-500">We've Got Answers.</span>
+      </h1>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STICKY CATEGORY NAV
+  ============================================ -->
+  <nav id="faq-nav" class="sticky bg-white border-b border-gray-200 shadow-sm" style="top: var(--top-bar-h, 48px); z-index: 20;">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div class="flex items-center gap-2 py-3 overflow-x-auto scrollbar-hide lg:justify-center">
+        {categories.map((cat) => (
+          <a
+            href={`#${cat.id}`}
+            class="faq-nav-pill shrink-0 px-3.5 py-1.5 rounded-md text-[13px] font-medium no-underline whitespace-nowrap border border-gray-200 text-gray-500 bg-gray-50 transition-all duration-200"
+            style={`--pill-bg:${cat.pillText};--pill-text:white`}
+            data-cat={cat.id}
+          >
+            {cat.title}
+          </a>
+        ))}
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       FAQ SECTIONS
+  ============================================ -->
+  {categories.map((cat, catIndex) => (
+    <>
+      <section id={cat.id} class="py-8 md:py-16 bg-white" aria-labelledby={`cat-${cat.id}`}>
+        <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+          <h2 id={`cat-${cat.id}`} class={`text-2xl lg:text-3xl font-bold mb-6 scroll-mt-28 lg:scroll-mt-40 ${cat.text}`}>
+            {cat.title}
+          </h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {faqs
+              .filter(faq => faq.category === cat.id)
+              .map((faq) => (
+                <details
+                  class={`group bg-white rounded-lg border border-l-4 ${cat.border} ${cat.accent} shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md self-start`}
+                >
+                  <summary class={`flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none font-semibold ${cat.text} transition-colors [&::-webkit-details-marker]:hidden`}>
+                    <h3 class="text-[15px] leading-snug m-0 font-semibold">{faq.question}</h3>
+                    <svg class={`faq-page-chevron w-5 h-5 ${cat.text} opacity-60 shrink-0 transition-transform duration-300`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </summary>
+                  <div class={`faq-page-answer px-5 pb-5 text-warm-gray text-sm leading-relaxed border-t ${cat.border}`}>
+                    <div class="pt-3 [&_a]:text-secondary-600 [&_a]:underline [&_a]:underline-offset-2 hover:[&_a]:text-secondary-700" set:html={faq.answer} />
+                  </div>
+                </details>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      {/* Mid-page CTA after category 4 (packing) */}
+      {catIndex === 3 && (
+        <section class="py-10 bg-primary-600 text-white text-center">
+          <div class="container-wide">
+            <p class="text-xl lg:text-2xl font-medium mb-3">Can't find your answer?</p>
+            <p class="text-primary-100 mb-6">
+              Call Painless Removals on <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="text-white font-bold no-underline hover:text-primary-200 transition-colors">{siteConfig.company.contact.phone}</a> — we're happy to help.
+            </p>
+            <a href="/contact/" class="btn-cta-orange inline-block">
+              Get in Touch
+            </a>
+          </div>
+        </section>
+      )}
+
+      {/* Second CTA after category 6 (insurance) */}
+      {catIndex === 5 && (
+        <section class="py-10 bg-cream text-center">
+          <div class="container-wide">
+            <p class="text-xl font-medium text-primary-600 mb-3">Want an accurate quote for your move?</p>
+            <p class="text-warm-gray mb-6">Our free home survey takes 10–15 minutes — no obligation, no pressure.</p>
+            <a href="/free-home-survey/" class="btn-cta-orange inline-block">
+              Book Your Free Survey
+            </a>
+          </div>
+        </section>
+      )}
+    </>
+  ))}
+
+  <!-- ============================================
+       TRUST SECTION
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide text-center">
+      <h2 class="text-white text-2xl lg:text-3xl mb-8">Why Bristol Trusts Painless Removals</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <div class="stat-card-blue">
+          <div class="font-heading text-4xl md:text-5xl font-bold text-white">47</div>
+          <div class="text-sm text-primary-200 mt-1">Years in Business</div>
+        </div>
+        <div class="stat-card-blue">
+          <div class="font-heading text-4xl md:text-5xl font-bold text-white">{siteConfig.company.rating.value}</div>
+          <div class="text-sm text-primary-200 mt-1">Star Rating</div>
+        </div>
+        <div class="stat-card-blue">
+          <div class="font-heading text-4xl md:text-5xl font-bold text-white">2,000+</div>
+          <div class="text-sm text-primary-200 mt-1">Moves Completed</div>
+        </div>
+        <div class="stat-card-blue">
+          <div class="font-heading text-4xl md:text-5xl font-bold text-white">£15k</div>
+          <div class="text-sm text-primary-200 mt-1">Insurance Per Van</div>
+        </div>
+      </div>
+
+      <!-- Review quote -->
+      <div class="max-w-2xl mx-auto">
+        <ReviewQuote
+          text="Painless Removals were brilliant. They did what it says on the tin &ndash; <mark>made the whole process very painless</mark>. They were friendly and efficient and the whole process was completed super quickly. <mark>Would strongly recommend</mark> and will use them again. Thank you!"
+          name="Emma Henry"
+          source="Verified Trustpilot Review"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STILL STUCK? SECTION
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide text-center">
+      <h2 class="text-2xl lg:text-3xl font-bold mb-4">Still Got a Question?</h2>
+      <p class="text-warm-gray max-w-xl mx-auto mb-8">
+        If you haven't found what you're looking for, get in touch. We're real people, not a chatbot.
+      </p>
+      <div class="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="bg-white rounded-xl p-5 shadow-sm border-2 border-secondary-500 text-center no-underline hover:shadow-md transition-shadow relative">
+          <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-secondary-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full">Preferred</div>
+          <h3 class="text-primary-600 font-semibold mb-1 text-base">Call Us</h3>
+          <p class="font-bold text-primary-600">{siteConfig.company.contact.phone}</p>
+          <p class="text-xs text-warm-gray mt-1">Mon–Fri 9am–5pm</p>
+        </a>
+        <a href="/contact/" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center no-underline hover:shadow-md transition-shadow">
+          <h3 class="text-primary-600 font-semibold mb-1 text-base">Send a Message</h3>
+          <p class="text-sm text-warm-gray">We'll reply within a few hours</p>
+        </a>
+        <a href="/free-home-survey/" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center no-underline hover:shadow-md transition-shadow">
+          <h3 class="text-primary-600 font-semibold mb-1 text-base">Free Survey</h3>
+          <p class="text-sm text-warm-gray">Get an accurate quote</p>
+        </a>
+      </div>
+
+      <p class="text-sm text-warm-gray">
+        Or explore our services:
+        <a href="/home-removals-bristol/" class="text-secondary-600 underline underline-offset-2">Home Removals</a> ·
+        <a href="/home-packing-service/" class="text-secondary-600 underline underline-offset-2">Packing</a> ·
+        <a href="/storage-service/" class="text-secondary-600 underline underline-offset-2">Storage</a> ·
+        <a href="/office-removals/" class="text-secondary-600 underline underline-offset-2">Office Moves</a> ·
+        <a href="/house-and-waste-clearance/" class="text-secondary-600 underline underline-offset-2">House Clearance</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FINAL CTA
+  ============================================ -->
+  <section class="py-12 lg:py-16 bg-gray-900 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white text-2xl lg:text-3xl font-bold mb-3">Ready to Get Started?</h2>
+      <p class="text-gray-300 max-w-lg mx-auto mb-8">
+        Call us for a chat, or book your free home survey. No pressure, no obligation — just honest advice.
+      </p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="bg-white text-primary-600 px-8 py-3 text-base font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl inline-block">
+          Call {siteConfig.company.contact.phone}
+        </a>
+        <a href="/free-home-survey/" class="btn-cta-orange inline-block">
+          Book Free Survey
+        </a>
+      </div>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  /* Sticky nav responsive top offset */
+  @media (min-width: 768px) {
+    #faq-nav {
+      top: 64px !important; /* tablet: taller header, no services nav */
+    }
+  }
+  @media (min-width: 1024px) {
+    #faq-nav {
+      top: calc(64px + 40px) !important; /* desktop: header + services nav */
+    }
+  }
+
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Nav pills — colourful on hover and active only */
+  .faq-nav-pill:hover {
+    background-color: var(--pill-bg);
+    color: var(--pill-text);
+    border-color: var(--pill-bg);
+  }
+
+  .faq-nav-pill.active {
+    background-color: var(--pill-bg);
+    color: var(--pill-text);
+    border-color: var(--pill-bg);
+    font-weight: 700;
+  }
+
+  /* FAQ answer animation */
+  .faq-page-answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding-top: 0;
+    padding-bottom: 0;
+    border-top-width: 0;
+  }
+  details[open] > .faq-page-answer {
+    grid-template-rows: 1fr;
+    padding-top: 0;
+    padding-bottom: 1.25rem;
+    border-top-width: 1px;
+  }
+  .faq-page-answer > div {
+    overflow: hidden;
+    min-height: 0;
+  }
+  details[open] .faq-page-chevron {
+    transform: rotate(180deg);
+  }
+</style>
+
+<script is:inline>
+  // Highlight active category in sticky nav based on scroll position
+  // Auto-scroll the nav so the active pill is centered
+  (function() {
+    var navContainer = document.querySelector('#faq-nav .overflow-x-auto');
+    var pills = document.querySelectorAll('.faq-nav-pill');
+    var sections = [];
+    pills.forEach(function(pill) {
+      var id = pill.getAttribute('href').replace('#', '');
+      var section = document.getElementById(id);
+      if (section) sections.push({ id: id, el: section, pill: pill });
+    });
+
+    var lastActiveId = null;
+    var ticking = false;
+
+    function scrollPillIntoView(pill) {
+      if (!navContainer || !pill) return;
+      var containerRect = navContainer.getBoundingClientRect();
+      var pillRect = pill.getBoundingClientRect();
+      var scrollLeft = navContainer.scrollLeft;
+      var targetScroll = scrollLeft + pillRect.left - containerRect.left - (containerRect.width / 2) + (pillRect.width / 2);
+      navContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+
+    function updateActive() {
+      var scrollY = window.scrollY + 100;
+      var active = sections[0];
+      for (var i = 0; i < sections.length; i++) {
+        if (sections[i].el.offsetTop <= scrollY) {
+          active = sections[i];
+        }
+      }
+      pills.forEach(function(p) { p.classList.remove('active'); });
+      if (active) {
+        active.pill.classList.add('active');
+        if (active.id !== lastActiveId) {
+          lastActiveId = active.id;
+          scrollPillIntoView(active.pill);
+        }
+      }
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(updateActive);
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Ensure nav starts scrolled to the left and first pill is active on load
+    if (navContainer) navContainer.scrollLeft = 0;
+    setTimeout(updateActive, 50);
+  })();
+
+  // FAQ page details animation — prevent two-step open/close
+  (function() {
+    document.querySelectorAll('.faq-page-answer').forEach(function(wrap) {
+      var det = wrap.closest('details');
+      if (!det) return;
+      var summary = det.querySelector('summary');
+      if (!summary) return;
+
+      summary.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (det.hasAttribute('open')) {
+          wrap.style.gridTemplateRows = '0fr';
+          function onEnd() {
+            wrap.removeEventListener('transitionend', onEnd);
+            det.removeAttribute('open');
+            wrap.style.gridTemplateRows = '';
+          }
+          wrap.addEventListener('transitionend', onEnd);
+          setTimeout(function() { if (det.hasAttribute('open')) { det.removeAttribute('open'); wrap.style.gridTemplateRows = ''; } }, 400);
+        } else {
+          wrap.style.gridTemplateRows = '0fr';
+          det.setAttribute('open', '');
+          requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+              wrap.style.gridTemplateRows = '1fr';
+              function onOpenEnd() {
+                wrap.removeEventListener('transitionend', onOpenEnd);
+                wrap.style.gridTemplateRows = '';
+              }
+              wrap.addEventListener('transitionend', onOpenEnd);
+            });
+          });
+        }
+      });
+    });
+  })();
+</script>

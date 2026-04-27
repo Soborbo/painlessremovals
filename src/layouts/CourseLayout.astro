@@ -1,0 +1,35 @@
+---
+/**
+ * CourseLayout — Dark theme wrapper extending Layout.astro
+ *
+ * Preserves header, nav, footer from base Layout.
+ * Imports course.css and scopes dark theme via data-theme="course".
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import '@/styles/course.css';
+import '@/styles/lite-yt-embed.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  schema?: object;
+  canonical?: string;
+  ogImage?: string;
+  preloadImage?: string;
+}
+
+const { title, description, schema, canonical, ogImage, preloadImage } = Astro.props;
+---
+
+<Layout title={title} description={description} schema={schema} canonical={canonical} ogImage={ogImage} preloadImage={preloadImage}>
+  <Fragment slot="head">
+    <!-- Preconnect to YouTube for lite-youtube-embed -->
+    <link rel="preconnect" href="https://i.ytimg.com" />
+    <link rel="preconnect" href="https://www.youtube.com" />
+  </Fragment>
+
+  <div data-theme="course" class="min-h-screen">
+    <slot />
+  </div>
+</Layout>

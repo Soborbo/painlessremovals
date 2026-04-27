@@ -1,0 +1,94 @@
+---
+/**
+ * FinalCTA — dark section with heading, bullets, phone, 2 buttons, bottom note
+ *
+ * Used across 22+ service pages as the closing conversion section.
+ */
+
+import { siteConfig } from '@/config/site.config';
+
+export interface Props {
+  /** Main heading */
+  heading: string;
+  /** Description paragraph */
+  description: string;
+  /** Optional bullet points with checkmarks */
+  bullets?: string[];
+  /** Primary button text */
+  primaryText: string;
+  /** Primary button href */
+  primaryHref: string;
+  /** Secondary button text (default: "CALL NOW") */
+  secondaryText?: string;
+  /** Secondary button href (default: tel link) */
+  secondaryHref?: string;
+  /** Optional bottom note text */
+  bottomNote?: string;
+  /** Background class (default: "bg-gray-900") */
+  bgClass?: string;
+  /** Show phone number (default: true) */
+  showPhone?: boolean;
+}
+
+const {
+  heading,
+  description,
+  bullets = [],
+  primaryText,
+  primaryHref,
+  secondaryText = 'CALL NOW',
+  secondaryHref,
+  bottomNote,
+  bgClass = 'bg-gray-900',
+  showPhone = true,
+} = Astro.props;
+
+const phone = siteConfig.company.contact.phone;
+const phoneTel = phone.replace(/\s/g, '');
+const resolvedSecondaryHref = secondaryHref || `tel:${phoneTel}`;
+---
+
+<section class={`py-20 md:py-28 ${bgClass} text-white text-center`}>
+  <div class="container-wide">
+    <h2 class="text-white text-3xl md:text-4xl mb-6">
+      {heading}
+    </h2>
+    <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+      {description}
+    </p>
+
+    {bullets.length > 0 && (
+      <div class="flex flex-wrap justify-center gap-6 mb-10">
+        {bullets.map((bullet) => (
+          <div class="flex items-center gap-2">
+            <span class="text-green-400">&#10003;</span> {bullet}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {showPhone && (
+      <p class="text-2xl font-bold mb-8">
+        {phone}
+      </p>
+    )}
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
+      <div class="relative">
+        <span class="absolute inset-0 rounded-sm bg-green-500 animate-[ping_3s_ease-in-out_infinite] opacity-15"></span>
+        <a href={primaryHref} class="btn-cta-green relative">
+          {primaryText}
+        </a>
+      </div>
+      <a href={resolvedSecondaryHref} class="btn-cta-outline">
+        {secondaryText}
+      </a>
+    </div>
+
+    {bottomNote && (
+      <div class="inline-block bg-white/10 px-8 py-4 rounded-lg">
+        <span class="ml-2">{bottomNote}</span>
+      </div>
+    )}
+  </div>
+</section>

@@ -1,0 +1,47 @@
+---
+/**
+ * YouTubeEmbed — lite-youtube-embed wrapper
+ *
+ * Uses the facade pattern: shows a thumbnail + play button,
+ * loads the YouTube iframe only when clicked.
+ */
+
+export interface Props {
+  videoId: string;
+  title: string;
+}
+
+const { videoId, title } = Astro.props;
+---
+
+<div class="aspect-video w-full rounded-lg overflow-hidden bg-black">
+  <lite-youtube
+    videoid={videoId}
+    playlabel={`Play: ${title}`}
+    style={`background-image: url('https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg');`}
+  >
+    <a
+      href={`https://youtube.com/watch?v=${videoId}`}
+      class="lty-playbtn"
+      title={`Play: ${title}`}
+    >
+      <span class="lyt-visually-hidden">{`Play: ${title}`}</span>
+    </a>
+  </lite-youtube>
+</div>
+
+<script>
+  import 'lite-youtube-embed';
+</script>
+
+<style is:global>
+  lite-youtube {
+    max-width: 100%;
+    aspect-ratio: 16/9;
+  }
+
+  /* Override default lite-youtube-embed styles for dark theme */
+  lite-youtube::before {
+    display: none; /* Remove default gradient overlay */
+  }
+</style>

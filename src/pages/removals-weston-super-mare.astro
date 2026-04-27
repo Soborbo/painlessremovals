@@ -1,0 +1,349 @@
+---
+/**
+ * /removals-weston-super-mare/ — Weston-super-Mare hub page
+ *
+ * Type B: Hub Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Weston-super-Mare Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~22 miles' },
+        { label: 'Drive time from depot', value: '~35–50 minutes' },
+        { label: 'Main route', value: 'M5 J21' },
+        { label: 'Council', value: 'North Somerset' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi / terrace' },
+        { label: 'Typical crew', value: '2–3 movers, 1–2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£700–£1,500' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£275,000' },
+        { label: 'Typical property', value: 'Semi / terrace / new-build' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Growing trend', value: 'Retirement downsizing' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Seafront / town centre' },
+        { label: 'Suspension needed', value: 'Occasionally' },
+        { label: 'Main difficulty', value: 'Summer holiday traffic' },
+        { label: 'Seasonal note', value: 'Avoid August if possible' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "From the first phone call to the last box being unpacked, everything was handled brilliantly. The team worked non-stop and treated every item with care. Outstanding service.",
+  name: 'Karen Phillips',
+  context: 'Google Review',
+};
+
+const title = 'Removals in Weston-super-Mare';
+const description = `Weston-super-Mare removal services — 22 miles from our Bristol depot via M5. Seaside properties, retirement downsizing, family homes. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Weston-super-Mare Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": { "@type": "City", "name": "Weston-super-Mare", "sameAs": "https://en.wikipedia.org/wiki/Weston-super-Mare" },
+  "description": description,
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Does the distance from Bristol add much to the cost?', answer: 'Not significantly. Weston-super-Mare is around 22 miles from our depot — roughly 35 minutes down the M5. The motorway access is direct, so it doesn\'t add the premium you might expect. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for your specific move.' },
+  { question: 'Can you handle seafront properties and Victorian buildings?', answer: 'Yes. Victorian seafront properties along the Esplanade and Royal Parade have narrow hallways, high ceilings, and bay windows that create awkward angles for large furniture. We bring specialist equipment and our team is experienced with period property layouts.' },
+  { question: 'Do you handle retirement downsizing moves?', answer: 'We handle a significant number of downsizing moves in Weston. Your Move Manager will spend extra time planning what to take, what to <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">store</a>, and what to leave behind — taking the stress out of a major life change.' },
+  { question: 'Can I use your storage if there\'s a gap between moves?', answer: 'Yes. Our secure warehouse in Bristol is 35 minutes from Weston via the M5. We can load, store for as long as you need, and deliver when you\'re ready. Ideal for chain moves or if your new build isn\'t finished.' },
+  { question: 'Does summer holiday traffic affect removals?', answer: 'It can, particularly on the seafront approach roads. Weston gets significantly busier during school holidays. For weekday moves this is rarely disruptive, but we plan around peak visitor periods where possible.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/weston-super-mare-removal-street-1200w.webp" preloadImage="/img/areas/weston-super-mare-removal-street-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/weston-super-mare-removal-street"
+      pattern="FULL"
+      alt="Removal van on a residential street in Weston-super-Mare"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Weston-super-Mare</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=weston-super-mare`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/weston-super-mare-removal-street"
+      pattern="FULL"
+      alt="Removal van on a residential street in Weston-super-Mare"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Weston-super-Mare' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Weston-super-Mare is one of the most operationally easy places we work — except during summer holidays and bank holidays, when the seaside town transforms and every road becomes congested with visitors. The transformation happens almost overnight when schools break up. Get the timing right and Weston is a dream to work in. Get it wrong and you're loading a van while half of Bristol queues past you to get to the beach.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We're around 22 miles from Weston — roughly 35–50 minutes down the M5 to Junction 21, depending on traffic. The streets are wider than inner Bristol, parking is less fraught outside of season, and most housing is two-storey without the 4–5 storey Georgian complexity of Bath or Clifton. It's a route we know well and a town we work in regularly.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/weston-super-mare-removal-street" pattern="FULL" alt="Removal van on a residential street in Weston-super-Mare" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Weston Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Summer Calendar</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This is the single biggest factor for Weston moves. Jay compares it to matching a Horfield move around the Bristol Rovers fixture list — check the calendar before confirming dates. If you can avoid August, avoid August. The seafront and town centre roads go from quiet to saturated when half-term arrives, and it doesn't ease until schools go back.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">For weekday moves outside peak season, none of this applies. Earlier starts and confirmed parking arrangements are recommended for any move during school holidays, and for long-distance moves where the crew needs to overnight locally, we book accommodation well in advance — the town fills up during busy periods.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">A Town of Contrasts</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Along the seafront and up through the older residential streets, Victorian and Edwardian properties line up in long terraces — high ceilings, bay windows, and hallways that were built for top hats, not American-style fridge-freezers. Flats above shops in the town centre have tighter stairwells and limited parking.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Further back from the coast: 1930s semis, post-war estates, and the newer developments on the southern edge pulling in young families priced out of Bristol. The newer estates — Locking Parklands, Winterstoke — have good road widths, driveways, and are among the easiest moves we do anywhere.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Downsizing Moves</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">A significant proportion of our Weston work involves retirement downsizing. Weston has always attracted retirees — the seafront, the parks, the quieter pace — and many are moving from four-bed family homes into bungalows or retirement complexes. These moves need patience and sensitivity. Your Move Manager will spend extra time planning what goes, what gets <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">stored</a>, and what stays behind.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Planning a Move in Weston-super-Mare?" description="Free quote in about two minutes. We know the seasonal patterns — your quote reflects your specific property and timing." buttonText="Get Your Weston Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Working in Weston</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Most of our Weston moves are on the back roads and suburban streets rather than the seafront itself. The streets are longer and wider than inner Bristol's tighter terraces, which makes the logistics generally smooth. Access to the M5 at Junction 21 means a removal van is on the motorway within minutes of loading.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/weston-super-mare-crew-loading" pattern="HALF" alt="Removal crew loading furniture during a Weston-super-Mare move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Weston is a mixed bag — some very nice properties, some more modest ones. The focal point is the seafront, but most of our moves are on the back roads and suburban streets. The streets are wider than inner Bristol, which makes the logistics easy. The seasonal calendar is the one thing to watch."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Weston is comfortably within our range — and Painless Removals covers the whole North Somerset coast. If you're moving between Weston and <a href="/removals-clevedon/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Clevedon</a>, <a href="/removals-nailsea/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Nailsea</a>, or anywhere along the coast, it's all priced as local work.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Weston a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">No — it's one of the easier places we work. Most housing is two-storey, streets are wider than Bristol, and the suburban estates have good access. The Victorian seafront properties are more demanding but nothing unusual for our crews. The only complication is seasonal traffic, and that's solved by checking the calendar.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">A smaller property move typically costs £700–£900. A typical 3-bed house with a couple of vans: £1,200–£1,500. Distance doesn't drive the cost — volume and access do. Most Weston moves are comfortable one-day jobs.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Weston Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 weston-checklist">
+          <li><strong>Check the calendar.</strong> School holidays and bank holidays transform the town — avoid if timing allows.</li>
+          <li><strong>Seafront property?</strong> Victorian terraces need careful furniture planning for narrow hallways and bay windows.</li>
+          <li><strong>Downsizing?</strong> Your Move Manager helps plan what to take, store, or leave behind.</li>
+          <li><strong>New-build estate?</strong> Locking Parklands and Winterstoke are among the easiest moves we do.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do People Ask About Moving in Weston-super-Mare?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Weston Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Weston sits right off the M5 at Junction 21, giving fast access north and south.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol / Weston" to="London" meta="~140 miles via M5/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol / Weston" to="Birmingham" meta="~110 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Bristol / Weston" to="Manchester" meta="~190 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+      <RouteCard from="Bristol / Weston" to="Cardiff" meta="~60 miles via M5/M4" days="1 day" href="/removals-bristol-to-cardiff/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Moving From a Town Near Weston?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We cover the whole North Somerset coast and beyond. If you're moving from or to
+        <a href="/removals-clevedon/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Clevedon</a>,
+        <a href="/removals-nailsea/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Nailsea</a>, or
+        <a href="/removals-portishead/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Portishead</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Popular with downsizing clients — help sorting and wrapping.</p>
+        </a>
+        <a href="/storage-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Storage</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Secure units 35 min up the M5. Flexible terms from days to months.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move in Weston-super-Mare?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .weston-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .weston-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

@@ -1,0 +1,1076 @@
+---
+/**
+ * About Page
+ *
+ * Painless Removals - About Us
+ * Following E-E-A-T guidelines for trust and credibility.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AccreditationLogos from '@/components/AccreditationLogos.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, breadcrumbs } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'About Us – Bristol Removals Since 1978';
+const pageDescription = 'Meet the team behind Painless Removals. Nearly 50 years helping families move home, from our Bristol base to anywhere in the UK. Long-distance and chain move specialists.';
+
+// Values
+const values = [
+  {
+    number: '01',
+    title: 'Quality over speed',
+    description: 'We don\'t rush through your move to squeeze in another job. Your move gets our full attention for the entire day.',
+  },
+  {
+    number: '02',
+    title: 'Honest pricing',
+    description: 'The price we quote is the price you pay. No surprises. No "unforeseen circumstances" that mysteriously inflate the bill.',
+  },
+  {
+    number: '03',
+    title: 'People you\'d welcome home',
+    description: 'Our team members are educated, respectful, and well-mannered. We pay above industry average because we want people who take pride in their work.',
+  },
+  {
+    number: '04',
+    title: 'One person who knows your move',
+    description: 'You\'ll have a dedicated Move Manager from first contact to final box. No explaining your situation to a different person every time you call.',
+  },
+];
+
+// Timeline milestones
+const milestones = [
+  {
+    year: '1978',
+    title: 'Where it all began',
+    description: 'Steve Fanger founds Painless Removals in Bristol, turning a musician\'s van into a removal business built on hard work and word of mouth.',
+  },
+  {
+    year: '2015',
+    title: 'The Green Goddess',
+    description: 'Our first fully branded vehicle hits the road — affectionately known as the Green Goddess. A proper identity on Bristol\'s streets for the first time.',
+  },
+  {
+    year: '2019',
+    title: 'A new chapter',
+    description: 'Jay Newton takes the reins from Steve, bringing fresh energy while preserving the values that made Painless what it is.',
+  },
+  {
+    year: '2021',
+    title: 'Fleet expansion',
+    description: 'We add our next van to the fleet, increasing capacity and allowing us to serve more families across the UK.',
+  },
+  {
+    year: '2023',
+    title: 'Farewell to our founder',
+    description: 'Steve Fanger passes away, leaving behind a legacy of nearly 45 years of service to Bristol. We honour his memory by continuing what he built.',
+  },
+  {
+    year: '2023',
+    title: 'Digital transformation',
+    description: 'A major investment in our online presence begins — building one of the most user-friendly removal websites in the UK.',
+  },
+];
+
+// Schema markup — reference the global /#business entity, no duplication
+const aboutPageSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "name": "About Painless Removals",
+    "description": pageDescription,
+    "url": `${siteConfig.brand.domain}/about`,
+    "mainEntity": ref.business(),
+  },
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "About Us" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={aboutPageSchema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp" preloadImage="/img/about/Painless-Removals-van-Bristol-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative">
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="about/Painless-Removals-van-Bristol"
+        pattern="FULL"
+        alt="Painless Removals van parked in Bristol neighbourhood"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover object-bottom"
+      />
+    </div>
+
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-104px)]">
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            About Painless Removals
+          </h1>
+
+          <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+            Moving People,<br /><span class="text-secondary-500">Not Just Boxes</span>
+          </h2>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            Bristol-based. Nationwide coverage. Long-distance and chain move specialists since 1978. We've helped thousands of families start their next chapter.
+          </p>
+
+          <div class="flex flex-col gap-2 mb-5 items-center">
+            <a href="/instantquote/" class="btn-cta-orange text-center">
+              GET MY FREE QUOTE IN 47 SECONDS
+            </a>
+            <p class="text-warm-gray text-sm text-center">Free, no risk, no obligation</p>
+          </div>
+
+          <TrustpilotStrip />
+        </div>
+      </div>
+
+      <div class="hidden lg:block relative overflow-hidden">
+        <OptimizedPicture
+          name="about/Painless-Removals-van-Bristol"
+          pattern="FULL"
+          alt="Painless Removals van parked in Bristol neighbourhood"
+          loading="eager"
+          fetchpriority="high"
+          class="absolute inset-0 w-full h-full object-cover object-bottom"
+        />
+        <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg px-3 py-2 flex items-center gap-2">
+          <img src="/images/google-g-logo.svg" alt="Google" class="w-8 h-8" width="32" height="32" />
+          <div>
+            <div class="flex items-center gap-1">
+              <span class="text-xl font-bold text-gray-800">{siteConfig.company.rating.value}</span>
+              <span class="text-yellow-400 text-xs" aria-label="5 out of 5 stars">★★★★★</span>
+            </div>
+            <p class="text-[10px] text-gray-600">Google reviews</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: OUR JOURNEY – Horizontal timeline
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-cream">
+    <div class="container-wide mb-8">
+      <div class="text-center">
+        <h2 class="mb-3">Our Journey</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          From a musician's van to a fully accredited national removal service.
+        </p>
+      </div>
+    </div>
+
+    <div class="tl-wrapper">
+      <div class="tl-track" role="list">
+        <!-- Connecting line behind cards -->
+        <div class="tl-line" aria-hidden="true"></div>
+
+        {milestones.map((m, i) => (
+          <article class="tl-card" role="listitem" style={`--idx:${i}`}>
+            <div class="tl-dot" aria-hidden="true"></div>
+            <span class="tl-year">{m.year}</span>
+            <h3 class="tl-title">{m.title}</h3>
+            <p class="tl-desc">{m.description}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: HOW IT ALL BEGAN
+  ============================================ -->
+  <section class="bg-white overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="relative overflow-hidden min-h-[250px] sm:min-h-[300px] lg:min-h-[500px]">
+        <OptimizedPicture
+          name="about/young-steve-fanger"
+          pattern="HALF"
+          alt="Steve Fanger with his band The Vultures in the early days"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <div class="bg-white px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center">
+        <div class="max-w-lg">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+            How It All Began
+          </p>
+
+          <h2 class="mb-6">A remarkable man and his van</h2>
+
+          <div class="text-warm-gray space-y-4 text-lg leading-relaxed">
+            <p>
+              Nearly half a century ago, young Bristolian musician and future local legend, <strong class="text-primary-600">Steve Fanger</strong>, needed a van for his band, The Vultures, to transport their equipment. He purchased it, and due to his reputation for hard work and reliability, he frequently ended up assisting others with their removals as well.
+            </p>
+            <p>
+              What began as a necessity soon turned into his calling, leading to the establishment of Painless Removals in the summer of 1978.
+            </p>
+          </div>
+
+          <div class="mt-8 flex justify-center">
+            <OptimizedPicture
+              name="about/since-1978-blue"
+              pattern="SIXTH"
+              alt="Painless Removals - Established Since 1978"
+              loading="lazy"
+              decoding="async"
+              class="w-[180px] h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: OUR VISION
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="grid lg:grid-cols-[1fr_auto] gap-12 lg:gap-16 items-start">
+        <div>
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+            Our Vision
+          </p>
+
+          <h2 class="mb-6">Proud of our history – excited for our future</h2>
+
+          <div class="text-warm-gray space-y-4 text-lg leading-relaxed">
+            <p>
+              Our founder, Steve, sadly passed away in 2023. With new management, we honour his legacy while modernising our processes.
+            </p>
+            <p>
+              We're upgrading our fleet for smoother, more eco-friendly service, introducing a new concierge service, and expanding our team. The values Steve built this company on – honesty, reliability, and genuine care – remain at the heart of everything we do.
+            </p>
+          </div>
+        </div>
+
+        <div class="max-w-[280px] mx-auto lg:mx-0">
+          <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <OptimizedPicture
+              name="about/steve-fanger-band"
+              pattern="QUARTER"
+              alt="Steve Fanger, founder of Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="w-full"
+            />
+            <div class="p-4 text-center">
+              <p class="font-heading text-primary-600 font-semibold">Steve Fanger</p>
+              <p class="text-sm text-warm-gray">Founder, 1978–2023</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REVIEW 1: Dr. John Jones
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-xl p-8 md:p-10 shadow-sm relative">
+          <div class="text-yellow-400 text-2xl tracking-widest mb-4 text-center" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote class="font-heading text-xl md:text-2xl italic text-primary-600 leading-relaxed mb-6 text-center" set:html={`&ldquo;I recently used Painless Removals in Bristol for a house move and was extremely impressed with the service provided. They were <mark>prompt and professional</mark> from the initial quote through to the end of the removal process. I wouldn&rsquo;t hesitate to use Painless Removals again for any future moves. <mark>The whole experience was effortless.</mark>&rdquo;`} />
+          <div class="flex items-center justify-center gap-4">
+            <img src="/images/reviews/john-jones.avif" alt="Dr. John Jones" class="w-14 h-14 rounded-full object-cover" width="56" height="56" loading="lazy" />
+            <div>
+              <cite class="not-italic font-semibold text-primary-600">Dr. John Jones</cite>
+              <div class="flex items-center gap-1.5 text-sm text-warm-gray">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Verified Google Review
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: OUR MISSION
+  ============================================ -->
+  <section class="bg-cream overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center order-2 lg:order-1">
+        <div class="max-w-lg lg:ml-auto">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+            Our Mission
+          </p>
+
+          <h2 class="mb-6">Making the world a little better, one move at a time</h2>
+
+          <div class="text-warm-gray text-lg leading-relaxed space-y-4">
+            <p>
+              Moving house is consistently ranked as the <strong class="text-primary-600">third most stressful life event</strong> — behind only bereavement and divorce. The combination of upheaval, uncertainty, and exhaustion catches most people off guard. We want to change that experience.
+            </p>
+
+            <p>
+              That's why we don't just move your belongings from A to B. We take on <mark>the entire organisational weight of your move</mark> — the planning, the packing, the logistics, the cleaning — so that the hardest thing you have to do on moving day is decide where the kettle goes.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px] order-1 lg:order-2">
+        <OptimizedPicture
+          name="about/Horsley-removal"
+          pattern="HALF"
+          alt="Painless Removals van at a countryside home in Horsley, Gloucestershire"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover object-[75%_center]"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: WHAT MAKES US DIFFERENT
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="mb-6">What makes us different?</h2>
+
+        <p class="text-warm-gray text-lg leading-relaxed">
+          Most removal companies move your things. We look after you. There's a difference, and you'll feel it from the first phone call. We handle the logistics, the heavy lifting, and all the tedious bits in between — so that by the end of the day, you're settled in your new home wondering <mark>why everyone told you moving was so hard</mark>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: OUR PEOPLE – OUR TRIBE
+  ============================================ -->
+  <section class="bg-cream overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center order-2 lg:order-1">
+        <div class="max-w-lg lg:ml-auto">
+          <h2 class="mb-3">Our People, Our Tribe</h2>
+          <h3 class="text-xl text-secondary-500 font-semibold mb-6">More than a workplace — a team you belong to</h3>
+
+          <div class="text-warm-gray text-lg leading-relaxed space-y-4">
+            <p>
+              One of the things that truly sets Painless Removals apart is how we treat our own people. If our team doesn't feel valued, supported, and fairly rewarded, how can we expect them to deliver their best for you?
+            </p>
+
+            <p>
+              We invest in building a real team. Not a revolving door of temporary labour, but a tight-knit group of people who know each other, trust each other, and take pride in working together. We want working at Painless to feel like <mark>belonging to a tribe</mark> — not just clocking in and clocking out.
+            </p>
+
+            <p>
+              This matters because it directly affects you. When our team members care about the company and about each other, they naturally care about your move. The difference between a crew of hired hands and a crew that takes genuine pride in their work is something you'll feel on moving day.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px] order-1 lg:order-2">
+        <OptimizedPicture
+          name="about/christmas-party"
+          pattern="HALF"
+          alt="Painless Removals team at their Christmas party"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       LIVING WAGE EMPLOYER – 50/50 SECTION
+  ============================================ -->
+  <section class="bg-white overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="flex items-center justify-center px-6 py-12 lg:py-16 bg-teal-50">
+        <div class="relative bg-white border-[3px] border-teal-600 rounded-2xl px-12 py-10 shadow-xl text-center group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+          <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-teal-600 text-white px-5 py-1.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold shadow-md">
+            Accredited
+          </div>
+          <div class="mt-2 mb-4">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="text-4xl font-bold font-heading text-teal-700 leading-tight">Living Wage</div>
+          <div class="text-2xl font-bold font-heading text-teal-600 mb-3">Employer</div>
+          <div class="w-12 h-0.5 bg-teal-300 mx-auto mb-3 group-hover:w-20 transition-all duration-500"></div>
+          <div class="text-teal-600 text-sm font-medium">
+            We pay the real Living Wage
+          </div>
+        </div>
+      </div>
+
+      <div class="px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center">
+        <div class="max-w-lg">
+          <p class="text-teal-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-teal-400 inline-block pb-1 mb-4">
+            Living Wage Employer
+          </p>
+
+          <h2 class="mb-6">We pay our people what they deserve</h2>
+
+          <div class="text-warm-gray text-lg leading-relaxed space-y-4">
+            <p>
+              We pay our team what they deserve — not the industry minimum, but a <strong class="text-teal-700">genuine Living Wage</strong> that reflects the physically demanding, highly skilled work they do every day. But fair pay is only the beginning.
+            </p>
+            <p>
+              Fair pay creates better movers. When people feel valued, they naturally bring more care and attention to every item they handle, every home they enter, and every customer they meet.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: THE TEAM
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="mb-3">Meet the Leaders of the Team</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          The people behind every painless move.
+        </p>
+      </div>
+
+      <!-- Team members – horizontal rows -->
+      <div class="space-y-6">
+
+        <!-- Jay -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <OptimizedPicture
+              name="about/team/Jay-Newton"
+              pattern="HALF"
+              alt="Jay Newton, Director of Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Director / Since 2019</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-2">Jay Newton</h3>
+            <p class="text-xs text-primary-600 bg-primary-600/5 inline-block px-3 py-1 rounded-full font-medium mb-4">2,000+ moves overseen &middot; 3rd Dan Combat Jiu-Jitsu</p>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              Jay's journey with Painless started in the early 2000s, when Steve Fanger — the original founder — moved him as a student and offered him casual work. What began as weekend shifts grew into two decades of hands-on experience. In 2019, he took over from Steve and set about modernising the business — commissioning our bespoke Instant Quote Calculator, overhauling the fleet, and building the team you see today. He's personally supervised over 2,000 moves, many hundreds of those lifting, carrying, and leading from the front.
+            </p>
+            <a href="/about/jay-newton/" class="inline-flex items-center gap-1 mt-4 text-primary-600 font-semibold text-sm no-underline hover:text-secondary-500 hover:gap-2 transition-all">Read Jay's full story <span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+
+        <!-- Tom -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <OptimizedPicture
+              name="about/team/Tom"
+              pattern="HALF"
+              alt="Tom, Customer Relationships at Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Customer Relationships / Joined 2025</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-3">Tom</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              Most likely the first voice you'll hear when you call us. A linguist by training who speaks fluent French and Spanish to near-native level, Tom brings a deeply human approach to customer service. His background in the humanities gives him a natural warmth that customers notice immediately — calm, patient, and genuinely interested in getting your move right from the very first conversation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tamara -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <OptimizedPicture
+              name="about/team/Tamara"
+              pattern="HALF"
+              alt="Tamara, Packing Team Lead at Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Packing &amp; Cleaning Team Lead / Joined 2021</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-3">Tamara</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              Tamara has personally handled hundreds of packing jobs and leads our packing and cleaning team with a combination of speed, precision, and genuine care. She's packed everything from crystal glassware to entire libraries and has developed an intuitive sense for how to protect even the most awkward items. When Tamara's team arrives, you know your possessions are in safe hands.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pete -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <OptimizedPicture
+              name="about/team/Pete"
+              pattern="HALF"
+              alt="Pete, Removal Team Leader at Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Removal Team Leader</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-3">Pete</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              Pete brings decades of hands-on removal experience. As a team leader, he's the one on site supervising your move — making decisions in real time, managing the crew, and ensuring everything runs to plan. He's navigated every awkward staircase and handled every last-minute curveball that moving day can throw at you. His presence on the ground is one of the reasons our moves run so smoothly.
+            </p>
+          </div>
+        </div>
+
+        <!-- Mike -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <OptimizedPicture
+              name="about/team/Mike"
+              pattern="HALF"
+              alt="Mike, Removal Team Leader at Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Removal Team Leader</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-3">Mike</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              Mike brings decades of hands-on removal experience. As a team leader, he's the one on site supervising your move — making decisions in real time, managing the crew, and ensuring everything runs to plan. He's navigated every awkward staircase and handled every last-minute curveball that moving day can throw at you. His presence on the ground is one of the reasons our moves run so smoothly.
+            </p>
+          </div>
+        </div>
+
+        <!-- László -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <OptimizedPicture
+              name="about/team/Laszlo"
+              pattern="HALF"
+              alt="László, Marketing Executive at Painless Removals"
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Marketing / Joined 2023</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-3">László</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              László took charge of our marketing with a level of strategic thinking that immediately elevated the brand. In his home country, he managed marketing for opera houses — high-pressure, culturally complex environments where precision and storytelling matter. He brought that same rigour to Painless Removals, and has been instrumental in building the digital presence and communication strategy that define how people find and experience our company.
+            </p>
+          </div>
+        </div>
+
+        <!-- Richard -->
+        <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
+          <div class="relative aspect-[4/3] md:aspect-auto md:min-h-[240px] overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary-600 to-primary-800">
+              <span class="font-heading text-[8rem] font-bold text-white/10 group-hover:scale-110 transition-transform duration-500">R</span>
+            </div>
+          </div>
+          <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
+            <p class="text-secondary-500 text-xs font-semibold uppercase tracking-widest mb-1">Business Development &amp; Partnerships / Joined 2026</p>
+            <h3 class="text-xl font-bold text-primary-600 mb-3">Richard</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">
+              Richard leads our trade partnerships and B2B relationships. He came to Painless from senior business development roles at established national companies, where he built and managed high-value client portfolios across property, relocation, and professional services. He joined us because he saw in Painless something rare — a company small enough to care about every client, but ambitious enough to compete with the biggest names in the industry. His experience in forging lasting commercial relationships, combined with a genuine alignment with our values, has already opened doors that simply weren't available to us before.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REVIEW 2: Laura Carnegie-Brown
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-cream">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-xl p-8 md:p-10 shadow-sm relative">
+          <div class="text-yellow-400 text-2xl tracking-widest mb-4 text-center" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote class="font-heading text-xl md:text-2xl italic text-primary-600 leading-relaxed mb-6 text-center" set:html={`&ldquo;Painless Removals have been brilliant, couldn&rsquo;t recommend them more. They helped us move in Bristol and then helped us organise a cross-country move. Both were done on a tight timeline and at a good price. The guys who moved us were <mark>very kind and efficient</mark> &ndash; Thanks again!&rdquo;`} />
+          <div class="flex items-center justify-center gap-4">
+            <img src="/images/reviews/laura-carnegie-brown.avif" alt="Laura Carnegie-Brown" class="w-14 h-14 rounded-full object-cover" width="56" height="56" loading="lazy" />
+            <div>
+              <cite class="not-italic font-semibold text-primary-600">Laura Carnegie-Brown</cite>
+              <div class="flex items-center gap-1.5 text-sm text-warm-gray">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Verified Google Review
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ARE WE THE RIGHT MATCH?
+  ============================================ -->
+  <section class="section bg-linear-to-br from-secondary-100 to-cream">
+    <div class="container-wide">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-secondary-600 mb-6">Are We the Right Match for You?</h2>
+
+        <div class="text-warm-gray text-lg space-y-4">
+          <p>We're honest: we're not the best fit for everyone.</p>
+
+          <p>
+            If you're looking for the absolute cheapest option, or you need a last-minute same-day move, we're probably not your company. We're designed for people who want things done properly–homeowners with larger properties, families in chains who need reliability, people moving 100+ miles who want the peace of mind that comes with experience.
+          </p>
+
+          <p>If that sounds like you, we'd love to help.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       OUR APPROACH (VALUES)
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="mb-3">Our Approach</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          We're not trying to be the cheapest or the fastest. We're trying to be the removal company you actually want to recommend to your friends.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {values.map((value) => (
+          <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
+            <div class="flex items-center gap-4 mb-4">
+              <span class="w-12 h-12 rounded-xl bg-primary-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0 group-hover:bg-secondary-500 group-hover:rotate-6 transition-all duration-300">
+                {value.number}
+              </span>
+              <h3 class="text-primary-600 text-lg">{value.title}</h3>
+            </div>
+            <p class="text-warm-gray text-[15px] leading-relaxed">{value.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: COMMUNITY CONNECTIONS
+  ============================================ -->
+  <section class="bg-cream overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center order-2 lg:order-1">
+        <div class="max-w-lg lg:ml-auto">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+            Rooted in Bristol
+          </p>
+
+          <h2 class="mb-6">Trusted by organisations across the region</h2>
+
+          <div class="text-warm-gray text-lg leading-relaxed space-y-4">
+            <p>
+              Over nearly five decades of operating in Bristol, we've built strong working relationships with a wide range of organisations across the city and the wider region. From cultural institutions like the <strong class="text-primary-600">Bristol Old Vic Theatre School</strong> to major housing providers like <strong class="text-primary-600">LiveWest</strong>, from the <strong class="text-primary-600">Church of England</strong> to social enterprises like <strong class="text-primary-600">Second Step</strong> — these are organisations that trust us to deliver reliably, professionally, and with care.
+            </p>
+
+            <p>
+              Being embedded in the local business and cultural community isn't just good for our reputation — it's part of who we are. When a local institution calls us, they're not getting a faceless national franchise. They're getting a Bristol company that understands Bristol and will still be around to help them next time.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px] order-1 lg:order-2">
+        <OptimizedPicture
+          name="about/theatre-school"
+          pattern="HALF"
+          alt="Painless Removals van at Bristol Old Vic Theatre School Scenic Workshop in Bedminster"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 11: LONG-STANDING CUSTOMER RELATIONS
+  ============================================ -->
+  <section class="bg-cream overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px]">
+        <OptimizedPicture
+          name="about/family"
+          pattern="HALF"
+          alt="Three generations of a Bristol family - long-standing Painless Removals customers"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      </div>
+
+      <div class="px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center">
+        <div class="max-w-lg">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+            Long-Standing Customer Relations
+          </p>
+
+          <h2 class="mb-6">Our customers return even after years</h2>
+
+          <p class="text-warm-gray text-lg leading-relaxed">
+            One of the things we are most proud of is the fact that our customers come back to us even after many years. This speaks volumes about the trust and satisfaction they have in our services. Whether it's a local move within Bristol or a long-distance relocation, our clients know that they can rely on us for a smooth and painless experience every time.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REVIEW 3: Emma Henry
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-xl p-8 md:p-10 shadow-sm relative">
+          <div class="text-yellow-400 text-2xl tracking-widest mb-4 text-center" aria-label="5 out of 5 stars">★★★★★</div>
+          <blockquote class="font-heading text-xl md:text-2xl italic text-primary-600 leading-relaxed mb-6 text-center" set:html={`&ldquo;Painless Removals were brilliant. They did what it says on the tin &ndash; <mark>made the whole process very painless</mark>. They were <mark>friendly and efficient</mark> and the whole process was completed super quickly. Would strongly recommend and will use them again. Thank you!&rdquo;`} />
+          <div class="flex items-center justify-center gap-4">
+            <img src="/images/reviews/emma-henry.avif" alt="Emma Henry" class="w-14 h-14 rounded-full object-cover" width="56" height="56" loading="lazy" />
+            <div>
+              <cite class="not-italic font-semibold text-primary-600">Emma Henry</cite>
+              <div class="flex items-center gap-1.5 text-sm text-warm-gray">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                Verified Google Review
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 12: COMMITMENT TO THE COMMUNITY
+  ============================================ -->
+  <section class="bg-white overflow-hidden">
+    <div class="grid lg:grid-cols-2 items-stretch">
+      <div class="px-6 py-10 lg:px-12 lg:py-16 flex flex-col justify-center bg-white order-2 lg:order-1">
+        <div class="max-w-lg">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+            Commitment to the Community
+          </p>
+
+          <h2 class="mb-3">Charitable Works and Volunteering</h2>
+
+          <div class="text-warm-gray text-lg leading-relaxed space-y-4">
+            <p>
+              We believe in the power of collective action, so we partner with community organizations and local leaders to create meaningful change.
+            </p>
+            <p>
+              Every year, our team volunteers to help local charities. One of our favourite initiatives is supporting <strong class="text-primary-600">St. Peter's Hospice</strong> with their Christmas tree collection campaign–turning holiday cleanup into vital fundraising for end-of-life care in our community.
+            </p>
+            <p>
+              It's a small way of giving back to the Bristol community that's supported us for nearly 50 years.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative overflow-hidden min-h-[300px] sm:min-h-[350px] lg:min-h-[500px] order-1 lg:order-2">
+        <OptimizedPicture
+          name="about/Painless-Removals-St-Peter-Hospice"
+          pattern="HALF"
+          alt="Painless Removals team collecting Christmas trees for St. Peter's Hospice fundraising campaign"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover object-center"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 13: PARTNERSHIPS & COLLABORATIONS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+          Open to Collaboration
+        </p>
+
+        <h2 class="mb-6">We work with property professionals</h2>
+
+        <div class="text-warm-gray text-lg leading-relaxed space-y-4">
+          <p>
+            We actively welcome partnerships with professionals across the property sector. Whether you're an estate agent looking for a reliable removal partner for your clients, a solicitor who needs completions to run smoothly, a care home arranging resident transitions, a relocation agent managing corporate moves, or a home staging company needing flexible logistics — we'd love to hear from you.
+          </p>
+
+          <p>
+            Our partner programme offers dedicated Move Managers, priority booking, full-day chain move allocation, and the kind of consistent, professional service that reflects well on everyone involved.
+          </p>
+
+          <p class="font-semibold text-primary-600">
+            Get in touch — we're genuinely enthusiastic about working together.
+          </p>
+        </div>
+
+        <a href="/partners/" class="btn-cta-orange inline-flex mt-8">
+          Explore Our Partner Programme
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 14: ACCREDITATIONS
+  ============================================ -->
+  <AccreditationLogos />
+
+  <!-- ============================================
+       SECTION 15: FOLLOW OUR JOURNEY
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-cream">
+    <div class="container-wide">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="mb-4">Follow Our Journey</h2>
+        <p class="text-warm-gray mb-8">
+          We're real people running a real business. Here's where you can find us online:
+        </p>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <a href={siteConfig.company.contact.facebook} target="_blank" rel="noopener" class="social-link">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            <span class="font-medium">Facebook</span>
+            <small class="text-warm-gray text-xs">Move day photos & stories</small>
+          </a>
+
+          <a href={siteConfig.company.contact.instagram} target="_blank" rel="noopener" class="social-link">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span class="font-medium">Instagram</span>
+            <small class="text-warm-gray text-xs">Behind the scenes</small>
+          </a>
+
+          <a href={siteConfig.company.contact.linkedin} target="_blank" rel="noopener" class="social-link">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            <span class="font-medium">LinkedIn</span>
+            <small class="text-warm-gray text-xs">Company news</small>
+          </a>
+
+          <a href={siteConfig.company.contact.googleBusiness} target="_blank" rel="noopener" class="social-link">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            <span class="font-medium">Google Business</span>
+            <small class="text-warm-gray text-xs">Reviews & directions</small>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 17: CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white mb-4">Ready to Get Started?</h2>
+      <p class="text-primary-100 text-lg mb-8 max-w-xl mx-auto">
+        Get an instant estimate for your move. No pressure, no obligation–just a clear idea of what it might cost.
+      </p>
+
+      <a href="/instantquote/" class="btn btn-primary text-lg px-10 py-4">
+        Get Your Instant Quote
+      </a>
+    </div>
+  </section>
+
+</Layout>
+
+<style>
+  /* ═══════════════════════════════════════════
+     TIMELINE — Horizontal scroll with connecting line
+  ═══════════════════════════════════════════ */
+  .tl-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-300, #7c9cbf) transparent;
+    padding: 0 1.5rem 1rem;
+    cursor: grab;
+  }
+  .tl-wrapper:active { cursor: grabbing; }
+  .tl-wrapper::-webkit-scrollbar { height: 4px; }
+  .tl-wrapper::-webkit-scrollbar-track { background: transparent; }
+  .tl-wrapper::-webkit-scrollbar-thumb {
+    background: var(--color-primary-300, #7c9cbf);
+    border-radius: 999px;
+  }
+
+  .tl-track {
+    display: flex;
+    gap: 0;
+    position: relative;
+    padding: 3rem 0 1rem;
+    min-width: max-content;
+  }
+
+  /* Connecting horizontal line */
+  .tl-line {
+    position: absolute;
+    top: calc(3rem + 6px);
+    left: 2rem;
+    right: 2rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-primary-200, #bdd0e7), var(--color-secondary-400, #f59e0b), var(--color-primary-200, #bdd0e7));
+  }
+
+  .tl-card {
+    flex-shrink: 0;
+    width: 260px;
+    padding: 0 1rem;
+    position: relative;
+    animation: tl-fade-in 0.5s ease-out both;
+    animation-delay: calc(var(--idx) * 0.08s);
+  }
+  @media (min-width: 768px) {
+    .tl-card { width: 300px; }
+  }
+
+  @keyframes tl-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Dot on the line */
+  .tl-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-primary-600, #1e3a5f);
+    border: 3px solid var(--color-cream, #faf7f2);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .tl-card:hover .tl-dot {
+    transform: scale(1.4);
+    box-shadow: 0 0 0 4px var(--color-primary-200, #bdd0e7);
+  }
+
+  .tl-year {
+    display: block;
+    font-family: var(--font-heading, serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-secondary-500, #f59e0b);
+    line-height: 1;
+    margin-bottom: 0.375rem;
+  }
+
+  .tl-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-primary-600, #1e3a5f);
+    margin-bottom: 0.5rem;
+  }
+
+  .tl-desc {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-warm-gray, #78716c);
+  }
+
+  /* Snap on touch */
+  @media (hover: none) {
+    .tl-wrapper { scroll-snap-type: x mandatory; scroll-padding: 1.5rem; }
+    .tl-card { scroll-snap-align: start; }
+  }
+
+  /* ═══════════════════════════════════════════
+     SCROLL ANIMATIONS (sa = scroll-animate)
+  ═══════════════════════════════════════════ */
+  .sa {
+    opacity: 0;
+    transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: opacity, transform;
+  }
+  .sa--fade {
+    transform: scale(1.04);
+  }
+  .sa--right {
+    transform: translateX(60px);
+  }
+  .sa.is-visible {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sa {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+</style>
+
+<script>
+  // Enable drag-to-scroll on timeline
+  const tl = document.querySelector<HTMLElement>('.tl-wrapper');
+  if (tl) {
+    let isDown = false;
+    let startX: number;
+    let scrollLeft: number;
+
+    tl.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - tl.offsetLeft;
+      scrollLeft = tl.scrollLeft;
+    });
+    tl.addEventListener('mouseleave', () => { isDown = false; });
+    tl.addEventListener('mouseup', () => { isDown = false; });
+    tl.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - tl.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      tl.scrollLeft = scrollLeft - walk;
+    });
+  }
+
+  // Scroll-triggered animations
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('[data-sa]').forEach((el) => observer.observe(el));
+</script>

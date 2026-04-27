@@ -1,0 +1,84 @@
+---
+/**
+ * Pre-processed responsive image component.
+ * Uses pre-generated avif/webp variants from public/img/.
+ * Pattern determines widths + sizes (from astro-images skill).
+ */
+
+import { patterns, ALL_WIDTHS, type PatternName } from '@/config/image-patterns';
+import imageData from '@/data/image-data.json';
+
+interface Props {
+  name: string;
+  pattern: PatternName;
+  alt: string;
+  loading?: 'eager' | 'lazy';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  decoding?: 'async' | 'auto';
+  class?: string;
+  style?: string;
+  sizes?: string; // override pattern default
+}
+
+const {
+  name,
+  pattern,
+  alt,
+  loading,
+  fetchpriority,
+  decoding = 'async',
+  class: className,
+  style,
+  sizes: sizesOverride,
+} = Astro.props;
+
+const patternDef = patterns[pattern];
+if (!patternDef) {
+  throw new Error(`OptimizedPicture: unknown pattern "${pattern}". Valid: ${Object.keys(patterns).join(', ')}`);
+}
+const { widths, sizes: patternSizes } = patternDef;
+const sizes = sizesOverride ?? patternSizes;
+const meta = (imageData as Record<string, { width: number; height: number; format: string }>)[name];
+
+if (!meta) {
+  throw new Error(`OptimizedPicture: no metadata for "${name}". Run "npm run images" first.`);
+}
+
+// Only include widths that exist (not upscaled)
+let availableWidths = widths.filter((w) => w <= meta.width);
+// Guard: if image is smaller than all pattern widths, use the smallest
+if (availableWidths.length === 0) {
+  availableWidths = [widths[0]];
+}
+// Use the largest ALL_WIDTHS value ≤ image width — this is what the script generates as the .jpg/.png fallback
+const fallbackWidth = [...ALL_WIDTHS].reverse().find((w) => w <= meta.width) ?? ALL_WIDTHS[0];
+const fallbackExt = meta.format;
+// Cap declared dimensions to actual max output (prevents mismatch for >2560px sources)
+const aspectRatio = meta.height / meta.width;
+const declaredWidth = Math.min(meta.width, fallbackWidth);
+const declaredHeight = Math.round(declaredWidth * aspectRatio);
+---
+
+<picture>
+  <source
+    type="image/avif"
+    srcset={availableWidths.map((w) => `/img/${name}-${w}w.avif ${w}w`).join(', ')}
+    sizes={sizes}
+  />
+  <source
+    type="image/webp"
+    srcset={availableWidths.map((w) => `/img/${name}-${w}w.webp ${w}w`).join(', ')}
+    sizes={sizes}
+  />
+  <img
+    src={`/img/${name}-${fallbackWidth}w.${fallbackExt}`}
+    width={declaredWidth}
+    height={declaredHeight}
+    alt={alt}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding={decoding}
+    class={className}
+    style={style}
+  />
+</picture>

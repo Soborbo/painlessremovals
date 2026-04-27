@@ -1,0 +1,347 @@
+---
+/**
+ * /removals-radstock/ — Radstock town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ * Covers Radstock (BA3), Midsomer Norton, and surrounding Somerset villages.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Radstock Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '14 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'BA3' },
+        { label: 'Nearest motorway', value: 'A37 to M5/M4 via Bristol' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2–3 bed terrace / semi' },
+        { label: 'Typical crew', value: '2 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day to full day' },
+        { label: 'Local move cost', value: '£400–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£280–350k' },
+        { label: 'Typical property', value: "Miners' cottage / modern semi" },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Driveways', value: 'Newer estates; terraces none' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Minimal' },
+        { label: 'Suspension needed', value: 'Rarely' },
+        { label: 'Main difficulty', value: 'Compact terrace access' },
+        { label: 'Conservation area', value: 'Town centre (limited)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Fantastic service. They were punctual, efficient and dealt with our slightly complicated move with absolute professionalism. Great value and we couldn't recommend them more.",
+  name: 'Beatrice Collins',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Radstock';
+const description = `Radstock removal services from Bristol, 14 miles south. Former mining town, BA3 postcode — miners' cottages to modern estates. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Radstock Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Radstock",
+    "address": { "@type": "PostalAddress", "postalCode": "BA3", "addressLocality": "Radstock", "addressRegion": "Bath and North East Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'How far is Radstock from your depot?', answer: 'About 14 miles — roughly 25 minutes via the A37 or A39. Well within our core service area, with no significant mileage surcharge.' },
+  { question: 'Do you cover Midsomer Norton too?', answer: 'Yes. Midsomer Norton and Radstock are essentially twin towns separated by a few hundred metres. We cover both, along with surrounding villages like Paulton, Peasedown St John, and Coleford.' },
+  { question: 'Is Radstock in Bristol or Bath?', answer: 'Radstock falls under Bath & North East Somerset Council (B&NES), the same authority as Bath and <a href="/removals-keynsham/" class="text-secondary-500 underline underline-offset-2">Keynsham</a>. We work across B&NES regularly — different council, same service.' },
+  { question: 'How much does a Radstock removal cost?', answer: 'A typical 3-bed property costs £400–£750 locally. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Can you provide storage between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — about 25 minutes from Radstock. Flexible duration, units from wardrobe to garage size.' },
+  { question: 'Is Radstock a good place to move to from Bristol?', answer: 'It depends on what matters to you. Radstock offers countryside, quieter roads, and significantly more house for your money. What it doesn\'t have is dense social infrastructure. The commute to Bristol is also a consideration. If you value space and countryside, it\'s excellent.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/radstock-property-removal-team-1200w.webp" preloadImage="/img/areas/radstock-property-removal-team-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/radstock-property-removal-team"
+      pattern="FULL"
+      alt="Removal team at a property in Radstock, Somerset"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Radstock</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=radstock`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/radstock-property-removal-team"
+      pattern="FULL"
+      alt="Removal team at a property in Radstock, Somerset"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Radstock' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Radstock is a former coal mining town 14 miles south of our Bristol depot, sitting in the Somer Valley at the heart of the old Somerset coalfield. It has a quiet claim to fame — it's the hometown of comedian Russell Howard, often assumed to be a Bristolian but technically from here. It's the kind of detail that tells you something about the area: close enough to Bristol to feel connected, distinct enough to have its own identity.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Together with neighbouring Midsomer Norton, Radstock forms the largest settlement in this part of Bath & North East Somerset. The town has been regenerating since the last pit closed in 1973 — the former railway line is now a cycle path, the coal mines have become business parks, and new housing estates have expanded the town's boundaries. We notice a pattern: people moving to Radstock are making a deliberate decision to trade city prices for more space with a garden in Somerset.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/radstock-property-removal-team" pattern="FULL" alt="Removal team at a property in Radstock, Somerset" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Radstock Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Miners' Cottages</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The oldest properties are compact 2-bed stone terraces — 2-up-2-down with front doors opening onto the pavement. These are concentrated around the town centre, along Fortescue Road, Wells Road, and the streets climbing the hillside towards Clandown. They're similar to Bristol's Victorian terraces in terms of moving logistics: narrow hallways, steep staircases, and limited parking outside.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">A bay suspension isn't usually needed — most streets have sufficient on-street space — but we bring protective runners and blankets as standard. On narrow terraced streets, we recommend reserving parking space with cones and giving neighbours a heads-up beforehand.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Newer Estates</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The post-war and modern estates around Westfield, the Waterside area, and the edges of Midsomer Norton offer 3–4 bed detached and semi-detached homes with garages, driveways, and wider roads. These are the easiest moves we do — good access, easy parking, room dimensions that don't require furniture disassembly. Many of our Radstock customers are families moving between these estates and the surrounding villages.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Getting There</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">No motorway access — the approach is via the A362 from Frome direction, through Midsomer Norton, or back roads from Bath via the A367. Our preferred route is the A367 through Peasedown St John — more predictable. Bristol to Radstock takes 40–50 minutes; Bath to Radstock is around 20 minutes. We've never had issues with traffic or access doing moves here — it's operationally smooth.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving from Radstock?" description="Free quote in about two minutes. Just 14 miles from our depot — practically next door." buttonText="Get Your Radstock Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Converted Properties That Stand Out</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Radstock and the surrounding area have some beautifully converted older properties — mills, chapels, and farm buildings given new life. These tend to be the moves that stand out, because the buildings themselves are distinctive and worth the extra care a proper removal takes.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/radstock-coleford" pattern="HALF" alt="Removal job near Coleford, Somerset" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "One of the more memorable Radstock moves was into what had been a mill or converted industrial building. Lovely property, character, space, interesting architecture. Not what you'd necessarily expect to find out here."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">The surrounding villages — Paulton, Peasedown St John, Coleford, Kilmersdon — each have their own quirks. Paulton has expanded significantly with new estates, while Coleford and Kilmersdon retain their rural character with narrow lanes. Painless Removals covers all of them from the same depot with the same pricing structure — no village surcharges.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Radstock a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">No. The newer estates are as easy as any Bristol suburb. The terraced streets need the same techniques we use in Totterdown or Bedminster — narrow hallways, steep stairs, street parking. Nothing we haven't handled hundreds of times.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">One thing worth being honest about: Radstock is far enough from Bristol that daily commuting is a consideration. It's not on the most direct route, and journey times can add up. What you gain is space, countryside, and quiet. Both matter — weigh them honestly before you commit.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Radstock Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 radstock-checklist">
+          <li><strong>Terrace or estate?</strong> Compact cottages need different planning to modern detached houses.</li>
+          <li><strong>Street parking?</strong> On narrow terraced streets, reserve space with cones and notify neighbours.</li>
+          <li><strong>Which route?</strong> A367 via Peasedown is our preferred approach — avoid the narrower back roads.</li>
+          <li><strong>Converted property?</strong> Mills and chapels need a survey for access, floor protection, and ceiling height.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Radstock Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Long-Distance Moves From Radstock</h2>
+    <p class="text-gray-500 max-w-xl mb-8">The A37 connects Radstock to Bristol and the motorway network within 25 minutes.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Radstock" to="London" meta="~115 miles via A36/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Radstock" to="Southampton" meta="~70 miles via A36" days="1–2 days" href="/removals-bristol-to-southampton/" />
+      <RouteCard from="Radstock" to="Birmingham" meta="~100 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Radstock" to="Exeter" meta="~75 miles via A37/M5" days="1 day" href="/removals-bristol-to-exeter/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">At 14 miles from our depot, Radstock adds minimal travel time to any long-distance move.</p>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Areas Do We Cover Near Radstock?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We also serve families across B&NES and the surrounding area. If you're moving from or to
+        <a href="/removals-bath/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Bath</a>,
+        <a href="/removals-keynsham/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Keynsham</a>, or
+        <a href="/removals-chew-valley/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Chew Valley</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">All Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">See everything we offer, from storage to concierge.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move from Radstock?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-[#D4A84B] no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  .radstock-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .radstock-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

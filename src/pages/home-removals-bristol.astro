@@ -1,0 +1,602 @@
+---
+/**
+ * Home Removals Service Landing Page
+ *
+ * Professional home removals service for Painless Removals Bristol.
+ * Following 5-block landing page structure for conversion optimization.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import AccreditationLogos from '@/components/AccreditationLogos.astro';
+import HowItWorksHome from '@/components/HowItWorksHome.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { bristolNeighbourhoods, neighbourhoodUrl, longDistanceRoutes, surroundingTowns } from '@/config/areas.config';
+import { service, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Home Removals Bristol | Since 1978 | Painless Removals';
+const pageDescription = 'Professional home removals in Bristol with nearly 50 years\' experience. Dedicated move manager, full packing available, £15,000 insurance per van. Get your quote in minutes.';
+
+// Data structures
+
+const benefits = [
+  {
+    imageName: 'home-removals/Bristol-home-removals-service-2',
+    imageClass: 'object-left',
+    title: 'Full Day Allocated for Every Move in a Chain',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">Most removal companies pack their schedule tight – squeezing in as many jobs as possible. We do the opposite.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p><strong class="text-primary-600">Your move gets our full attention.</strong> If you're in a property chain, you already know the stress of waiting for keys. We never schedule another job before yours. Your home removals team arrives fresh, on time, and ready.</p>
+        <p><strong class="text-primary-600">A team you'd welcome into your home.</strong> Our movers are well&#8209;trained, well&#8209;paid, and genuinely respectful. They'll treat your belongings as if they were their own.</p>
+      </div>`,
+    cta: { text: 'GET MY INSTANT QUOTE NOW', href: '/instantquote?service=home-removals' },
+  },
+  {
+    imageName: 'home-removals/Bristol-removals-service-3',
+    title: 'Peace of Mind for Your Valuables',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">Industry-standard protection and secure transport for every item.</p>
+      <div class="space-y-4 text-warm-gray">
+         <p><strong class="text-primary-600">We invest in specialised equipment</strong> to guarantee the utmost safety for your belongings. We utilise a comprehensive range of protective materials,  mattress protectors, sofa covers, TV bags, and picture bags to meticulously safeguard your possessions during transit.</p>
+        <p><strong class="text-primary-600">Insurance you can rely on.</strong> Every van carries £15,000 of Goods in Transit insurance. If you have individual items worth over £2,000, just let us know in writing before the move and we'll make sure they're covered.</p>
+      </div>`,
+    showAccreditations: false,
+  },
+  {
+    imageName: 'home-removals/Bristol-furniture-disassembly-service',
+    title: 'We Expertly Disassemble and Reassemble Your Furniture',
+    content: `<div class="space-y-4 text-warm-gray">
+        <p>Don't worry about the hassle of dismantling and reassembling your furniture yourself. Our home removals team have the expertise and tools to handle the job safely and efficiently, without causing any damage to your precious belongings.</p>
+        <p>Beds, wardrobes, dining tables – if it's in your quote, we'll take it apart, transport it safely, and put it back together at the other end.</p>
+        <p>We can also remove windows or doors for easy access to your home, if needed.</p>
+      </div>`,
+  },
+  {
+    imageName: 'home-removals/Bristol-home-removals-service-4',
+    title: 'The Price We Quote Is the Price You Pay',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">No hidden fees, no surprises on the day – just honest, upfront pricing.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p>Your quote covers everything through to 5pm on moving day, with overtime rates clearly explained upfront.</p>
+        <p><strong class="text-primary-600">Fair charge policy:</strong> If a delay occurs, we only pass on our additional wage bill. We are not looking to make any profit from the situation – we just cover the additional costs.</p>
+        <p><strong class="text-primary-600">First Refusal:</strong> Date not confirmed yet? We'll hold your slot free of charge and contact you first if someone else requests the same day.</p>
+      </div>`,
+    cta: { text: 'GET YOUR INSTANT QUOTE', href: '/instantquote?service=home-removals' },
+  },
+  {
+    imageName: 'home-removals/Bristol-home-removals-company',
+    title: 'Your Dedicated Personal Move Manager',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">One person who knows every detail of your move, from start to finish.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p>From the initial phone call to the moment we leave your new home, you'll have a dedicated personal move manager who will be your unwavering companion throughout the entire home removal journey.</p>
+        <p>They'll handle the survey, coordinate the day, and be your single point of contact whenever you have a question.</p>
+        <p><strong class="text-primary-600">One single person who knows your move inside out.</strong></p>
+      </div>`,
+  },
+
+  {
+    imageName: 'home-removals/Bristol-home-removals-service-5',
+    title: 'More Affordable Than You Would Expect',
+    content: `<p class="text-xl text-primary-600 font-medium mb-6">High standards don't have to mean high prices.</p>
+      <div class="space-y-4 text-warm-gray">
+        <p>Every home removal is unique, and the cost is determined by a variety of factors, including the distance of the move, the volume of belongings transported, and the accessibility of the properties (parking, elevators, etc.).</p>
+        <p>We've found that many people are pleasantly surprised to learn that although our standards are extremely high, our prices are not.</p>
+        <p class="font-medium text-primary-600">Request a callback today for a free and no-obligation personalised quote!</p>
+      </div>`,
+    cta: { text: 'GET MY INSTANT QUOTE NOW', href: '/instantquote?service=home-removals' },
+  },
+];
+
+
+const reviews = [
+  {
+    html: 'I recently used Painless Removals in Bristol for a house move and was extremely impressed with the service provided. They were <mark>prompt and professional</mark> from the initial quote through to the end of the removal process. I wouldn\'t hesitate to use Painless Removals again for any future moves. <mark>The whole experience was effortless.</mark>',
+    name: 'Dr. John Jones',
+    platform: 'google',
+    image: '/images/reviews/john-jones.avif',
+  },
+  {
+    html: 'Painless Removals have been brilliant, couldn\'t recommend them more. They helped us move in Bristol and then helped us organise a cross-country move. Both were done on a tight timeline and at a good price. The guys who moved us were <mark>very kind and efficient</mark> — Thanks again!',
+    name: 'Laura Carnegie-Brown',
+    platform: 'google',
+    image: '/images/reviews/laura-carnegie-brown.avif',
+  },
+  {
+    html: 'Brilliant service, <mark>friendly and efficient</mark>. Would absolutely recommend and would use again for any future moves.',
+    name: 'Fiona Hazzard',
+    platform: 'google',
+    image: '/images/reviews/fiona-hazzard.jpg',
+  },
+];
+
+const reviewsSecond = [
+  {
+    html: 'I couldn\'t have chosen a better removal company for our house move. Jay and the team were so helpful and accommodating. We had a nightmare of an exchange and completion. I could only confirm the moving date the evening before which for us was very stressful but <mark>Jay was so wonderfully adaptable</mark>. Thank you so much Jay and team.',
+    name: 'Michelle Hayes',
+    platform: 'trustpilot',
+    image: '/images/reviews/michelle-hayes.avif',
+  },
+  {
+    html: 'Really great service and <mark>excellent value</mark>. The guys were helpful and efficient. Definitely recommend them.',
+    name: 'Eleanor Miller',
+    platform: 'google',
+    image: '/images/reviews/eleanor-miller.avif',
+  },
+  {
+    html: 'Great customer service from start to finish. <mark>Fast, efficient, and friendly</mark>, they go above and beyond and great value for money too! Thanks again Painless Removals!',
+    name: 'Katie Stagg',
+    platform: 'trustpilot',
+    image: '/images/reviews/katie-stagg.avif',
+  },
+];
+
+const faqs = [
+  {
+    question: 'How much do home removals in Bristol cost?',
+    answer: 'It depends on your property size, how much you own, and how far you\'re moving. A typical 3-bedroom local move starts from around £800–£1,200. Use our instant quote calculator for an accurate price – you\'ll see the number before we ask for any contact details.',
+  },
+  {
+    question: 'What does your home removal service include?',
+    answer: 'Every move includes mattress protectors, sofa covers, TV bags, and picture bags as standard. Furniture disassembly and reassembly is included when it\'s part of your quote. Packing services are available as an add-on. For a full breakdown of what to expect, including area-specific tips and typical costs, see our <a href="/home-removals-guide-bristol-bath/">Bristol &amp; Bath removals guide</a>.',
+  },
+  {
+    question: 'How do I get an accurate quote?',
+    answer: 'Start with our online calculator for an instant estimate. For larger homes (4+ bedrooms) or complex moves, we recommend a video survey – you just walk around your home with your phone camera while we note everything down. It takes about 15 minutes.',
+  },
+  {
+    question: 'What happens if my keys are late on moving day?',
+    answer: 'For chain moves, we allocate a full day to your move, and our team won\'t have another job to rush off to. If the delay runs past 5pm, overtime is charged at £35 per 30 minutes per team member – or you can add a <a href="/key-wait-waiver/">Key Wait Waiver</a> to your booking, which removes overtime charges entirely. It starts from around £100 and is the single best way to protect yourself against chain delays.',
+  },
+  {
+    question: 'Are my belongings insured during the move?',
+    answer: 'Yes. Every van carries £15,000 of Goods in Transit insurance. Items valued over £2,000 individually need to be declared in writing before the move. Please note that self-packed boxes aren\'t covered – which is one of the reasons we recommend our professional packing service.',
+  },
+  {
+    question: 'Do you handle long-distance moves?',
+    answer: 'Absolutely – long-distance moves over 100 miles are our speciality. Bristol\'s location means we\'re already on the route for most major UK corridors, from London to Edinburgh. The same team handles your move from start to finish, with no subcontractors.',
+  },
+  {
+    question: 'Do you disassemble and reassemble furniture?',
+    answer: 'Yes. Beds, wardrobes, dining tables and other furniture that needs to come apart for transport is disassembled by our team, moved safely, and reassembled at your new home. This is included in your quoted price.',
+  },
+  {
+    question: 'How far in advance should I book?',
+    answer: 'Ideally 2-3 weeks, though we can sometimes accommodate shorter notice. Peak times (summer and month-ends) book up faster, so earlier is better for those periods. Our <a href="/moving-house-checklist/">moving house checklist</a> has a full week-by-week timeline to help you plan everything from instructing your solicitor to settling in.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "Home Removals Bristol",
+    description: pageDescription,
+    serviceType: "Home Removals",
+    url: "/home-removals-bristol/",
+    areaServed: [areas.bristol, areas.bath],
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Home Removals Bristol" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/home-removals/Bristol-home-removals-service-1-1200w.webp" preloadImage="/img/home-removals/Bristol-home-removals-service-1-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Full image at top (no crop) -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="home-removals/Bristol-home-removals-service-1"
+        pattern="FULL"
+        alt="Professional home removals service in Bristol – Painless Removals team carefully loading a van"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Professional Home Removals in Bristol
+        </h1>
+
+        <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+          We Only Book One Move a Day. <span class="text-secondary-500">Yours.</span>
+        </h2>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          A full day for your move. A dedicated move manager from start to finish. Transparent pricing with no hidden fees. And a team that's been doing this since 1978.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote?service=home-removals" class="btn-cta-orange">
+            GET MY QUOTE IN JUST 47 SECONDS
+          </a>
+          <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="home-removals/Bristol-home-removals-service-1"
+        pattern="FULL"
+        alt="Professional home removals service in Bristol – Painless Removals team carefully loading a van"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover object-left-top"
+      />
+    </div>
+  </section>
+
+  <!-- USPs - Full width bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: INTRO / EMOTIONAL HOOK
+  ============================================ -->
+  <section class="py-8 md:py-10 bg-white">
+    <div class="container-wide">
+      <div class="grid lg:grid-cols-[auto_1fr] gap-10 lg:gap-16 items-center">
+        <!-- Jay portrait -->
+        <div class="flex flex-col items-center text-center mx-auto lg:mx-0 order-last lg:order-first">
+          <OptimizedPicture
+            name="homepage/Jay-Newton-Painless-Removals"
+            pattern="QUARTER"
+            alt="Jay Newton, Director of Painless Removals"
+            sizes="(min-width: 1024px) 280px, 200px"
+            class="w-48 lg:w-72 aspect-[3/4] object-cover object-top rounded-xl shadow-md"
+          />
+          <a href="/about/jay-newton/" class="mt-3 text-primary-700 font-semibold hover:text-secondary-500 transition-colors no-underline">
+            Jay Newton
+          </a>
+          <span class="text-warm-gray text-sm">Director, Painless Removals</span>
+        </div>
+
+        <!-- Text -->
+        <div>
+          <h2 class="mb-6">Moving Shouldn't Feel Like a Gamble</h2>
+          <p class="text-warm-gray leading-relaxed mb-6 text-lg">
+            <strong class="text-warm-gray">You've exchanged contracts, the countdown is on, and everything needs to go right.</strong> But deep down, there's that nagging worry — what if the movers don't show? What if they rush through it and your grandmother's china doesn't survive the journey? What if the final bill looks nothing like the quote?
+          </p>
+          <p class="text-warm-gray leading-relaxed mb-6">
+            We've heard countless horror stories about unreliable movers who either don't show up on time or rush through the job without care, damaging irreplaceable personal treasures; customers left in difficult situations, helpless, or even overcharged and taken advantage of.
+          </p>
+          <p class="text-warm-gray leading-relaxed mb-6">
+            <strong class="text-primary-700">We are here to not let any of these happen to you.</strong> We show up when we say we will. We handle your belongings as if they were our own. We quote honestly and stick to it — no hidden fees, no surprises on the day. And unlike most removal companies, we don't disappear once the last box is off the van.
+          </p>
+          <p class="text-warm-gray leading-relaxed">
+            If something unexpected comes up — a delayed key handover, an awkward access issue, items that need storing overnight — we stay with you and work through it. Your move isn't done until you're settled, and neither are we.
+          </p>
+          <a href="/instantquote?service=home-removals" class="inline-block btn-cta-orange mt-8">
+            See How We Make It Painless →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: ACCREDITATIONS
+  ============================================ -->
+  <AccreditationLogos />
+
+  <!-- ============================================
+       SECTION 4: BENEFITS (6 alternating 50/50 rows)
+  ============================================ -->
+  <section class="bg-cream">
+    <div>
+      {benefits.map((benefit, index) => (
+        <div class="grid lg:grid-cols-2">
+          <!-- Image (50% width, full height) -->
+          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+            <OptimizedPicture
+              name={benefit.imageName}
+              pattern="HALF_CARD"
+              alt={benefit.title}
+              loading="lazy"
+              class={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105 ${benefit.imageClass || ''}`}
+            />
+          </div>
+          <!-- Text (50% width) -->
+          <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+            <h3 class="text-2xl lg:text-3xl mb-4">{benefit.title}</h3>
+            <div set:html={benefit.content} />
+
+            {benefit.showAccreditations && (
+              <div class="flex items-center gap-6 mt-6 pt-6 border-t border-gray-100">
+                <p class="text-sm text-warm-gray uppercase tracking-wide">Officially Accredited By</p>
+                <img src="/images/move-assured-logo.jpg" alt="Move Assured – Accreditation for Independent Removers" class="h-10 w-auto" loading="lazy" />
+                <img src="/images/ai-movers-logo.jpg" alt="AIM – Association of Independent Movers" class="h-10 w-auto" loading="lazy" />
+              </div>
+            )}
+
+            {benefit.cta && (
+              <a href={benefit.cta.href} class="btn-cta-orange mt-6 self-start">
+                {benefit.cta.text}
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: HOW IT WORKS (5 steps)
+  ============================================ -->
+  <HowItWorksHome />
+
+  <!-- ============================================
+       SECTION 6: SOCIAL PROOF
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Our Home Removals Customers Say</h2>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {reviews.map((review) => (
+          <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+            <div>
+              <div class="flex gap-1 text-orange-400 text-xl mb-2">
+                <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+              </div>
+              <p class="text-gray-700 text-[15px] leading-relaxed" set:html={review.html} />
+            </div>
+            <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+              <div class="flex items-center gap-3">
+                {review.image && (
+                  <img src={review.image} alt={review.name} class="w-10 h-10 rounded-full object-cover" width="80" height="80" loading="lazy" />
+                )}
+                <span class="font-semibold text-gray-900 text-[14px]">{review.name}</span>
+              </div>
+              {review.platform === 'google' ? (
+                <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+              ) : (
+                <img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="w-[96px] h-auto" width="220" height="50" />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/reviews/" class="soft-cta">Read more verified customer reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: PACKING CROSS-SELL
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-6">Don't Want to Pack for Your Home Removal? We'll Do It For You.</h2>
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            Our professional packing service is the single biggest stress-reducer we offer. A trained team arrives the day before your move and packs everything – room by room, wrapped properly, labelled clearly.
+          </p>
+          <p>
+            Fragile items get specialist treatment. Books go in small boxes so they're not too heavy. Wardrobes get packed on hanging rails so your clothes arrive crease-free.
+          </p>
+          <p>
+            You can choose full packing, fragile-only packing, or anything in between. And because we packed it, it's fully covered by our insurance – unlike self-packed boxes, which aren't.
+          </p>
+        </div>
+        <a href="/home-packing-service/" class="btn-cta-orange mt-8 self-start">
+          LEARN MORE ABOUT OUR PACKING SERVICES
+        </a>
+        <p class="text-warm-gray text-sm mt-4">
+          Or learn to pack yourself with our <a href="/packing-guide/" class="text-primary-600 hover:text-secondary-500 transition-colors no-underline font-medium">free room-by-room video guide</a>.
+        </p>
+      </div>
+
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px]">
+        <OptimizedPicture
+          name="packing/Bristol-home-packing-service"
+          pattern="HALF_CARD"
+          alt="Professional packing service for home removals in Bristol"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: ABOUT
+  ============================================ -->
+  <JayAuthorBlock
+    heading="Nearly 50 Years of Home Removals in Bristol"
+    quote="Painless Removals was founded in 1978 by Steve, a Bristol musician who believed moving house didn't have to be miserable. Nearly five decades later, that philosophy hasn't changed."
+    description={`We've maintained a ${siteConfig.company.rating.value}-star average rating across hundreds of home removals. We're not a franchise, not a man-and-van outfit, and not a faceless corporate operation. We're an independent company with a team that knows each other by name, and a genuine commitment to making your home removal as straightforward as possible.`}
+    bgClass="bg-cream"
+  />
+
+  <!-- ============================================
+       SECTION 10: MORE REVIEWS
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">More Happy Customers</h2>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {reviewsSecond.map((review) => (
+          <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+            <div>
+              <div class="flex gap-1 text-orange-400 text-xl mb-2">
+                <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+              </div>
+              <p class="text-gray-700 text-[15px] leading-relaxed" set:html={review.html} />
+            </div>
+            <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+              <div class="flex items-center gap-3">
+                {review.image && (
+                  <img src={review.image} alt={review.name} class="w-10 h-10 rounded-full object-cover" width="80" height="80" loading="lazy" />
+                )}
+                <span class="font-semibold text-gray-900 text-[14px]">{review.name}</span>
+              </div>
+              {review.platform === 'google' ? (
+                <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+              ) : (
+                <img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="w-[96px] h-auto" width="220" height="50" />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/reviews/" class="soft-cta">Read more verified customer reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       KEY WAIT WAIVER ADD-ON
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto bg-amber-50 border border-amber-200 rounded-xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-start">
+        <div class="shrink-0">
+          <OptimizedPicture
+            name="key-wait-waiver/hero"
+            pattern="QUARTER"
+            alt="House keys being handed over on moving day"
+            loading="lazy"
+            class="w-24 h-24 md:w-28 md:h-28 rounded-lg object-cover"
+          />
+        </div>
+        <div>
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-2">Worried About Key Delays?</h3>
+          <p class="text-[15px] leading-relaxed text-amber-900 mb-3">In a property chain, keys can arrive hours late — and overtime charges add up fast. Our <strong>Key Wait Waiver</strong> is a small one-off fee (from ~&pound;100) that removes overtime charges entirely if the chain runs late. No surprise bills, no stress.</p>
+          <a href="/key-wait-waiver/" class="inline-block text-primary-600 font-bold text-sm hover:text-primary-700 no-underline transition-colors">Learn how the Key Wait Waiver works &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 11: QUOTE CTA
+  ============================================ -->
+  <section class="bg-linear-to-br from-primary-600 to-primary-700 text-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Left: Content -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <div class="max-w-xl">
+          <h2 class="text-white mb-4">Ready to Take the Stress Out of Moving?</h2>
+          <p class="text-primary-100 mb-8">
+            Get an instant quote in under two minutes. See your price before we ask for a single detail. No pressure, no obligation – just a straightforward number so you can plan with confidence.
+          </p>
+
+          <ul class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-8 text-primary-100">
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> No obligation
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> All-inclusive pricing
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Response within 2 hours
+            </li>
+          </ul>
+
+          <a href="/instantquote?service=home-removals" class="inline-block bg-white hover:bg-gray-100 text-primary-600 px-8 py-3 text-lg font-bold uppercase no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            GET MY HOME REMOVALS QUOTE
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="hidden lg:block relative min-h-[400px]">
+        <OptimizedPicture
+          name="home-removals/Bristol-home-removals-valuables"
+          pattern="HALF_CARD"
+          alt="Your valuables are secure during the move with Painless Removals"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 11: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Home Removals" bgClass="bg-white" />
+
+  <!-- ============================================
+       AREAS WE COVER: NEIGHBOURHOODS + TOWNS + ROUTES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Areas We Cover in Bristol</h2>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10">We know Bristol inside out. From Georgian terraces in Clifton to new builds in Stoke Gifford — every postcode, every parking zone, every quirk.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-12">
+        {bristolNeighbourhoods.map(n => (
+          <a href={neighbourhoodUrl(n.slug)} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            {n.name} <span class="text-warm-gray font-normal">({n.postcode})</span>
+          </a>
+        ))}
+      </div>
+
+      <h3 class="text-center mb-4">Surrounding Towns</h3>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-8">Moving from a town outside Bristol? We cover Bath, Weston-super-Mare, and every town in between.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-12">
+        {surroundingTowns.map(town => (
+          <a href={town.path} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            {town.name}
+          </a>
+        ))}
+      </div>
+
+      <div class="text-center mb-12">
+        <a href="/areas/" class="soft-cta">See all areas we cover</a>
+      </div>
+
+      <h3 class="text-center mb-4">We Move You Anywhere in the UK</h3>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-8">Long-distance moves are our speciality. Bristol's central location means we're already on the way.</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        {longDistanceRoutes.map(route => (
+          <a href={route.href} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            Bristol → {route.to}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 12: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Take the Stress Out of Moving?"
+    description="Get an instant quote in under two minutes. No pressure, no obligation – just a straightforward number so you can plan with confidence."
+    bullets={['Full day for chain moves', 'Dedicated move manager', '£15k insurance protection']}
+    primaryText="GET YOUR INSTANT QUOTE"
+    primaryHref="/instantquote?service=home-removals"
+    bottomNote="Every item moved by our team is fully insured. If something breaks, we cover it."
+  />
+
+
+</Layout>

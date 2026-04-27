@@ -1,0 +1,296 @@
+---
+/**
+ * AreasHeroMap — Animated SVG map showing Bristol coverage & UK routes
+ * Pure CSS animations, no JavaScript required
+ *
+ * Far-city routes are truncated — lines trail off toward the edge
+ * with hollow endpoint markers suggesting the route continues.
+ */
+---
+
+<div class="areas-hero-map">
+  <svg
+    viewBox="0 0 600 600"
+    width="100%"
+    height="100%"
+    xmlns="http://www.w3.org/2000/svg"
+    preserveAspectRatio="xMidYMid slice"
+    role="img"
+    aria-label="Animated map showing Painless Removals coverage radiating from Bristol across the UK"
+  >
+    <defs>
+      <pattern id="heroGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="12" cy="12" r="0.7" fill="rgba(255,255,255,0.06)" />
+      </pattern>
+      <radialGradient id="bristolGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#C65D3B" stop-opacity="0.35" />
+        <stop offset="70%" stop-color="#C65D3B" stop-opacity="0.1" />
+        <stop offset="100%" stop-color="#C65D3B" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <rect width="600" height="600" fill="url(#heroGrid)" />
+
+    <!-- ─── Pulse rings from Bristol ─── -->
+    <circle class="am-pulse am-p1" cx="300" cy="365" r="25" />
+    <circle class="am-pulse am-p2" cx="300" cy="365" r="25" />
+    <circle class="am-pulse am-p3" cx="300" cy="365" r="25" />
+
+    <!-- Subtle coverage area fill -->
+    <circle cx="300" cy="365" r="60" fill="rgba(198,93,59,0.05)" class="am-area" />
+
+    <!-- ─── Route lines: nearby towns (solid white) ─── -->
+    <line class="am-route am-near am-r1" x1="300" y1="365" x2="345" y2="352" />
+    <line class="am-route am-near am-r2" x1="300" y1="365" x2="255" y2="395" />
+    <line class="am-route am-near am-r3" x1="300" y1="365" x2="198" y2="350" />
+    <line class="am-route am-near am-r4" x1="300" y1="365" x2="400" y2="342" />
+
+    <!-- ─── Route lines: medium cities (full terracotta) ─── -->
+    <line class="am-route am-mid am-r5" x1="300" y1="365" x2="492" y2="350" />
+    <line class="am-route am-mid am-r6" x1="300" y1="365" x2="362" y2="258" />
+
+    <!-- ─── Route lines: far cities (dashed, trailing off) ─── -->
+    <line class="am-route am-far am-r7" x1="300" y1="365" x2="305" y2="148" />
+    <line class="am-route am-far am-r8" x1="300" y1="365" x2="372" y2="145" />
+    <line class="am-route am-far am-r9" x1="300" y1="365" x2="312" y2="72" />
+    <line class="am-route am-far am-r10" x1="300" y1="365" x2="252" y2="80" />
+
+    <!-- ─── Far-city hollow endpoints (signals "continues beyond") ─── -->
+    <circle class="am-ring am-rg7" cx="305" cy="148" r="4" />
+    <circle class="am-ring am-rg8" cx="372" cy="145" r="4" />
+    <circle class="am-ring am-rg9" cx="312" cy="72" r="4" />
+    <circle class="am-ring am-rg10" cx="252" cy="80" r="4" />
+
+    <!-- ─── Bristol glow + pin ─── -->
+    <circle cx="300" cy="365" r="26" fill="url(#bristolGlow)" class="am-glow" />
+    <circle class="am-pin am-pin-bristol" cx="300" cy="365" r="7.5" />
+    <circle class="am-dot am-dot-bristol" cx="300" cy="365" r="2.8" />
+
+    <!-- ─── Nearby town pins (solid blue) ─── -->
+    <circle class="am-pin am-pin-town am-pt1" cx="345" cy="352" r="3.5" />
+    <circle class="am-pin am-pin-town am-pt2" cx="255" cy="395" r="3.5" />
+    <circle class="am-pin am-pin-town am-pt3" cx="198" cy="350" r="3.5" />
+    <circle class="am-pin am-pin-town am-pt4" cx="400" cy="342" r="3.5" />
+
+    <!-- ─── Medium city pins (solid white) ─── -->
+    <circle class="am-pin am-pin-city am-pc5" cx="492" cy="350" r="5" />
+    <circle class="am-pin am-pin-city am-pc6" cx="362" cy="258" r="4.5" />
+
+    <!-- ─── Labels ─── -->
+    <text class="am-lbl am-lbl-hub am-l0" x="300" y="393" text-anchor="middle">BRISTOL</text>
+
+    <!-- Nearby -->
+    <text class="am-lbl am-lbl-town am-l1" x="360" y="349">Bath</text>
+    <text class="am-lbl am-lbl-town am-l2" x="235" y="410" text-anchor="end">Weston</text>
+    <text class="am-lbl am-lbl-town am-l3" x="182" y="345" text-anchor="end">Cardiff</text>
+    <text class="am-lbl am-lbl-town am-l4" x="415" y="339">Swindon</text>
+
+    <!-- Medium -->
+    <text class="am-lbl am-lbl-city am-l5" x="508" y="347">London</text>
+    <text class="am-lbl am-lbl-city am-l6" x="377" y="254">Birmingham</text>
+
+    <!-- Far (at truncated endpoints) -->
+    <text class="am-lbl am-lbl-far am-l7" x="273" y="144" text-anchor="end">Manchester</text>
+    <text class="am-lbl am-lbl-far am-l8" x="388" y="141">Leeds</text>
+    <text class="am-lbl am-lbl-far am-l9" x="328" y="68">Edinburgh</text>
+    <text class="am-lbl am-lbl-far am-l10" x="236" y="76" text-anchor="end">Glasgow</text>
+  </svg>
+</div>
+
+<style>
+  .areas-hero-map {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, #1a3a4a 0%, #1E4240 45%, #1d3d3b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ── Pulse rings ── */
+  .am-pulse {
+    fill: none;
+    stroke: #C65D3B;
+    stroke-width: 1.5;
+    opacity: 0;
+    animation: amPulse 3.5s ease-out 0.6s infinite;
+  }
+  .am-p2 { animation-delay: 1.8s; }
+  .am-p3 { animation-delay: 3.0s; }
+
+  @keyframes amPulse {
+    0%   { r: 25;  opacity: 0.5; stroke-width: 2; }
+    100% { r: 170; opacity: 0;   stroke-width: 0.3; }
+  }
+
+  /* ── Coverage area ── */
+  .am-area {
+    opacity: 0;
+    animation: amFadeIn 1.2s ease-out 0.4s forwards;
+  }
+
+  /* ── Route lines (shared) ── */
+  .am-route {
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: amDraw 1s ease-out forwards;
+  }
+
+  /* Nearby: solid white */
+  .am-near {
+    stroke: rgba(255,255,255,0.2);
+    stroke-width: 1.5;
+  }
+
+  /* Medium: solid terracotta */
+  .am-mid {
+    stroke: rgba(198,93,59,0.3);
+    stroke-width: 1.2;
+  }
+
+  /* Far: dashed terracotta, sparser */
+  .am-far {
+    stroke: rgba(198,93,59,0.22);
+    stroke-width: 1;
+    stroke-dasharray: 6 5;
+    stroke-dashoffset: 0;
+    opacity: 0;
+    animation: amFadeIn 1s ease-out forwards;
+  }
+
+  .am-r1  { animation-delay: 0.6s; }
+  .am-r2  { animation-delay: 0.7s; }
+  .am-r3  { animation-delay: 0.8s; }
+  .am-r4  { animation-delay: 0.9s; }
+  .am-r5  { animation-delay: 1.3s; animation-duration: 1.4s; }
+  .am-r6  { animation-delay: 1.5s; animation-duration: 1.2s; }
+  .am-r7  { animation-delay: 1.8s; }
+  .am-r8  { animation-delay: 2.0s; }
+  .am-r9  { animation-delay: 2.2s; }
+  .am-r10 { animation-delay: 2.4s; }
+
+  @keyframes amDraw {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ── Hollow rings at far-route endpoints ── */
+  .am-ring {
+    fill: none;
+    stroke: rgba(198,93,59,0.35);
+    stroke-width: 1.2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: amRingIn 0.5s ease-out forwards;
+  }
+  .am-rg7  { animation-delay: 2.2s; }
+  .am-rg8  { animation-delay: 2.4s; }
+  .am-rg9  { animation-delay: 2.6s; }
+  .am-rg10 { animation-delay: 2.8s; }
+
+  @keyframes amRingIn {
+    0%   { opacity: 0; r: 0; }
+    100% { opacity: 1; r: 4; }
+  }
+
+  /* ── Pins ── */
+  .am-pin,
+  .am-dot {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: amPinDrop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .am-pin-bristol { fill: #C65D3B; animation-delay: 0.2s; }
+  .am-dot-bristol { fill: #fff;    animation-delay: 0.3s; }
+
+  .am-pin-town { fill: #5a8aab; }
+  .am-pt1 { animation-delay: 0.9s; }
+  .am-pt2 { animation-delay: 1.0s; }
+  .am-pt3 { animation-delay: 1.1s; }
+  .am-pt4 { animation-delay: 1.2s; }
+
+  .am-pin-city { fill: rgba(255,255,255,0.9); }
+  .am-pc5 { animation-delay: 1.7s; }
+  .am-pc6 { animation-delay: 1.9s; }
+
+  .am-glow {
+    opacity: 0;
+    animation: amFadeIn 0.8s ease-out 0.2s forwards;
+  }
+
+  @keyframes amPinDrop {
+    0%   { opacity: 0; transform: scale(0) translateY(-8px); }
+    60%  { transform: scale(1.3) translateY(0); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  @keyframes amFadeIn {
+    to { opacity: 1; }
+  }
+
+  /* ── Labels ── */
+  .am-lbl {
+    font-family: system-ui, -apple-system, sans-serif;
+    fill: rgba(255,255,255,0.85);
+    opacity: 0;
+    animation: amLabelIn 0.5s ease-out forwards;
+  }
+  .am-lbl-hub {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    fill: white;
+    animation-delay: 0.4s;
+  }
+  .am-lbl-town {
+    font-size: 11.5px;
+    font-weight: 500;
+    fill: rgba(255,255,255,0.6);
+  }
+  .am-lbl-city {
+    font-size: 12px;
+    font-weight: 600;
+    fill: rgba(255,255,255,0.8);
+  }
+  .am-lbl-far {
+    font-size: 11px;
+    font-weight: 500;
+    font-style: italic;
+    fill: rgba(255,255,255,0.45);
+  }
+
+  .am-l0  { animation-delay: 0.4s; }
+  .am-l1  { animation-delay: 1.1s; }
+  .am-l2  { animation-delay: 1.2s; }
+  .am-l3  { animation-delay: 1.3s; }
+  .am-l4  { animation-delay: 1.4s; }
+  .am-l5  { animation-delay: 1.9s; }
+  .am-l6  { animation-delay: 2.1s; }
+  .am-l7  { animation-delay: 2.4s; }
+  .am-l8  { animation-delay: 2.6s; }
+  .am-l9  { animation-delay: 2.8s; }
+  .am-l10 { animation-delay: 3.0s; }
+
+  @keyframes amLabelIn {
+    0%   { opacity: 0; transform: translateY(3px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .am-pulse { animation: none; }
+    .am-route { animation: none; stroke-dashoffset: 0; opacity: 1; }
+    .am-far  { animation: none; opacity: 1; }
+    .am-pin,
+    .am-dot,
+    .am-glow,
+    .am-area,
+    .am-ring,
+    .am-lbl  { animation: none; opacity: 1; }
+  }
+</style>

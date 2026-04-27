@@ -1,0 +1,356 @@
+---
+/**
+ * /removals-bristol-to-devon/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '80–180 miles' },
+        { label: 'Drive time', value: '1.5–3 hours' },
+        { label: 'Primary route', value: 'M5 southbound' },
+        { label: 'Move duration', value: '1 day (most moves)' },
+        { label: 'Crew size', value: '2–4 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£700–£1,800' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The lads worked hard — very friendly and respectful. They were careful with everything. We'd definitely recommend them.",
+  name: 'Sandra W',
+  context: 'Trustpilot Review',
+};
+
+const title = 'Removals Bristol to Devon — One-Day & Two-Day Moves';
+const description = `House removals from Bristol to Devon, 80–180 miles via M5 southbound. One-day and two-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Devon",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "AdministrativeArea", "name": "Devon" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'Can a Bristol to Devon move be done in one day?',
+    answer: 'Yes, for most moves. Exeter is about 1.5 hours from Bristol, Torquay around 2 hours, and Barnstaple roughly 2.5 hours. A one- or two-bed home with a single van can comfortably load, drive, and unload in one day. Larger homes or properties with difficult access may need to split across two days.',
+  },
+  {
+    question: 'Does M5 holiday traffic affect Devon moves?',
+    answer: 'Yes. The M5 southbound carries heavy holiday traffic during school holidays and bank holiday weekends — the same corridor that feeds Cornwall. A summer Friday can add over an hour to the journey. Midweek moves during term time are faster, cheaper, and calmer. We always flag the best dates when you book.',
+  },
+  {
+    question: 'How much does a Bristol to Devon move cost?',
+    answer: 'A single-van move to the Exeter area typically costs £700–£900. A full family home with two or three van loads runs £1,200–£1,800 depending on volume, access, and whether you need our <a href="/home-packing-service/" class="text-secondary-500 underline underline-offset-2">packing service</a>. Every quote includes insurance, fuel, crew, and equipment — no hidden charges.',
+  },
+  {
+    question: 'Which parts of Devon do you cover?',
+    answer: 'All of it. We regularly move to Exeter, Torquay, Paignton, Newton Abbot, Barnstaple, Bideford, Tiverton, Exmouth, and Sidmouth. Whether your new home is a Dartmoor farmhouse or a Salcombe harbour cottage, we plan the route and access in advance.',
+  },
+  {
+    question: 'How does a Devon move compare to Cornwall?',
+    answer: "Devon is meaningfully closer. That changes the economics — one-day moves are achievable for most homes, and we rarely need to overnight the team. Costs are lower because there's no hotel accommodation to factor in. The typical pattern is load in Bristol, drive to Devon, unload, and return the same day.",
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Devon" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Devon' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Devon — One&#8209;Day &amp;&nbsp;Two&#8209;Day&nbsp;Moves
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">The gap between a Bristol terrace and a Devon farmhouse, a Redland semi and a house on the edge of Dartmoor, is more than distance. Devon sits 80 to 180 miles south-west via the M5 — anywhere from an hour and a half to three hours depending on whether you're heading for Exeter or the far side of Barnstaple. For most moves, that's a comfortable single day. For larger homes or properties with access complications, we split the work across two.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Devon has more access variety per square mile than almost anywhere we work. South Devon coast towns like Dartmouth, Salcombe, and Kingsbridge sit at the end of B-roads with passing places. North Devon — Barnstaple, Bideford, Croyde — relies on the A361 single carriageway, which slows to a crawl in summer. Dartmoor properties come with extraordinary approach roads. Each destination needs its own plan, and the video walkthrough we carry out before every move specifically examines the Devon end: approach road width, van parking, low bridges, and turning space.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Devon house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Devon Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The M5 Calendar</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The M5 southbound is the only practical route into Devon from Bristol, and it carries every car, caravan, and campervan heading for the south-west coast. During school holidays and bank holiday weekends, the stretch between Taunton and Exeter can add well over an hour to the drive. A summer Friday is the worst — the motorway fills from mid-morning and stays congested into the evening.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Midweek in term time is a different road entirely — faster, cheaper, and calmer. We always flag this when you book. A one-day shift from Friday to Wednesday can save you real time and keep the cost down. The day you choose affects the entire move.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Devon's Access Variety</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The motorway section of the journey is the easy part. Once you leave the M5, Devon's road network demands attention. Exeter and the A38 corridor to Newton Abbot are well-served dual carriageway. Beyond that, things narrow quickly. The lanes leading to coastal villages and moorland properties are where the real planning happens — hedge-lined single-track roads, sharp bends, and farm traffic.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">We assess every Devon delivery address on satellite imagery and, where necessary, send someone to check the approach in person. For properties where a large vehicle can't reach the front door, we plan a shuttle — transferring your belongings into a smaller van for the final stretch. It takes longer, but it protects your furniture and the property.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">North Devon vs South Devon</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">The two halves of the county are quite different journeys. South Devon — Torquay, Paignton, Totnes, and the coast beyond — is reached via the A38 after Exeter and tends to be quicker. North Devon — Barnstaple, Bideford, Ilfracombe — follows the A361 North Devon Link Road, a single carriageway that can be slow behind caravans and agricultural vehicles. We factor in extra time for North Devon runs and, for larger moves, may start the loading earlier to compensate.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Devon, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Devon?"
+          description="Free quote in about two minutes. M5 southbound, experienced crew, no hidden charges."
+          buttonText="Get Your Devon Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals runs the Bristol to Devon corridor regularly — it's one of our most popular routes in both directions. Professionals relocating from Exeter to Bristol for work, Bristol families moving to Devon for space and lifestyle. The pattern is consistent: load in Bristol in the morning, drive south, unload in Devon by late afternoon. For most homes, one day is enough.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Devon" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Devon is meaningfully closer than Cornwall, which changes the economics. For smaller and medium-sized moves, one day is usually achievable. For larger moves we still split across two days — but unlike Cornwall, we rarely need to overnight the team. The typical pattern is: load in Bristol, drive to Devon, unload, and return the same day. It keeps costs down compared to moves that require hotel accommodation."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready. We also handle the return trip — Devon to Bristol moves follow the same M5 corridor and benefit from the same planning.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Devon Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A single-van move to the Exeter area typically costs £700–£900. A standard family home — three or four bedrooms, two to three van loads — runs £1,200–£1,800 depending on volume, destination within Devon, and access at the delivery end. Remote properties requiring a shuttle transfer sit at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but keeps everything protected and splits the work across two days.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, and equipment. No hidden charges for mileage, access complications, or shuttle transfers. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Devon Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 devon-checklist">
+          <li><strong>Avoid school holidays.</strong> The M5 southbound carries all south-west holiday traffic. Midweek in term time is consistently faster and cheaper.</li>
+          <li><strong>Check your Devon access.</strong> Narrow lanes, low bridges, and limited turning space are common — we assess every address before move day.</li>
+          <li><strong>North Devon? Allow extra time.</strong> The A361 single carriageway is slower than the A38 south. We adjust the schedule accordingly.</li>
+          <li><strong>Book 3–4 weeks ahead.</strong> Summer months fill quickly on this route, particularly for North Devon and coastal destinations.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then move everything the following morning.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Devon, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Devon Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="Exeter" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Bristol" to="Cornwall" meta="~160–250 miles via M5/A30" days="1–2 days" href="/removals-bristol-to-cornwall/" />
+      <RouteCard from="Bristol" to="Cardiff" meta="~45 miles via M4" days="1 day" href="/removals-bristol-to-cardiff/" />
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready for Your Bristol to Devon Move?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .devon-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .devon-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .devon-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

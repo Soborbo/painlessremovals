@@ -1,0 +1,509 @@
+---
+/**
+ * Partners: Estate Agents & Property Professionals
+ *
+ * B2B page targeting estate agents — earn referral fees,
+ * branded materials, 2-hour quote response. Agent-centric framing.
+ * Redesigned to match service page patterns with high-conversion layout.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+
+// Page metadata
+const pageTitle = 'For Estate Agents | Painless Removals \u2014 Chain Move Specialists Since 1978';
+const pageDescription = 'Earn a referral fee on every completed move. Branded materials for your clients. 2-hour quote response on agent referrals. Zero effort partnership \u2014 since 1978.';
+
+const reviewCount = siteConfig.company.rating.count;
+
+// Benefits data — alternating 50/50 sections
+const benefits = [
+  {
+    title: 'Branded Moving Kits for Your Clients',
+    content: `<p class="text-warm-gray text-lg mb-4">Physical moving kits &mdash; your branding alongside ours &mdash; that you hand to clients at exchange or completion. Bubble wrap, tape, markers, a printed moving checklist, and a quote voucher for our services.</p>
+      <p class="text-warm-gray text-lg mb-4">We design them, produce them, and deliver them to your office. Your client gets something genuinely useful. You&rsquo;re the one who gave it to them.</p>
+      <p class="text-warm-gray text-lg">Research shows 85% of home movers are more likely to recommend their estate agent after receiving a branded moving kit. This isn&rsquo;t a PDF they&rsquo;ll forget &mdash; it&rsquo;s a box they&rsquo;ll use on packing day and associate with you.</p>`,
+  },
+  {
+    title: 'Soft Booking &mdash; Because Chains Don&rsquo;t Wait',
+    content: `<p class="text-warm-gray text-lg mb-4">Your client can pencil in a moving date with a small deposit &mdash; even before completion is confirmed. If the chain shifts, we shift with it. No cancellation penalties for date changes.</p>
+      <p class="text-warm-gray text-lg mb-4">We recommend a lead time of around three weeks, but we typically have availability within two weeks. For agent referrals, we hold soft-booked dates as a priority.</p>
+      <p class="text-warm-gray text-lg"><strong class="text-primary-600">Your client never loses their slot because a chain moved.</strong> That&rsquo;s one less panic call to your office.</p>`,
+  },
+  {
+    title: 'Free Storage When Chains Break',
+    content: `<p class="text-warm-gray text-lg mb-4">If your client&rsquo;s chain collapses and they need somewhere to put their belongings, we offer <strong class="text-primary-600">free short-term storage</strong> when they book their move with us.</p>
+      <p class="text-warm-gray text-lg mb-4">We have access to trade pricing at Safestore, Access Self Storage, and More Storage &mdash; plus our own Clifton warehouse. Your client doesn&rsquo;t pay a premium. They don&rsquo;t panic. And you don&rsquo;t lose the sale.</p>
+      <p class="text-warm-gray text-lg">This is the kind of safety net that turns a potential disaster into a manageable situation &mdash; and it&rsquo;s something only a proper removal partner can offer.</p>`,
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'How does the referral fee work?',
+    answer: 'You introduce your client to us. If they book and the move completes, you earn a referral fee. We pay monthly with full reporting &mdash; you see which referrals converted and what you earned. We also provide NTS-compliant disclosure documentation so your paperwork is covered. <a href="/partners/#partner-form" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Get in touch to discuss the fee structure &rarr;</a>',
+  },
+  {
+    question: 'What if my client needs to move at short notice after a fast exchange?',
+    answer: 'We can usually accommodate moves within 5&ndash;7 working days, sometimes sooner. Your dedicated trade contact can check availability in real time &mdash; not via a contact form, via a direct line.',
+  },
+  {
+    question: 'How fast do you respond to referrals?',
+    answer: 'Within 2 hours. That\'s our guarantee on agent referrals. Your client gets a personalised quote &mdash; not a generic estimate &mdash; the same day.',
+  },
+  {
+    question: 'Do you handle packing as well?',
+    answer: 'Yes. Full and partial packing services, including fragile-only packing. Packing is done the day before the move. Costs range from &pound;400&ndash;&pound;990 depending on property size. This is often the add-on that makes the biggest difference to your client\'s experience &mdash; and the one they\'ll mention when they thank you for the recommendation.',
+  },
+  {
+    question: 'What about properties with difficult access?',
+    answer: 'Narrow streets, no parking, upper floors without a lift &mdash; we deal with this daily across Bristol. We assess access during the survey and plan accordingly. No surprises on the day.',
+  },
+  {
+    question: 'Can you handle moves outside Bristol?',
+    answer: 'Yes. We\'re long-distance specialists &mdash; moves of 100+ miles are our sweet spot. Bristol to London, Bristol to Manchester, Southwest to anywhere. National coverage, Bristol base.',
+  },
+  {
+    question: 'What\'s the Key Wait Waiver?',
+    answer: 'A flat add-on your client includes in their quote. It removes all overtime charges if keys are delayed past 5pm. For chain moves, we recommend it as standard &mdash; it removes the last financial uncertainty from the day.',
+  },
+  {
+    question: 'What\'s the soft booking system?',
+    answer: 'Your client places a small deposit to reserve their preferred date. If the chain moves the date, we move with it &mdash; no penalty. The deposit is applied to the final invoice. It means your client always has a removal date secured, even when completion is uncertain.',
+  },
+  {
+    question: 'What if something goes wrong on the move?',
+    answer: 'Claims are handled within 7 days. &pound;15,000 per van Goods in Transit insurance. We deal with issues directly with your client &mdash; you won\'t be pulled into a complaint process.',
+  },
+  {
+    question: 'Do I need to manage any of this?',
+    answer: 'No. You make the introduction. We handle the quote, the survey, the move, the follow-up, and the review prompt. Your involvement ends after the introduction &mdash; unless you want updates, which we\'re happy to provide.',
+  },
+  {
+    question: 'What branded materials do you provide?',
+    answer: 'Physical moving kits (bubble wrap, tape, checklist, quote voucher &mdash; your branding on it), printed and digital co-branded moving guides, quote cards for viewings and open houses, and a branded quote link tracked to your agency. We design, produce, and deliver everything to your office at no cost to you.',
+  },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removal Services for Estate Agents \u2014 Painless Removals Bristol",
+  "description": pageDescription,
+  "provider": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+    "url": siteConfig.brand.domain,
+    "telephone": siteConfig.company.contact.phoneInternational,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bristol",
+      "addressRegion": "Bristol",
+      "addressCountry": "GB",
+    },
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "AdministrativeArea", "name": "South West England" },
+  ],
+  "serviceType": "House Removals for Estate Agent Partners",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/&ndash;/g, '\u2013').replace(/&mdash;/g, '\u2014').replace(/&pound;/g, '\u00a3').replace(/&rarr;/g, '\u2192').replace(/<[^>]*>/g, ''),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       HERO — Split 50/50 (service page pattern)
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+
+    <!-- Mobile: image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture name="partners/refer-a-client" pattern="FULL" alt="Estate agent referring a client to Painless Removals" class="absolute inset-0 w-full h-full object-cover" />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+
+        <!-- Eyebrow -->
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          For Estate Agents
+        </p>
+
+        <!-- H1 -->
+        <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          Get a Referral Fee for Helping Your Clients. <span class="text-secondary-500">Zero Extra Work.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Mention us to your client. We handle the quote, the move, and the follow-up. You earn a fee on every completed booking.
+        </p>
+
+        <!-- Proof bar -->
+        <div class="flex flex-col gap-2 text-sm text-warm-gray mb-6 max-w-max mx-auto">
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 shrink-0">&#10003;</span>
+            <span>Paid monthly with full reporting</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 shrink-0">&#10003;</span>
+            <span>Branded materials &amp; compliance docs provided</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 shrink-0">&#10003;</span>
+            <span>Fill three fields in a form &mdash; we do everything else</span>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/partners/#partner-form" class="btn-cta-orange">
+            Start Earning From Referrals
+          </a>
+          <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-primary-600 font-semibold no-underline hover:text-secondary-500 transition-colors text-lg mt-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            {siteConfig.company.contact.phone}
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture name="partners/refer-a-client" pattern="FULL" alt="Estate agent referring a client to Painless Removals" class="absolute inset-0 w-full h-full object-cover" />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar hideBadge={true} />
+
+  <!-- ============================================
+       SECTION 1: HOW IT WORKS — "One Introduction. That's It."
+  ============================================ -->
+  <section class="section bg-white overflow-hidden">
+    <div class="container-wide">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl lg:text-3xl mb-4">One Introduction. <span class="text-secondary-500">That&rsquo;s It.</span></h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          This is the entire process from your side.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto mt-10">
+
+        <!-- YOUR PART — highlighted as the one thing the agent does -->
+        <div class="relative mb-2">
+          <p class="text-xs font-bold uppercase tracking-widest text-secondary-500 mb-3 pl-[4.5rem]">Your part</p>
+          <div class="relative bg-secondary-500/5 border-2 border-secondary-500/30 rounded-2xl p-6 lg:p-8 shadow-sm">
+            <div class="flex items-start gap-4">
+              <div class="relative z-10 w-12 h-12 bg-secondary-500 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0 shadow-lg shadow-secondary-500/30">1</div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">You mention us to your client</h3>
+                <p class="text-warm-gray leading-relaxed">
+                  At the viewing, at exchange, whenever it&rsquo;s natural. Hand them a branded moving guide, drop our name, or send them our quote link. <strong class="text-secondary-600">That&rsquo;s your only job.</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector arrow -->
+        <div class="flex justify-center py-1">
+          <div class="flex flex-col items-center">
+            <div class="w-px h-6 bg-gradient-to-b from-secondary-500/40 to-primary-600/40"></div>
+            <svg class="w-5 h-5 text-primary-600/50 -mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          </div>
+        </div>
+
+        <!-- OUR PART — visually grouped as a single block with internal timeline -->
+        <div class="relative mb-2">
+          <p class="text-xs font-bold uppercase tracking-widest text-primary-600 mb-3 pl-[4.5rem]">We handle the rest</p>
+
+          <div class="relative bg-cream rounded-2xl p-6 lg:p-8 border border-gray-200">
+            <!-- Internal timeline line -->
+            <div class="absolute left-[2.85rem] lg:left-[3.35rem] top-[4.5rem] bottom-[5.5rem] w-px bg-primary-600/20"></div>
+
+            <div class="space-y-8">
+              <div class="flex items-start gap-4 relative">
+                <div class="relative z-10 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">2</div>
+                <div>
+                  <h3 class="text-lg font-bold mb-1">We take over within 2 hours</h3>
+                  <p class="text-warm-gray text-sm leading-relaxed">
+                    Your client hears from us within 2 hours. They get a personalised quote &mdash; either through our <a href="/instantquote/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">instant calculator</a> or following a video survey. No pressure. No aggressive follow-up calls.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4 relative">
+                <div class="relative z-10 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">3</div>
+                <div>
+                  <h3 class="text-lg font-bold mb-1">Their Move Manager handles everything</h3>
+                  <p class="text-warm-gray text-sm leading-relaxed">
+                    One named person manages your client&rsquo;s move from quote to completion day. If your client has a question at 7am on moving day, they call their Move Manager &mdash; not your office.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4 relative">
+                <div class="relative z-10 w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">4</div>
+                <div>
+                  <h3 class="text-lg font-bold mb-1">The move happens &mdash; your client is our only job</h3>
+                  <p class="text-warm-gray text-sm leading-relaxed">
+                    We allocate a <strong class="text-primary-600">full working day to every chain move</strong>. No prior job to finish. No late arrivals. Protective materials as standard: mattress covers, sofa protectors, TV bags, doorframe padding. If keys are late, we wait.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Connector arrow -->
+        <div class="flex justify-center py-1">
+          <div class="flex flex-col items-center">
+            <div class="w-px h-6 bg-gradient-to-b from-primary-600/40 to-green-500/40"></div>
+            <svg class="w-5 h-5 text-green-500/50 -mt-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+          </div>
+        </div>
+
+        <!-- THE PAYOFF -->
+        <div class="relative">
+          <p class="text-xs font-bold uppercase tracking-widest text-green-600 mb-3 pl-[4.5rem]">The payoff</p>
+          <div class="relative bg-green-50 border-2 border-green-500/30 rounded-2xl p-6 lg:p-8 shadow-sm">
+            <div class="flex items-start gap-4">
+              <div class="relative z-10 w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-green-500/30">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">You get paid</h3>
+                <p class="text-warm-gray leading-relaxed">
+                  Monthly payment with full reporting. You see exactly which referrals converted and what you earned. No chasing invoices.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-10 bg-primary-600 rounded-xl p-6 text-center max-w-4xl mx-auto">
+        <p class="text-white font-bold text-lg">
+          That&rsquo;s it. One mention, then nothing until the payment lands.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: ALTERNATING BENEFITS (50/50 image+text)
+  ============================================ -->
+  <section class="bg-cream">
+    {benefits.map((benefit, index) => (
+      <div class="grid lg:grid-cols-2">
+        <!-- Image -->
+        <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-gray-400 text-sm">Image placeholder — {benefit.title}</span>
+          </div>
+        </div>
+        <!-- Text -->
+        <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+          <h2 class="text-2xl lg:text-3xl mb-4">{benefit.title}</h2>
+          <Fragment set:html={benefit.content} />
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- ============================================
+       SECTION 3: WHAT YOU ACTUALLY GET
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">What You Actually <span class="text-secondary-500">Get</span></h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+          <h3 class="font-bold text-primary-600 mb-2">Referral Fee</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">Paid monthly on every completed move. Full reporting shows which referrals converted. NTS-compliant disclosure documentation provided.</p>
+        </div>
+        <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+          <h3 class="font-bold text-primary-600 mb-2">Co-Branded Moving Guide</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">A professional &ldquo;Your Guide to Moving&rdquo; leaflet &mdash; printed and digital &mdash; with both logos. Bristol-specific tips your clients will actually read.</p>
+        </div>
+        <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+          <h3 class="font-bold text-primary-600 mb-2">Open House Materials</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">Branded moving guides and quote cards for viewings and open house events. Your buyers see &ldquo;your move is already sorted&rdquo; before they&rsquo;ve made an offer.</p>
+        </div>
+        <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+          <h3 class="font-bold text-primary-600 mb-2">Compliance Done for You</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">Pre-written NTS disclosure text and pro-forma documents so your referral arrangement is compliant from day one. We hand you the paperwork ready to use.</p>
+        </div>
+        <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+          <h3 class="font-bold text-primary-600 mb-2">Re-Engage Past Clients</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">&ldquo;We&rsquo;ve partnered with a trusted removal company&rdquo; is a natural reason to contact clients who bought 3, 5, 7 years ago. It reopens conversations without being pushy.</p>
+        </div>
+        <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+          <h3 class="font-bold text-primary-600 mb-2">Branded Referral Page</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">Your own affiliate page where you can submit client referrals directly. Tracked to your agency, instant notification to our team, auto-intro email to your client.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: WHY YOUR RECOMMENDATION IS SAFE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Why You Can Put Your Name <span class="text-secondary-500">Next to Ours</span></h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          You don&rsquo;t recommend tradespeople lightly. Here&rsquo;s why we&rsquo;re a safe bet.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">47 years. Since 1978.</strong> We&rsquo;ve handled chain moves since before most removal companies existed. This isn&rsquo;t a side hustle &mdash; it&rsquo;s all we do.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">{reviewCount} verified reviews. {siteConfig.company.rating.value}&#9733; average.</strong> Read them. The most common thing clients mention is the team &mdash; respectful, careful, on time.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Exclusive completion-day allocation.</strong> Your client is our only job that day. No overlapping moves. No late arrivals. Full attention from start to finish.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">&pound;15,000 insurance per van.</strong> Goods in Transit cover on every vehicle. Items over &pound;2,000 declared before the move. Transparent claims process &mdash; resolved within 7 days.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Three-van fleet with experienced crews.</strong> Every quote is based on a proper assessment. We send the right number of people with the right number of vans. No cramming a 4-bed house into one Luton.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">We protect the property.</strong> Mattress covers, sofa protectors, TV bags, picture protection, banister wrapping, doorframe padding &mdash; all included as standard.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Key Wait Waiver available.</strong> A flat add-on that removes all overtime charges if keys are delayed. For chain moves, we recommend it as standard &mdash; it removes the last financial uncertainty.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REVIEW STRIP — Testimonial blockquote
+  ============================================ -->
+  <section class="bg-white py-10 lg:py-14">
+    <div class="container-wide max-w-3xl mx-auto text-center">
+      <div class="text-orange-400 text-2xl mb-4">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <blockquote class="text-xl lg:text-2xl text-gray-700 italic leading-relaxed mb-4">
+        &ldquo;Our estate agent recommended Painless Removals and they were <mark>absolutely brilliant</mark>. Keys were delayed by 3 hours and they just waited, kept us updated, and still finished everything that evening. The agent who recommended them went up in our estimation too.&rdquo;
+      </blockquote>
+      <div class="flex items-center justify-center gap-3">
+        <span class="text-gray-500 text-sm font-medium">Agent-referred client, BS9</span>
+        <span class="text-gray-300">&middot;</span>
+        <img src="/images/google-g-logo.svg" alt="Google" class="w-5 h-5" width="20" height="20" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: CASE STUDY — 50/50 layout
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-gray-400 text-sm">Image placeholder — loaded removal van at property</span>
+        </div>
+      </div>
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">Case Study</p>
+        <h2 class="text-2xl lg:text-3xl mb-4">A 4-Property Chain <span class="text-secondary-500">on a Friday in July</span></h2>
+
+        <div class="space-y-4 text-warm-gray leading-relaxed">
+          <p>
+            <strong class="text-primary-600">The situation:</strong> Peak season. Four properties in a chain. Completion confirmed for midday. Our partner agent had worked on this deal for four months. At 11:45am, the bottom of the chain hit a delay.
+          </p>
+          <p>
+            <strong class="text-primary-600">What we did:</strong> Our team was loaded and ready. The moment the delay was confirmed, our Move Manager called the agent: &ldquo;We&rsquo;re here. We&rsquo;ll wait. No overtime charges.&rdquo;
+          </p>
+          <p>
+            Keys arrived at 3:15pm. The move was completed by 7:30pm. Essentials unpacked first. The client was in their new home that evening.
+          </p>
+          <p>
+            <strong class="text-primary-600">The result:</strong> The client left a 5-star review mentioning both the removal team and the estate agent by name. That agent has since referred 6 further clients.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <p class="text-primary-600 font-bold text-sm">One introduction. Six more clients. That&rsquo;s the compound return on a reliable recommendation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       JAY AUTHOR BLOCK
+  ============================================ -->
+  <JayAuthorBlock
+    quote="When an agent puts their name next to ours, I take that personally. Their reputation is on the line. That's why every agent-referred move gets our full attention — full day, best crew, no shortcuts."
+    heading="A Family Business Since 1978"
+    credential="Personally overseen 2,000+ completed moves"
+    description="Painless Removals has been serving Bristol since 1978. Jay works directly with every partner agent and is available on a direct line for any agent concerns."
+    bgClass="bg-white"
+  />
+
+  <!-- ============================================
+       FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Questions Agents Ask Us" bgClass="bg-cream" />
+
+  <!-- ============================================
+       FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="One Introduction. We Handle the Rest. You Get Paid."
+    description="Join Bristol's most trusted removal partnership. Zero effort, full reporting, monthly payments."
+    bullets={['Referral fee on every move', '2-hour quote response', 'Branded materials at no cost', 'NTS compliance handled']}
+    primaryText="Start Earning From Referrals"
+    primaryHref="/partners/#partner-form"
+    bottomNote="Call and ask about our agent partnership — we'll have you set up the same week."
+  />
+
+</Layout>

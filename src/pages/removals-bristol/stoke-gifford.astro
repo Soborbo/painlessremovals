@@ -1,0 +1,246 @@
+---
+/**
+ * /removals-bristol/stoke-gifford/ — Stoke Gifford neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Stoke Gifford Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~3 miles' },
+        { label: 'Drive time from depot', value: '10–12 minutes' },
+        { label: 'Postcode area', value: 'BS34' },
+        { label: 'Nearest motorway', value: 'M32 J1 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed detached or semi' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day' },
+        { label: 'Local move cost', value: '£350–£700' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£300–400k' },
+        { label: 'Typical property', value: 'Modern detached / semi' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Estate access lanes' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Really helpful and professional service. Friendly and efficient staff. Would definitely recommend.",
+  name: 'Tom Sinclair',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Stoke Gifford, Bristol';
+const description = `Stoke Gifford removal specialists — modern estates, good road access, no RPZ. Northern Bristol moves from BS34 since 1978. ${siteConfig.company.rating.value}-star rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Stoke Gifford Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Stoke Gifford, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS34", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Stoke Gifford?', answer: 'No. Stoke Gifford has no Residents\' Parking Zone. Most properties have driveways or allocated parking spaces. Street parking is freely available on the residential estate roads.' },
+  { question: 'How much does a removal from Stoke Gifford cost?', answer: 'A typical 3-bed property moving locally runs £350–£700. Stoke Gifford\'s easy access and modern housing generally keep costs at the lower end compared to inner Bristol. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a quote based on your actual property.' },
+  { question: 'Can you access the narrower lanes between new-build properties?', answer: 'Yes. Some estate developments have access lanes between properties that are tighter than they look — we check this at the survey stage. Our Luton vans are sized to handle most estate roads, and for the tightest spots, we plan the approach to avoid unnecessary manoeuvring with a full load.' },
+  { question: 'Do you cover moves near UWE and the Bristol & Bath Science Park?', answer: 'Yes. UWE\'s Frenchay campus and the Science Park both bring professionals relocating to Stoke Gifford. We handle full-service moves including packing, and can coordinate with corporate relocation timelines.' },
+  { question: 'How does Stoke Gifford compare to inner Bristol for removals?', answer: 'Significantly easier. No parking zone, wider roads, more driveways, and flat terrain. You won\'t encounter the tight Victorian terrace streets, steep hills, or permit zone complications common in inner Bristol. It\'s one of the most manageable areas we cover.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Stoke Gifford" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Stoke Gifford"
+  slug="stoke-gifford"
+  schema={schema}
+  ogImage="/img/areas/stoke-gifford-removals-loading-van-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/stoke-gifford-removals-loading-van"
+  heroAlt="Painless Removals crew loading a van on a modern residential street in Stoke Gifford"
+  heroSubtitle="Nearly 50 years of moving Bristol families. Home removals in Stoke Gifford from a company built on local trust."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Stoke Gifford sits alongside <a href="/removals-bristol/patchway/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Patchway</a> in Bristol's northern corridor — modern housing, good motorway access, and more space than the inner-city areas. Our Southmead Road depot is about three miles south via the A38, which means a crew arrives in around ten minutes and already knows this part of the city well. The area around <a href="https://en.wikipedia.org/wiki/Stoke_Gifford" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bristol Parkway station</a> has become one of north Bristol's key transport hubs, and UWE's Frenchay campus and the Bristol & Bath Science Park bring a steady stream of professionals relocating from across the country.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The housing is predominantly modern estate builds — detached and semi-detached houses with driveways, front gardens, and wider streets than you'd find in inner Bristol. No Residents' Parking Zone, no conservation area restrictions, and no period-property quirks to plan around. It's BS34 territory, flat terrain, and the kind of suburb where a removal team can park directly outside most properties and get straight to work. For a logistics perspective, Stoke Gifford is one of the more efficient areas we cover.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: Modern Estates & Access -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Stoke Gifford Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Modern Estates and Easy Access</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The housing developments that make up most of Stoke Gifford were designed with modern vehicle access in mind — driveways, garages, and wider residential streets than the Victorian terraces of inner Bristol. Our vans can park directly outside most properties, and loading distances are short. A typical 3-bed detached or semi-detached in Stoke Gifford is a half-day move with a two or three-person crew. The contrast with somewhere like <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> or Totterdown is marked — you're not squeezing a Luton through a gap that was designed for a horse and cart.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The estates around Stoke Gifford were built in an era when planners considered that vehicles might need to get around, which puts it ahead of half of Bristol's Victorian streetscape. You won't do 20-point turns. You won't pass oncoming traffic with a centimetre to spare on each side. For families moving in or out, that makes the entire day calmer and faster.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Where it can get tighter is within some of the newer developments — the cul-de-sacs and shared-access estates where the roads narrow and cars park on both sides. Not a problem for a Luton van, but worth noting if a larger vehicle were needed. We check this during the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> so the crew arrives with the right vehicle and a planned approach route.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Bristol Parkway & UWE Traffic -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Bristol Parkway and UWE Traffic</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bristol Parkway station and UWE's Frenchay campus generate commuter traffic that can affect the roads around Stoke Gifford during rush hours. Harry Stoke Road and the approach to Bristol Parkway slow down between 8–9am and 4:30–6pm. We schedule moves to start early and plan routes that avoid the worst pinch points — arriving before the commuter traffic builds and using the quieter estate roads rather than the main approaches.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For long-distance moves, the motorway access is a genuine advantage. You're close to Junction 16 of the M5 and the M4/M5 interchange at Almondsbury. A loaded van is on a major road within minutes of leaving the estate — no threading through the city centre, no crawling down bus lanes. Whether you're relocating from London, the Midlands, or Wales, the drop-off into Stoke Gifford is clean.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Relocation moves are common here — professionals joining UWE, the Science Park, or nearby aerospace employers and moving from elsewhere in the UK. We handle these as a full service: <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing the day before</a>, loading and driving on moving day, and unloading at the new home.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Stoke Gifford?"
+      description="Get a personalised quote — modern estates and good access mean competitive pricing."
+      buttonText="Get Your Stoke Gifford Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Apartment Blocks & the Brabazon Effect -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Apartment Blocks and Internal Access</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Stoke Gifford has a growing number of apartment buildings — some built as the area has expanded and developers have moved into the land around the existing housing. These vary. Some are well-designed with good lift access and parking close to the entrance. Others have the usual frustrations: lifts that are available but not well-suited to moving furniture, car parks that require a long walk to the front door, and corridors that narrow enough to make a large mattress a problem.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The question to ask before moving day is always the same: how far is it from the van to the front door, and what's in between? For apartment blocks in Stoke Gifford, the building might feel spacious, but the internal stairwells and corridors can surprise you. We always check dimensions at the survey stage so the crew knows what they're walking into.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Brabazon Development and a Changing Area</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The nearby Brabazon project — one of the biggest housing developments in the region — is reshaping this part of north Bristol. When complete, it will add thousands of new homes and significant commercial space to the area. New roads are going in, new junctions, and new building sites that will eventually become new streets. Stoke Gifford, along with <a href="/removals-bristol/patchway/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Patchway</a> and Bradley Stoke, is growing — new families are moving in, existing residents are upsizing or downsizing, and the pipeline of moves keeps building.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Painless Removals do a lot of moves in this part of north Bristol. The area rewards a team that has been here before, knows the roads, and isn't guessing when they pull up on moving day.</p>
+  </div>
+
+  <!-- S4: What the Properties Are Like -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Stoke Gifford and Patchway are similar — modern housing, good motorway access, more space than the inner-city areas. The typical property here has sensible hallways, stairs you can navigate with a sofa, and a driveway or enough road space to get a Luton positioned without blocking the whole street."
+      <span class="block mt-1 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The typical Stoke Gifford move involves a three-bedroom semi or detached house — two storeys, sensible proportions, and stairs that don't require a geometry degree to navigate with a sofa. These are the kind of properties where you can get a wardrobe upstairs without dismantling it, and where the crew isn't standing in the garden wondering how to explain that a corner unit won't fit through the door. The housing is practical, modern, and moves well.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bradley Stoke and Little Stoke sit to the east and share much of the same character — detached and semi-detached houses, wide estate roads, good access. Bradley Stoke's road layout reflects the 1980s and 1990s era of planning: roundabouts, cul-de-sacs, and estates where every house has a garage. For removals, it's almost entirely unproblematic — you can get a van outside nearly any property without a fight.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about any access challenges before the van arrives rather than discovering them on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal layout, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+  <!-- S5: Is Stoke Gifford a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Stoke Gifford a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not at all. Stoke Gifford is one of the easiest Bristol areas for removals. No parking zone. No conservation area. Flat terrain. Wider roads than the inner-city neighbourhoods. The infrastructure works in your favour — the roads were built to handle volume, and getting a loaded van in and out of a residential street here is a different proposition from doing the same thing in Totterdown or Clifton.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For most Stoke Gifford moves — a two or three-bed semi or detached house moving locally — you're looking at a team of two to three, one van, and a half-day job. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the access, the parking, and the right crew size. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Stoke Gifford Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>House or apartment?</strong> Most Stoke Gifford properties are houses with driveways, but apartment blocks have different access challenges — flag which you have at booking.</li>
+      <li><strong>Check estate access lanes.</strong> Some newer developments have access lanes between properties that are tighter than expected. We'll assess this during the survey.</li>
+      <li><strong>Avoid rush hour routes.</strong> Harry Stoke Road and the Bristol Parkway approach congest between 8–9am and 4:30–6pm. Early starts keep the crew ahead of commuter traffic.</li>
+      <li><strong>Any large items?</strong> Modern properties are generally well-proportioned, but apartment corridors and stairwells can catch you out. Flag oversized furniture at booking.</li>
+      <li><strong>Long-distance move?</strong> If you're relocating to or from Stoke Gifford, the motorway access at M5 J16 and Almondsbury interchange means quick trunk road connections — factor that into timing.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

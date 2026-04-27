@@ -1,0 +1,77 @@
+---
+/**
+ * WorryCard — Flip card for the 3AM Worry List
+ *
+ * Shows a worry on the front, a calm answer on the back.
+ * Flips on click (desktop) or acts as accordion (mobile).
+ */
+
+export interface Props {
+  worry: string;
+  answer: string;
+  index: number;
+}
+
+const { worry, answer, index } = Astro.props;
+---
+
+<!-- Desktop: flip card -->
+<div class="worry-card group cursor-pointer" data-worry-index={index} tabindex="0" role="button" aria-label={`${worry} — press Enter to reveal our answer`}>
+  <!-- Flip container -->
+  <div class="worry-card-inner relative w-full h-full transition-transform duration-500" style="transform-style: preserve-3d;">
+    <!-- Front -->
+    <div class="worry-card-front absolute inset-0 bg-white rounded-xl p-6 md:p-8 shadow-sm border border-gray-100 flex flex-col justify-center items-center text-center" style="backface-visibility: hidden;">
+      <svg class="w-8 h-8 text-secondary-400 mb-4 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <p class="text-primary-600 font-heading text-lg font-semibold leading-snug">{worry}</p>
+      <span class="mt-4 text-xs text-warm-gray opacity-60">Click to read our answer</span>
+    </div>
+    <!-- Back -->
+    <div class="worry-card-back absolute inset-0 bg-primary-600 text-white rounded-xl p-6 md:p-8 shadow-sm flex flex-col justify-center overflow-y-auto" style="backface-visibility: hidden; transform: rotateY(180deg);">
+      <p class="text-[15px] leading-relaxed">{answer}</p>
+      <span class="mt-4 text-xs text-white/50 text-center">Click to close</span>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile: accordion fallback (hidden on lg+) -->
+<details class="lg:hidden group border-b border-gray-200 bg-white">
+  <summary class="flex items-center justify-between gap-4 py-5 px-5 cursor-pointer list-none font-heading text-base text-primary-700 font-medium hover:text-primary-900 transition-colors [&::-webkit-details-marker]:hidden">
+    <span>{worry}</span>
+    <span class="shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 text-primary-600 text-sm font-bold transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+  </summary>
+  <div class="pb-5 px-5 text-warm-gray text-[15px] leading-relaxed">
+    {answer}
+  </div>
+</details>
+
+<style>
+  /* Desktop flip card dimensions */
+  .worry-card {
+    display: none;
+    height: 280px;
+    perspective: 1000px;
+  }
+
+  @media (min-width: 1024px) {
+    .worry-card {
+      display: block;
+    }
+  }
+
+  .worry-card.flipped .worry-card-inner {
+    transform: rotateY(180deg);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.worry-card').forEach((card) => {
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    card.addEventListener('keydown', (e) => {
+      const ke = e as KeyboardEvent;
+      if (ke.key === 'Enter' || ke.key === ' ') {
+        ke.preventDefault();
+        card.classList.toggle('flipped');
+      }
+    });
+  });
+</script>

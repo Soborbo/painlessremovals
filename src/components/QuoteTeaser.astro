@@ -1,0 +1,99 @@
+---
+/**
+ * QuoteTeaser — "Know Your Price" 50/50 section
+ *
+ * Left: copy + stats + CTA
+ * Right: calculator placeholder (slot) or fallback image
+ */
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+
+interface Props {
+  /** id applied to the <section> */
+  id?: string;
+  /** heading id for aria-labelledby */
+  headingId?: string;
+  /** CTA link target (default: /instant-quote) */
+  ctaHref?: string;
+}
+
+const {
+  id,
+  headingId = 'quote-heading',
+  ctaHref = '/instantquote',
+} = Astro.props;
+
+const hasSlot = Astro.slots.has('default');
+---
+
+<section {id} class="bg-linear-to-br from-primary-50 to-white" aria-labelledby={headingId}>
+  <div class="grid lg:grid-cols-2 items-center">
+    <!-- Text -->
+    <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+      <span class="inline-block bg-secondary-50 text-secondary-600 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-3 self-start">
+        No phone call needed
+      </span>
+      <h2 id={headingId}>Know Your Price Before You Pick Up the Phone</h2>
+
+      <p class="text-warm-gray mt-4 mb-6">
+        Skip the long calls and detailed inventories. Get a reliable estimate in under a minute.
+      </p>
+
+      <!-- Stat highlights -->
+      <div class="flex gap-4 mb-6 justify-center">
+        <div class="text-center px-5 py-3 bg-white rounded-lg shadow-sm border border-gray-100">
+          <span class="block text-3xl font-black text-secondary-500">47s</span>
+          <span class="text-xs text-warm-gray">average quote time</span>
+        </div>
+        <div class="text-center px-5 py-3 bg-white rounded-lg shadow-sm border border-gray-100">
+          <span class="block text-3xl font-black text-secondary-500">10</span>
+          <span class="text-xs text-warm-gray">quick questions</span>
+        </div>
+      </div>
+
+      <ul class="space-y-3 mb-6 list-none pl-0">
+        <li class="flex items-center gap-2">
+          <span class="text-secondary-500 shrink-0">&#10003;</span>
+          <span class="text-warm-gray text-sm"><strong class="text-primary-700">200+ options automatically analysed</strong> — our algorithm is trained on our former quotes</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-secondary-500 shrink-0">&#10003;</span>
+          <span class="text-warm-gray text-sm"><strong class="text-primary-700">Instant ballpark price</strong> — see what to budget before committing</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-secondary-500 shrink-0">&#10003;</span>
+          <span class="text-warm-gray text-sm"><strong class="text-primary-700">No obligation</strong> — save it, share it, come back later</span>
+        </li>
+      </ul>
+
+      <p class="text-warm-gray text-xs leading-relaxed mb-6">
+        The final price depends on availability, access, and exactly what you're moving.
+      </p>
+
+      <!-- CTA with pulse ring -->
+      <div class="relative self-center">
+        <span class="absolute inset-0 rounded-sm bg-orange-600 animate-[ping_3s_ease-in-out_infinite] opacity-15"></span>
+        <a href={ctaHref} class="btn-cta-orange relative">
+          Get Your Quote in Under 47 Seconds →
+        </a>
+      </div>
+      <p class="text-warm-gray text-xs mt-3 text-center">
+        Join 2,000+ people who already got their quote online
+      </p>
+    </div>
+
+    <!-- Right column: slot (calculator) or fallback image -->
+    <div class="flex items-center justify-center p-4 lg:p-8">
+      {hasSlot ? (
+        <slot />
+      ) : (
+        <OptimizedPicture
+          name="homepage/home-removal-calculator-wide"
+          pattern="HALF"
+          alt="Painless Removals instant quote calculator — 9 quick questions to get your price"
+          sizes="(min-width:1024px) 45vw, min(320px, 95vw)"
+          class="w-full max-w-full h-auto shadow-xl rounded-xl"
+        />
+      )}
+    </div>
+  </div>
+</section>

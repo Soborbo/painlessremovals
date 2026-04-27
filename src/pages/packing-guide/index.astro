@@ -1,0 +1,355 @@
+---
+/**
+ * Packing Guide Hub — Landing page for the free packing course
+ *
+ * Dark theme via CourseLayout. Displays all lessons as a card grid,
+ * master packing checklist, trust signals, author attribution, and FAQ.
+ */
+
+import CourseLayout from '@/layouts/CourseLayout.astro';
+import Breadcrumbs from '@/components/course/Breadcrumbs.astro';
+import PackingChecklist from '@/components/course/PackingChecklist.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+import { getCollection } from 'astro:content';
+import { ENTITY, ref, faqPage, breadcrumbs } from '@/utils/schema';
+
+// ── Fetch & sort lessons ────────────────────────────────────────────
+const lessons = (await getCollection('packing-guide')).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const lessonCount = lessons.length;
+const totalMinutes = lessons.reduce((sum, l) => sum + l.data.durationMinutes, 0);
+const totalHours = Math.floor(totalMinutes / 60);
+const remainderMinutes = totalMinutes % 60;
+const durationLabel =
+  totalHours > 0
+    ? `${totalHours} hr ${remainderMinutes} min`
+    : `${remainderMinutes} min`;
+
+// ── Page metadata ───────────────────────────────────────────────────
+const pageTitle = 'Free Packing Guide — How to Pack for Moving';
+const pageDescription =
+  `Learn how to pack your entire home for a move with this free ${lessonCount}-lesson video guide from Painless Removals Bristol. Room-by-room walkthroughs, checklists, and pro tips from movers with 45+ years' experience.`;
+const canonical = `${siteConfig.brand.domain}/packing-guide`;
+const domain = siteConfig.brand.domain;
+const director = siteConfig.company.director;
+
+// ── FAQ data ────────────────────────────────────────────────────────
+const faqs = [
+  {
+    question: 'How far in advance should I start packing?',
+    answer:
+      'For a typical 3-bedroom house, start at least two weeks before moving day. Begin with rooms and items you use least — the loft, garage, spare bedroom, and bookshelves. Leave everyday essentials like the kitchen, toiletries, and bedding until the final few days. If you have a larger home or limited time to pack in the evenings, three to four weeks is more realistic.',
+  },
+  {
+    question: 'Is it worth paying for professional packers?',
+    answer:
+      'It depends on your budget, your schedule, and how much you dislike packing. Professional packers can pack a 3-bedroom house in a single day, which saves you evenings and weekends of work. They also bring the right materials and know how to protect fragile items. If your move is time-sensitive — such as a chain completion — hiring packers removes one major source of stress. Our packing service page has full details on what\'s included and pricing.',
+  },
+  {
+    question: 'How many boxes do I need for a 3-bedroom house?',
+    answer:
+      'A typical 3-bedroom house needs roughly 40 to 60 boxes: 10 to 15 small boxes for heavy items like books, 15 to 20 medium boxes for general household items, 8 to 12 large boxes for bedding and light bulky items, and 3 to 5 wardrobe boxes for hanging clothes. It is always better to over-order — most suppliers accept returns on unused boxes, and running out mid-pack means a frustrating trip to the shop.',
+  },
+  {
+    question: "What's the best order to pack rooms?",
+    answer:
+      'Start with the rooms you use least and finish with the ones you use every day. A proven order: loft and garage first, then spare rooms, study, and bookshelves. Next, tackle the living room (leaving the TV until last), followed by bedrooms. The kitchen should be one of the last rooms because you need it daily. Pack an essentials box the night before — kettle, mugs, phone chargers, medications, toilet roll — and keep it in the car, not on the van.',
+  },
+  {
+    question: 'What packing materials do I actually need?',
+    answer:
+      'The essentials are: sturdy double-walled boxes in at least three sizes, 5 to 8 kilograms of packing paper (not newspaper, which leaves ink stains), one roll of bubble wrap for genuinely fragile items, four to six rolls of packing tape, and a thick permanent marker. A tape gun speeds things up significantly. Wardrobe boxes and picture boxes are worth the investment if you have hanging clothes or framed artwork.',
+  },
+  {
+    question: 'Can I pack everything myself and still have a smooth move?',
+    answer:
+      'Absolutely. Most of our customers pack themselves and the move goes perfectly. The key is starting early enough, using proper materials, and following a room-by-room system rather than packing randomly. This guide walks you through every room in detail. The most common mistake we see is leaving everything to the last two days — that leads to rushed packing, poorly protected items, and unlabelled boxes that make unpacking a nightmare.',
+  },
+];
+
+// ── Schema: Course (entity-linked) ──────────────────────────────────
+const courseSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Course',
+  'name': 'The Complete Packing Guide',
+  'description': pageDescription,
+  'url': canonical,
+  'provider': ref.business(),
+  'author': ref.person(),
+  'isAccessibleForFree': true,
+  'inLanguage': 'en-GB',
+  'numberOfLessons': lessonCount,
+  'timeRequired': `PT${totalMinutes}M`,
+  'image': `${domain}/img/packing/Bristol-home-packing-service-1200w.webp`,
+  'hasCourseInstance': {
+    '@type': 'CourseInstance',
+    'courseMode': 'online',
+    'courseWorkload': `PT${totalMinutes}M`,
+  },
+};
+
+// ── Schema: ItemList linking to each lesson's watch page ───────────
+// VideoObject lives on the individual lesson pages (the actual watch pages),
+// not on this hub, so Google treats each video's canonical URL as the watch URL.
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  'name': 'Packing Guide Lessons',
+  'numberOfItems': lessonCount,
+  'itemListElement': lessons.map((lesson, i) => ({
+    '@type': 'ListItem',
+    'position': i + 1,
+    'name': lesson.data.title,
+    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}`,
+  })),
+};
+
+// ── Schema: HowTo (step-by-step packing process) ───────────────────
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  'name': 'How to Pack Your Entire Home for a Move',
+  'description': 'A step-by-step guide to packing every room in your home for a house move, from decluttering to loading day.',
+  'totalTime': `PT${totalMinutes}M`,
+  'image': `${domain}/img/packing/Bristol-home-packing-service-1200w.webp`,
+  'step': lessons.map((lesson, i) => ({
+    '@type': 'HowToStep',
+    'position': i + 1,
+    'name': lesson.data.title,
+    'text': lesson.data.description,
+    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}`,
+  })),
+};
+
+// Combine all schemas
+const schema = [
+  courseSchema,
+  itemListSchema,
+  howToSchema,
+  faqPage(faqs),
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'Packing Guide' },
+  ]),
+];
+
+// ── Master checklist items ──────────────────────────────────────────
+const masterChecklist = [
+  'Declutter every room before you start packing',
+  'Order boxes in three sizes: small, medium, and large',
+  'Buy 5–8 kg of packing paper (not newspaper)',
+  'Get 4–6 rolls of strong packing tape and a tape gun',
+  'Source wardrobe boxes for hanging clothes',
+  'Get picture/mirror boxes for framed artwork',
+  'Pack the loft, garage, and spare rooms first',
+  'Wrap every plate, glass, and mug individually in paper',
+  'Use small boxes for books and heavy items',
+  'Wrap fragile items with bubble wrap and paper',
+  'Pack electronics in original boxes where possible',
+  'Photograph cable setups before disconnecting',
+  'Seal toiletry bottles with cling film under the cap',
+  'Pack medicines separately in a clearly labelled bag',
+  'Hang clothes directly into wardrobe boxes',
+  'Fold knitwear and casual clothes into bin bags or boxes',
+  'Label every box on two sides: room, contents, and fragile',
+  'Use a colour-coding system for each room',
+  'Number boxes and keep a master inventory list',
+  'Pack an essentials box: kettle, mugs, chargers, toilet roll',
+  'Keep the essentials box in the car, not on the van',
+  'Strip beds last — stuff duvets into bin bags for padding',
+];
+---
+
+<CourseLayout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
+  canonical={canonical}
+  ogImage="/img/homepage/packing-video-guide-1200w.webp"
+  preloadImage="/img/homepage/packing-video-guide-750w.avif"
+>
+  <!-- ── Hero — Cinematic split ─────────────────────────────────── -->
+  <div class="hub-hero">
+    <div class="hub-hero-inner">
+      <!-- Left: Content -->
+      <div class="hub-hero-content">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Free Packing Guide' },
+          ]}
+        />
+
+        <h1>The Complete Packing Guide</h1>
+        <p class="hub-hero-subtitle">
+          Free, room-by-room video lessons from Bristol's trusted packing and removals team. Everything you need to pack your home safely, efficiently, and without the stress.
+        </p>
+
+        <div class="hub-hero-meta">
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            {lessonCount} lessons
+          </span>
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {durationLabel} total
+          </span>
+          <span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            100% free
+          </span>
+        </div>
+
+        <a href="#lessons" class="hub-hero-cta">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Watch the Video Lessons
+        </a>
+
+        <!-- Cinematic credit line -->
+        <div class="hub-hero-credit">
+          <span class="hub-hero-credit-label">with</span>
+          <span class="hub-hero-credit-name">{director.name}</span>
+          <span class="hub-hero-credit-role">{director.title}, {siteConfig.brand.name} &middot; 2,000+ moves</span>
+        </div>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="hub-hero-image">
+        <OptimizedPicture
+          name="homepage/packing-video-guide"
+          pattern="FULL"
+          alt="Painless Removals packing guide — professional packing techniques for your home move"
+          loading="eager"
+          fetchpriority="high"
+          class="hub-hero-img"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Lesson Grid ─────────────────────────────────────────────── -->
+  <section class="hub-lessons-section" id="lessons">
+    <div class="container-narrow" style="margin-bottom: 1.5rem;">
+      <h2 class="hub-lessons-heading">All Lessons</h2>
+    </div>
+    <div class="lesson-card-grid">
+      {lessons.map((lesson) => (
+        <a href={`/packing-guide/${lesson.id.replace(/\.md$/, '')}`} class="lesson-card">
+          <div class="lesson-card-thumb">
+            <img
+              src={`https://i.ytimg.com/vi/${lesson.data.youtubeId}/hqdefault.jpg`}
+              alt={lesson.data.title}
+              loading="lazy"
+              width="480"
+              height="360"
+            />
+          </div>
+          <div class="lesson-card-body">
+            <div class="lesson-card-number">Lesson {lesson.data.order}</div>
+            <div class="lesson-card-title">{lesson.data.title}</div>
+            <div class="lesson-card-desc">{lesson.data.description}</div>
+          </div>
+          <div class="lesson-card-footer">
+            <span>{lesson.data.durationMinutes} min</span>
+            <span class="cta-arrow">Watch &rarr;</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- ── Introduction ────────────────────────────────────────────── -->
+  <section style="max-width: 900px; margin: 0 auto; padding: 0 1rem;">
+    <div class="course-transcript prose">
+      <h2>Why We Made This Guide</h2>
+
+      <p>
+        After more than four decades of moving families across Bristol and the South West, we have seen every packing mistake in the book. Boxes that collapse because they were overloaded. Plates cracked because they were stacked without paper between them. Entire kitchens thrown together the night before, leaving owners exhausted before the van even arrives. The pattern is always the same: people underestimate how long packing takes, skip the preparation, and end up rushing at the worst possible moment.
+      </p>
+
+      <p>
+        Jay Newton, our director, created this guide to change that. It distils what our team has learned from personally handling over 2,000 moves into a structured, step-by-step course that anyone can follow. Each lesson covers a specific topic — from planning and materials through to packing your kitchen, labelling boxes, dismantling furniture, and handling specialist items like pianos and pets — with the exact techniques our professional packing team uses every day. No filler, no generic advice recycled from the internet. Just proven methods that protect your belongings and save you time.
+      </p>
+
+      <p>
+        The single most important piece of advice we can give you is this: <strong>start two weeks before your move, not two days</strong>. Packing is not difficult. Packing in a panic is. When you begin early, you can work through one room at a time, wrap items carefully, label boxes properly, and still have your evenings free. When you leave it to the last minute, corners get cut, fragile items get damaged, and unpacking at the other end becomes a frustrating guessing game because nothing is labelled.
+      </p>
+
+      <p>
+        This guide is designed to be followed in order, starting with planning and materials, then moving through packing techniques for every part of the home, and finishing with specialist items and a reminder that professional help is always available. You do not need to watch every lesson — if you are only worried about your kitchen or your fragile items, skip straight to those lessons. But if you want a complete system from start to finish, working through the course in sequence gives you a clear, stress-free timeline.
+      </p>
+
+      <p>
+        Every lesson includes a video walkthrough, a written guide you can reference while you pack, and a printable checklist so you can tick items off as you go. Below the lessons you will find a master checklist covering every room in the house — print it, stick it on the fridge, and work through it over the fortnight before moving day. It is the same checklist our team uses when we pack homes for customers, adapted for people doing it themselves.
+      </p>
+
+      <p>
+        Whether you are moving across Bristol or relocating to the other end of the country, the fundamentals of good packing are the same. Get the right materials, give yourself enough time, and work through one room at a time. Follow this guide and your moving day will be one of the smooth ones. Before you start packing, make sure you have covered the essentials on our <a href="/moving-house-checklist/">moving house checklist</a> — it covers everything from solicitors to Royal Mail redirects.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Quick-Reference Link ────────────────────────────────────── -->
+  <section class="container-narrow" style="padding: 1rem 0 0;">
+    <p style="text-align: center; opacity: 0.85; font-size: 0.95rem;">
+      Prefer a single-page quick reference? See our <a href="/packing-guide-home-removal/" style="color: var(--color-accent); text-decoration: underline;">printable packing guide</a> — a concise overview of every topic covered above.
+    </p>
+  </section>
+
+  <!-- ── Master Packing Checklist ────────────────────────────────── -->
+  <section class="container-narrow" style="padding: 2rem 0;">
+    <PackingChecklist
+      roomName="Complete Moving"
+      items={masterChecklist}
+    />
+  </section>
+
+  <!-- ── Trust Block ─────────────────────────────────────────────── -->
+  <div class="trust-block">
+    <div class="trust-block-item">
+      <span class="trust-block-value">Since 1978</span>
+      45+ years of experience
+    </div>
+    <div class="trust-block-item">
+      <span class="trust-block-value">2,000+</span>
+      Moves completed
+    </div>
+    <div class="trust-block-item">
+      <span class="trust-block-value">{siteConfig.company.rating.value}</span>
+      Star rating ({siteConfig.company.rating.count} reviews)
+    </div>
+  </div>
+
+  <!-- ── Dual CTA Section ────────────────────────────────────────── -->
+  <section class="course-cta-section">
+    <div class="course-cta-grid">
+      <a href="/home-packing-service/" class="course-cta-card">
+        <p>Short on time? Our Bristol packing team handles everything.</p>
+        <span class="cta-arrow">View packing service &rarr;</span>
+      </a>
+      <a href="/home-removals-bristol/" class="course-cta-card">
+        <p>Planning a move in Bristol or the South West?</p>
+        <span class="cta-arrow">Get a free quote &rarr;</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── FAQ Section ─────────────────────────────────────────────── -->
+  <section class="course-faq">
+    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">Frequently Asked Questions</h2>
+    {faqs.map((faq) => (
+      <details class="course-faq-item">
+        <summary class="course-faq-question">
+          {faq.question}
+          <span class="faq-icon" aria-hidden="true">+</span>
+        </summary>
+        <div class="course-faq-answer">
+          <p><Fragment set:html={faq.answer} /></p>
+        </div>
+      </details>
+    ))}
+  </section>
+</CourseLayout>

@@ -1,0 +1,37 @@
+---
+/**
+ * AccreditationLogos — shared accreditation badge section
+ *
+ * Mobile: Movers World + AIM side-by-side, CompareMyMove below.
+ * Desktop: all three logos in a single row.
+ */
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<section class:list={['pt-2 pb-12 bg-white', className]}>
+  <div class="container-wide">
+    <p class="text-center text-sm text-warm-gray mb-6 uppercase tracking-wide">Officially Accredited By</p>
+    <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-10">
+      <OptimizedPicture
+        name="logos/move-assured-logo"
+        pattern="LOGO"
+        alt="Move Assured – Accreditation for Independent Removers"
+        class="w-[140px] sm:w-[180px] h-auto"
+        loading="lazy"
+      />
+      <OptimizedPicture
+        name="logos/aim-logo"
+        pattern="LOGO"
+        alt="AIM – Association of Independent Movers"
+        class="w-[140px] sm:w-[180px] h-auto"
+        loading="lazy"
+      />
+      <img src="/images/compare-my-move-logo.svg" alt="Compare My Move – Verified Removal Company" class="w-[140px] sm:w-[180px] h-auto" width="180" height="60" loading="lazy" decoding="async" />
+    </div>
+  </div>
+</section>

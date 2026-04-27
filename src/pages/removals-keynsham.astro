@@ -1,0 +1,322 @@
+---
+/**
+ * /removals-keynsham/ — Keynsham town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Keynsham Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~10 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'BS31' },
+        { label: 'Nearest motorway', value: 'M4 J18 (5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi / terrace' },
+        { label: 'Typical crew', value: '2 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day' },
+        { label: 'Local move cost', value: '£380–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£320–400k' },
+        { label: 'Typical property', value: 'Somerdale new-build / Victorian terrace' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'New riverside flats only' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'High St / centre only' },
+        { label: 'Suspension needed', value: 'Sometimes' },
+        { label: 'Main difficulty', value: 'Low bridge + A4 congestion' },
+        { label: 'Conservation area', value: 'Town centre core' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Absolutely brilliant. All the team were very friendly, polite, professional, and respectful. The dismantle and reassemble service took a lot of the stress out of the move.",
+  name: 'Ell Grace',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Keynsham';
+const description = `Keynsham removal specialists — 10 miles from our Bristol depot, between Bristol and Bath. Victorian terraces to Somerdale new-builds. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Keynsham Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Keynsham",
+    "address": { "@type": "PostalAddress", "postalCode": "BS31", "addressLocality": "Keynsham", "addressRegion": "Bath and North East Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'How close are you to Keynsham?', answer: 'About 10 miles and 25 minutes from our depot in north Bristol. We price Keynsham at our standard local rates — no distance premium.' },
+  { question: 'Is Keynsham in Bristol or Bath?', answer: 'Neither — it falls under Bath and North East Somerset Council (B&NES). This means different council rules from Bristol for things like parking permits and waste collection. We handle moves across both council areas regularly.' },
+  { question: 'Do I need a parking suspension for a Keynsham move?', answer: 'Depends on the street. Most residential areas have unrestricted parking. The High Street and town centre core can require coordination. We advise at <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey stage</a>.' },
+  { question: 'Can you handle moves to Bath as well as Bristol?', answer: 'Yes. Keynsham is on the A4 corridor between the two cities. We do plenty of moves along this route — Bath is about 15 minutes from Keynsham.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 25 minutes from Keynsham.' },
+  { question: 'Is there a low bridge in Keynsham I should know about?', answer: 'Yes. There is at least one low bridge in the Keynsham area that our Luton vans cannot fit under. We know which routes to use and plan accordingly — but if you\'re hiring your own van, check the height clearance before planning your route through town.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/keynsham-house-move-team-1200w.webp" preloadImage="/img/areas/keynsham-house-move-team-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/keynsham-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Keynsham"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Keynsham</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=keynsham`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/keynsham-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Keynsham"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Keynsham' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Keynsham sits between Bristol and Bath, which tells you a lot about why people choose to live there. You get reasonable access to both cities, prices that are gentler than either, and a town that has its own identity rather than being a suburb of somewhere bigger. We do a fair number of moves in and out of Keynsham, and it's a place we know well.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The surrounding area is attractive. You're not far from the Chew Valley to the south, the River Avon runs nearby, and it's one of those places that offers the practical things people want from a home without the premium you'd pay for the same square footage in Bristol or Bath.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/keynsham-house-move-team" pattern="FULL" alt="Painless Removals team working on a house move in Keynsham" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Keynsham Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Low Bridge: Know Before You Go</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There is at least one low bridge in Keynsham that our Luton vans will not fit under. This doesn't always show up with adequate warning on sat nav, and it's the kind of thing you do not want to discover with a loaded van and a tight schedule.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you're hiring your own van, check the height of whatever you're renting before you plan your route through Keynsham. A standard car-derived van will be fine. Anything with a box body above the cab — a Luton, a high-top, a curtainsider — needs a route check first.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">For our moves, we know which routes to use and plan accordingly. But if a friend or family member is following behind with another vehicle, or if a separate delivery is being made to the property around the same time, pass this on.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Access and Parking</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For most of Keynsham's residential streets, access is reasonable. The newer estates have the kind of road widths and turning spaces that make a removal van driver's life easy. The older parts near the centre can be a bit tighter, and the high street gets busy, but nothing that would put us on high alert the way some of Bristol's inner neighbourhoods do.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The main thing to flag — beyond the bridge — is the A4175 and the roads connecting Keynsham to the A4. These can get congested during rush hour, particularly on the Bristol side as you approach <a href="/removals-bristol/brislington/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Brislington</a>. We plan start times with this in mind.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Housing Mix</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Keynsham is a proper town with a high street, good amenities, and a mix of housing that reflects its long history and more recent growth. You've got older properties in and around the centre — some characterful — and then the newer developments that have been built out on the edges as the town has expanded. The housing is a good mix and prices sit comfortably below both Bristol and Bath for equivalent quality.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving to or from Keynsham?" description="Get a personalised quote — we know the routes and the low bridges." buttonText="Get Your Keynsham Removal Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Bristol–Bath Corridor</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Keynsham is around 25 minutes from our base in north Bristol on a normal day — longer if the A4 through Brislington is doing what it sometimes does. It's well within our standard local area, so you're not paying any kind of distance premium.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/keynsham-removal-job" pattern="HALF" alt="Painless Removals at a removal job in Keynsham" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "For moves between Keynsham and Bath, the A4 connects the two directly and it's a short hop — 15 minutes or so. We do plenty of moves along this corridor and it's one of the easier routes we work. Keynsham is a proper town rather than a village, with a high street and good amenities."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">For moves between Keynsham and Bath, the A4 connects the two cities directly — about 15 minutes. We do plenty of moves along this corridor.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Keynsham a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not for most properties. A one-day job for the majority of Keynsham moves. Load, drive, unload — the distances involved are short enough that even a larger property rarely needs to stretch into two days. The main variables are access in the older town centre streets and the low bridge routing.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Let Painless Removals handle the logistics. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a> gives us the detail we need to price the job properly and plan the route through town.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Keynsham Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 keynsham-checklist">
+          <li><strong>Low bridge?</strong> If anyone following the removal van is driving a tall vehicle, warn them about the bridge height restrictions.</li>
+          <li><strong>Town centre or newer estate?</strong> The older streets near the centre need different parking planning than the new developments.</li>
+          <li><strong>A4 timing?</strong> Rush hour congestion on the Brislington approach can add time — we schedule around it.</li>
+          <li><strong>Moving to or from Bath?</strong> The A4 corridor is one of our easiest routes — 15 minutes between the two.</li>
+          <li><strong>New-build flat?</strong> Confirm your floor and whether there's lift access — it affects crew size and timing.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Keynsham Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Keynsham Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Keynsham sits on the A4 corridor between Bristol and Bath — close to M4 J18.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Keynsham" to="London" meta="~115 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Keynsham" to="Birmingham" meta="~95 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Keynsham" to="Southampton" meta="~75 miles via A36/M3" days="1–2 days" href="/removals-bristol-to-southampton/" />
+      <RouteCard from="Keynsham" to="Manchester" meta="~180 miles via M5/M6" days="1 day" href="/removals-bristol-to-manchester/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Keynsham?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across the Bristol–Bath corridor. If you're moving from or to
+        <a href="/removals-bath/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Bath</a>,
+        <a href="/removals-chew-valley/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Chew Valley</a>, or
+        <a href="/removals-yate/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Yate</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3><p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p></a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3><p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p></a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3><p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move to or from Keynsham?" description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed { margin-left: -1rem; margin-right: -1rem; }
+  @media (min-width: 640px) { .midcta-bleed { margin-left: -1.5rem; margin-right: -1.5rem; } }
+  @media (min-width: 800px) { .midcta-bleed { margin-left: 0; margin-right: 0; } }
+  .keynsham-checklist { list-style: none; padding-left: 0; }
+  .keynsham-checklist li { position: relative; padding-left: 2rem; }
+  .keynsham-checklist li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.15rem; height: 1.15rem; border: 2px solid #3b6587; border-radius: 0.25rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 0.8rem; background-position: center; background-repeat: no-repeat; }
+</style>

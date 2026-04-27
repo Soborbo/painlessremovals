@@ -1,0 +1,349 @@
+---
+/**
+ * /removals-chew-valley/ — Chew Valley area page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Chew Valley Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '10 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'BS39 / BS40' },
+        { label: 'Nearest motorway', value: 'A37 to M5 (8 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '4-bed farmhouse / cottage' },
+        { label: 'Typical crew', value: '3–4 movers, 1–2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£600–£1,100' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£480,000' },
+        { label: 'Typical property', value: 'Period cottage / farmhouse' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'No' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'N/A (rural)' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Country lanes, tight access' },
+        { label: 'AONB restrictions', value: 'Mendip Hills AONB' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "We cannot fault the service they provided. Their quote was reasonable, packing instructions were clear. The movers on the day were sublime, considerate and friendly.",
+  name: 'George Wilyman',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Chew Valley';
+const description = `Chew Valley removal services from Bristol, 10 miles south. Rural moves, country lanes, period farmhouses — we handle the logistics. ${siteConfig.company.rating.value}★, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Chew Valley Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Chew Valley",
+    "address": { "@type": "PostalAddress", "postalCode": "BS39", "addressLocality": "Chew Valley", "addressRegion": "Bath and North East Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol, not the Chew Valley?', answer: 'At 10 miles from our depot — about 25 minutes via the A37 — the mileage component is modest. Chew Valley has no local removal company, so you\'d be looking at Bristol-based operators regardless. Our quote reflects your specific property and access, not the distance alone.' },
+  { question: 'Can your vans handle the narrow country lanes?', answer: 'Yes. Many Chew Valley properties are accessed via single-track lanes with passing places. For the tightest approaches, we use a smaller transit van and transfer to the Luton at a wider point. We plan the route to your property before moving day.' },
+  { question: 'Which villages in the Chew Valley do you cover?', answer: 'All of them. Chew Magna, Chew Stoke, Bishop Sutton, West Harptree, East Harptree, Compton Martin, Ubley, Stanton Drew — we\'ve moved families from villages across the valley.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — about 25 minutes from the Chew Valley. Useful when selling a rural property where completion dates can be unpredictable.' },
+  { question: 'What about larger farmhouses and period properties?', answer: 'Rural properties often come with unique challenges: large volumes of contents, outbuildings to clear, limited turning space, and long drives. We bring extra crew, specialist wrapping for period features, and plan vehicle positioning carefully.' },
+  { question: 'Is the mobile signal reliable in the Chew Valley?', answer: 'Patchy at best. The valley\'s geography works against the masts — in parts of Chew Magna, Chew Stoke, and the Harptrees, signal drops out entirely. On moving day, we plan logistics in advance rather than relying on signal to coordinate.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/chew-valley-cottage-1200w.webp" preloadImage="/img/areas/chew-valley-cottage-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/chew-valley-cottage"
+      pattern="FULL"
+      alt="Removal team at a cottage move in the Chew Valley"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Chew Valley</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=chew-valley`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/chew-valley-cottage"
+      pattern="FULL"
+      alt="Removal team at a cottage move in the Chew Valley"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Chew Valley' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">The Chew Valley attracts people leaving the Bristol commuter grind for countryside and space. The reservoir, the lakes, the green hills, the farm shops — there's a reason people pay what they pay to live out here. We handle removals across the valley from our Bristol depot, around 10 miles to the north, and the moves we do here tend to be into exceptional houses — the kind of properties people choose specifically for the setting.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The Chew Valley isn't one place — it's a network of scattered villages around Chew Valley Lake, sitting within the Mendip Hills Area of Outstanding Natural Beauty. Chew Magna, Chew Stoke, Bishop Sutton, West Harptree, Stanton Drew — each has its own character and its own access challenges. The common thread is country lanes, often single-track, and properties that weren't built with removal logistics in mind.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/chew-valley-cottage" pattern="FULL" alt="Removal team at a cottage move in the Chew Valley" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in the Chew Valley Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Lanes Look Reasonable on a Map</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The roads off the A37 and B3130 look manageable on screen, but they can get narrow surprisingly fast past the reservoir toward Chew Stoke and Bishop Sutton. Sat nav has sent us down tracks that are fine for cars but not for a loaded van. We always check actual access — not the postcode — before committing to a plan. Hills change van positioning strategy too: loading uphill is a different proposition to loading downhill.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">For the tightest approaches, we use a smaller transit and shuttle loads to the Luton parked at a wider point. It adds time but removes risk. Every Chew Valley move gets a route assessment before the day.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Properties That Need Proper Planning</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Property types vary by village. Chew Magna has a handsome village centre with listed stone cottages and larger houses on the outskirts. Chew Stoke is similar but quieter. Bishop Sutton has a mix of older cottages and newer infill. The Harptrees and Compton Martin sit deeper into the Mendips, with more isolated properties and challenging lane access. Stanton Drew — famous for its stone circles — has a cluster of period farmhouses on the B3130.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Many moves we handle involve larger-than-average properties: 4- and 5-bed farmhouses, converted barns, period cottages extended over the years. These often have outbuildings, garages, and long drives with low entrance gates. We bring extra crew and sometimes a second van for the bigger jobs.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Mobile Signal Drops Every Time</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This catches people out. The valley's geography works against the masts — in parts of Chew Magna, Chew Stoke, and the Harptrees, signal disappears entirely. On moving day, we plan everything in advance rather than relying on phones to coordinate between vehicles. As Jay puts it: "Make sure everyone has the plan written down before you lose four bars."</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving from the Chew Valley?" description="Free quote in about two minutes. We factor in rural access and lane width — your quote reflects your specific property." buttonText="Get Your Chew Valley Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We've Learned Working in the Valley</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">One Chew Valley move stays with us. We'd loaded the van at a farmhouse without any trouble — good approach, gates opened fine. Then a neighbour's car blocked the exit. What followed was a 40-point turn in a tight courtyard with a stone wall on one side and a low-hanging structure on the other, the owner watching nervously from the window. We got through it with no damage and no drama — but it's the kind of moment that underlines why the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> matters.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/chew-valley-countryside-removal" pattern="HALF" alt="House removal in the Chew Valley countryside" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "The moves we do in Chew Valley are, more often than not, into exceptional houses. It's an area people choose specifically for the countryside feel — and they get it. The reservoir, the lakes, the farm shops. The valley's character is defined by its distinctive rural properties."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">The Chew Valley is in <a href="https://www.bathnes.gov.uk/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Bath & North East Somerset</a> (B&NES), not Bristol. Different council, different waste rules, and the AONB designation means planning rules can be stricter. If you're combining a move with a <a href="/house-and-waste-clearance/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">house clearance</a>, Painless Removals can advise on disposal options that comply with B&NES requirements.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is the Chew Valley Difficult to Move In?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It depends on the property. A modern house in Bishop Sutton with a driveway is as easy as any Bristol suburb. A converted farmhouse down a single-track lane at the end of a half-mile drive — that needs planning. What we bring is the experience to handle countryside logistics that would catch a less experienced outfit off guard.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you're considering the Chew Valley and plan to commute into Bristol, be honest about journey times. The countryside feel is real and wonderful — but so is the traffic on the A37 during rush hour.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Chew Valley Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 chew-valley-checklist">
+          <li><strong>Lane width?</strong> Send us photos or a video of the approach road before we finalise the quote.</li>
+          <li><strong>Gate clearance?</strong> Low gates and overhanging trees can restrict van height — measure before moving day.</li>
+          <li><strong>Outbuildings?</strong> Garages, workshops, and garden stores add volume — include them in the survey.</li>
+          <li><strong>Mobile signal?</strong> Plan the logistics in writing — don't rely on calling the crew from the property.</li>
+          <li><strong>Ground conditions?</strong> Gravel drives and soft verges behave differently when a loaded van parks on them.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Chew Valley Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From the Chew Valley Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">The valley is rural, but Bristol's motorway network is 15–20 minutes away via the A37 or A38.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Chew Valley" to="London" meta="~130 miles via A37/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Chew Valley" to="Birmingham" meta="~105 miles via A37/M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Chew Valley" to="Bath" meta="~12 miles via A368" days="Half day" href="/removals-bath/" />
+      <RouteCard from="Chew Valley" to="Edinburgh" meta="~395 miles" days="2–3 days" href="/removals-bristol-to-edinburgh/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate from Chew Magna. Add time for single-track lane access at the property.</p>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near the Chew Valley?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We also serve families across B&NES and North Somerset. If you're moving from or to
+        <a href="/removals-keynsham/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Keynsham</a>,
+        <a href="/removals-nailsea/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Nailsea</a>, or
+        <a href="/removals-long-ashton/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Long Ashton</a>,
+        we know these areas well. For Bath moves, see our <a href="/removals-bath/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Bath area guide</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">All Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">See everything we offer, from storage to concierge.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move from the Chew Valley?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-[#D4A84B] no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  .chew-valley-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .chew-valley-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

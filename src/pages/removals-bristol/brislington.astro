@@ -1,0 +1,252 @@
+---
+/**
+ * /removals-bristol/brislington/ — Brislington neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Brislington Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~5 miles' },
+        { label: 'Drive time from depot', value: '20 minutes' },
+        { label: 'Postcode area', value: 'BS4' },
+        { label: 'Nearest motorway', value: 'M32 / A4 to M4 J18' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: '4–6 hours' },
+        { label: 'Local move cost', value: '£400–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£350,000' },
+        { label: 'Typical property', value: '1930s semi-detached' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Driveways', value: 'Most properties' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None (most streets)' },
+        { label: 'Suspension needed', value: 'Rarely' },
+        { label: 'Main difficulty', value: 'A4 Bath Road congestion' },
+        { label: 'Conservation area', value: 'Arnos Vale only' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "True to the name. Jay was seriously accommodating. Van loaded in 2 hours and unloaded in an hour at the other end. Seriously impressive and the price was best on the market.",
+  name: 'Callum Parsons',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Brislington, Bristol';
+const description = `Brislington removal specialists handling BS4 semis, Bath Road congestion, and Broomhill estate moves. ${siteConfig.company.rating.value}★ rated Bristol removals since 1978.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Brislington Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Brislington, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS4", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'How bad is Bath Road traffic on moving day?', answer: 'Bath Road (A4) is one of Bristol\'s busiest corridors, especially during rush hour. We schedule Brislington moves to avoid the 7:30–9am and 4:30–6pm peaks. For most residential streets off the A4, once we\'re parked up the traffic doesn\'t affect loading.' },
+  { question: 'Do I need a parking suspension in Brislington?', answer: 'Most Brislington streets have driveways or unrestricted on-street parking, so suspensions are rarely needed. The exception is some terraced streets near the Bath Road where parking is tight — your Move Manager will advise during the survey.' },
+  { question: 'How much does a Brislington removal cost?', answer: 'A typical 3-bed semi in Brislington moving locally costs £400–£750 depending on volume and access. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Can you handle moves from the Broomhill estate?', answer: 'Yes. Broomhill\'s 1930s semis and terraces have good road widths and most properties have driveways. The estate\'s grid layout makes access easy for our vans. We\'ve moved dozens of families from Broomhill over the years.' },
+  { question: 'Do you cover Hanham and Longwell Green too?', answer: 'Absolutely. Hanham and Longwell Green are adjacent to Brislington and close to our depot. Whether you\'re moving within these areas or between them, the same crew and pricing applies.' },
+  { question: 'What about the newer developments near the retail park?', answer: 'Yes — modern apartments and townhouses along the A4 corridor often have allocated parking, narrow access roads, and communal corridors. We coordinate with building management ahead of time and bring floor protection for shared areas.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Brislington" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Brislington"
+  slug="brislington"
+  schema={schema}
+  ogImage="/img/areas/brislington-property-removal-team-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/brislington-property-removal-team"
+  heroAlt="Painless Removals team loading furniture at a property in Brislington, Bristol"
+  heroSubtitle="A Bristol removal company since 1978. We bring nearly five decades of local experience to every home removal in Brislington."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Brislington sits on Bristol's south-eastern edge — close enough to the city to feel connected, far enough to offer the kind of houses and green space that are increasingly hard to find closer in. If you're moving to or from Brislington, here's what years of removals in this part of Bristol have taught us: the neighbourhood itself is rarely the problem. The A4 is.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The housing stock is a mixed bag in the best possible sense. You've got older Victorian and Edwardian properties with solid proportions and decent room sizes, inter-war semis on the Broomhill estate with driveways and wide hallways, and newer developments on the fringes with open-plan ground floors. There's variety here, which means we always take a proper look before quoting — but there are no persistent access problems unique to Brislington the way there are in <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> or <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a>.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The A4 Bath Road -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Brislington Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The A4: The Factor Nobody Mentions Until Moving Day</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The A4 Bath Road is the single biggest logistical consideration for any Brislington move — and it's worth thinking about before you book your date. It's the main arterial route into Bristol from the east, carrying significant traffic through Brislington from Temple Meads all the way out towards Keynsham and beyond. During peak hours — morning and evening commute times — it backs up reliably. If your removal van needs to approach from Bath Road, or if it's heading back into the city centre at the wrong time of day, you can lose a meaningful chunk of time sitting in traffic that was entirely predictable.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Our advice: schedule your move to avoid the A4 at peak times. A mid-morning start that gets loading done before the lunchtime traffic builds, or a finish that puts you clear of the evening rush, makes a noticeable difference. It's not a crisis — it's something worth planning around rather than discovering on the day.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Some properties sit directly on Bath Road. If you're one of them, you already know the road is relentless. Parking a van on or adjacent to a main A road brings its own challenges — traffic flow, sight lines, the patience of other drivers. We manage these situations routinely, but flag it when you book so we can plan accordingly. Properties a few streets back — places like the quieter runs off Broomhill Road or the residential pockets near Sandy Park — are a different matter entirely. Calm, manageable, no dramas.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Sandy Park and the Quieter Streets -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Sandy Park and the Quieter Streets</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Sandy Park Road and the area around it is worth knowing about. There's a small but well-established cluster of independent shops, a decent deli, coffee — the kind of local amenities that make a neighbourhood feel like a community rather than a postcode. Properties near here tend to be popular with families and young professionals for good reason.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">From a removals perspective, Sandy Park and the streets immediately around it are fine. Parking can be competitive at certain times of day, and the roads aren't wide enough for the largest wagons, but our Luton vans handle this area without difficulty. Side streets off the main drag — particularly around Sandy Park Road and Hungerford Road — have attractive terraced and semi-detached houses that are easy and pleasant to work in. Good access, sensible layouts, no conversion nightmares.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The newer developments on the fringes — three and four-bed semis and detached houses with driveways, open-plan ground floors, and wide front doors — are among the simplest jobs we do. Van on the drive, straight in, done. Beyond <a href="/removals-bristol/knowle/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Knowle</a>, the housing climbs toward the Brislington–Knowle border where larger, more substantial properties offer views back across the city. These are our bigger Brislington jobs — more volume, more floors, but generally good access and enough road space to work comfortably.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Brislington?"
+      description="Get a personalised quote — we plan around Bath Road traffic so your move runs smoothly."
+      buttonText="Get Your Brislington Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Timing and Access -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Timing Your Brislington Move</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Beyond the A4 traffic question, Brislington doesn't have the event-related congestion challenges of somewhere like <a href="/removals-bristol/bedminster/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster</a> (with Ashton Gate nearby) or the stadium-adjacent parking chaos near <a href="/removals-bristol/horfield/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Horfield</a>. It's a relatively predictable place to move.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The caveats are standard Bristol ones: avoid Bank Holidays if you're making a longer journey, avoid school-run times if your property is near one of the several primary schools in the area, and give yourself a realistic loading window rather than trying to rush a big house in half a day. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the access, the parking, and the right crew size for your specific property.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">What the Properties Are Like</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Brislington's housing stock is predominantly 1920s–1960s semis and detached houses. The Broomhill estate alone accounts for hundreds of 3-bed semis with front and rear gardens, bay windows, and the kind of wide hallways and staircases that make furniture removal efficient. Unlike the narrow Victorian terraces in BS3 or BS6, most Brislington homes have driveways or at least sufficient front-garden space for our van to park close to the front door.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Many Brislington moves are families upgrading or downsizing within South Bristol — moving to Keynsham, Long Ashton, or the Chew Valley. Others are heading to Bath via the A4 or out of the area entirely. Whatever the destination, the A4's direct connection to the motorway network makes Brislington an efficient starting point.</p>
+  </div>
+
+  <!-- S4: What We've Learned From Experience -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We've Learned From Experience</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Brislington can mean different things depending on which part you're in. A conversion flat near the A4 and a four-bedroom detached house near the Knowle border are both technically Brislington, but they're different jobs with different requirements. We treat them accordingly — and the survey is where we work that out."
+    </blockquote>
+
+    <OptimizedPicture
+      name="areas/brislington-removal-crew-working"
+      pattern="HALF"
+      alt="Painless Removals crew working at a removal job in Brislington"
+      class="w-full rounded-xl my-6 object-cover max-h-[380px]"
+    />
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It starts with a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> — either in person or by video call. For Brislington, we're particularly interested in driveway access, any items in garages or sheds (many Brislington semis have generous outbuildings), and whether you're on or near Bath Road. The survey determines crew size, van requirements, and the best time to arrive.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">On moving day, the crew approaches via the A4 or through Knowle — whichever avoids the worst traffic at that time of day. Brislington's wide residential roads and driveways mean we can usually park the van within a few metres of the front door. Loading is typically faster than in Bristol's tighter neighbourhoods — the hallways are wider, the staircases are standard width, and there's no pavement-to-door carrying distance. A typical 3-bed Broomhill semi loads in about 2–3 hours.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Need packing? Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">full packing service</a> sends a team the day before. In Brislington's larger semis, where decades of accumulated belongings often fill lofts, garages, and garden sheds, professional packing can turn a two-day job into one.</p>
+  </div>
+
+  <!-- S5: Is Brislington Easy to Move In? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Brislington a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">On balance, no — easier than many Bristol neighbourhoods. The housing is solid, access is generally good, and the streets (away from the A4) are manageable. We don't approach a Brislington job with the particular caution we might reserve for certain streets in Montpelier or the steep narrow runs of Clifton Wood. The A4 is the main thing to respect. Plan around it, not into it, and your Brislington move should go smoothly.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Brislington Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Which part of Brislington?</strong> Near the A4, or on the quieter residential streets further back? The logistics differ significantly.</li>
+      <li><strong>What type of property?</strong> Victorian terrace, modern semi, converted flat? Each has different access and crew requirements.</li>
+      <li><strong>Off-street parking?</strong> Most properties have driveways, but if yours doesn't, flag it so we can plan van positioning.</li>
+      <li><strong>What time of day?</strong> Mid-morning starts work well here — avoid peak A4 traffic between 7:30–9am and 4:30–6pm.</li>
+      <li><strong>Any large or valuable items?</strong> Especially relevant for older properties where room layouts can be less predictable. Declare items over £2,000 in advance.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

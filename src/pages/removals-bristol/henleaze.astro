@@ -1,0 +1,231 @@
+---
+/**
+ * /removals-bristol/henleaze/ — Henleaze neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Henleaze Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~1 mile' },
+        { label: 'Drive time from depot', value: '4 minutes' },
+        { label: 'Postcode area', value: 'BS9' },
+        { label: 'Nearest motorway', value: 'M5 J17 (4 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '4-bed family home' },
+        { label: 'Typical crew', value: '3–4 movers, 1–2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£550–£1,000' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£568,000' },
+        { label: 'Typical property', value: 'Interwar semi / detached' },
+        { label: 'Typical floors', value: '2 storeys + loft' },
+        { label: 'Driveways', value: 'Most properties' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Volume + high-value items' },
+        { label: 'Conservation area', value: 'No (character assessment)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Thank you ever so much for moving us to our new home. The packers were lovely, professional and polite. The movers on the day were fab, respectful and did a great job.",
+  name: 'Samantha Lyons',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Henleaze, Bristol';
+const description = `Henleaze removal specialists near BS9. Wide driveways, no RPZ, and interwar family homes — smooth moves done properly. ${siteConfig.company.rating.value}★ rated since 1978.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Henleaze Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Henleaze, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS9", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Henleaze?', answer: 'No. Henleaze has no Residents\' Parking Scheme, which makes scheduling moves much simpler than in inner Bristol. Most properties also have driveways or front gardens with off-street parking.' },
+  { question: 'How much does a Henleaze removal cost?', answer: 'A 3–4 bed semi-detached moving locally typically costs £550–£1,000 depending on volume and packing. Larger detached homes may require two vans. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Can you handle large Edwardian or detached properties in Henleaze?', answer: 'Yes. Many Henleaze properties are substantial 4–5 bed detached houses with garages, lofts, and large gardens. We regularly handle full-house moves including loft clearance, garden furniture, and outbuildings — the survey covers all of it.' },
+  { question: 'Should I avoid school-run times in Henleaze?', answer: 'It helps. Henleaze Junior School and St Ursula\'s Academy cause morning and afternoon congestion on surrounding streets. We recommend starting before 8am or after 9:30am for the smoothest experience.' },
+  { question: 'Do you cover high-value items and antiques?', answer: `Yes. Every van carries ${siteConfig.company.insurance} Goods in Transit insurance. Declare items over £2,000 in advance so we can wrap and track them individually. Henleaze's family homes often contain inherited furniture and art — this is routine for us.` },
+  { question: 'Do you use large lorries or smaller vans in Henleaze?', answer: 'Our fleet is predominantly Luton vans — more manoeuvrable than full-size lorries and better suited to residential streets. For Henleaze\'s wider avenues, the Luton is still the right vehicle. For the tighter streets near the high street and the Downs, it\'s the only practical option. Larger properties may need two vans rather than one larger lorry.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Henleaze" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Henleaze"
+  slug="henleaze"
+  schema={schema}
+  ogImage="/img/areas/henleaze-home-packing-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/henleaze-home-packing"
+  heroAlt="Painless Removals team packing items at a family home in Henleaze, Bristol"
+  heroSubtitle="We've moved thousands of Bristol families since 1978. For home removals in Henleaze, that depth of experience speaks for itself."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Henleaze is the closest neighbourhood to our Southmead Road depot — roughly a mile north and on our doorstep. It's a BS9 family suburb that doesn't shout about itself: no bohemian cachet, no architectural drama, but good schools, leafy streets, and solid housing that has stayed consistently desirable for decades. Almost the entire neighbourhood was built during the 1920s housing boom, replacing farmland with tree-lined avenues of interwar semis and detached homes that define the area today. It borders Westbury-on-Trym to the west, Redland to the south, and the open expanse of Durdham Down to the east — a proximity to green space that makes living here feel generous even when the streets themselves are busy.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The challenge in Henleaze isn't logistics — it's what's inside the houses. This is an affluent area with large family homes, full lofts, garages, garden sheds, and decades of accumulated possessions. Many of the bigger properties on roads like Henleaze Avenue contain inherited furniture and high-value items that all need careful handling. We do a lot of work here, and the team knows the streets and access patterns well. When moves are properly planned, Henleaze is one of the smoothest areas we cover.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: Volume and High-Value Items -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Henleaze Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Volume Is the Biggest Factor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Henleaze's interwar semis and detached houses are substantially larger than the Victorian terraces found in inner Bristol. A typical 4-bed on one of the wider avenues will have a garage — sometimes double — a full loft, an extended kitchen, and a garden with a shed or outbuilding. Many families have lived in the same Henleaze home for 15–20 years, which means the accumulated contents of a household that has expanded into every available space. We regularly send two vans and a crew of four to Henleaze jobs. The <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> identifies everything that needs to go, so the quote reflects the real volume.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">High-value contents need proper protection. Properties frequently contain antique furniture, artwork, and inherited items that are difficult or impossible to replace. Every one of our vans carries {siteConfig.company.insurance} Goods in Transit insurance. Items worth more than £2,000 should be declared in advance so we can wrap and track them individually. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">fragile-only packing service</a> is popular in Henleaze — it covers glassware, ceramics, artwork, and anything you'd rather not risk packing yourself.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The housing stock is a mix. Some streets have beautiful larger houses — three and four-bedroom semis and detached properties built with a generosity of space that modern builds rarely match. Others have a more compact feel. The distinction matters because it shapes everything from crew size to van choice to how long the job takes.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: School-Run Timing and Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">School-Run Timing and Parking Near the High Street</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Henleaze is a family area with high primary school density — Henleaze Junior School, Henleaze Infant School, and several others sit within the neighbourhood. The roads around these schools get noticeably busy at drop-off and pick-up times. If your property is near one of the schools, factor this into your start time or plan to be clear of the loading phase before 8:30am. We schedule Henleaze moves to start either before 8am or after 9:30am — it keeps the first hour productive rather than waiting for the school traffic to clear.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The main parking pressure point is the high street corridor along Henleaze Road and the streets immediately adjacent. This is a busy shopping area throughout the day, and the surrounding residential streets absorb parking overflow from people visiting the shops, the library, and the medical centre. Henleaze Road at lunchtime is busier than you'd expect for a suburban high street. If your property is within a few streets of the high street, parking a van on moving day needs thought in advance.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The wider streets closer to the Downs are a different matter — generally enough room to work without drama. Most of Henleaze has driveways and good access, so the parking question is specific rather than universal. The right part of Henleaze is perfectly manageable; the busier streets near the shops need more planning.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving from Henleaze?"
+      description="Get a personalised quote — we'll survey every room, the garage, and the garden shed."
+      buttonText="Get Your Henleaze Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S4: Fleet, Depot Proximity, and Survey Process -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">How We Handle Henleaze Moves</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Our fleet is predominantly Luton vans rather than larger lorries — a deliberate choice for Bristol's residential streets. A Luton can position in spaces a lorry can't reach, which matters in areas like Henleaze where street widths vary between roads. For the tighter streets near the high street, the Luton is the right vehicle. For the wider avenues, it's still the right vehicle — it's easier to park."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It starts with a thorough survey — either in person or by <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">video call</a>. Henleaze homes tend to have more rooms and more storage than most Bristol properties, so the survey is where we make sure nothing gets missed. We check the loft (almost every Henleaze house uses the loft for storage), the garage, any outbuildings, and the garden — including hot tubs, trampolines, and large planters that catch people out on moving day.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">On moving day, your crew parks on the driveway or directly outside. No parking suspensions, no battle for kerb space — this is one of the luxuries of moving from Henleaze. The van arrives early, and loading is methodical: heavy items first, fragiles wrapped and secured in blanket compartments, artwork in purpose-built picture carriers. For the larger detached properties on Henleaze Avenue or Northumbria Drive, we send two vans and four movers to keep the day manageable.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Our depot is barely a mile from Henleaze on Southmead Road. That proximity means if we need an extra van, an additional set of blankets, or more specialist packing materials mid-move, someone can run back to base in under five minutes. It's a small thing, but it's prevented delays on more than a few Henleaze jobs where the volume turned out to be slightly more than estimated.</p>
+  </div>
+
+  <!-- S5: Assessment and Checklist -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Henleaze a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not particularly. Henleaze is one of north Bristol's most reliable neighbourhoods for removals — no parking zone, driveways on most properties, wider roads than the inner city, and two-storey houses with manageable proportions. The work is in getting the volume right. These are often family homes where people have been for 15 or 20 years, which means lofts, garages, sheds, and outbuildings that all need emptying. That's what the survey catches. Need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>? We can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Downs in summer brings additional footfall and parking pressure to the eastern edge of Henleaze, particularly on weekends. Families parking to access the Downs fill up the surrounding streets in good weather. Weekday moves avoid this entirely. And if you're near the Horfield border, a quick check of the Bristol Rovers fixture list before confirming your moving date is sensible housekeeping — Muller Road and Filton Avenue on match days are worth avoiding.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Henleaze Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Which part of Henleaze?</strong> Near the high street, near the Downs, or in the quieter residential interior? The parking and access situation differs meaningfully between each.</li>
+      <li><strong>What type of property?</strong> Interwar semi, detached, or converted flat? Driveway access changes the day considerably — flag which you have at booking.</li>
+      <li><strong>School proximity?</strong> If you're near one of the primary schools, plan your loading phase to avoid the morning drop-off rush.</li>
+      <li><strong>Check the Rovers fixture list</strong> if you're near the Horfield border. Muller Road and Filton Avenue on match days are worth steering clear of.</li>
+      <li><strong>Any large or high-value items?</strong> Interwar houses have good proportions but hallways that can catch you out with oversized furniture. Flag anything unusual at booking so we assess it during the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a>.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

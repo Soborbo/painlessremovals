@@ -1,0 +1,252 @@
+---
+/**
+ * /removals-bristol/patchway/ — Patchway neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Patchway Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~3 miles' },
+        { label: 'Drive time from depot', value: '8–10 minutes' },
+        { label: 'Postcode area', value: 'BS34' },
+        { label: 'Nearest motorway', value: 'M5 J16 (1.5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi or new-build' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day' },
+        { label: 'Local move cost', value: '£350–£650' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£250–320k' },
+        { label: 'Typical property', value: '1930s semi / new-build' },
+        { label: 'Typical floors', value: '1–2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'A38 rush hour / construction' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Really helpful and professional service. Friendly and efficient staff. Would definitely recommend.",
+  name: 'Tom Sinclair',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Patchway, Bristol';
+const description = `Patchway removal specialists — Charlton Hayes new-builds, wide estate roads, no RPZ. Easy-access moves near Cribbs Causeway since 1978. ${siteConfig.company.rating.value}-star rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Patchway Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Patchway, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS34", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Patchway?', answer: 'No. Patchway has no Residents\' Parking Zone. Most properties have driveways or ample street parking. The newer Charlton Hayes development has allocated parking spaces and wide roads designed for modern living.' },
+  { question: 'Do you cover the Charlton Hayes new-build development?', answer: 'Yes. Charlton Hayes is one of the fastest-growing parts of Patchway, and we move families in and out regularly. The streets are wide, most homes have driveways, and access is good. Check which phases are fully complete — active construction zones can affect routing.' },
+  { question: 'How much does a removal from Patchway cost?', answer: 'A typical 3-bed semi or new-build moving locally runs £350–£650. Patchway\'s easy access and ground/two-storey properties make it one of the most cost-effective areas we cover. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for an exact quote.' },
+  { question: 'Is Patchway easy to access for removal vans?', answer: 'Very easy. The A38 runs through the middle of Patchway, and M5 Junction 16 (Almondsbury Interchange) is less than two miles away. Roads are wider than inner Bristol, most properties are ground or two-storey, and driveways are common.' },
+  { question: 'Do you handle moves for people relocating for Airbus or Rolls-Royce?', answer: 'Regularly. Patchway\'s aerospace employers — Rolls-Royce, Airbus, BAE Systems — generate relocation moves throughout the year. We handle the full service including packing, and we\'re used to coordinating with corporate relocation timelines.' },
+  { question: 'Are new-build apartment stairwells wide enough for large furniture?', answer: 'Not always. Some newer apartment blocks have stairwells and corridors that are surprisingly narrow for large furniture, despite the building feeling spacious overall. We check internal dimensions during your <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a> so we can plan the best approach.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Patchway" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Patchway"
+  slug="patchway"
+  schema={schema}
+  ogImage="/img/areas/patchway-removal-job-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/patchway-removal-job"
+  heroAlt="Painless Removals at a removal job in Patchway, Bristol"
+  heroSubtitle="A Bristol removal company with nearly 50 years of experience. Home removals in Patchway with a team that takes the job seriously."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you're moving to or from Patchway, here's the good news up front: it's one of the easier parts of our patch to work in. No medieval alleyways. No hills that swallow vans. No parking situations that end with us leaving the vehicle overnight and walking home. Patchway is, by and large, a removal company's friend.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">Patchway sits on the northern edge of Bristol, bordered by <a href="/removals-bristol/filton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Filton</a> to the south, <a href="/removals-bristol/stoke-gifford/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Stoke Gifford</a> to the east, and the open run towards the M4 and M5 junction to the north and west. It grew up largely in the post-war era alongside the aerospace industry at Filton Airfield — the same industrial heritage that shaped much of this corner of the city. What that history left behind is a suburb built for practicality. Wide roads. Reasonable pavements. Housing estates laid out with enough space between properties that you're not squeezing a Luton through a gap that was designed for a horse and cart.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: What Are the Houses Like? -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Patchway Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Houses: Practical and Accessible</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This is where Patchway differs most obviously from somewhere like <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> or <a href="/removals-bristol/redland/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Redland</a>. No five-storey Georgian townhouses. What you'll find is a broad mix of newer housing stock — ranging from 1950s and 60s semi-detached houses through to modern apartment buildings and brand-new developments that are still going up.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The typical Patchway move involves a three-bedroom semi or detached house, two storeys, sensible hallways, stairs that don't require a geometry degree to navigate with a sofa. The kind of property where you can get a wardrobe upstairs without dismantling it, and where the removal team isn't standing in the garden at 11am wondering how to explain that the corner unit isn't going through that door.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-8">There are also apartment buildings — some well-designed with good lift access and parking close to the entrance. Others have the usual frustrations: lifts that are technically available but not suited to moving furniture, car parks that require a ten-minute walk to the front door, corridors that narrow enough to make a large mattress into a problem. We check all of this at the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> stage.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Access and Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Access and Parking: One of the Easier Parts of Bristol</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Patchway doesn't give removal teams nightmares. Parking is generally not a serious issue. Most properties have drives, or at least enough road space outside that you can get a Luton positioned without blocking the entire street. The roads themselves are wider than the inner-city areas — no 20-point turns, no passing oncoming traffic with a centimetre to spare. The estates around Patchway were built in an era when planners at least considered the idea that vehicles might need to get around.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Where it can get slightly tighter is within some of the newer developments — the cul-de-sacs and shared-access estates where roads narrow down and cars park on both sides. Not a problem for a Luton. Worth knowing about if someone were arriving with a larger wagon.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Patchway is also close to Cribbs Causeway — one of the largest retail parks in the South West — which tells you something about the area's infrastructure. Roads around here were built to handle volume. Getting a loaded van in and out of a residential street in Patchway is a different proposition from doing the same thing in <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Patchway?"
+      description="Get a personalised quote — easy access means competitive pricing for BS34."
+      buttonText="Get Your Patchway Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Motorway Access and the Aerospace Legacy -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Motorway Access: A Genuine Advantage</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">One of the things that makes Patchway work well for long-distance moves is the motorway access. You're close to Junction 16 of the M5 and the M4/M5 interchange at Almondsbury. For a removal team, that means you're on a major road within minutes of loading up, without crawling through the city. If you're moving to Patchway from London, the Midlands, or Wales, the drop-off is clean — come off the M5 and you're there.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The local roads that feed the area — the A38 through Filton and Patchway — do get congested at peak times. The Cribbs Causeway retail park generates steady traffic along the Lysander Road and Cribbs Way corridors, particularly on weekends and around the pre-Christmas period. If you're scheduling a move, it's worth avoiding a Saturday morning in December when half of Bristol is heading to John Lewis.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Brabazon Development</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The area grew up in the orbit of the Filton Airfield and the BAE Systems and Rolls-Royce facilities nearby. The airfield closed in 2012, and much of the site is being redeveloped as the Brabazon development — a major new neighbourhood named after the Bristol Brabazon aircraft once assembled in the hangars there. When complete, it will add thousands of new homes, a new arena, and significant commercial space.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">What that means for anyone moving into Patchway or the surrounding area is that the neighbourhood is changing. New roads are going in, new junctions, new building sites that will become new streets. Patchway and its surrounding estates — Stoke Gifford, Little Stoke, Bradley Stoke — are growing. We do a lot of moves in this part of north Bristol and expect to do a lot more as the Brabazon development matures.</p>
+  </div>
+
+  <!-- S4: What We've Learned From Experience -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We've Learned From Experience</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Patchway rewards a bit of local knowledge — not because it's complicated, but because understanding what you're moving into makes the whole day run cleaner. The newer apartment blocks can catch you out: the building feels spacious when you walk in, but the stairwells and corridors in some developments are tighter than you'd expect. We check that at the survey stage so there are no surprises."
+    </blockquote>
+
+    <OptimizedPicture
+      name="areas/patchway-little-stoke-removal"
+      pattern="HALF"
+      alt="Removal job in Little Stoke, near Patchway"
+      class="w-full rounded-xl my-6 object-cover max-h-[380px]"
+    />
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">On moving day, the crew arrives from our depot — eight to ten minutes on the A38. For most Patchway properties, they park on the driveway or directly outside and load from the front door. The work is systematic: heavy items first, boxes stacked in the van for stability, fragile items last with blankets and straps. A 3-bed semi typically loads in two to three hours. If you're heading onto the M5, you're away before lunch.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Relocation moves are common in Patchway — professionals joining Rolls-Royce, Airbus, or MOD Abbey Wood and moving from elsewhere in the UK. We handle these as a full service: <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a> the day before, loading and driving on moving day, and unloading at the new home. Corporate relocations often have fixed timelines, and we work within them.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Patchway properties being mostly two-storey houses with easy access means we're not pricing in the complications you'd see for a top-floor flat in Clifton with no lift and a street where you can't park within 50 metres. What you see is broadly what you get, and that makes for a cleaner quote and fewer surprises on the day.</p>
+  </div>
+
+  <!-- S5: Is Patchway Easy? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Patchway a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not at all. Patchway is a good place to move to and a good place to move from. The infrastructure works in your favour. The roads are manageable. The properties are mostly practical and accessible. You're close to the motorway. We've had moves in Bristol that involved taking windows out to get furniture through, or leaving vans overnight because a street became impassable. Patchway, generally speaking, is not that.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Patchway Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>House or apartment?</strong> The typical semi is an easy move. Apartment blocks need a stairwell and corridor check at the survey.</li>
+      <li><strong>Which estate?</strong> Older Patchway Common, Charlton Hayes new-build, or the Bradley Stoke border? Access differs slightly between them.</li>
+      <li><strong>Charlton Hayes construction phase?</strong> Active building work can affect routing — let us know so we plan the approach.</li>
+      <li><strong>Driveway available?</strong> Most Patchway properties have one. If yours doesn't, flag it so we can plan van positioning.</li>
+      <li><strong>Long-distance move?</strong> The M5 is minutes away — we can be on the motorway before the traffic builds if we start early enough.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

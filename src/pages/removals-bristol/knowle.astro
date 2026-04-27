@@ -1,0 +1,260 @@
+---
+/**
+ * /removals-bristol/knowle/ — Knowle neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Knowle Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~4 miles' },
+        { label: 'Drive time from depot', value: '15–20 minutes' },
+        { label: 'Postcode area', value: 'BS4' },
+        { label: 'Nearest motorway', value: 'A4 to M32 (3 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi or terrace' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£400–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£300–380k' },
+        { label: 'Typical property', value: '1930s semi / Victorian terrace' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Wells Road traffic + hills' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Brilliant experience from start to finish. Jay did a visit and estimated packing materials — which he got completely right. The team arrived on time and were incredible.",
+  name: 'Ross McCaw',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Knowle, Bristol';
+const description = `Knowle removal specialists since 1978. We handle Wells Road traffic, 1930s semis, and the Upper/West Knowle divide — 4 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Knowle Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Knowle, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS4", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Knowle?', answer: 'No. Most of Knowle has no Residents\' Parking Zone. Street parking is free and generally available, especially in the wider 1930s streets of Upper Knowle. Lower Knowle\'s narrower hillside streets can be tighter, but you won\'t need a formal suspension.' },
+  { question: 'How steep is Wells Road for removal vans?', answer: 'Wells Road is a steep A-road, but it\'s wide enough for our vans — it carried trams until 1941. The gradient is manageable. Talbot Hill and some of the Lower Knowle streets are steeper and narrower. Our drivers know which routes to use and which to avoid with a full load.' },
+  { question: 'How much does a removal from Knowle cost?', answer: 'A 3-bed 1930s semi moving locally runs roughly £400–£750. Victorian properties in Upper Knowle or hillside houses in Lower Knowle may cost more due to stairs and access. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a quote specific to your property.' },
+  { question: 'Do you cover Lower Knowle as well as Upper Knowle?', answer: 'Yes. Lower Knowle\'s terrain is steeper and the streets narrower — closer in character to <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline underline-offset-2">Totterdown</a> than the wider Upper Knowle roads. We survey access before quoting and adjust the crew size and equipment accordingly.' },
+  { question: 'What\'s the best time to move in Knowle?', answer: 'Early morning starts work best if you\'re on or near Wells Road — the A37 gets heavy with bus and commuter traffic from 8am. For the quieter residential streets away from the main road, timing is more flexible. We recommend starting by 8am regardless to make the most of the day.' },
+  { question: 'Is there a difference between moving from Knowle West and Upper Knowle?', answer: 'Yes. Knowle West homes tend to be smaller three-bed council-era houses — compact, efficient moves. Towards <a href="/removals-bristol/brislington/" class="text-secondary-500 underline underline-offset-2">Brislington</a>, the properties are larger with more furniture, more floors, and often more accumulated contents. We adjust crew size and vehicle allocation based on which part of the postcode you\'re in.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Knowle" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Knowle"
+  slug="knowle"
+  schema={schema}
+  ogImage="/img/areas/knowle-1930s-semi-detached-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/knowle-1930s-semi-detached-removal"
+  heroAlt="Painless Removals team loading a van outside a 1930s semi-detached house in Knowle, Bristol"
+  heroSubtitle="Nearly five decades of moving Bristol homes — that's what stands behind every home removal in Knowle."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Knowle is a neighbourhood with a split personality — and if you're planning a move here, understanding that split will help you understand why two houses a ten-minute walk apart can be completely different jobs for a removal company. Head up towards the <a href="/removals-bristol/brislington/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Brislington</a> border and you're in the Knowle that people pay a premium for: larger houses, proper gardens, city views. Head west towards Knowle West and the picture changes — predominantly council-built housing from the mid-twentieth century, smaller rooms, tighter streets.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">This isn't a criticism. It's the reality of a part of Bristol that has always had a clear divide between its more affluent eastern end and its council estate legacy. Both sides are changing, and both are places we work in comfortably. But they're distinct, and they're worth understanding before moving day. Here's the honest guide to what that means for your move.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Two Faces of Knowle -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Knowle Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Two Faces of Knowle</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Head up towards the top of the hill where Wells Road climbs and the city opens up below you, and you're in the Knowle that people pay a premium for. The houses here are larger, often detached or substantial semis, with proper gardens and the kind of views across Bristol that remind you why people are prepared to live on a hill. These are among the more manageable and satisfying removal jobs we do in this part of the city. Good road access, driveways on many properties, and houses built with proportions that make moving furniture in and out straightforward.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Head west towards Knowle West, and the housing is predominantly council-built — terraced and semi-detached houses from the mid-twentieth century, smaller rooms, tighter streets. That doesn't make them difficult to move — smaller houses with less volume are often quicker, simpler jobs — but it's a different character, and the streets require a different approach. We won't be bringing an 18-tonne wagon into the tighter estate roads. The Luton is the right tool here — manoeuvrable enough to handle estate-street geometry, large enough to avoid unnecessary extra trips.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">It's worth knowing which part of Knowle you're in, because it shapes everything from the quote to the crew size to the van we send. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> takes an hour and costs nothing — and it means the right team shows up on the day.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) — before Upper Knowle section -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Upper Knowle Advantage -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Upper Knowle Advantage</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The properties on and around Broadfield Road and the residential roads that branch off Wells Road towards the Brislington edge are genuinely pleasant to work in. Many have driveways or at least reasonable kerbside access. The roads are wide enough to accommodate a Luton van without drama. The houses, while not the tall Victorian terraces of Clifton, have solid layouts that reward a methodical crew.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you're near Knowle Park — the open green space that anchors the upper neighbourhood — you're in one of the calmer parts of south Bristol for a removal. The park acts as a natural buffer; the streets around it tend to be quieter, more residential in feel, with less through-traffic. The 1920s Knowle Park estate cottages have decent-width staircases, front and back doors, and gardens where we can stage items before loading.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">No parking zone restrictions here either — unlike much of inner Bristol, you won't need a formal suspension. For Upper Knowle and the wider 1930s streets, this makes moving-day logistics genuinely straightforward.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Knowle?"
+      description="Get a personalised quote — we know the difference between Upper Knowle, Lower Knowle, and Knowle West."
+      buttonText="Get Your Knowle Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Wells Road & Sandy Park Road -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Wells Road: The Main Artery</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wells Road is Knowle's main arterial connection to Bristol city centre, and it's worth understanding for anyone planning a move. It's a busy road — not catastrophically so, but busy enough that timing matters. During morning and evening rush hours it backs up noticeably, and since it's one of the main routes south out of Bristol towards Whitchurch and beyond, it catches holiday traffic too. The road was built wide enough for electric trams — they ran up it from 1904 until 1941 — so the road itself isn't a problem for our vans. The congestion is.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The good news is that once you're off Wells Road and into the residential streets on either side, things calm down considerably. We schedule Knowle moves to start early — typically arriving by 7:30–8am — to load before the commuter traffic builds. A mid-morning approach from our depot avoids the worst of it.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Sandy Park Road and Community</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Sandy Park Road sits on the Knowle–Brislington border and anchors the whole upper Knowle area socially. The small cluster of independent businesses there — a well-regarded deli, coffee shops, a genuine community feel — makes the surrounding streets particularly attractive to buyers and renters who want something that feels like a neighbourhood rather than a commuter zone.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Properties near Sandy Park tend to be well-kept, well-sought, and from a removal perspective, well-accessed. The character of the streets changes as you move through south Bristol — the steeper gradients and coloured terraces of <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> to the east, the Victorian terraces of <a href="/removals-bristol/bedminster/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster</a> to the west — but Knowle's wider residential roads and no-RPZ streets make it one of the more forgiving parts of BS4 to work in.</p>
+  </div>
+
+  <!-- S4: What the Houses Are Like -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Houses Are Like</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Knowle's housing is a genuine mix. At the upper end near the Brislington border you have some Victorian and Edwardian properties with the proportions that era built in — generous hallways, decent staircases, rooms that feel like rooms. Further down the hill and into the estate areas, the housing shifts to the post-war semi and terrace stock that characterises much of Bristol's outer ring.</p>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/knowle-boxes-stairs"
+          pattern="HALF"
+          alt="Moving boxes stacked at the bottom of stairs in a Knowle family home ready for the removal crew"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">Boxes staged and ready in a typical Knowle 1930s semi — manageable staircases and honest proportions.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Converted flats exist here as they do everywhere in Bristol, but Knowle hasn't seen the same intense subdivision as Clifton or parts of Redland. Most of the properties we move people into and out of are still recognisably what they were built to be. That's a quiet advantage — fewer surprises about internal access once we arrive."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The biggest variable is which end of the postcode you're in. A three-bed in Knowle West is a compact, efficient job — standard access, manageable volume, no surprises. A larger family home towards Brislington with city views and a garage full of accumulated belongings is a different proposition entirely. We quote accordingly once we've seen the property at <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey stage</a>.</p>
+  </div>
+
+
+  <!-- S5: Is Knowle a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Knowle a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. The upper stretch towards Brislington and around Knowle Park is among the more pleasant parts of south Bristol to do a removal — good access, solid houses, manageable streets, no parking zone. Knowle West is straightforward in its own way: smaller in scale and simpler for it. Lower Knowle's steeper hillside streets — closer in character to neighbouring <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> — are the most demanding section, but nothing our crew hasn't handled before.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The one variable to manage is Wells Road traffic. Time your move to avoid peak hours and the rest falls into place. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers everything — we'll visit your property, assess the access, and confirm the right crew size and vehicle for your specific part of Knowle.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For most Knowle moves — a two or three-bed semi or terrace moving locally — you're looking at a team of two to three, one Luton van, and a half-day to full-day job. Need packing? Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a> sends a team the day before — popular with Knowle families managing a move around children's school schedules.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Knowle Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Which part of Knowle?</strong> Upper Knowle, Knowle West, or Lower Knowle — the crew size, vehicle, and timing depend on this.</li>
+      <li><strong>Wells Road timing.</strong> Early morning starts avoid the worst congestion. School-run times near local primaries add a buffer too.</li>
+      <li><strong>Property type?</strong> 1930s semi, Victorian terrace, council-era house, or converted flat? Let us know so we plan access correctly.</li>
+      <li><strong>Any large items?</strong> Wardrobes, American fridge-freezers, and large sofas all need assessing individually — flag them at survey stage.</li>
+      <li><strong>Driveway or kerbside?</strong> Upper Knowle properties often have driveways. If you're relying on kerbside access, no suspension is needed — but let us know the parking situation so we plan loading efficiently.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

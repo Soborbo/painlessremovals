@@ -1,0 +1,203 @@
+---
+/**
+ * MobileMenu — slide-in mobile navigation with staggered link animations.
+ *
+ * Extracted from Layout.astro for reusability. Includes hamburger icon,
+ * overlay, navigation panel, submenus, and contact CTA section.
+ */
+import { siteConfig } from '@/config/site.config';
+---
+
+<!-- Mobile menu overlay -->
+<div id="mobile-overlay" class="fixed inset-0 bg-black/60 z-[46] opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"></div>
+
+<!-- Mobile menu panel -->
+<div id="mobile-menu" class="mobile-menu fixed top-0 right-0 bottom-0 w-80 max-w-[calc(100vw-3rem)] z-[47] flex flex-col lg:hidden" style="background-color: #0E3C54;">
+  <!-- Close button -->
+  <div class="flex items-center justify-between px-6 h-12">
+    <a href="/" class="no-underline" aria-label={siteConfig.brand.name}>
+      <img src="/images/logo.svg" alt={siteConfig.brand.logoAlt} class="h-10 w-auto" width="1440" height="460" />
+    </a>
+    <button id="mobile-menu-close" type="button" class="p-2 text-white/80 hover:text-white transition-colors" aria-label="Close menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Navigation links -->
+  <nav aria-label="Mobile navigation" class="flex-1 px-6 py-6 overflow-y-auto">
+    <div class="space-y-1">
+      <a href="/" class="mobile-nav-link" style="--delay: 0">Home</a>
+      <!-- Services submenu -->
+      <div class="mobile-services-group" style="--delay: 1">
+        <button id="mobile-services-toggle" type="button" class="mobile-nav-link w-full flex items-center gap-2 whitespace-nowrap" style="--delay: 1" aria-expanded="false" aria-controls="mobile-services-submenu">
+          <span class="flex-1 text-center">Services</span>
+          <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-200 mobile-services-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="mobile-services-submenu" class="hidden pl-4 space-y-0.5 pb-1">
+          <a href="/free-home-survey/" class="mobile-subnav-link font-bold text-secondary-500">Free Survey</a>
+          <a href="/home-removals-bristol/" class="mobile-subnav-link">Home Removals</a>
+          <a href="/office-removals/" class="mobile-subnav-link">Office Removals</a>
+          <a href="/home-packing-service/" class="mobile-subnav-link">Packing Service</a>
+          <a href="/storage-service/" class="mobile-subnav-link">Storage</a>
+          <a href="/house-and-waste-clearance/" class="mobile-subnav-link">House Clearance</a>
+          <a href="/cleaning-service/" class="mobile-subnav-link">Cleaning</a>
+        </div>
+      </div>
+      <!-- Guides submenu -->
+      <div class="mobile-services-group" style="--delay: 2">
+        <button id="mobile-guides-toggle" type="button" class="mobile-nav-link w-full flex items-center gap-2 whitespace-nowrap" style="--delay: 2" aria-expanded="false" aria-controls="mobile-guides-submenu">
+          <span class="flex-1 text-center">Guides</span>
+          <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-200 mobile-guides-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div id="mobile-guides-submenu" class="hidden pl-4 space-y-0.5 pb-1">
+          <a href="/moving-advice/" class="mobile-subnav-link">Moving Advice</a>
+          <a href="/packing-guide/" class="mobile-subnav-link">Packing Guide</a>
+          <a href="/areas/" class="mobile-subnav-link">Areas We Cover</a>
+        </div>
+      </div>
+      <a href="/about/" class="mobile-nav-link" style="--delay: 3">About</a>
+      <a href="/pricing/" class="mobile-nav-link" style="--delay: 4">Pricing</a>
+      <a href="/reviews/" class="mobile-nav-link" style="--delay: 5">Reviews</a>
+      <a href="/faq/" class="mobile-nav-link" style="--delay: 6">FAQ</a>
+      <a href="/contact/" class="mobile-nav-link" style="--delay: 7">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Contact info + CTA -->
+  <div class="px-6 py-6 border-t border-white/10">
+    <a href="/instantquote/" class="btn btn-primary w-full justify-center mb-3">
+      Online Quote
+    </a>
+    <a href="/send-survey-video/" class="btn w-full justify-center mb-4 bg-primary-600 text-white hover:bg-primary-700" style="box-shadow: 0 1px 3px rgba(0,0,0,0.12);">
+      Send Survey Video
+    </a>
+    <div class="space-y-3 text-sm">
+      <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-3 text-white/80 no-underline hover:text-white transition-colors">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+        {siteConfig.company.contact.phone}
+      </a>
+      <a href={`mailto:${siteConfig.company.contact.email}`} class="flex items-center gap-3 text-white/80 no-underline hover:text-white transition-colors">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        {siteConfig.company.contact.email}
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Menu panel — clip-path reveal instead of simple slide */
+  .mobile-menu {
+    clip-path: circle(0% at calc(100% - 2rem) 1.5rem);
+    opacity: 0;
+    transition: clip-path 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .mobile-menu.is-open {
+    clip-path: circle(150% at calc(100% - 2rem) 1.5rem);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Stagger nav links on open */
+  .mobile-menu .mobile-nav-link,
+  .mobile-menu .mobile-services-group {
+    opacity: 0;
+    transform: translateX(1.5rem);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .mobile-menu.is-open .mobile-nav-link,
+  .mobile-menu.is-open .mobile-services-group {
+    opacity: 1;
+    transform: translateX(0);
+    transition-delay: calc(var(--delay, 0) * 60ms + 200ms);
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    var menu = document.getElementById('mobile-menu');
+    var overlay = document.getElementById('mobile-overlay');
+    var closeBtn = document.getElementById('mobile-menu-close');
+    var toggles = document.querySelectorAll('[aria-controls="mobile-menu"]');
+
+    if (!menu || !overlay || !closeBtn) return;
+
+    var menuOpenedBy = null;
+
+    function getScrollbarWidth() {
+      return window.innerWidth - document.documentElement.clientWidth;
+    }
+
+    function openMenu(trigger) {
+      menuOpenedBy = trigger || null;
+      var sbw = getScrollbarWidth();
+      var header = document.getElementById('site-header');
+      var stickyCta = document.getElementById('sticky-cta');
+      document.body.style.overflow = 'hidden';
+      if (sbw > 0) {
+        document.body.style.paddingRight = sbw + 'px';
+        if (header) header.style.paddingRight = sbw + 'px';
+        if (stickyCta) stickyCta.style.paddingRight = sbw + 'px';
+      }
+      menu.classList.add('is-open');
+      overlay.classList.remove('opacity-0', 'pointer-events-none');
+      overlay.classList.add('opacity-100');
+      toggles.forEach(function(t) { t.setAttribute('aria-expanded', 'true'); t.classList.add('menu-open'); });
+      closeBtn.focus();
+    }
+
+    function closeMenu() {
+      var header = document.getElementById('site-header');
+      var stickyCta = document.getElementById('sticky-cta');
+      menu.classList.remove('is-open');
+      overlay.classList.remove('opacity-100');
+      overlay.classList.add('opacity-0', 'pointer-events-none');
+      toggles.forEach(function(t) { t.setAttribute('aria-expanded', 'false'); t.classList.remove('menu-open'); });
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      if (header) header.style.paddingRight = '';
+      if (stickyCta) stickyCta.style.paddingRight = '';
+      if (menuOpenedBy) { menuOpenedBy.focus(); menuOpenedBy = null; }
+    }
+
+    toggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function() {
+        var isOpen = menu.classList.contains('is-open');
+        if (isOpen) closeMenu(); else openMenu(toggle);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeMenu);
+    overlay.addEventListener('click', closeMenu);
+
+    // Close on nav link click
+    menu.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', closeMenu);
+    });
+
+    // Services submenu toggle
+    var servicesToggle = document.getElementById('mobile-services-toggle');
+    var servicesSubmenu = document.getElementById('mobile-services-submenu');
+    var servicesChevron = servicesToggle ? servicesToggle.querySelector('.mobile-services-chevron') : null;
+    if (servicesToggle && servicesSubmenu) {
+      servicesToggle.addEventListener('click', function() {
+        var isHidden = servicesSubmenu.classList.toggle('hidden');
+        servicesToggle.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
+        if (servicesChevron) servicesChevron.classList.toggle('rotate-180');
+      });
+    }
+
+    // Guides submenu toggle
+    var guidesToggle = document.getElementById('mobile-guides-toggle');
+    var guidesSubmenu = document.getElementById('mobile-guides-submenu');
+    var guidesChevron = guidesToggle ? guidesToggle.querySelector('.mobile-guides-chevron') : null;
+    if (guidesToggle && guidesSubmenu) {
+      guidesToggle.addEventListener('click', function() {
+        var isHidden = guidesSubmenu.classList.toggle('hidden');
+        guidesToggle.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
+        if (guidesChevron) guidesChevron.classList.toggle('rotate-180');
+      });
+    }
+  })();
+</script>

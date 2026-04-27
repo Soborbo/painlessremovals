@@ -1,0 +1,252 @@
+---
+/**
+ * /removals-bristol/totterdown/ — Totterdown neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Totterdown Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~4 miles' },
+        { label: 'Drive time from depot', value: '~15 minutes' },
+        { label: 'Postcode area', value: 'BS4' },
+        { label: 'Nearest motorway', value: 'M32 J3 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2–3 bed terrace' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: '4–7 hours' },
+        { label: 'Local move cost', value: '£700–£1,200' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£400,000' },
+        { label: 'Typical property', value: 'Victorian terrace' },
+        { label: 'Typical floors', value: '2–3 storeys' },
+        { label: 'Front gardens', value: 'Small or none' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'Partial RPZ coverage' },
+        { label: 'Suspension needed', value: 'Strongly recommended' },
+        { label: 'Main difficulty', value: 'Tight access + steep hills' },
+        { label: 'Conservation area', value: 'Parts (Totterdown Front)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The three guys who moved us from one side of town to the other were brilliant. It was the least stressful day of our whole house moving process. They were friendly, relaxed and very quick.",
+  name: 'Jonny Spry',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Totterdown, Bristol';
+const description = `Totterdown removal specialists who navigate BS4's steepest streets. Tight access, narrow clearances, and hill parking — handled by a local team since 1978. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Totterdown Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Totterdown, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS4", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Can a removal van get down my street in Totterdown?', answer: 'It depends on the street. Some Totterdown roads have very tight clearances — we check every address before the move. Our Luton vans are the right size for most Totterdown streets, but a few roads require a specific approach route or adjusted positioning. We never arrive without having assessed access first.' },
+  { question: 'Do I need a parking suspension in Totterdown?', answer: 'Parts of Totterdown fall within the Windmill Hill / Totterdown RPZ (Mon–Fri 9am–5pm). Even where there\'s no formal parking zone, on-street parking is typically heavy. A <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline underline-offset-2">parking bay suspension</a> guarantees space directly outside your property and is strongly recommended.' },
+  { question: 'How much does a Totterdown removal cost?', answer: 'A typical 2–3 bed Victorian terrace moving locally costs £700–£1,200 depending on access difficulty, floor levels, and packing. Totterdown\'s hills and narrow streets add time compared to flatter Bristol areas, which is reflected in the quote. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific estimate.' },
+  { question: 'Should I reserve parking spaces before my Totterdown move?', answer: 'Yes — this is one of our strongest recommendations. Reserve two van-length spaces outside your property the day before: cones, a note through neighbours\' doors, whatever it takes. If you\'re moving in, ask the sellers or current owners to hold space. A small amount of planning prevents a much larger problem on the day.' },
+  { question: 'Is Totterdown hard to move to because of the hills?', answer: 'The hills add complexity but they\'re not a reason to worry. We plan for gradients at <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey stage</a> — where to park the van safely, which direction to approach from, and how to manage heavy items on a slope. It\'s something we deal with regularly across Bristol\'s hillier neighbourhoods.' },
+  { question: 'How does Totterdown compare to Montpelier for difficulty?', answer: 'They share the same fundamental challenge — tight streets, parking pressure, Victorian housing stock — but Totterdown adds the hill. Montpelier\'s difficulty is mostly horizontal: narrow streets and traffic flow. Totterdown\'s is both horizontal and vertical. The gradient and the access compound each other, which directly affects how long a job takes and how many crew you need. We plan for both areas the same way: a proper <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a> before any quote.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Totterdown" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Totterdown"
+  slug="totterdown"
+  schema={schema}
+  ogImage="/img/areas/totterdown-tight-street-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/totterdown-tight-street-removal"
+  heroAlt="Painless Removals team navigating a tight residential street during a Totterdown removal"
+  heroSubtitle="Bristol removals since 1978 — that's the track record behind every home removal in Totterdown. A local team you can rely on."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">When a Totterdown job comes in, it gets our full attention. Not because the area is impossible to work in — we've done plenty of moves there and we'll do plenty more — but because Totterdown is one of those parts of Bristol where you cannot afford to turn up and assume everything will be fine. You have to know what you're walking into before you get in the van. Driving down some of those roads with a fully loaded Luton, you're passing parked cars with an inch on either side. You check the mirrors. You carry on. And that's on a good day, on a road you've been down before.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">Totterdown sits on the south side of Bristol, rising steeply from the River Avon up through a grid of Victorian terraced streets that climb the hillside towards Wells Road at the top. It's one of Bristol's most recognisable neighbourhoods — colourful houses, community feel, independent cafes on Wells Road — and one of the more challenging areas in the city to do a removal in. Here's the honest guide to what that means for your move.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Streets -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Totterdown Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Streets</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The central challenge of Totterdown is easy to describe and difficult to solve on moving day if you haven't prepared: the streets are narrow, they're steep, they're lined with parked cars on both sides, and they don't have anywhere obvious to put a large van.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Take a road like William Street or Oxford Street in the heart of the neighbourhood. Terraced houses right to the pavement edge, cars parked bumper to bumper, and a road width that was designed for pedestrians and the occasional horse — not for a 3.5-tonne Luton with a full household inside it. You can get down them. But if someone has parked on a corner — which happens constantly — you're doing a multi-point turn on a gradient while a queue of cars builds behind you.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The streets that run up and down the hill are the worst. Sylvia Avenue, Stackpool Road, the roads cutting between Wells Road at the top and Bath Road at the bottom — these are the ones that catch people out. You're not dealing with width alone. You're dealing with camber and gradient at the same time, which makes reversing a loaded van a very specific skill test.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The streets that run level across the hillside are more manageable. But even those have their moments, particularly in the evenings when residents are back from work and every available space is taken.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) — before Hill section -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Hill -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Hill: It Changes Everything</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Totterdown's defining physical feature is the hill itself. The neighbourhood rises sharply from the Avon at the bottom to Wells Road at the top, and that gradient affects every aspect of a removal. If your property is near the top — on or near Wells Road, or on one of the upper cross-streets — access from below is going to be slower and harder on the team. Everything coming out of the van is going uphill. Every heavy item is being carried up a flight of external steps, or up steep internal stairs, before it's even in the building.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The flip side is that if you're moving out and the van is parked lower than the property, gravity can work in your favour. You're bringing things downhill to the van rather than fighting the gradient the whole way. The principle holds: assess the elevation in relation to where the van will be, not only the distance in metres.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">It also means that for some Totterdown streets, which direction you approach from matters more than you'd expect. Coming up from Bath Road is different from coming down from Wells Road. Knowing in advance which approach gives better access to your specific street is the kind of local knowledge that comes from having done it before.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Totterdown?"
+      description="Get a personalised quote — we check street access and gradient before confirming your plan."
+      buttonText="Get Your Totterdown Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Parking and Wells Road -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking and Permits</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Totterdown operates under Bristol's residents' parking permit scheme in some streets, and even where there's no formal zone, on-street parking is heavy. A <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking bay suspension</a> guarantees space directly outside your property and is strongly recommended for any Totterdown move.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Reserve your parking the day before. This sounds obvious. It isn't, apparently, because we've turned up to moves in Totterdown where no one has thought to do it, and what should have been a manageable morning turns into a negotiation with the street. You're blocking the road, every ten minutes someone comes along and you have to move the van, they drive through, you move it back. We've done moves here where that cycle ran for most of the day. If you can get two van-length spaces reserved outside your property — cones the night before, a note through neighbours' doors — you will save yourself hours of stress and save us hours of wasted time. That saved time translates directly into cost.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Wells Road: The Artery</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wells Road runs along the top of Totterdown and connects it to <a href="/removals-bristol/knowle/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Knowle</a>, Brislington, and the routes south and east out of Bristol. For a removal company, it's the main road in and out — wide enough to be manageable, accessible from the M32 and the inner ring road without going through the worst of the city centre.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Bath Road at the bottom — the A4, running from Temple Meads through Brislington towards Bath — is the other major artery. Useful for access but frustrating at rush hour when it backs up significantly. If you're scheduling a move that involves loading or unloading near the lower end of Totterdown, aim to be done before five or start after nine. Bath Road at the wrong time of day adds friction you don't need.</p>
+  </div>
+
+  <!-- S4: The Properties -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Properties: What's Inside the Houses</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Totterdown's terraces look compact from the street. Inside, they often aren't — or not in the way you'd expect. Tall narrow staircases where a kingsize box spring becomes a philosophical problem. Hallways barely wide enough to be usable. Period features that make the rooms feel spacious but make moving furniture through the doorways into them feel like a puzzle. If you've got a large L-shaped sofa, tell us before we turn up. We'll plan for it rather than discovering it half-wedged in the stairwell."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wardrobes are usually fine going in through the front door and up the stairs. Large sofas are the ones that cause grief — particularly L-shaped corner units, which have become fashionable at roughly the inverse rate of how well they fit through Victorian doorways.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Converted flats are common in Totterdown, as they are across most of Bristol's Victorian housing stock. The conversion quality varies enormously. Some are done properly, with well-proportioned internal access and sensible communal areas. Others have been divided in ways that make no practical sense — a door put in where there shouldn't be one, a landing reduced to nothing, a ground-floor flat accessible only through a corridor that's about four inches narrower than a standard sofa.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">When you're booking a move into a converted flat in Totterdown, the access question is the first question, not an afterthought. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the internal layout as well as the street — we need to see both before we can quote accurately.</p>
+  </div>
+
+
+  <!-- S5: Is Totterdown a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Totterdown a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Totterdown is one of Bristol's best neighbourhoods to live in and one of its more demanding to move in or out of. The character that makes it desirable — the Victorian terraces, the tight streets, the hillside position, the community feel — is precisely what makes removal logistics here require more thought than they would in, say, Patchway or Bradley Stoke.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">What it rewards is experience. A team that has been down these streets before, that knows which end to approach from, that can spot a badly converted top-floor flat at the survey stage rather than on moving day, and that will tell you in advance to reserve your parking rather than discovering on the day why that mattered.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For a typical 2–3 bed terrace moving within Bristol, you're looking at a team of two to three, with one or two vans, and a full-day job. A two-man, one-van setup starts from around £600, but the average Totterdown terrace realistically needs three men and two vans — which comes in around £900–£1,100. The honest thing to say is that Totterdown moves rarely go wrong when they're properly planned and priced. They go wrong when someone books a two-man, one-van job based on what the house looks like from the outside, and the team turns up to discover four flights of steep stairs, a corner sofa, and nowhere to park within a hundred metres.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Totterdown Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Reserve parking the day before.</strong> Two van-length spaces outside your property — cones, neighbour notes, whatever it takes. This is the single most effective thing you can do.</li>
+      <li><strong>Check whether you need a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking suspension</a>.</strong> Partial RPZ coverage means some streets require one and others don't. Your Move Manager will confirm.</li>
+      <li><strong>Assess the gradient.</strong> Where does your property sit on the hill? Which direction should the van approach from? We check this at survey stage.</li>
+      <li><strong>Flag large or awkward items.</strong> L-shaped sofas, kingsize bed frames, American fridge-freezers — Victorian doorways and staircases need these assessed individually.</li>
+      <li><strong>Converted flat?</strong> Tell us so we can check the internal access, stairwell width, and communal areas before we quote.</li>
+      <li><strong>Consider <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing the day before</a>.</strong> Having everything boxed before the crew arrives means less time on the street and a faster, smoother day.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

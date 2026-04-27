@@ -1,0 +1,382 @@
+---
+/**
+ * /removals-bristol-to-london/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '120 miles' },
+        { label: 'Drive time', value: '~2 hours (off-peak)' },
+        { label: 'Primary route', value: 'M4 eastbound' },
+        { label: 'Move duration', value: '1–2 days' },
+        { label: 'Crew size', value: '3–4 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£1,200–£2,500' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Massive thanks to Painless Removals for the help with my move from Bristol to Bicester. Pete and Mike made my day much easier and stress free. None of my stuff was damaged in the move.",
+  name: 'Anthony',
+  context: 'Trustpilot Review',
+};
+
+const title = 'Removals Bristol to London — 120 Miles, 1–2 Days';
+const description = `Professional removals from Bristol to London, 120 miles via M4. Full-service house moves with packing, storage & ${siteConfig.company.insurance} insurance. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to London",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "London" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'How long does a Bristol to London move take?',
+    answer: 'We allocate a full day. The crew leaves Bristol early morning, arrives by mid-morning, and spends the afternoon unloading at your London address. Most moves are completed by early evening. Larger properties — 4+ bedrooms — may need two days: packing at your Bristol address on day one, driving and unloading on day two.',
+  },
+  {
+    question: 'Do you handle London parking suspensions?',
+    answer: 'Yes. We apply to the relevant London borough council for a parking suspension at least two weeks before your move date. This guarantees space directly outside your property for loading or unloading. The suspension fee varies by borough — some need 48–72 hours advance notice.',
+  },
+  {
+    question: 'Is there a congestion charge for the removal van?',
+    answer: 'Our fleet is fully ULEZ-compliant, so there is no additional charge for entering London\'s Ultra Low Emission Zone. We factor any applicable congestion charges into your quote upfront — no surprises on the day.',
+  },
+  {
+    question: 'Can you store our things if we haven\'t completed yet?',
+    answer: 'Yes. We offer secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol depot with flexible terms — from a few days to several months. This is common when exchange and completion dates don\'t align, which happens frequently with London property chains.',
+  },
+  {
+    question: 'Do you do return loads from London to Bristol?',
+    answer: 'Yes, we frequently move families in both directions. London-to-Bristol relocations are one of our most common routes — professionals and families moving out of the capital for more space and a lower cost of living.',
+  },
+  {
+    question: 'Should I avoid moving to London on a Friday?',
+    answer: 'Yes, strongly. London traffic on a Friday is reliably difficult, adding at least an hour to the journey — sometimes much more. We have seen a three-hour drive turn into five and a half hours on a Friday before school holidays. We sometimes apply a Friday surcharge for London moves. Moving on a Thursday instead can save you money and stress.',
+  },
+  {
+    question: 'What happens if keys are delayed on moving day?',
+    answer: 'Chain delays are common on London moves. We offer a Key Wait Waiver — a one-off fixed addition to your quote that removes all overtime charges if you\'re held up waiting for keys. Without it, our overtime rate is &pound;35 per 30 minutes per crew member after 5pm.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to London" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/routes/london-van-brent-cross-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to London' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to London — 120&nbsp;Miles, 1–2&nbsp;Days
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Bristol to London is our most popular long-distance route. The M4 runs directly between the two cities — 120 miles, roughly two hours in clear traffic. Whether your move takes one day or two depends on two things: how much you have to move, and where in London you're going. West London — good motorway access, predictable unload — can often be completed in a single day. Central or east London tends to push things to two days, partly because of drive time and partly because London properties add access and parking time that local moves don't require.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">London presents challenges unique to the capital: parking suspensions that need to be applied for weeks in advance, congestion zones, narrow Victorian terraces with tight staircases, and mansion blocks with service lifts that need booking. Our crews handle Westminster, Camden, Islington, Hackney, and South London regularly. Telling us the postcode rather than "London" lets us give you a much more accurate picture — the side of London affects everything.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="routes/london-van-brent-cross" pattern="FULL" alt="Painless Removals van on a London street near Brent Cross during a Bristol to London house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes a Bristol to London Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to London Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Friday Problem</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Do not move on a Friday if you can possibly avoid it. London traffic on a Friday is reliably difficult — the Friday before school holidays or Easter is in a different category entirely. We have seen a three-hour Bristol-to-London drive turn into five and a half hours on a Friday afternoon. The result: the team arrives exhausted, unloads in the dark, and the customer pays for overtime nobody wanted.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The best days are Tuesday, Wednesday, or Thursday. A one-day shift from Friday to Thursday can save you a couple of hundred pounds and a significant amount of stress. We always flag this when you book — the day you choose affects the entire experience.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Where in London You're Going</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">West London — Hammersmith, Chiswick, Putney, Richmond — is the natural run-in from the M4 corridor. Good motorway connections, less city driving, and the most predictable drive times. Central and east London add 45 minutes to an hour once off the motorway. South London means routing around or through the city.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">A ground-floor maisonette with a parking bay outside is a different job from a fourth-floor flat in a building where the lift is restricted during move-in and the nearest parking is 80 metres along a corridor. Both are London. The postcode tells us which one we're dealing with.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking Suspensions and Access</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If your London property is in a Controlled Parking Zone — most of inner London — you'll need a parking suspension to guarantee a bay outside your front door. We handle this for you, applying to the borough council at least two weeks ahead. Without it, circling for parking with a loaded removal van is a recipe for delays.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">For larger households — 4+ bedrooms — we send two vans with a crew of four. This means fewer trips up narrow staircases and a faster unload at the London end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> is popular on this route: we pack the day before at your Bristol address, then move everything the following day.</p>
+      </div>
+
+      <!-- Mobile: Review (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="London, UK" />
+      </div>
+
+      <!-- Mid CTA — bleed full-width on mobile -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to London?"
+          description="Free quote in about two minutes. We handle parking suspensions, congestion zones, and every London borough."
+          buttonText="Get Your London Removal Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We run Bristol to London multiple times a month — it's our busiest long-distance corridor. The patterns repeat: the M4/M25 junction delays at predictable times, the parking suspension requirements in every inner borough, and the difference that choosing the right day of the week makes to the entire experience. Painless Removals has been running this route since 1978.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="routes/london-van-loading" pattern="HALF" alt="Painless Removals van being loaded for a long-distance move to London" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Where in London you're going matters as much as how much you've got to move. West London is the most predictable for us — good motorway connections, less city driving. Central London adds parking complexity and time. East London means navigating through the city itself. And whatever you do, avoid Friday — we've seen a three-hour drive turn into five and a half hours. A one-day shift to Thursday can save you a couple of hundred pounds."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">If you're moving from London to Bristol, the same advice applies in reverse. We handle both directions with equal frequency — particularly professionals and families moving out of the capital for more space.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to London Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A Bristol-to-London move typically falls between £1,200 and £2,500 depending on the size of your household, access at both ends, and whether you need packing. A one-bedroom flat with good access sits at the lower end — from around £800. A four-bedroom family home with a garage clearance, <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">full packing</a>, and difficult London access can reach £2,500–£4,000.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Our quotes include {siteConfig.company.insurance} insurance cover per van, all fuel, parking suspension handling, and a full crew. No hidden charges for mileage, tolls, or congestion zones. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to London Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 london-checklist">
+          <li><strong>Avoid Friday.</strong> Tuesday, Wednesday, or Thursday are reliably better — cheaper, calmer, and faster.</li>
+          <li><strong>Give us the postcode.</strong> "London" isn't specific enough. West London, central London, and east London are different jobs with different pricing.</li>
+          <li><strong>Book 4–6 weeks ahead.</strong> This gives time for parking suspensions, packing logistics, and crew allocation.</li>
+          <li><strong>Consider the Key Wait Waiver.</strong> If you're in a chain, this fixed addition removes all overtime charges for key delays — peace of mind for a common problem.</li>
+          <li><strong>Professional packing?</strong> For long-distance moves, professional packing protects your belongings and your insurance cover. Self-packed items are not insured.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+
+        <!-- Route Overview -->
+        <FactBox {...factBoxProps} />
+
+        <!-- Review -->
+        <ReviewInline {...reviewProps} />
+
+        <!-- Route Map -->
+        <RouteMap destination="London, UK" />
+
+        <!-- Author box -->
+        <SidebarAuthorBox />
+
+        <!-- Sticky CTA -->
+        <SidebarCTA />
+
+      </div>
+    </aside>
+
+  </div>
+  <!-- ═══ End two-column layout ═══ -->
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to London Moving FAQs" />
+  </div>
+
+</div>
+<!-- ═══ Full-width sections (break out of container) ═══ -->
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot. Here are some of our most common routes.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="Birmingham" meta="~90 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Bristol" to="Oxford" meta="~75 miles via M4/A34" days="1 day" href="/removals-bristol-to-oxford/" />
+      <RouteCard from="Bristol" to="Southampton" meta="~80 miles via M4/M3" days="1–2 days" href="/removals-bristol-to-southampton/" />
+      <RouteCard from="Bristol" to="Manchester" meta="~190 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to London?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  /* ── Mid CTA: full-width bleed on mobile ── */
+  .midcta-bleed {
+    margin-left: -1rem;   /* cancels px-4 */
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem; /* cancels sm:px-6 */
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  /* ── Checklist: checkmark icons ── */
+  .london-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .london-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .london-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

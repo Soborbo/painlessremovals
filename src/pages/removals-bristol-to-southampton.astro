@@ -1,0 +1,360 @@
+---
+/**
+ * /removals-bristol-to-southampton/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '75 miles' },
+        { label: 'Drive time', value: '~1 hr 40 min–2 hrs' },
+        { label: 'Primary route', value: 'M4 / M3' },
+        { label: 'Move duration', value: '1–2 days' },
+        { label: 'Crew size', value: '2–3 movers, 1 van' },
+        { label: 'Typical cost', value: '£700–£1,800' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "We moved from Bristol to Southampton and Painless Removals did a really great job. They worked very hard and were careful with our belongings. They wouldn't leave until we were happy that our furniture had been reassembled and put in the right place.",
+  name: 'Kevin Briggs',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Southampton — 80 Miles, 1–2 Days';
+const description = `House removals from Bristol to Southampton, 80 miles via M4/M3. One- and two-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Southampton",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Southampton" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'How long does a Bristol to Southampton move take?',
+    answer: 'Under two hours on the road via M4 and M3. We load in the morning, drive across, and unload at your Southampton address in the afternoon. A full day is enough to complete the move.',
+  },
+  {
+    question: 'Do you cover the wider Hampshire area?',
+    answer: 'Yes. We deliver to Winchester, Eastleigh, Romsey, the New Forest, and Portsmouth as well as Southampton itself. Each destination is quoted individually based on your specific address and access.',
+  },
+  {
+    question: 'Can you help with overseas shipping from Southampton port?',
+    answer: 'We deliver your belongings to the port and coordinate the handover with your chosen international shipping company. The overseas leg is handled by specialist freight operators — we make sure your items arrive at the dock on time and in good condition.',
+  },
+  {
+    question: 'What about parking in Southampton city centre?',
+    answer: 'Many Southampton city centre streets and waterfront developments have restricted parking. We handle council parking suspensions where needed, and coordinate with building management for loading bay access at apartment complexes.',
+  },
+  {
+    question: "Do you offer storage if our completion dates don't match?",
+    answer: 'Yes. We store your belongings at our Bristol depot on flexible terms — weekly or monthly — until your new property is ready. Everything is collected from your old address, stored securely, and delivered when you need it.',
+  },
+  {
+    question: 'Is this a route you run often?',
+    answer: "Honestly, it is not our highest-volume route. The drive is about two hours — comparable to parts of Devon. But the logistics are well-planned and we assess each move individually. Whether we run the route weekly or monthly makes no difference to the service — every move gets the same level of preparation.",
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Southampton" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Southampton' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Southampton — 80&nbsp;Miles, One&nbsp;Day
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">It's not a route people talk about much, but for the right move it's a clean one. Bristol to Southampton is around 75 miles — about one hour and forty minutes to two hours depending on which way you go. The M4 east to the M3 south is the faster motorway option. The A36 through Warminster and Salisbury is quieter, scenic, and sometimes quicker when the motorways are backed up. For smaller moves, a single day covers loading, driving, and unloading. Larger properties with more to pack and carry may need two days.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Southampton's housing varies widely: waterfront apartment developments along Ocean Village and the marina with long carries from the van to the front door, Victorian terraces in St Denys and Portswood, suburban family homes in Bassett and Hedge End, and student lets around Highfield near the university. Each type of property presents different access requirements — and we plan for all of them before move day.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Southampton house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Southampton Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Route South</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">You have two realistic options. The M4 eastbound picking up the M3 south is the default — mostly motorway, predictable timing, and the route sat-navs prefer. The alternative is the A36 through Warminster and Salisbury, which avoids the motorway network entirely. On a clear day there is little difference in journey time. When the M4 around Swindon or the M3 near Winchester is carrying heavy traffic, the A36 can be faster.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The M27 around Southampton backs up during rush hour — particularly the stretch between junctions 3 and 8 during the evening commute. We schedule arrivals to avoid this window. A midweek move with a mid-morning departure from Bristol puts us into Southampton before the afternoon build-up starts.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Southampton's Neighbourhoods</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bassett and Highfield sit on higher ground north of the city centre — wider residential streets and driveways that give the van easy access. Bitterne and Hedge End to the east are similar: suburban estates with room to park and work. The waterfront developments along Ocean Village and the marina are a different proposition. Underground car parks, narrow service corridors, pre-booked goods lifts, and longer carries from loading bay to apartment. We assess every waterfront delivery individually.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">St Denys and Portswood have a mix of Victorian terraces and converted flats, many on streets with permit parking. Shirley, to the west of the centre, offers a range of housing from pre-war semis to modern developments. If your new property is in a restricted parking area, we handle the council suspension paperwork.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Port and Student Calendar</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Southampton is a major port city, and we occasionally handle moves involving items going in or out of the docks — delivering household goods to the port for international shipping, or collecting from the port for new arrivals. The university population around Highfield also creates a predictable September surge in moving activity. If your move falls in late September, booking early gives you a better choice of dates. The student traffic affects van availability across the whole city, not just the university area.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Southampton, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Southampton?"
+          description="Free quote in about two minutes. M4/M3 route, fully insured, no hidden charges."
+          buttonText="Get Your Southampton Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals has handled Bristol-to-Southampton moves for professionals relocating to the maritime and defence industries, families moving closer to the south coast, and port workers transferring between cities. The route works in both directions — Southampton-to-Bristol moves tend to involve people joining the creative and tech sectors. We know the access requirements at both ends and plan accordingly.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Southampton" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Southampton is about two hours from Bristol — a similar drive time to parts of Devon. For smaller moves, a single day is achievable; for larger properties with more to move, we split across two days. It's not one of our highest-volume routes, but the principles are the same — we plan properly and price honestly."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready. Weekly or monthly terms, with collection and delivery included.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Southampton Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat with a single van typically costs £700–£900. A standard family home runs £1,200–£1,800. Waterfront apartments with access complications — goods lift bookings, loading bay reservations, longer carries — sit at the higher end of that range. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but splits the work across two days and protects fragile items for the journey.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, and equipment. No hidden charges for mileage or parking suspension handling. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Southampton Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 southampton-checklist">
+          <li><strong>Check the M27.</strong> The stretch around Southampton backs up during rush hour. Midweek moves with mid-morning departures avoid the worst of it.</li>
+          <li><strong>Waterfront apartment?</strong> Confirm goods lift availability and loading bay access with building management before your move date.</li>
+          <li><strong>September moves.</strong> The university student intake creates a city-wide surge in moving activity. Book early for late September dates.</li>
+          <li><strong>Port delivery?</strong> If items are going into or out of Southampton docks, let us know at the quoting stage so we can coordinate timing.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then move everything the following morning.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Southampton, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Southampton Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Oxford" meta="~75 miles via M4/A34" days="1 day" href="/removals-bristol-to-oxford/" />
+      <RouteCard from="Bristol" to="Exeter" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Bristol" to="Cardiff" meta="~45 miles via M4/M48" days="1 day" href="/removals-bristol-to-cardiff/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to Southampton?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .southampton-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .southampton-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .southampton-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

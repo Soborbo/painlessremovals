@@ -1,0 +1,647 @@
+---
+/**
+ * Storage Service Landing Page
+ *
+ * Secure storage service for Painless Removals Bristol.
+ * Following 5-block landing page structure for conversion optimization.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import { siteConfig } from '@/config/site.config';
+import { bristolNeighbourhoods, neighbourhoodUrl } from '@/config/areas.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import ProblemSolution from '@/components/ProblemSolution.astro';
+
+// Page metadata
+const pageTitle = 'Secure Storage Bristol | 50% Off With Your Move | Painless Removals';
+const pageDescription = 'Secure, insured storage in Bristol. Flexible sizes from 25 sq ft. 50% off your first months when you book with a removal. We handle everything – door to door.';
+
+// Data structures
+
+const benefits = [
+  {
+    imageName: 'storage/painless-removals-storage-more',
+    title: 'We Collect, Store, and Deliver – You Don\'t Lift a Finger',
+    description: 'This isn\'t self-storage. You don\'t need to hire a van, drive to a warehouse, or figure out how to stack boxes. Our team collects everything from your door, transports it to our secure facility, and delivers it back when you\'re ready. Access is available by appointment – just get in touch and we\'ll arrange it.',
+  },
+  {
+    imageName: 'storage/painless-removals-storage-more-door',
+    title: 'Fully Insured While in Our Care',
+    description: 'Your belongings are comprehensively insured while in storage. Every item is covered under our insurance policy. If you have individual items valued over £2,000, just let us know in writing beforehand and we\'ll ensure appropriate coverage. Peace of mind, from the moment we collect to the moment we deliver.',
+  },
+  {
+    imageName: 'storage/painless-storage-door',
+    title: 'Two Secure Locations: Clifton and Filton',
+    description: 'We operate from two storage facilities across Bristol. Our Clifton facility is centrally located for easy access. In Filton, we partner with More Storage – a modern, secure facility with individually locked, monitored units. Both locations are clean, dry, and purpose-built for safe long-term storage.',
+  },
+];
+
+
+
+const reviews = [
+  {
+    html: 'Jay and Nick moved me into and out of storage – <mark>hugely grateful for their efficient and friendly service</mark>. Would definitely recommend!',
+    name: 'Julia Davidson',
+    initials: 'JD',
+    platform: 'google',
+  },
+  {
+    html: 'Such a great company! The guys came in dismantled and packed, no fuss, <mark>absolutely stress free</mark>! Will definitely be using again when we move from storage to house!',
+    name: 'Phoebe Cox',
+    initials: 'PC',
+    platform: 'google',
+  },
+  {
+    html: 'Painless Removals were great from start to finish. Jay came around and had a look, <mark>did everything he could to keep the move affordable</mark>, and organised storage for us. The crew who then came were on time, friendly and professional.',
+    name: 'Joe Knowles',
+    initials: 'JK',
+    platform: 'google',
+  },
+];
+
+
+const faqs = [
+  {
+    question: 'Can I access my things whenever I want?',
+    answer: 'Our storage is managed, not self-access – which means your items are more secure and we handle all the heavy lifting. If you need something, just contact us and we\'ll arrange access by appointment. If you need regular access, we recommend local self-storage partners at possibly higher but discounted rates.',
+  },
+  {
+    question: 'How do I know my things are safe?',
+    answer: 'Our facilities are secure, individually locked, and monitored. On top of that, your belongings are insured while in our care. We also handle everything ourselves – your items aren\'t touched by third parties.',
+  },
+  {
+    question: 'What if I don\'t need a full container?',
+    answer: 'That\'s exactly our approach. We offer flexible unit sizes starting from just 25 sq ft. You only pay for the space you actually use – not a square foot more.',
+  },
+  {
+    question: 'Do you offer free storage for chain breaks?',
+    answer: 'Yes. If you\'re moving with us and need short-term storage because your completion dates don\'t line up, we\'ll store your belongings for free for up to two weeks (subject to availability). This also applies if something goes wrong on moving day and we can\'t deliver to your new address. After two weeks, we move you onto a flexible paid plan at a fair rate. You can also add a <a href="/key-wait-waiver/">Key Wait Waiver</a> to your move to cover overtime costs if the chain runs late on the day itself.',
+  },
+  {
+    question: 'How long can I store my things?',
+    answer: 'As long as you need. There\'s no maximum storage duration. Some customers store for a few weeks between moves, others keep things with us for months during renovations. You\'re in control.',
+  },
+  {
+    question: 'What size storage unit do I need?',
+    answer: 'As a rough guide: 25 sq ft holds the contents of a small shed or a dozen boxes. 75 sq ft accommodates a 1-bedroom flat. 125 sq ft handles a 2-3 bedroom house. We\'ll help you work out exactly what you need during your quote.',
+  },
+  {
+    question: 'Do I need to pack everything before you collect it?',
+    answer: 'No. If you book our packing service alongside storage, we\'ll pack everything professionally before it goes into storage. This is actually ideal – items packed by our team are better protected for longer-term storage.',
+  },
+  {
+    question: 'Where is the storage facility?',
+    answer: 'We use secure storage facilities in the Bristol area, including locations in Clifton and Filton. Both are clean, dry, and monitored facilities with individually locked units.',
+  },
+  {
+    question: 'Is my stuff insured while in storage?',
+    answer: 'Yes. Your belongings are insured while in our care. Items over £2,000 in value should be declared in writing beforehand so we can ensure appropriate coverage.',
+  },
+  {
+    question: 'Can I add more items to storage later?',
+    answer: 'Yes. If you need to add items after the initial collection, we can arrange a separate collection or you can bring items by appointment. If you need a larger unit, we\'ll upgrade you seamlessly.',
+  },
+  {
+    question: 'What can\'t I store?',
+    answer: 'Hazardous items (chemicals, gas, explosives), perishable food, and anything illegal. Valuables like jewellery, cash, and important documents should travel with you rather than go into storage.',
+  },
+  {
+    question: 'How much notice do I need to give for delivery?',
+    answer: 'Ideally a week, though we can often accommodate shorter notice. We\'ll deliver everything to your new address and place items where you want them.',
+  },
+  {
+    question: 'What happens if I need to cancel?',
+    answer: 'There\'s no long-term commitment. If you no longer need storage, just let us know and we\'ll arrange delivery of your items or you can collect them by appointment.',
+  },
+];
+
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "Secure Storage Bristol",
+    description: pageDescription,
+    serviceType: "Storage Service",
+    url: "/storage-service/",
+    areaServed: areas.bristol,
+    offers: offer({ price: "41", description: "Secure storage from £41/month for 25 sq ft" }),
+    image: "/img/storage/painless-removals-storage-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Storage Service" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/storage/painless-removals-storage-1200w.webp" preloadImage="/img/storage/painless-removals-storage-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO (with USPs below - all above the fold)
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="storage/painless-removals-storage"
+        pattern="FULL"
+        alt="Secure storage facility in Bristol with individually locked units"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Secure Storage in Bristol
+        </h1>
+
+        <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+          Move with us and save <span class="text-secondary-500">50%</span> on your first months of storage
+        </h2>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Waiting for keys? Renovating? We'll collect your belongings, keep them safe&nbsp;&amp;&nbsp;insured, and deliver when you're ready.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote?service=storage" class="btn-cta-orange">
+            GET MY STORAGE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, flexible sizes</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="storage/painless-removals-storage"
+        pattern="FULL"
+        alt="Secure storage facility in Bristol with individually locked units"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USPs - Full width bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: INTRO / EMOTIONAL HOOK
+  ============================================ -->
+  <ProblemSolution
+    heading="You Don't Need to Decide Everything on Moving Day"
+  >
+    <p class="text-warm-gray leading-relaxed mb-6 text-lg">
+      <strong class="text-warm-gray">Life rarely follows the plan.</strong> Dates don't match, renovations overrun, and sometimes you just need more time. This isn't self-storage – we collect everything from your door, keep it safe and insured in our secure facilities, and deliver it wherever you need it, whenever you're ready.
+    </p>
+    <p class="text-warm-gray leading-relaxed mb-6">
+      <strong class="text-warm-gray">You don't need to hire a van, visit a warehouse, or lift a finger.</strong> Whether your completion dates are weeks apart, a renovation is running behind, or you're downsizing and need time to decide what to keep – we give you the breathing room to handle it on your own terms.
+    </p>
+    <p class="text-warm-gray leading-relaxed">
+      <strong class="text-primary-700">Access is available by appointment</strong> – just get in touch and we'll arrange it. Need something back sooner? We can deliver individual items too.
+    </p>
+  </ProblemSolution>
+
+  <!-- ============================================
+       CHAIN-BREAKING: FREE SHORT-TERM STORAGE
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden">
+        <OptimizedPicture
+          name="storage/more-storage-door"
+          pattern="HALF"
+          alt="Secure storage unit door at our Bristol facility"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white">
+        <h2 class="text-2xl lg:text-3xl mb-4">Stuck in a Chain? We'll Store Your Things <span class="text-secondary-500">for Free</span></h2>
+        <p class="text-warm-gray text-lg leading-relaxed mb-6">
+          Property chains don't always line up. If your completion dates are days or weeks apart, that shouldn't cost you extra. When you move with us and need short-term storage to break the chain, <strong class="text-gray-900">we'll store your belongings for free for up to two weeks</strong> – as long as we have availability in our facility.
+        </p>
+        <p class="text-warm-gray leading-relaxed mb-6">
+          The same applies if something goes wrong on moving day. If your buyer completes but your new home isn't ready yet and we can't unload the van, we'll take everything to our warehouse and keep it safe at no charge for up to two weeks – then deliver it to your new address as soon as you're ready.
+        </p>
+        <p class="text-warm-gray leading-relaxed">
+          If storage is needed beyond two weeks, we'll move you onto one of our flexible paid plans at a fair rate. But for those short stopovers that just need a little breathing room – <strong class="text-gray-900">it's on us</strong>.
+        </p>
+        <a href="/instantquote?service=storage" class="inline-block btn-cta-orange mt-8">
+          Get Your Storage Quote →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STORAGE TESTIMONIAL
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 text-center">
+          <div class="flex justify-center gap-1 text-orange-400 text-xl mb-4">
+            <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+          </div>
+          <p class="text-gray-700 text-lg leading-relaxed mb-4">
+            "At relatively short notice Painless made time to pack and moved us out in March. They then <mark>kept our things in storage at a very reasonable rate</mark> until our house was ready for them to move us in. Pete, Isaac, Jeremiah, Mike and Sam were all amazing!"
+          </p>
+          <div class="flex items-center justify-center gap-3">
+            <span class="font-semibold text-gray-900">Claire G.</span>
+            <img src="/images/google-g-logo.svg" alt="Google review" class="w-5 h-5" width="48" height="48" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: BENEFITS (Full-width alternating, no gaps)
+  ============================================ -->
+  <section class="bg-cream">
+    <div>
+      {benefits.map((benefit, index) => (
+        <div class="grid lg:grid-cols-2">
+          <!-- Image (50% width, full height) -->
+          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+            <OptimizedPicture
+              name={benefit.imageName}
+              pattern="HALF"
+              alt={benefit.title}
+              loading="lazy"
+              decoding="async"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+          <!-- Text (50% width) -->
+          <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+            <h3 class="text-2xl lg:text-3xl mb-4">{benefit.title}</h3>
+            <p class="text-warm-gray text-lg">{benefit.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: STORAGE PRICING & SIZE CALCULATOR
+  ============================================ -->
+  <section class="section bg-white" id="size-calculator">
+    <div class="container-wide">
+      <!-- Section header -->
+      <div class="text-center mb-4">
+        <h2 class="mb-3">Simple, Transparent Storage Pricing</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto mb-2">
+          Every quote is tailored to your needs. Prices depend on availability, unit size, and duration – so your quote may be even better than the guide prices below. Get in touch for your personalised price.
+        </p>
+        <p class="text-secondary-500 text-xl lg:text-2xl font-bold">50% off your first 2 months when booked with a removal</p>
+        <p class="text-warm-gray text-sm mt-2">All prices per month +VAT. No hidden fees, no long-term contracts.</p>
+      </div>
+
+      <!-- Two-column layout: illustration left, size info right -->
+      <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start max-w-5xl mx-auto mt-10">
+
+        <!-- Left: Animated room illustration (fixed height container so page doesn't jump) -->
+        <div class="flex flex-col items-center justify-end" style="min-height: 320px;">
+          <div id="calc-room-icon" class="flex items-end justify-center transition-all duration-500 ease-out" style="width: 80px; height: 80px;">
+            <svg id="calc-room-svg" viewBox="0 0 100 100" class="w-full h-full text-primary-600 transition-all duration-500">
+              <rect id="svg-room" x="10" y="10" width="80" height="80" fill="none" stroke="currentColor" stroke-width="3" rx="4"/>
+              <line id="svg-arrow-h" x1="10" y1="97" x2="90" y2="97" stroke="currentColor" stroke-width="1.5" marker-start="url(#arrowLeft)" marker-end="url(#arrowRight)"/>
+              <line id="svg-arrow-v" x1="3" y1="10" x2="3" y2="90" stroke="currentColor" stroke-width="1.5" marker-start="url(#arrowUp)" marker-end="url(#arrowDown)"/>
+              <text id="svg-sqft-label" x="50" y="48" text-anchor="middle" fill="currentColor" font-size="22" font-weight="bold"></text>
+              <text id="svg-sqft-unit" x="50" y="66" text-anchor="middle" fill="currentColor" font-size="13">sq ft</text>
+              <defs>
+                <marker id="arrowRight" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="currentColor"/></marker>
+                <marker id="arrowLeft" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><path d="M6,0 L0,3 L6,6" fill="currentColor"/></marker>
+                <marker id="arrowDown" markerWidth="6" markerHeight="6" refX="3" refY="5" orient="auto"><path d="M0,0 L3,6 L6,0" fill="currentColor"/></marker>
+                <marker id="arrowUp" markerWidth="6" markerHeight="6" refX="3" refY="1" orient="auto"><path d="M0,6 L3,0 L6,6" fill="currentColor"/></marker>
+              </defs>
+            </svg>
+          </div>
+          <p id="calc-room-name" class="text-2xl lg:text-3xl font-bold text-primary-600 text-center transition-all duration-300 mt-4"></p>
+          <p class="text-warm-gray text-base text-center mt-1">
+            <span class="text-gray-500">Think of it as:</span>
+            <span id="calc-think-of" class="font-semibold text-gray-700 transition-all duration-300"></span>
+          </p>
+        </div>
+
+        <!-- Right: Price display + recommendation -->
+        <div class="flex flex-col justify-center">
+          <!-- Recommendation badge -->
+          <div id="calc-recommendation" class="flex items-center gap-2 mb-4">
+            <span class="inline-flex items-center gap-1.5 bg-primary-100 text-primary-700 text-sm font-semibold px-4 py-1.5 rounded-full">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span id="calc-rec-text"></span>
+            </span>
+          </div>
+
+          <!-- Pricing result -->
+          <div class="bg-cream border-2 border-primary-200 rounded-xl p-6">
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-gray-400 line-through text-lg" id="calc-regular"></span>
+              <span class="text-4xl font-bold text-gray-900" id="calc-price"></span>
+              <span class="text-warm-gray text-sm">+VAT/mo</span>
+            </div>
+            <p class="text-secondary-500 text-sm font-bold mb-3">for the first 2 months (50% off)</p>
+            <p class="text-warm-gray text-xs mb-5">Then <span id="calc-regular-after"></span>+VAT/mo from month 3</p>
+            <a href="/instantquote?service=storage" class="btn-cta-green">
+              GET MY REMOVAL AND STORAGE QUOTE
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slider (full width below) -->
+      <div class="max-w-3xl mx-auto mt-10">
+        <p class="text-warm-gray text-center text-sm mb-4">Drag the slider to find the right size for you</p>
+        <div class="relative mb-4">
+          <input
+            type="range"
+            id="storage-slider"
+            min="0"
+            max="5"
+            value="3"
+            step="1"
+            class="w-full h-3 rounded-full appearance-none cursor-pointer bg-gray-200 accent-primary-600"
+            style="--slider-progress: 60%"
+            aria-label="Select storage size"
+          />
+          <!-- Tick marks positioned to match slider thumb centers -->
+          <div class="relative mt-3" style="margin-left: 14px; margin-right: 14px;">
+            <div class="flex justify-between">
+              <button class="slider-tick text-center cursor-pointer group flex flex-col items-center" data-index="0">
+                <span class="block w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-400 mb-1 transition-colors"></span>
+                <span class="text-xs text-warm-gray group-hover:text-primary-600 transition-colors">25</span>
+              </button>
+              <button class="slider-tick text-center cursor-pointer group flex flex-col items-center" data-index="1">
+                <span class="block w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-400 mb-1 transition-colors"></span>
+                <span class="text-xs text-warm-gray group-hover:text-primary-600 transition-colors">50</span>
+              </button>
+              <button class="slider-tick text-center cursor-pointer group flex flex-col items-center" data-index="2">
+                <span class="block w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-400 mb-1 transition-colors"></span>
+                <span class="text-xs text-warm-gray group-hover:text-primary-600 transition-colors">85</span>
+              </button>
+              <button class="slider-tick text-center cursor-pointer group flex flex-col items-center relative" data-index="3">
+                <span class="block w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-400 mb-1 transition-colors"></span>
+                <span class="text-xs text-warm-gray group-hover:text-primary-600 transition-colors">100</span>
+                <span class="absolute -top-7 left-1/2 -translate-x-1/2 bg-secondary-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap">Most Popular</span>
+              </button>
+              <button class="slider-tick text-center cursor-pointer group flex flex-col items-center" data-index="4">
+                <span class="block w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-400 mb-1 transition-colors"></span>
+                <span class="text-xs text-warm-gray group-hover:text-primary-600 transition-colors">150</span>
+              </button>
+              <button class="slider-tick text-center cursor-pointer group flex flex-col items-center" data-index="5">
+                <span class="block w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-primary-400 mb-1 transition-colors"></span>
+                <span class="text-xs text-warm-gray group-hover:text-primary-600 transition-colors">200</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-center text-sm text-warm-gray mt-6">
+        We also have larger storage spaces available. Just ask. * 50% discount applies when storage is booked alongside a removal service. All prices +VAT.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: SOCIAL PROOF
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Our Customers Say</h2>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {reviews.map((review) => (
+          <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+            <div>
+              <div class="flex gap-1 text-orange-400 text-xl mb-2">
+                <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+              </div>
+              <p class="text-gray-700 text-[15px] leading-relaxed" set:html={review.html} />
+            </div>
+            <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+              <div class="flex items-center gap-3">
+                <span class="font-semibold text-gray-900 text-[14px]">{review.name}</span>
+              </div>
+              {review.platform === 'google' ? (
+                <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+              ) : (
+                <img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="w-[96px] h-auto" width="220" height="50" />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/reviews/" class="soft-cta">Read more verified customer reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: QUOTE CTA
+  ============================================ -->
+  <section class="bg-linear-to-br from-primary-600 to-primary-700 text-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Left: Content -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <div class="max-w-xl">
+          <h2 class="text-white mb-4">Get Your Free Storage Quote</h2>
+          <p class="text-primary-100 mb-8">
+            Tell us what you need to store and we'll find the right size at the right price. No obligation.
+          </p>
+
+          <ul class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-8 text-primary-100">
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> 50% off first 2 months
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> 10+ flexible unit sizes
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Fully insured
+            </li>
+          </ul>
+
+          <a href="/instantquote?service=storage" class="inline-block bg-white hover:bg-gray-100 text-primary-600 px-8 py-3 text-lg font-bold uppercase no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            GET MY STORAGE QUOTE
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="hidden lg:block relative min-h-[400px]">
+        <OptimizedPicture
+          name="storage/painless-removals-storage-door"
+          pattern="HALF"
+          alt="Secure storage unit entrance in Bristol"
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ============================================
+       SECTION 11: ABOUT (formerly Section 12)
+  ============================================ -->
+  <JayAuthorBlock
+    heading="Your Belongings Are in Good Hands"
+    quote="Storage should take something off your plate, not add to it. That's why we handle everything from collection to delivery. You shouldn't have to rent a van, drive to a warehouse, or figure out how to stack boxes in a container. We do it all."
+    description="Jay runs the business hands-on and personally ensures every storage customer gets the right unit size at the right price. If you have questions, you can reach him directly."
+  />
+
+  <!-- ============================================
+       SECTION 13: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} />
+
+
+  <!-- ============================================
+       NEIGHBOURHOOD CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Storage Collection Across Bristol</h2>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10">We collect from any Bristol neighbourhood and deliver straight to our secure storage facility.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {bristolNeighbourhoods.slice(0, 8).map(n => (
+          <a href={neighbourhoodUrl(n.slug)} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            {n.name} <span class="text-warm-gray font-normal">({n.postcode})</span>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/areas/" class="soft-cta">See all areas we cover</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 16: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Take Storage Off Your Plate?"
+    description="We collect, store, and deliver. You don't lift a finger."
+    bullets={['50% off first 2 months', 'Secure & insured', '10+ flexible sizes']}
+    primaryText="BOOK STORAGE NOW"
+    primaryHref="/instantquote?service=storage"
+  />
+
+
+</Layout>
+
+<!-- Size Calculator Script -->
+<!-- Storage Slider Calculator Script -->
+<script>
+  const storageTiers = [
+    { sqft: 25,  name: 'Small Wardrobe', price: 41,  regular: 82,  recommendation: 'Just a few boxes?', thinkOf: 'a small wardrobe or garden shed' },
+    { sqft: 50,  name: 'Garden Shed',    price: 59,  regular: 118, recommendation: 'Including a couch?', thinkOf: 'a single garage or garden shed' },
+    { sqft: 85,  name: 'Small Bedroom',  price: 82,  regular: 164, recommendation: 'Studio apartment',   thinkOf: 'a small bedroom – fits a studio flat' },
+    { sqft: 100, name: 'Standard Bedroom', price: 92, regular: 184, recommendation: '1-bedroom apartment', thinkOf: 'a standard bedroom – fits a 1-bed apartment' },
+    { sqft: 150, name: 'Large Bedroom',  price: 124, regular: 248, recommendation: '2-bedroom apartment', thinkOf: 'a large bedroom – fits a 2-bed apartment' },
+    { sqft: 200, name: '1 Car Garage',   price: 157, regular: 314, recommendation: '3-bedroom house',    thinkOf: 'a single car garage – fits a 3-bed house' },
+  ];
+
+  const slider = document.getElementById('storage-slider') as HTMLInputElement;
+  const roomName = document.getElementById('calc-room-name');
+  const thinkOf = document.getElementById('calc-think-of');
+  const recText = document.getElementById('calc-rec-text');
+  const priceEl = document.getElementById('calc-price');
+  const regularEl = document.getElementById('calc-regular');
+  const regularAfter = document.getElementById('calc-regular-after');
+  const sqftLabel = document.getElementById('svg-sqft-label');
+  const roomIcon = document.getElementById('calc-room-icon');
+  const ticks = document.querySelectorAll('.slider-tick');
+
+  function updateCalculator(index: number) {
+    const tier = storageTiers[index];
+    if (!tier) return;
+
+    // Update text displays
+    if (roomName) roomName.textContent = tier.name;
+    if (thinkOf) thinkOf.textContent = tier.thinkOf;
+    if (recText) recText.textContent = tier.recommendation;
+    if (priceEl) priceEl.textContent = `£${tier.price}`;
+    if (regularEl) regularEl.textContent = `£${tier.regular}`;
+    if (regularAfter) regularAfter.textContent = `£${tier.regular}`;
+    if (sqftLabel) sqftLabel.textContent = tier.sqft.toString();
+
+    // Scale the room icon: smallest is 80px, largest is 220px
+    // Container has fixed min-height so page doesn't jump
+    const minSize = 80;
+    const maxSize = 220;
+    const progress = index / (storageTiers.length - 1);
+    const size = Math.round(minSize + progress * (maxSize - minSize));
+    if (roomIcon) {
+      roomIcon.style.width = `${size}px`;
+      roomIcon.style.height = `${size}px`;
+    }
+
+    // Update slider progress fill via CSS custom property
+    const percent = (index / 5) * 100;
+    slider.style.setProperty('--slider-progress', `${percent}%`);
+
+    // Highlight active tick
+    ticks.forEach((tick, i) => {
+      const dot = tick.querySelector('span:first-child');
+      const label = tick.querySelector('span:last-child');
+      if (i === index) {
+        dot?.classList.add('bg-primary-500', 'scale-150');
+        dot?.classList.remove('bg-gray-300');
+        label?.classList.add('text-primary-600', 'font-bold');
+        label?.classList.remove('text-warm-gray');
+      } else {
+        dot?.classList.remove('bg-primary-500', 'scale-150');
+        dot?.classList.add('bg-gray-300');
+        label?.classList.remove('text-primary-600', 'font-bold');
+        label?.classList.add('text-warm-gray');
+      }
+    });
+  }
+
+  // Slider input handler
+  slider.addEventListener('input', () => {
+    updateCalculator(parseInt(slider.value));
+  });
+
+  // Tick click handlers
+  ticks.forEach(tick => {
+    tick.addEventListener('click', () => {
+      const index = parseInt(tick.getAttribute('data-index') || '0');
+      slider.value = index.toString();
+      updateCalculator(index);
+    });
+  });
+
+  // Initialize on load (default: Standard Bedroom, index 3)
+  updateCalculator(3);
+</script>
+
+

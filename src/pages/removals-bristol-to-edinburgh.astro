@@ -1,0 +1,360 @@
+---
+/**
+ * /removals-bristol-to-edinburgh/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '380 miles' },
+        { label: 'Drive time', value: '~6 hours' },
+        { label: 'Primary route', value: 'M5/M6/M74' },
+        { label: 'Move duration', value: '2 days (3 with packing)' },
+        { label: 'Crew size', value: '3–4 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£2,500–£5,000' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Jay and the team were really friendly, helpful, and professional. They packed the vans up really well and were very careful and considerate when handling all of our belongings. Nothing got broken.",
+  name: 'Hugh Walker',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Edinburgh — 380 Miles, 2–3 Days';
+const description = `House removals from Bristol to Edinburgh, 380 miles via M5/M6/M74. Two- to three-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Edinburgh",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Edinburgh" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'Why does a Bristol to Edinburgh move take two days?',
+    answer: 'Edinburgh is 380 miles from Bristol — around six hours of driving each way. We load your belongings in the morning at your Bristol address, drive north through the afternoon, overnight near Edinburgh, and unload the following day. Anything over four hours of driving in a day on a loaded van creates the conditions where accidents happen, so a two-day structure is non-negotiable on this route.',
+  },
+  {
+    question: 'Is crew accommodation included in the quote?',
+    answer: 'Yes. Overnight accommodation for the crew is built into every Edinburgh quote. You won\'t see a separate charge for hotels or per diems — it\'s all included in the price we give you.',
+  },
+  {
+    question: 'Can you handle Edinburgh tenement stairs?',
+    answer: 'Yes. Many Edinburgh properties — particularly in Leith, Marchmont, and Bruntsfield — are tenement buildings with stone staircases and half-landing turns, often four or five floors with no lift. We carry stair-climbing trolleys, use floor runners to protect communal areas, and send extra crew when the survey identifies difficult stair access.',
+  },
+  {
+    question: 'Is the price much higher than a local move?',
+    answer: 'Yes — an Edinburgh move reflects the distance, two full days of labour, fuel for an 800-mile round trip, and overnight accommodation for the crew. A typical Bristol to Edinburgh move costs £2,500–£5,000 depending on property size and access requirements. We include everything in the quote so there are no surprises.',
+  },
+  {
+    question: 'Can you store our belongings at your Bristol depot?',
+    answer: 'Yes. We offer flexible <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol depot for any duration. This is useful if your Edinburgh move-in date doesn\'t align with your Bristol departure — we collect, store, and deliver when you\'re ready.',
+  },
+  {
+    question: 'When does a Bristol to Edinburgh move need three days?',
+    answer: 'Three days are typical when you add our <a href="/home-packing-service/" class="text-secondary-500 underline underline-offset-2">packing service</a>, when you\'re moving from a large property (four or more bedrooms), or when your Edinburgh destination has difficult city centre access — narrow streets, no parking, or upper-floor tenement flats with no lift. If two of those apply, plan for three days from the outset.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Edinburgh" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/scotland-removal1-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Edinburgh' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Edinburgh — 380&nbsp;Miles, Two&nbsp;Days
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Bristol to Edinburgh is 380 miles — roughly six hours of driving through the M5, M6, and M74 corridors. This is always a two-day job at minimum. There is no safe or sensible way to load a house in Bristol, drive six hours north, and unload the same day. Anything over four hours of driving in a day, on a loaded van, creates the conditions where accidents happen. We do not cut that margin.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Edinburgh itself adds its own complications. The Old Town and New Town streets were built long before removal vans existed. Tenement buildings in Leith, Marchmont, and Bruntsfield mean stone staircases with half-landing turns — sometimes five floors, no lift, and barely enough room for two people carrying a sofa side by side. Every Edinburgh delivery starts with a thorough access assessment, because the city punishes anyone who turns up without a plan.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="areas/scotland-removal1" pattern="FULL" alt="Removal van prepared for a Bristol to Edinburgh long-distance house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Edinburgh Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Two-Day Structure</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For a smaller move — one or two bedrooms — the pattern is consistent. We load at your Bristol address in the morning, drive north through the afternoon, and the crew overnights near Edinburgh. The following morning, we unload at your new property and drive the vans back south. For larger moves — three or more bedrooms, or properties requiring a full packing service — three days is the realistic schedule: one day packing, one day loading and driving, one day unloading.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The M5/M6/M74 corridor is the fastest route and the one we know best. Traffic around Birmingham and the M6 toll section can add time, but the Scottish stretch from Carlisle northward through the Borders is typically clear. We schedule departures to pass through the Midlands outside of peak hours.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Edinburgh's Architecture</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Edinburgh's housing stock presents access challenges that most English cities do not. The tenement buildings common in Leith, Marchmont, Bruntsfield, and Morningside have stone staircases with half-landing turns — tight, worn, and unforgiving with heavy furniture. Many are four or five storeys with no lift. We carry stair-climbing trolleys, use floor runners to protect communal stairwells, and send additional crew when the pre-move survey identifies difficult access.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Parking in Edinburgh's city centre and residential areas is heavily controlled. A parking bay suspension requires advance notice from Edinburgh City Council — we handle the application and paperwork, but early booking helps. Streets in the Old Town and around the Grassmarket are narrow enough that van positioning needs careful planning.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Scottish Property Law</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Scottish property law operates on a Date of Entry system rather than the English Exchange and Completion process. This means your move-in date is typically confirmed earlier and with less last-minute uncertainty than moves within England. It is one of the few aspects of an Edinburgh move that works in your favour. We still recommend having a backup plan — delays happen on both sides of the border — but the Scottish system tends to produce fewer same-day cancellations.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Edinburgh, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Edinburgh?"
+          description="Free quote in about two minutes. Two- to three-day moves, crew accommodation included, no hidden charges."
+          buttonText="Get Your Edinburgh Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Timing matters on this route more than most. The Edinburgh Festival in August drives hotel prices up across the city, which affects crew accommodation costs and general access — roads are busier, parking is harder to secure, and the city centre is packed. Rugby internationals at Murrayfield create similar surges on match weekends. If you have flexibility on dates, avoiding August and Six Nations weekends will keep costs down and logistics simpler.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/scotland-removal2" pattern="HALF" alt="Removal crew navigating Edinburgh tenement stairs during a long-distance move from Bristol" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Edinburgh is always at least two days — there's no shortcut for a six-hour drive each way. For a smaller move, we load in Bristol, drive the same day, overnight near Edinburgh, unload the next day, and drive back. For larger moves, it extends to three. If you're moving into the city centre with a big property and difficult access, plan for three days from the outset rather than hoping for two."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Painless Removals runs this route regularly in both directions — professionals relocating to Edinburgh for work, and Scottish families moving south to Bristol. If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Edinburgh Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat typically costs £2,000–£2,800. A standard family home with two or three van loads runs £3,000–£4,000. Properties requiring difficult city centre access in Edinburgh — tenement stairs, parking suspensions, restricted streets — sit at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds a day and cost but means you don't have to lift a finger.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew accommodation, and equipment. No hidden charges for mileage or parking suspension handling. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Edinburgh Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 edinburgh-checklist">
+          <li><strong>Book early.</strong> Edinburgh moves require crew accommodation and parking suspension applications — 4–6 weeks' notice gives us time to coordinate everything.</li>
+          <li><strong>Avoid August.</strong> The Edinburgh Festival inflates hotel prices and clogs city centre streets. If you can move in July or September instead, do.</li>
+          <li><strong>Tenement building?</strong> Confirm your floor, whether there's a lift, and stairwell width with us during the survey. We'll send extra crew if needed.</li>
+          <li><strong>Scottish property law.</strong> Date of Entry is usually confirmed earlier than English completion — use that lead time to book your move promptly.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then load and drive the following morning. Budget three days total.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Edinburgh, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Edinburgh Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="Glasgow" meta="~400 miles via M5/M6/M74" days="2–3 days" href="/removals-bristol-to-glasgow/" />
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Manchester" meta="~170 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+      <RouteCard from="Bristol" to="Leeds" meta="~200 miles via M5/M1" days="2 days" href="/removals-bristol-to-leeds/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to Edinburgh?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .edinburgh-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .edinburgh-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .edinburgh-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

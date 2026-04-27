@@ -1,0 +1,247 @@
+---
+/**
+ * /removals-bristol/cotham/ — Cotham neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Cotham Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~2 miles' },
+        { label: 'Drive time from depot', value: '8–12 minutes' },
+        { label: 'Postcode area', value: 'BS6' },
+        { label: 'Nearest motorway', value: 'M32 J3 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2-bed flat or 3-bed house' },
+        { label: 'Typical crew', value: '3–4 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£450–£1,200' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£500–650k' },
+        { label: 'Typical property', value: 'Victorian townhouse / flat' },
+        { label: 'Typical floors', value: '3–4 storeys' },
+        { label: 'Lifts available', value: 'Rare (converted buildings)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'RPZ (overlapping zones)' },
+        { label: 'Suspension needed', value: 'Yes (7–10 days notice)' },
+        { label: 'Main difficulty', value: 'Steep hills + tall buildings' },
+        { label: 'Conservation area', value: 'Yes (Cotham & Redland CA)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "I employed this firm for a flat move within Bristol. Everything was covered by one reasonable fee. On the day, the team were very professional and coped extremely well with unexpected problems.",
+  name: 'Martin Poulter',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Cotham, Bristol';
+const description = `Cotham removal specialists — steep hills, RPZ parking, tall Victorian townhouses with basement flats. BS6 experts since 1978. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Cotham Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Cotham, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS6", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a residents\' parking zone in Cotham?', answer: 'Yes. Most of Cotham falls within a Residents\' Parking Zone that overlaps with <a href="/removals-bristol/redland/" class="text-secondary-500 underline underline-offset-2">Redland</a> and Kingsdown boundaries. You\'ll need a parking bay suspension booked 7–10 working days ahead. Your Move Manager handles the council application and knows which zone covers your street.' },
+  { question: 'Can you move furniture out of a basement flat in Cotham?', answer: 'Basement flat removals are one of our most common Cotham jobs. External steps, narrow stairwells, and low ceilings all require advance planning — we survey the access during your <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">free home survey</a> before quoting so there are no surprises on the day.' },
+  { question: 'How much does a removal in Cotham cost?', answer: 'A 2-bed converted flat moving locally typically runs £450–£800 depending on floor level and access. Larger townhouses range from £700–£1,200. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a quote specific to your property.' },
+  { question: 'Is Cotham Brow too steep for removal vans?', answer: 'Not for us — we drive it regularly. Cotham Brow is steep and can be tricky in wet weather, but our drivers know the gradient and the turning points. We choose the right size vehicle for each street.' },
+  { question: 'When is the worst time to move in Cotham?', answer: 'September and early October — university term starts and the streets around the University of Bristol campus are packed with students moving in. June graduation week is similarly busy. Book well ahead if your move falls in these windows.' },
+  { question: 'Is Cotham as difficult as Montpelier for removal access?', answer: 'No. Despite being neighbours, Cotham is significantly more manageable than <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline underline-offset-2">Montpelier</a> for van access. Around 80% of Cotham\'s roads present no significant issue. The main challenges are inside the buildings — converted flat stairwells and basement access — rather than on the streets.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Cotham" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Cotham"
+  slug="cotham"
+  schema={schema}
+  ogImage="/img/areas/cotham-period-dome-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/cotham-period-dome"
+  heroAlt="Period dome and Victorian rooftops in Cotham, Bristol — typical of the tall townhouse architecture in BS6"
+  heroSubtitle="Moving Bristol homes since 1978. For home removals in Cotham, you want a team that knows these streets — we do."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We provide house removals in Cotham from our Southmead Road depot — roughly two miles north and a quick run down the Gloucester Road corridor. Cotham sits in the BS6 postcode between <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a>, <a href="/removals-bristol/redland/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Redland</a>, and Kingsdown. People sometimes expect the same access challenges as neighbouring <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> — in practice, around 80% of Cotham's roads present no significant issue for our vans. It's a more manageable area than its reputation might suggest, though it still has its quirks.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The quirks are specific: an active Residents' Parking Zone that overlaps with both the Redland and Kingsdown zones, tall Victorian townhouses carved into flats with basement access via external steps, and a university population that clogs the streets every September. We've been moving families and professionals out of Cotham since 1978, and we know how each of these factors affects your moving day.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: What Makes Moving in Cotham Different? -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Cotham Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Hills and the Buildings</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The hills come first. Cotham Brow climbs steeply from the Hampton Road junction toward <a href="/removals-bristol/redland/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Redland</a>, and St Michael's Hill — the old northern boundary of Bristol — marks Cotham's southern edge. The side streets off Cotham Hill all tilt. Our drivers choose routes based on the gradient, the load weight, and whether it's been raining. A 7.5-tonne van loaded with a four-storey townhouse of furniture handles differently on a 1-in-6 slope than it does on the flat.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Then the buildings. Cotham is dominated by tall Victorian townhouses — three and four storeys, many converted into flats during the 1980s and 1990s. That means narrow internal staircases, communal hallways shared with other residents, and basement flats reached by external stone steps. A wardrobe that fits through a front door might not clear the turning on the second-floor landing. We survey access before quoting — if something needs disassembly, you'll know in advance.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The converted townhouses on Cotham Road often have basement flats with external steps but no rear access. Upper-floor flats in the same buildings present a different challenge: narrow stairwells with tight turns that require careful manoeuvring of larger furniture. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, staircase width, and turning points before quoting.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking: Overlapping Zones</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Parking is the third piece of the puzzle. The RPZ is actively enforced throughout Cotham, and the streets are lined with parked cars from residents, university staff, and hospital visitors heading to the nearby BRI. Without a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking bay suspension</a>, there's physically nowhere to park a removal van on most Cotham streets during working hours.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">What makes Cotham's parking situation particularly confusing is the overlapping zone boundaries. The RPZ here bleeds into both the <a href="/removals-bristol/redland/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Redland</a> and Kingsdown zones, and the boundaries are not obvious from the street signage. Your Move Manager handles the application to Bristol City Council — 7 to 10 working days before your move — and knows exactly which zone your street falls in.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The BRI hospital adds a complication that most residential areas don't have. During visiting hours, the streets closest to the hospital fill with vehicles from people avoiding the car park charges. On streets like Cotham Road South and Aberdeen Road, this can reduce available kerb space significantly even with a suspension in place. We time arrivals to work around the worst of the hospital traffic.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Cotham?"
+      description="Get a personalised quote — we factor in your parking zone, floor level, and those Cotham hills."
+      buttonText="Get Your Cotham Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: University Factor + Cotham vs Montpelier -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The University Factor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Cotham sits close enough to the University of Bristol campus that it absorbs the seasonal rhythms of the academic year. September and early October are the worst — term starts and the streets around the campus fill with students moving into shared houses and halls. Removal vans, hire vehicles, and cars double-parked with hazard lights on become a daily occurrence on roads like Cotham Road and Arley Hill.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">June brings a smaller but similar disruption around graduation, when students are moving out and families are visiting. If your move falls in either window, book well ahead — we plan routes and timing to avoid the worst of the congestion, but availability fills quickly during these periods.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Cotham vs Montpelier</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">People sometimes assume that because Cotham and <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> are neighbours, they present similar challenges. They don't. Montpelier's narrow one-way streets, severe parking constraints, and tightly packed Victorian terraces require a level of advance planning that Cotham rarely demands.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Cotham is more manageable. The roads are generally wider, the access points more straightforward, and the majority of streets can accommodate our vans without difficulty. The challenges in Cotham are predominantly inside the buildings — the tall townhouse conversions, the basement steps, the communal stairwells — rather than on the streets themselves. Around 80% of Cotham's roads present no significant access issue for our vehicles.</p>
+  </div>
+
+  <!-- S4: The Properties — cream box -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Cotham has some streets with access considerations, but typically no alarm bells go off. Around 80% of the roads are fine. The real work happens inside the buildings — the tall townhouse conversions, the basement access steps, and the communal stairwells with awkward turns. That's where the survey makes the difference."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Victorian townhouses that dominate Cotham were built as grand single-family homes — three and four storeys with generous proportions at street level that narrow as you climb. Most were converted into flats during the late twentieth century, and the quality of those conversions varies. Some have been sensitively divided with decent hallway width retained. Others have partitions that create awkward pinch points on landings and corridors.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Basement flats are a Cotham speciality. Accessed by external stone steps — often steep, sometimes worn smooth — they present a specific set of challenges. Ceiling heights can be lower than modern standards. The route from the front door to the van involves climbing those external steps with every item. We survey basement access carefully and price accordingly, because a basement flat and a first-floor flat in the same building are meaningfully different jobs.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about it before the van arrives rather than discovering it on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+  <!-- S5: Is Cotham a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Cotham a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Moderately. Cotham isn't the easiest Bristol neighbourhood for removals — the RPZ, the hills, and the tall building interiors all add complexity. But it's significantly more manageable than <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> or Kingsdown, and the street access itself is rarely the problem. With the parking suspension booked, the right size vehicle chosen, and the building interior surveyed in advance, Cotham moves go well.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For most Cotham moves — a two-bed converted flat or a three-bed townhouse moving locally — you're looking at a team of three to four, one van, and a half-day to full-day job. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Cotham Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Book the parking suspension early.</strong> The RPZ overlaps with Redland and Kingsdown zones — your Move Manager needs 7–10 working days' notice to secure the right bay on the right street.</li>
+      <li><strong>Which floor are you on?</strong> Basement, ground, or upper floors all have different access characteristics. Flag your floor level at booking so we crew and price accordingly.</li>
+      <li><strong>Any large items on upper floors?</strong> Victorian townhouse stairwells have tight turns. Oversized furniture may need disassembly — we assess this during the survey.</li>
+      <li><strong>Avoid September if you can.</strong> University term start fills the streets with student moves. If you must move in September, book early and expect a longer journey to and from the property.</li>
+      <li><strong>Check the gradient.</strong> If your property is on Cotham Brow or one of the steeper side streets, let us know — we choose the right vehicle and approach route for the slope.</li>
+      <li><strong>Communal hallway arrangements.</strong> If you're in a converted building, let your neighbours know the date and time — clear hallways and stairwells make the job faster and protect everyone's property.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

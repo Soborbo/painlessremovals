@@ -1,0 +1,360 @@
+---
+/**
+ * /removals-bristol-to-oxford/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '75 miles' },
+        { label: 'Drive time', value: '~1.5 hours' },
+        { label: 'Primary route', value: 'M4 / A34' },
+        { label: 'Move duration', value: '1 full day' },
+        { label: 'Crew size', value: '2–3 movers, 1 van' },
+        { label: 'Typical cost', value: '£700–£1,800' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Great experience! Jeremiah and George were excellent — very helpful across a complicated move involving multiple houses and stops.",
+  name: 'MJ',
+  context: 'Trustpilot Review',
+};
+
+const title = 'Removals Bristol to Oxford — 75 Miles, One Day';
+const description = `House removals from Bristol to Oxford, 75 miles via M4/A34. Same-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Oxford",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Oxford" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'How long does a Bristol to Oxford move take?',
+    answer: 'The drive is about an hour and a half via the M4 and A34. We allocate a full day for the move — loading in the morning at your Bristol address, driving to Oxford, and unloading at your new property in the afternoon. Most moves are finished by late afternoon.',
+  },
+  {
+    question: 'What about parking in central Oxford?',
+    answer: 'Central Oxford has controlled parking zones across most of the city centre. We arrange parking suspensions in advance through Oxford City Council so the van has guaranteed space on your street. College areas and the High Street have restricted vehicle access windows — we plan around these.',
+  },
+  {
+    question: 'Can you move us during university term time?',
+    answer: 'Yes, though we recommend planning around peak congestion periods. Oxford is busier from October through June when the university is in session. Start-of-term weeks in particular bring heavier traffic. We schedule around these patterns when booking your move.',
+  },
+  {
+    question: 'Do you cover villages around Oxford?',
+    answer: 'Yes. We cover the wider Oxfordshire area — Abingdon, Witney, Bicester, Kidlington, and surrounding villages. The A34 gives good access to most of the county, and we quote based on your specific destination.',
+  },
+  {
+    question: 'What about narrow streets in Jericho?',
+    answer: 'Jericho\'s Victorian terraces have tight streets and limited turning space. We assess access in advance during the pre-move survey and use smaller vehicles where needed. It\'s a neighbourhood we know well — access is manageable with the right planning.',
+  },
+  {
+    question: 'Is Oxford easier to work in than Bristol?',
+    answer: 'In many ways, yes. Oxford is flat, which makes carrying furniture far less tiring than Bristol\'s hills. The wider Oxford area has good road access and space to work. The exception is the medieval city centre — narrow lanes, restricted access zones near the colleges, and limited vehicle windows. Outside the centre, Oxford is a comfortable city to move into.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Oxford" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Oxford' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Oxford — 75&nbsp;Miles, One&nbsp;Day
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Bristol to Oxford is about 75 miles — an hour and a half on a good run via the M4 and A34. It is one of the more relaxed long drives we do. No motorway tolls, no congestion-charge zones on the approach, and the A34 moves well outside rush hour. For most households, a single van and a two- or three-person crew will load in the morning, drive across, and have everything unloaded by late afternoon.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Oxford's character changes block by block. Jericho's narrow Victorian terraces need careful vehicle positioning. Headington and Cowley have wider residential streets with on-street parking to manage. Summertown and North Oxford offer more generous driveways. And the medieval city centre — around the colleges and the High Street — has restricted vehicle access that requires advance planning and specific time windows. We assess every Oxford delivery individually.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Oxford house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Oxford Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The M4/A34 Corridor</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The route is clean: M4 east from Bristol, then the A34 north from the Newbury area into Oxford. The M4 section is motorway all the way — predictable, well-maintained, and rarely a problem. The A34 is dual carriageway for most of the stretch, though it can slow down around the Abingdon and Botley interchange during peak hours. Occasional incidents on the A34 do cause delays, but nothing like the congestion you get on the M5 corridor heading north.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">We schedule departures to arrive in Oxford outside the morning commute window. A midweek move avoids the worst of the A34 traffic — and Oxford's own internal congestion from university buses and cyclists is lighter outside term time.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Oxford's Neighbourhoods</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Oxford's residential areas each have their own access considerations. Jericho — popular with academics and young professionals — is a grid of tight Victorian streets where a large removal van needs careful placement. Iffley, south of the centre, has a mix of period houses and modern estates with better access. Headington sits on the eastern edge with hospital-adjacent streets that can be busy during shift changes. Cowley Road is lively and congested in its commercial stretch but opens up into quieter residential roads further out.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Summertown and North Oxford tend to be the easiest — larger properties, wider roads, and more predictable parking. Further out, Abingdon and Kidlington are well-connected via the A34 and have fewer access restrictions. We plan each delivery based on the specific street, not just the postcode.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Academic Calendar</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Bristol to Oxford tends to be academic jobs — research positions, lecturers, people following the universities. Oxford to Bristol is often people who have had enough of Oxford prices and want a city with more edge and better music. Either way, the academic calendar shapes when people move. Start of Michaelmas term in October and the end of Trinity term in June are the busy periods. If you can move outside those windows, Oxford is quieter and parking is easier to arrange.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Oxford, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Oxford?"
+          description="Free quote in about two minutes. M4/A34 route, no tolls, no hidden charges."
+          buttonText="Get Your Oxford Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Oxford is also famously flat, which is a pleasant change for removal work after Bristol's hills. No steep carries, no awkward gradients on front paths — the crew notices the difference. After Bristol, where you are always aware of the topography, Oxford feels refreshingly level. The wider Oxford area is easy to work in: good road access, space for vans, and none of the terrain challenges that Bristol presents on a daily basis.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Oxford" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Oxford is about an hour and a bit from Bristol. Beautiful city. It's flat — a welcome change from Bristol's hills for the lads. The wider Oxford area is easy to work in. Pricing starts around seven hundred to nine hundred for a single van, twelve hundred to eighteen hundred for a family home."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Painless Removals runs this route regularly in both directions. If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready. Oxford's rental market moves quickly — having your belongings safely stored means you are not forced into a decision on timing.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Oxford Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat with a single van typically costs £700–£900. A standard family home runs £1,200–£1,800. Properties in central Oxford with restricted access zones — time-limited vehicle windows near the colleges, controlled parking — sit at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but splits the work across two days.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, and equipment. No hidden charges for mileage or parking suspension handling. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Oxford Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 oxford-checklist">
+          <li><strong>Check term dates.</strong> Oxford is busier October through June when the university is in session. Summer moves benefit from lighter traffic and easier parking.</li>
+          <li><strong>Central Oxford property?</strong> Vehicle access near the colleges and High Street is restricted to specific time windows — we plan around these.</li>
+          <li><strong>Parking suspensions.</strong> Most of central Oxford has controlled parking zones. We arrange suspensions through Oxford City Council in advance.</li>
+          <li><strong>Book 3–4 weeks ahead.</strong> Central Oxford properties benefit from extra lead time for access coordination.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then move everything the following morning.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Oxford, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Oxford Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Birmingham" meta="~90 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Bristol" to="Southampton" meta="~80 miles via M4/M3" days="1–2 days" href="/removals-bristol-to-southampton/" />
+      <RouteCard from="Bristol" to="Exeter" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to Oxford?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .oxford-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .oxford-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .oxford-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

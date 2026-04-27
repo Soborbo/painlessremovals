@@ -1,0 +1,447 @@
+---
+/**
+ * /removals-portishead/ — Portishead town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Portishead Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~11 miles' },
+        { label: 'Drive time from depot', value: '~20 minutes' },
+        { label: 'Postcode area', value: 'BS20' },
+        { label: 'Nearest motorway', value: 'M5 J19 (3 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi / townhouse' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£400–£800' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£350–500k' },
+        { label: 'Typical property', value: 'Port Marine apartment / Victorian terrace' },
+        { label: 'Typical floors', value: '2–3 storeys' },
+        { label: 'Lifts available', value: 'Marina apartments (some)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Marina / High St only' },
+        { label: 'Suspension needed', value: 'Usually no' },
+        { label: 'Main difficulty', value: 'Marina lift rules + height barriers' },
+        { label: 'Conservation area', value: 'Old Town / Battery Point' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Absolutely brilliant. In the run up to the move they were really helpful and accommodating. On the day they made the whole process really smooth and stress-free. Would not hesitate to recommend them.",
+  name: 'Amy Stone',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Portishead';
+const description = `Portishead removal specialists — 11 miles from our Bristol depot. Port Marine apartments to Victorian Old Town, we know both halves. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Portishead Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Portishead",
+    "address": { "@type": "PostalAddress", "postalCode": "BS20", "addressLocality": "Portishead", "addressRegion": "North Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol?', answer: 'At 11 miles from our depot, the mileage component is negligible. For most Portishead moves, the total cost is comparable to hiring locally — but with full insurance, dedicated Move Manager, and professional equipment included.' },
+  { question: 'How quickly can you reach Portishead?', answer: 'About 20 minutes from our depot via M5 J19 and the Portbury Hundred. On moving day, our crew arrives at your agreed start time — typically 8am.' },
+  { question: 'Can you handle the marina apartments?', answer: 'Yes. We move from the marina developments regularly — lifts, underground parking, tight corridors. We plan access with building management in advance and bring blanket protection for communal areas.' },
+  { question: 'Is there a parking problem on moving day in Portishead?', answer: 'Most residential streets have unrestricted parking. The marina and waterfront have visitor parking with height barriers — we coordinate access beforehand. High Street has loading restrictions during business hours.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 20 minutes from Portishead. Units from small wardrobe to garage size.' },
+  { question: 'Do the harbour apartments all have lift access?', answer: 'No — some do and some don\'t. For apartments without lifts, every item goes up the stairs, which affects crew size, time, and cost. We always confirm lift availability at quote stage so your price reflects the actual job.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/portishead-property-removal-van-1200w.webp" preloadImage="/img/areas/portishead-property-removal-van-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/portishead-property-removal-van"
+      pattern="FULL"
+      alt="Painless Removals van at a property in Portishead"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Portishead</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=portishead`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/portishead-property-removal-van"
+      pattern="FULL"
+      alt="Painless Removals van at a property in Portishead"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Portishead' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Portishead has reinvented itself over the past couple of decades. The harbour has been redeveloped into something notably attractive — modern apartments with water views, a marina, the kind of waterfront quarter that draws people who want a coastal feel without committing to somewhere remote. The town that surrounds it has grown to match: new developments spreading up the hill, a mix of modern estates and older housing stock, and a population that tends to be settled and community-minded.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We work in Portishead regularly. It's a hop from north Bristol — across the motorway bridge and you're there, 20 to 25 minutes in normal conditions. The jobs here are, for the most part, some of the most manageable we do.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="areas/portishead-property-removal-van" pattern="FULL" alt="Painless Removals van loading furniture outside a property in Portishead" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes Moving in Portishead Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Portishead Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Marina Quarter: Check the Lift First</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The harbour redevelopment is the most distinctive part of Portishead and the part that needs the most careful assessment before moving day. The apartments overlooking the marina are desirable — the views across the water are hard to argue with, and the quality of the buildings is generally high. What varies is the access situation once you get inside them.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Some of these buildings have lifts. Some don't. And in some that do have lifts, the building's management rules don't permit use of the lift for removals — which means everything goes up the stairs regardless of which floor you're on. We've encountered the same restriction in certain apartment buildings in <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a>, and it always adds time and crew to the job. A third-floor flat with a lift you're not allowed to use is a different proposition from one with a lift you can use, and the quote reflects that.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-2">If you're moving into or out of one of the marina apartments, the first questions we ask are:</p>
+
+        <ul class="pl-6 space-y-2 text-[17px] leading-relaxed text-gray-800 mb-4 survey-questions">
+          <li>Is there a lift?</li>
+          <li>Does the building allow removal use of the lift?</li>
+          <li>Where's the nearest loading bay?</li>
+        </ul>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">These answers shape the crew size, the timing, and the cost. A quick call to the building management before you enquire with us saves everyone time.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Residential Streets: Markedly Easier</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Away from the harbour, Portishead is markedly easier to work in than most comparable towns in the Bristol commuter belt. The key difference is space. Portishead doesn't have the Victorian terrace density of somewhere like <a href="/removals-bristol/bishopston/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bishopston</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> — the developments here are largely modern, which means wider roads, more driveways, and room for a Luton van to park close to the property without blocking the street.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The housing up on the hill above the town has some of the best views in the area — across the Severn towards Wales and back towards Bristol on a clear day — and tends to involve larger detached and semi-detached houses with the kind of access that makes a removal crew's day easy. These are the jobs where everything goes to plan, the van fits on the drive, and you finish with time to spare.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Commuter Timing</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">The road in from the M5 is unremarkable outside of peak commuter hours. During rush hour the approach roads can back up, particularly in the evening. For removals, the practical implication is simple: avoid scheduling the van's arrival or departure to coincide with the morning or evening commuter build-up on the motorway junction roads.</p>
+      </div>
+
+      <!-- Mobile: Review (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mid CTA — bleed full-width on mobile -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving to or from Portishead?"
+          description="Get a personalised quote — we factor in the distance from our depot automatically."
+          buttonText="Get Your Portishead Removal Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We've Learned From Portishead -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We've Learned From Portishead Moves</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">North Bristol to Portishead is quick: over the motorway bridge, off at the junction, and into town. Twenty to twenty-five minutes in normal conditions. That proximity makes Portishead simple from a logistics standpoint — it's well within our standard service area, priced as a local job, and in almost every case a clean one-day move.</p>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "The single most important detail for any Portishead apartment move is lift access. Some of the harbour buildings have lifts; some don't. For those without, a third-floor apartment means three flights of stairs for every item. We establish this at quote stage for every Portishead apartment move."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Beyond the apartments, Portishead is comfortable to work in — parking is good, the overall feel is more spacious than Bristol, and we're there regularly. There's also talk of reopening the passenger rail line into Portishead, connecting the town to Bristol Temple Meads. If that happens, it will change the property market here — worth watching if you're buying rather than renting.</p>
+      </div>
+
+      <!-- S5: Is Portishead a Difficult Place to Move? -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Portishead a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For the residential streets: rarely. The modern development pattern gives you wide roads, driveways, and properties designed with vehicle access in mind. The marina quarter is the section that needs the most careful preparation — specifically around lifts and parking — but even there it's a matter of asking the right questions early, not a fundamental problem.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Know your building's lift rules before you book. Let Painless Removals handle the rest. Get in touch for a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a> and we'll give you a number you can rely on.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Portishead Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 portishead-checklist">
+          <li><strong>Marina apartment?</strong> Check lift availability and whether building management allows removal use of the lift.</li>
+          <li><strong>Height barriers?</strong> The marina's visitor parking has height barriers that we plan around in advance.</li>
+          <li><strong>Which Portishead?</strong> Old Town Victorian terraces and the modern estates have different access needs.</li>
+          <li><strong>Rush hour?</strong> Avoid scheduling van arrival or departure during the morning or evening commuter window on the approach roads.</li>
+          <li><strong>Building management rules?</strong> Some Port Marine developments have specific requirements for moving-day access — check your service charge arrangements.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+  <!-- ═══ End two-column layout ═══ -->
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Portishead Residents Ask Us?" />
+  </div>
+
+</div>
+<!-- ═══ Full-width sections (break out of container) ═══ -->
+
+<!-- S7: Long-Distance Routes from Portishead -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Portishead Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">M5 J19 gives Portishead direct motorway access. Most long-distance moves route through Bristol anyway.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Portishead" to="London" meta="~135 miles via M5/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Portishead" to="Birmingham" meta="~105 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Portishead" to="Edinburgh" meta="~385 miles" days="2–3 days*" href="/removals-bristol-to-edinburgh/" />
+      <RouteCard from="Portishead" to="Cardiff" meta="~55 miles via M5/M4" days="1 day" href="/removals-bristol-to-cardiff/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">* With efficient loading and early start, sometimes completable in a long single day.</p>
+  </div>
+</section>
+
+<!-- S8: Nearby & Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Portishead?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across North Somerset and the surrounding area. If you're moving from or to
+        <a href="/removals-clevedon/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Clevedon</a>,
+        <a href="/removals-pill/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Pill</a>, or
+        <a href="/removals-long-ashton/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Long Ashton</a>,
+        we know these towns well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+          </span>
+          <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+          </span>
+          <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+          </span>
+          <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move to or from Portishead?"
+  description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  .survey-questions {
+    list-style: none;
+    padding-left: 0;
+  }
+  .survey-questions li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .survey-questions li::before {
+    content: '?';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background-color: #e8f0f6;
+    color: #3b6587;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .portishead-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .portishead-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .portishead-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

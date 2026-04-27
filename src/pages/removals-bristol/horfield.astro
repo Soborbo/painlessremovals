@@ -1,0 +1,246 @@
+---
+/**
+ * /removals-bristol/horfield/ — Horfield neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Horfield Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~1 mile' },
+        { label: 'Drive time from depot', value: '5 minutes' },
+        { label: 'Postcode area', value: 'BS7' },
+        { label: 'Nearest motorway', value: 'M5 J17 (4 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed terrace or semi' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£450–£850' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£420–480k' },
+        { label: 'Typical property', value: 'Victorian terrace / 1930s semi' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None (no RPZ)' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Match days + Gloucester Rd' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "I cannot recommend this company enough! Made a very stressful move so much easier and were a pleasure to be around. I would use them again in a heartbeat.",
+  name: 'Emily Bolton',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Horfield, Bristol';
+const description = `Horfield removal specialists — Gloucester Road corridor, match-day planning, Victorian terraces and 1930s semis. Our nearest neighbourhood, 1 mile from depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Horfield Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Horfield, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS7", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Do I need a parking suspension to move in Horfield?', answer: 'No. Horfield doesn\'t have a Residents\' Parking Zone. Street parking is free, though the Victorian streets off Gloucester Road are often full during working hours. We time arrivals to find space and can use nearby wider streets if needed.' },
+  { question: 'Should I avoid match days at the Memorial Stadium?', answer: 'If you\'re moving into a Horfield property, yes — especially for afternoon or evening kick-offs. Fans arrive well in advance and take up every free parking space within a wide radius: Horfield Common, residential streets, anywhere they can leave a car and walk to the ground. The immediate area around Filton Avenue and Muller Road gets road closures, buses, and thousands of fans on foot. Moving out is less of a problem — you\'d typically load in the morning and be gone before the crowds. We always check the Bristol Rovers and Bristol Bears fixture lists before scheduling a Horfield move.' },
+  { question: 'How much does a Horfield removal cost?', answer: 'A 3-bed terraced house near Gloucester Road runs £450–£850 for a local move. The wider 1930s semis toward Horfield Common are often at the lower end due to easier access. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Can you move from properties on Gloucester Road?', answer: 'Yes. In the Horfield stretch of Gloucester Road, we can usually park directly outside to load — the bus lane doesn\'t run this far north. Some of the narrower side streets can be trickier, and occasionally we\'ll need to park nearby and carry items around, but we plan for that.' },
+  { question: 'How close is your depot to Horfield?', answer: 'Very close — our Southmead Road base is roughly one mile north of Horfield. It\'s one of our nearest neighbourhoods, which means short travel time and we know the area inside out.' },
+  { question: 'How close to the Memorial Stadium does match-day parking affect moves?', answer: 'Much further than you\'d think. Fans arrive early and park anywhere free — Horfield Common, the residential streets off Kellaway Avenue, anywhere within walking distance. The immediate vicinity around Filton Avenue and Muller Road is the worst, but parking pressure extends well into the surrounding neighbourhood. If you\'re moving into the area on match day, even properties some distance from the ground can be affected. We always check the fixture list before scheduling a Horfield move.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Horfield" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Horfield"
+  slug="horfield"
+  schema={schema}
+  ogImage="/img/areas/horfield-terrace-van-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/horfield-terrace-van"
+  heroAlt="Painless Removals van outside a terraced house on a residential Horfield street near Gloucester Road"
+  heroSubtitle="A local Bristol team with nearly 50 years on the road. Home removals in Horfield handled by people who know the area."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Horfield is the closest neighbourhood to our Southmead Road depot — roughly one mile south and practically on our doorstep. It's a family area that has improved considerably over the past couple of decades: good green space around Horfield Common, a more relaxed character than the denser inner-city neighbourhoods, and a genuine sense of community along the Gloucester Road corridor. It straddles the A38 in north Bristol's BS7 postcode, mixing Victorian terraces close to the high street with wider 1930s semis toward the Common. There's no Residents' Parking Zone, road access is generally good, and the properties are mostly two storeys — making this one of the more manageable neighbourhoods we cover.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The one complication that catches people out is the Memorial Stadium. Bristol Rovers and Bristol Bears both play here — football matches can fall on any day of the week, and rugby is typically on Saturdays. Match days turn the streets around Muller Road and Filton Avenue into a parking battlefield. It's worth checking the fixture list before confirming your moving date. Beyond match days, Horfield is a straightforward area to move in — close to our base, familiar to our crews, and well-connected to the motorway network via the A38.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Gloucester Road Corridor -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Horfield Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Gloucester Road Corridor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Gloucester Road runs through the middle of Horfield, but by this point it's more residential than the busy shopping stretch further south in Bishopston and St Andrews. Up here, we can usually park directly on the road to load — the bus lane doesn't operate this far north, and there's generally enough room to work.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Some of the back roads and side streets can be tighter — narrow, with cars on both sides, and occasionally we'll need to park on a corner and carry items around. If direct loading isn't possible, we can use a nearby wider street and carry from the front door. It takes a bit longer, but we plan for it.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The wider 1930s semis toward Horfield Common are a different proposition entirely. These streets have front gardens, some driveways, and enough road width for a Luton to sit comfortably while the crew works. If your property is on one of these quieter streets, the Horfield move is a calm one.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Memorial Stadium Factor -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Memorial Stadium Factor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Memorial Stadium on Filton Avenue — home to both Bristol Rovers and Bristol Bears — generates serious traffic and parking pressure on match days. Football fixtures can fall on any day of the week (Tuesdays, Fridays, Saturdays), while rugby is typically on Saturdays. The impact reaches well beyond the streets immediately around the ground. Fans drive in early to secure free parking, filling up residential roads around Horfield Common and anywhere within walking distance of the Mem. Gloucester Road itself gets congested, Muller Road bottlenecks, and in the immediate vicinity roads are closed off with buses and thousands of fans on foot. It's chaotic close to the stadium, and noticeably busier for a significant radius around it.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The real problem for removals isn't moving <em>out</em> on match day — if you're loading in the morning you'll likely be gone before the crowds arrive. The issue is moving <em>in</em>. If you're arriving at a Horfield property in the afternoon and there's a 5pm or 7:45pm kick-off, you'll find the parking already taken — fans arrive early, grab a space, and head to the pub. Every free spot on the Common, the surrounding residential streets, and anywhere else that doesn't require a permit gets swallowed up. We check the Bristol Rovers and Bristol Bears fixture lists before scheduling any Horfield move, and we'd always recommend you do the same.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Beyond match days, parking in Horfield is generally workable. The neighbourhood doesn't have the parking chaos of <a href="/removals-bristol/bishopston/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bishopston</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>. There's no Residents' Parking Zone, and the streets — while not spacious — are manageable in most cases.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Horfield?"
+      description="Get a personalised quote — we're just down the road and know Horfield inside out."
+      buttonText="Get Your Horfield Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Horfield Common & Depot Proximity -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Horfield Common and the 1930s Streets</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The streets around Horfield Common — between Wellington Hill and Kellaway Avenue — represent the other side of Horfield. These are wider residential roads with 1930s semis that have front gardens, some driveways, and enough room for a removal van without creating a road management exercise. The properties are well-built family homes with slightly more generous hallways than the Victorian terraces, staircases that are a degree or two less steep, and overall proportions that make furniture handling easier.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you're moving to one of these streets, the move is straightforward — driveway access where available, a standard loading sequence, and a clear run out to wherever you're heading. These moves tend to sit at the lower end of the Horfield price range because the access is so much easier.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Our Nearest Neighbourhood</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Our depot on Southmead Road is roughly a mile away — we're practically neighbours. That proximity means we know Horfield as well as anywhere we cover. The crew arrives within five minutes of leaving base, and if they need anything extra during the move — additional blankets, a different trolley, an extra pair of hands — base is a five-minute round trip away.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Because we're so close, we can often pop over for an in-person survey the same week you enquire. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the internal access, the street parking, and any items that need special handling — and we price accordingly.</p>
+  </div>
+
+  <!-- S4: What the Properties Are Like -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Horfield has two distinct housing types: the Victorian terraces clustered around Gloucester Road, and the 1930s semis spreading out toward the Common. They're meaningfully different jobs. The terraces have narrower hallways, steeper staircases, and no driveways. The semis are more generous in every dimension — wider halls, gentler stairs, and usually a driveway or at least a front path. Both are perfectly good properties to move, but the crew size and timing differ."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Victorian and Edwardian terraces near Gloucester Road have the characteristic proportions of that era — hallways that are narrower than they look from the street, staircases with the steepness that pre-war building practice accepted as normal, rooms that are honest in size without being enormous. These are familiar territory for our crews. We know the corner that catches you with a large sofa, the landing that needs a specific angle of approach to get a wardrobe through.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The interwar semis that make up a significant portion of Horfield's housing stock are generally easier — slightly more generous hallways, often a driveway or at least a front path, staircases that accommodate standard furniture without the tight manoeuvring the terraces demand. These are comfortable, well-built family homes that move well.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about any access challenges before the van arrives rather than discovering them on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+  <!-- S5: Is Horfield a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Horfield a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. Horfield is one of the more straightforward Bristol neighbourhoods for removals. There's no Residents' Parking Zone. There's no conservation area. The streets are not the most challenging in Bristol, and the housing is honest and familiar. The one genuine complication — the Memorial Stadium — is predictable and avoidable with a quick check of the fixture list.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For most Horfield moves — a two or three-bed terrace or semi moving locally — you're looking at a team of two to three, with one or two vans, and a full-day job. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the access, the parking, and the right crew size. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Horfield Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Terrace or semi?</strong> The Victorian terraces near Gloucester Road and the 1930s semis toward the Common are meaningfully different jobs — flag which you have at booking.</li>
+      <li><strong>Check the fixture list.</strong> Match-day parking and traffic affects a wide area around the Memorial Stadium — not just the streets next to it. Avoid home match days for Bristol Rovers (midweek and weekends) and Bristol Bears (Saturdays), especially if you're moving in.</li>
+      <li><strong>Parking plan for the terraces?</strong> The streets off Gloucester Road fill up during working hours. Arrive early and reserve space if possible.</li>
+      <li><strong>Any large items?</strong> Victorian terrace hallways can catch you out. Flag oversized furniture at booking so we assess the staircase and hallway.</li>
+      <li><strong>Gloucester Road frontage?</strong> If your property faces onto the A38 itself, we might need to use side streets for loading — factor in slightly longer carry time.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

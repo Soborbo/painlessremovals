@@ -1,0 +1,503 @@
+---
+/**
+ * Man with a Van Near Bristol – Service Page
+ *
+ * Flexible, affordable single-item and small moves.
+ * Differentiates from uninsured operators with trust signals.
+ * Targets: "man with a van bristol", "man and van near me bristol"
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+
+// Page metadata
+const pageTitle = `Man with a Van Near Bristol | Insured & Rated ${siteConfig.company.rating.value} | Painless Removals`;
+const pageDescription = `Affordable man with a van in Bristol. Insured to £15,000, rated ${siteConfig.company.rating.value} stars, operating since 1978. Single items, studio flats, eBay pickups and student moves. Get a quote today.`;
+
+// What We Move items
+const moveItems = [
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`,
+    title: 'Single Items of Furniture',
+    description: 'A sofa, wardrobe, dining table, or fridge-freezer. We move individual pieces safely and affordably.',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>`,
+    title: 'Studio & 1-Bed Flats',
+    description: 'A full flat move without the full removal price. Perfect for first-time renters and small households.',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>`,
+    title: 'eBay & Marketplace Purchases',
+    description: 'Bought something on eBay, Facebook Marketplace, or Gumtree? We will collect it and deliver it to your door.',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>`,
+    title: 'Student Moves',
+    description: 'Moving to or from halls, a shared house, or your first student flat. We handle it quickly and cheaply.',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+    title: 'Office Desks & Equipment',
+    description: 'A desk, filing cabinet, or a few items of office furniture. Ideal for home offices and small business moves.',
+  },
+  {
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>`,
+    title: 'Storage Unit Runs',
+    description: 'Need items moved into or out of a storage unit? We will load, transport, and unload for you.',
+  },
+];
+
+// Comparison data
+const comparison = {
+  manAndVan: [
+    'Single items or a few pieces of furniture',
+    'Studio flat or 1-bed flat moves',
+    'Student moves to or from halls',
+    'eBay, Marketplace, or Gumtree pickups',
+    'Moving items into or out of storage',
+    'Small office equipment',
+  ],
+  fullRemoval: [
+    '2-bedroom houses and larger',
+    'Fragile or high-value collections',
+    'Moves requiring packing services',
+    'Long-distance relocations',
+    'Property chain moves',
+    'Homes with lofts, garages, and sheds full of belongings',
+  ],
+};
+
+// Trust signals
+const trustSignals = [
+  {
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`,
+    title: 'Fully Insured',
+    description: 'Every item we move is covered by £15,000 Goods in Transit insurance. Most man-and-van operators carry no insurance at all.',
+  },
+  {
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`,
+    title: `Rated ${siteConfig.company.rating.value} Stars`,
+    description: 'Across hundreds of verified reviews on Google and Trustpilot. We earn our reputation on every single job.',
+  },
+  {
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    title: 'Established in 1978',
+    description: 'Nearly 50 years moving Bristol. We are not a bloke with a van who started last month. We are a proper company with a track record.',
+  },
+  {
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`,
+    title: 'A Real Company',
+    description: 'Registered business. Named, uniformed staff. Proper vehicles. Not a random Facebook ad that vanishes after your booking.',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'How much does a man with a van cost in Bristol?',
+    answer: 'It depends on what you need moved and how far. A single-item local move typically starts from around £60&ndash;£120, while a studio flat move within Bristol is usually £150&ndash;£300. We price based on the actual job, not a vague hourly rate. Call us or send a few photos and we will give you a clear price upfront.',
+  },
+  {
+    question: 'Are you actually insured?',
+    answer: 'Yes. Every van carries &pound;15,000 of Goods in Transit insurance as standard. This is one of the biggest differences between us and most man-and-van operators. If something is damaged during transit, you are covered. Ask any other man-and-van if they can say the same &ndash; most cannot.',
+  },
+  {
+    question: 'Can you move just one item?',
+    answer: 'Absolutely. We regularly move single sofas, beds, dining tables, washing machines, and other individual pieces. There is no minimum job size. If it fits in a van, we will move it.',
+  },
+  {
+    question: 'Do I need to help with loading and unloading?',
+    answer: 'No. Our team handles all the lifting, carrying, loading, and unloading. You just need to tell us where things are going. That said, if you want to lend a hand you are welcome to &ndash; it is entirely up to you.',
+  },
+  {
+    question: 'How quickly can you do the job?',
+    answer: `We can often accommodate same-week bookings, and sometimes next-day if our schedule allows. For the best availability, a few days notice is ideal. Call us on ${siteConfig.company.contact.phone} and we will do our best to fit you in.`,
+  },
+  {
+    question: 'What is the difference between your service and a full house removal?',
+    answer: 'Our man-and-van service is designed for smaller jobs: single items, studio flats, student moves, and quick collection-and-delivery runs. A full removal is for larger homes (2+ bedrooms) and includes a dedicated Move Manager, furniture disassembly, protective wrapping, and a full-day allocation. If your job turns out to be bigger than expected, we can always scale up. See our <a href="/home-removals-bristol/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">home removals page</a> for details.',
+  },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Man with a Van Bristol",
+  "description": pageDescription,
+  "provider": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "Bristol",
+  },
+  "serviceType": "Man with a Van",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, ''),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} noindex>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-primary-100">
+      <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+        <div class="text-center p-6">
+          <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          <p class="text-sm font-medium">Image: Man with a van service</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Affordable &amp; Insured Man with a Van
+          </h1>
+
+          <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+            Man with a Van <span class="text-secondary-500">Near Bristol</span>
+          </h2>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            Flexible, affordable moves for single items, small flats, and everything in between. Fully insured, highly rated, and backed by nearly 50 years of experience.
+          </p>
+
+          <div class="flex flex-col gap-2 mb-5 items-center">
+            <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="btn-cta-orange">
+              CALL FOR A QUICK QUOTE
+            </a>
+            <p class="text-warm-gray text-sm">{siteConfig.company.contact.phone} &mdash; No obligation, honest pricing</p>
+          </div>
+
+          <TrustpilotStrip />
+        </div>
+      </div>
+
+      <!-- Right: Image placeholder (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden bg-primary-100">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+          <div class="text-center p-6">
+            <svg class="w-20 h-20 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+            <p class="text-sm font-medium">Image: Man with a van service</p>
+            <p class="text-xs mt-1 opacity-70">Recommended: 1280x720 or larger</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: WHEN MAN-AND-VAN MAKES SENSE vs FULL REMOVAL
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Man &amp; Van or Full Removal &mdash; Which Do You Need?</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-3xl mx-auto">
+        Not every move needs a full removal crew. Sometimes a man and a van is all it takes. Here is a quick guide to help you decide.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Man & Van column -->
+        <div class="bg-cream rounded-lg p-8 shadow-sm border-t-4 border-secondary-500">
+          <h3 class="text-xl font-bold text-secondary-600 mb-2">Man &amp; Van</h3>
+          <p class="text-warm-gray text-sm mb-6">Quick, flexible, and affordable</p>
+          <ul class="space-y-3">
+            {comparison.manAndVan.map((item) => (
+              <li class="flex items-start gap-3 text-warm-gray">
+                <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="btn-cta-orange text-sm !px-6 !py-3 w-full text-center">
+              GET A MAN &amp; VAN QUOTE
+            </a>
+          </div>
+        </div>
+
+        <!-- Full Removal column -->
+        <div class="bg-cream rounded-lg p-8 shadow-sm border-t-4 border-primary-500">
+          <h3 class="text-xl font-bold text-primary-600 mb-2">Full Removal Service</h3>
+          <p class="text-warm-gray text-sm mb-6">Comprehensive, managed, and stress-free</p>
+          <ul class="space-y-3">
+            {comparison.fullRemoval.map((item) => (
+              <li class="flex items-start gap-3 text-warm-gray">
+                <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-6 pt-6 border-t border-gray-200">
+            <a href="/home-removals-bristol/" class="inline-block bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-primary-600/40 hover:text-white/90 text-sm text-center w-full">
+              LEARN ABOUT FULL REMOVALS
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-center text-warm-gray mt-8 max-w-2xl mx-auto">
+        Not sure which you need? Call us on <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 font-semibold">{siteConfig.company.contact.phone}</a> and we will help you work it out. There is no pressure to book either service.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: WHAT WE MOVE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">What We Move with Our Man &amp; Van Service</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        If it fits in a van, we will move it. Here are the most common jobs we handle.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {moveItems.map((item) => (
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="w-14 h-14 bg-primary-100 text-primary-600 rounded-xl flex items-center justify-center mb-4">
+              <Fragment set:html={item.icon} />
+            </div>
+            <h3 class="text-lg font-bold mb-2 text-primary-600">{item.title}</h3>
+            <p class="text-warm-gray text-sm">{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: PRICING GUIDANCE
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">Transparent Pricing &mdash; No Nasty Surprises</h2>
+        <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+          We quote based on the actual job, not a vague hourly rate. Here is what to expect.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-10">
+          <div class="bg-cream rounded-lg p-8">
+            <h3 class="text-xl font-bold text-primary-600 mb-4">How We Price</h3>
+            <div class="space-y-4 text-warm-gray">
+              <p>
+                We give you a fixed price for the job based on three things: <strong class="text-primary-600">what you are moving</strong>, <strong class="text-primary-600">where it is going</strong>, and <strong class="text-primary-600">access at both ends</strong> (stairs, parking, narrow doorways).
+              </p>
+              <p>
+                This means the price we quote is the price you pay. No clock ticking. No surprise extras because the job took twenty minutes longer than expected.
+              </p>
+              <p>
+                For simple jobs, a quick phone call or a couple of photos via WhatsApp is usually enough for us to give you an accurate price.
+              </p>
+            </div>
+          </div>
+
+          <div class="bg-cream rounded-lg p-8">
+            <h3 class="text-xl font-bold text-primary-600 mb-4">Rough Guide</h3>
+            <ul class="space-y-4 text-warm-gray">
+              <li class="flex items-start gap-3">
+                <span class="text-secondary-500 font-bold shrink-0">&#8226;</span>
+                <div>
+                  <strong class="text-primary-600">Single item, local</strong>
+                  <p class="text-sm">From around &pound;60&ndash;&pound;120 depending on the item and distance</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-secondary-500 font-bold shrink-0">&#8226;</span>
+                <div>
+                  <strong class="text-primary-600">Studio or 1-bed flat</strong>
+                  <p class="text-sm">From around &pound;150&ndash;&pound;300 for a local move within Bristol</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-secondary-500 font-bold shrink-0">&#8226;</span>
+                <div>
+                  <strong class="text-primary-600">eBay or Marketplace pickup</strong>
+                  <p class="text-sm">From around &pound;40&ndash;&pound;80 for a local collection and delivery</p>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-secondary-500 font-bold shrink-0">&#8226;</span>
+                <div>
+                  <strong class="text-primary-600">Student move</strong>
+                  <p class="text-sm">From around &pound;100&ndash;&pound;200 depending on volume and distance</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-primary-50 border border-primary-200 rounded-lg p-6 text-center">
+          <p class="text-primary-700 font-semibold text-lg mb-2">
+            Every job is insured to &pound;15,000
+          </p>
+          <p class="text-warm-gray">
+            Most man-and-van operators carry no insurance whatsoever. If your sofa gets damaged, you are on your own. With us, every item is covered by &pound;15,000 Goods in Transit insurance as standard. That is the price difference between a professional service and a gamble.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: WHY CHOOSE US OVER RANDOM VAN GUYS
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-center text-white mb-4">Why Choose Us Over a Random Van Guy?</h2>
+      <p class="text-center text-white/80 text-lg mb-12 max-w-2xl mx-auto">
+        Bristol is full of people with a van and a Facebook page. Here is why we are different.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {trustSignals.map((signal) => (
+          <div class="bg-white/10 rounded-lg p-6 backdrop-blur-sm text-center">
+            <div class="text-white mb-4 flex justify-center">
+              <Fragment set:html={signal.icon} />
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">{signal.title}</h3>
+            <p class="text-white/80 text-sm">{signal.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-12 text-center">
+        <p class="text-white/90 text-lg max-w-3xl mx-auto">
+          We understand the appeal of a cheap quote from someone you found on Facebook Marketplace. But when your &pound;800 sofa arrives with a rip in it and the driver shrugs and says &ldquo;nothing I can do, mate&rdquo; &mdash; that cheap quote suddenly does not feel like such good value. With Painless Removals, you get a proper service at a fair price, and genuine protection if something goes wrong.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: UPSELL TO FULL REMOVALS
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">Job Bigger Than Expected? We Scale Up.</h2>
+
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            It happens more often than you would think. You call about moving a wardrobe and a few boxes, and then you remember the stuff in the spare room, the garden furniture, the loft&hellip; suddenly it is a bigger job than a single van can handle.
+          </p>
+          <p>
+            That is not a problem. Because we are a full removal company &mdash; not just a man with a van &mdash; we can scale up to meet whatever your move actually needs. More vans, more hands, a dedicated Move Manager, professional packing, furniture disassembly &mdash; it is all available.
+          </p>
+          <p>
+            <strong class="text-primary-600">You will never hear us say &ldquo;sorry, that is not what we do.&rdquo;</strong> Whether your move takes one hour or one full day, we have the team, the vehicles, and the experience to handle it properly.
+          </p>
+        </div>
+
+        <div class="mt-8 flex flex-col sm:flex-row gap-4">
+          <a href="/home-removals-bristol/" class="btn-cta-orange text-sm !px-6 !py-3 text-center">
+            EXPLORE FULL REMOVALS
+          </a>
+          <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="inline-block border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white px-6 py-3 font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 text-sm text-center">
+            CALL TO DISCUSS
+          </a>
+        </div>
+      </div>
+
+      <!-- Image placeholder -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] bg-primary-50">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+            <p class="text-sm font-medium">Image: Full removal crew in action</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: REVIEWS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Our Customers Say</h2>
+
+      <div class="space-y-8">
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Really great service and <mark>excellent value</mark>. The guys were helpful and efficient. <mark>Definitely recommend them.</mark>"
+          </p>
+          <p class="font-bold text-primary-600">Eleanor Miller</p>
+          <p class="text-sm text-warm-gray">Verified Google Review</p>
+        </div>
+
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Very good service. <mark>Good response to enquiries</mark> and offer a <mark>competitive pricing</mark> for the service. Would recommend."
+          </p>
+          <p class="font-bold text-primary-600">Rahul R</p>
+          <p class="text-sm text-warm-gray">Verified Google Review</p>
+        </div>
+
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Great customer service from start to finish. <mark>Fast, efficient, and friendly</mark>, they go above and beyond and <mark>great value for money</mark> too! Thanks again Painless Removals!"
+          </p>
+          <p class="font-bold text-primary-600">Katie Stagg</p>
+          <p class="text-sm text-warm-gray">Verified Trustpilot Review</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/reviews/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 font-medium">Read more verified customer reviews &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Our Man & Van Service" />
+
+  <!-- ============================================
+       SECTION 9: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Need a Man with a Van in Bristol?"
+    description="Tell us what you need moved and where it is going. We will give you an honest price — no obligation, no pressure. Most quotes take less than five minutes over the phone."
+    bullets={['Insured to \u00A315,000', `Rated ${siteConfig.company.rating.value} stars`, 'Since 1978']}
+    primaryText="CALL FOR A QUOTE"
+    primaryHref={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`}
+    secondaryText="SEND US A MESSAGE"
+    secondaryHref="/contact"
+    bottomNote="Every item we move is fully insured. If something breaks, we cover it."
+  />
+
+
+</Layout>

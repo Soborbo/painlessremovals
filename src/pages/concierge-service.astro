@@ -1,0 +1,487 @@
+---
+/**
+ * Concierge Service Landing Page
+ *
+ * Moving concierge packages for Painless Removals Bristol.
+ * Admin, settling in, home-ready, digital setup, curtain fitting + bundles.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Concierge Service | Painless Removals Bristol';
+const pageDescription = 'We handle the 30+ admin tasks, supplier switches, and odd jobs that come with moving house. Packages from £129. Available exclusively to Painless Removals customers.';
+
+// Packages data
+const packages = [
+  {
+    name: 'Admin Blitz',
+    price: 149,
+    tagline: 'For people who hate being on hold.',
+    description: 'We handle every address change, every supplier switch, every registration — so you don\'t have to spend your evenings on the phone to British Gas.',
+    items: [
+      'Broadband setup & best-deal switching',
+      'Energy supplier switching',
+      'Water supplier notification',
+      'Home phone line setup',
+      'Home insurance comparison',
+      'Royal Mail redirection',
+      'Council tax registration',
+      'DVLA address change',
+      'TV Licence update',
+      'Electoral roll registration',
+      'GP & dentist registration',
+      'Parking permit application',
+      'Car insurance address update',
+      'Pet microchip address update',
+      'Utility meter readings on moving day',
+      'Boiler service booking',
+      'Chimney sweep booking (if applicable)',
+    ],
+    note: 'That\'s 17 tasks off your list in one go. Most people forget at least five of them. We won\'t.',
+    color: 'primary',
+  },
+  {
+    name: 'Settling In',
+    price: 199,
+    tagline: 'For people who want to feel at home on day one.',
+    description: 'Our crew is already at your new place. For a little extra time, they\'ll get you properly set up — not just unloaded.',
+    items: [
+      'Kitchen and bedroom unpacking',
+      'Washing machine, dishwasher & cooker reconnected',
+      'Up to 2 flat-pack items assembled',
+      'Up to 10 pictures and mirrors hung',
+      'Welcome hamper waiting for you on arrival',
+    ],
+    note: 'Because there\'s a big difference between "moved in" and "home."',
+    extras: 'Additional rooms unpacked from £40/room. Extra flat-pack assembly from £35/item.',
+    color: 'secondary',
+  },
+  {
+    name: 'New Home Ready',
+    price: 249,
+    tagline: 'For people moving into a place that isn\'t quite theirs yet.',
+    description: 'Before you unpack a single box, we make sure your new home is secure, safe, and sorted.',
+    items: [
+      'Front door lock change with new keys',
+      'Smoke & carbon monoxide alarm check and battery replacement',
+      'Door and window security check',
+      'Boiler service by a Gas Safe registered engineer',
+      'Oven and hob deep clean',
+      'Pest control inspection',
+    ],
+    note: 'The previous owner had their own keys cut for the neighbours, the dog walker, and the cleaner. You don\'t know who has a copy. We fix that on day one.',
+    extras: 'Additional door lock changes from £65. Window locks from £15 each.',
+    color: 'primary',
+  },
+  {
+    name: 'Digital Life Setup',
+    price: 179,
+    tagline: 'For people who can\'t face another evening without WiFi.',
+    description: 'Everything screen-related and smart-home-related, measured, mounted, and working.',
+    items: [
+      'TV wall-mounted (1 TV, bracket supplied)',
+      'Smart doorbell installed (Ring, Blink, etc.)',
+      'Smart thermostat installed (Hive, Nest, etc.)',
+      'WiFi extenders placed for full coverage',
+      'Satellite dish or aerial checked and repointed',
+    ],
+    note: 'No more TV balanced on a cardboard box for six weeks while you "get around to it."',
+    extras: 'Additional TV mounting from £75. Full smart home camera setup from £150.',
+    color: 'secondary',
+  },
+  {
+    name: 'Curtain & Blind Fitting',
+    price: 129,
+    tagline: 'For people who\'ve been getting dressed in front of the neighbours.',
+    description: 'We measure, drill, and fit — so you get your privacy back before the first night.',
+    items: [
+      'Up to 4 windows measured and fitted',
+      'Curtain poles or blind brackets drilled and secured',
+      'Suitable for brick, plasterboard, or lintel mounting',
+    ],
+    note: '',
+    extras: 'Additional windows from £25 each.',
+    color: 'primary',
+  },
+];
+
+// Bundles data
+const bundles = [
+  {
+    name: 'Painless Essentials',
+    price: 299,
+    saving: 49,
+    includes: 'Admin Blitz + Settling In',
+    description: 'Every address changed. Kitchen unpacked. Pictures hung. Washing machine plumbed in. The basics, done properly.',
+    bestFor: 'First-time buyers. Young families. Anyone who wants to hit the ground running.',
+  },
+  {
+    name: 'Painless Complete',
+    price: 499,
+    saving: 98,
+    includes: 'Admin Blitz + Settling In + New Home Ready',
+    description: 'Everything in Essentials, plus your new home secured, serviced, and deep-cleaned before you move a single box in.',
+    bestFor: 'Families upgrading. Anyone buying an older property. People who want peace of mind from day one.',
+  },
+  {
+    name: 'Painless VIP',
+    price: 749,
+    saving: 156,
+    includes: 'Every package. Every service. Everything handled.',
+    description: 'You hand us the keys. We hand you back a home that\'s secure, connected, clean, set up, and ready to live in. All you need to do is sit down, put your feet up, and wonder why everyone says moving is stressful.',
+    bestFor: 'Busy professionals. Elderly parents (a popular gift from their children). Corporate relocations. Anyone who simply doesn\'t want to think about it.',
+  },
+];
+
+// FAQ data
+const faqs = [
+  {
+    question: 'Do I need to book a removal with you to use the Concierge Service?',
+    answer: 'Yes — our Concierge Service is available exclusively to Painless Removals customers. It\'s designed to work hand-in-hand with your move, so your coordinator and crew are fully in sync.',
+  },
+  {
+    question: 'When do I fill in the intake form?',
+    answer: 'We send it as soon as you confirm your removal booking. The earlier you complete it, the more time we have to get everything arranged before moving day.',
+  },
+  {
+    question: 'Do you actually switch my suppliers or just give me a list?',
+    answer: 'We do it for you. With your authorisation, we make the calls, fill in the forms, and confirm the switches. You get updates — not homework.',
+  },
+  {
+    question: 'Can I mix and match individual services instead of packages?',
+    answer: 'Of course. The packages offer the best value, but if you only need locks changed and a TV mounted, we\'ll quote you for exactly that.',
+  },
+  {
+    question: 'Who does the handyman and trade work?',
+    answer: 'We work with a small network of trusted, insured Bristol tradespeople we\'ve vetted ourselves. Locksmiths, Gas Safe engineers, electricians, cleaning specialists — all local, all reliable.',
+  },
+  {
+    question: 'Is the lock change included in New Home Ready really necessary?',
+    answer: 'It\'s the single most recommended thing to do when you move into any property. You have no way of knowing how many copies of the keys are out there. Estate agents, previous cleaners, old neighbours — a new lock gives you a clean start.',
+  },
+  {
+    question: 'What\'s in the welcome hamper?',
+    answer: 'The essentials for your first hour: tea, coffee, milk, biscuits, bottled water, toilet roll, hand soap, and a phone charger. The small things that make a big difference when everything else is still in boxes.',
+  },
+  {
+    question: 'Can I buy the Concierge Service as a gift for someone who\'s moving?',
+    answer: 'Absolutely — and it\'s one of the most thoughtful moving gifts you can give. We see a lot of adult children booking the VIP package for elderly parents who are downsizing.',
+  },
+];
+
+// Steps data
+const steps = [
+  {
+    number: 1,
+    title: 'Tell Us Everything Once',
+    text: 'After you book your removal, we send you a simple intake form. Your details, your new address, your preferences. You fill it in once. We take it from there.',
+  },
+  {
+    number: 2,
+    title: 'We Get to Work',
+    text: 'Your dedicated move coordinator works through your list — switching suppliers, updating addresses, booking tradespeople, coordinating with our crew. You get progress updates, not phone calls asking for your meter reading.',
+  },
+  {
+    number: 3,
+    title: 'Walk Into a Ready Home',
+    text: 'On moving day, your new place is secure, clean, checked, and set up. Your broadband is ordered. Your council tax is registered. Your locks are changed. There\'s even a kettle and biscuits waiting for you.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "Moving House Concierge Service Bristol",
+    description: pageDescription,
+    serviceType: "Moving Concierge Service",
+    url: "/concierge-service/",
+    areaServed: areas.bristol,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      "name": "Concierge Packages",
+      "itemListElement": [
+        ...packages.map((pkg) => ({
+          "@type": "Offer",
+          "name": pkg.name,
+          "price": pkg.price.toString(),
+          "priceCurrency": "GBP",
+          "description": pkg.tagline,
+        })),
+        ...bundles.map((b) => ({
+          "@type": "Offer",
+          "name": b.name,
+          "price": b.price.toString(),
+          "priceCurrency": "GBP",
+          "description": b.includes,
+        })),
+      ],
+    },
+    image: "/img/concierge/Concierge-service-Painless-Removals-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Concierge Service" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/concierge/Concierge-service-Painless-Removals-1200w.webp" preloadImage="/img/concierge/Concierge-service-Painless-Removals-750w.avif" noindex>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="concierge/Concierge-service-Painless-Removals"
+        pattern="FULL"
+        alt="Painless Removals concierge service — we handle everything beyond the boxes"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Concierge Service
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          We Don't Just Move Your Stuff. We Move Your <span class="text-secondary-500">Life.</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Changing your address with the DVLA. Sorting out broadband. Booking a boiler service. Getting the locks changed. There are over 30 things you need to do when you move house — and nobody enjoys any of them. We'll handle the lot.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="#packages" class="btn-cta-orange">
+            SEE OUR PACKAGES
+          </a>
+          <p class="text-warm-gray text-sm">Individual packages from £129</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="concierge/Concierge-service-Painless-Removals"
+        pattern="FULL"
+        alt="Painless Removals concierge service — we handle everything beyond the boxes"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USPs - Full width bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: INTRO
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-center mb-4">Moving House Is More Than Loading a Van</h2>
+        <p class="text-warm-gray text-lg mb-4">
+          You've got the removal sorted. But what about everything else?
+        </p>
+        <p class="text-warm-gray text-lg mb-4">
+          The average UK home move comes with over 30 admin tasks, phone calls, and odd jobs that eat into your evenings for weeks. Council tax. Energy suppliers. Car insurance. The GP. The dentist. The electoral roll. That TV that needs mounting. Those curtains that need hanging. That oven the previous owner clearly never cleaned.
+        </p>
+        <p class="text-warm-gray text-lg mb-4">
+          Most people muddle through it with a dog-eared checklist and a growing sense of dread. We thought there had to be a better way.
+        </p>
+        <p class="text-warm-gray text-lg font-medium">
+          Our Concierge Service takes care of everything beyond the boxes — so you can actually enjoy moving into your new home.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: HOW IT WORKS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Three Steps to a Genuinely Painless Move</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        No more spreadsheets or dog-eared checklists. Tell us once, and we take it from there.
+      </p>
+
+      <div class="max-w-4xl mx-auto space-y-8">
+        {steps.map((step) => (
+          <div class="bg-white rounded-xl p-8 shadow-sm">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">{step.number}</div>
+              <div>
+                <h3 class="text-xl font-bold mb-3">{step.title}</h3>
+                <p class="text-warm-gray">{step.text}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: PACKAGES
+  ============================================ -->
+  <section class="section bg-white" id="packages">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Choose Your Level of Painless</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Each package targets a different headache. Pick one, pick a few, or bundle them and save.
+      </p>
+
+      <div class="max-w-5xl mx-auto space-y-8">
+        {/* Admin Blitz — full width (17 items) */}
+        {packages.filter(p => p.name === 'Admin Blitz').map((pkg) => (
+          <div class={`rounded-xl overflow-hidden shadow-sm border ${pkg.color === 'secondary' ? 'border-secondary-200' : 'border-gray-200'}`}>
+            <div class={`px-8 py-5 ${pkg.color === 'secondary' ? 'bg-secondary-50' : 'bg-primary-50'}`}>
+              <div class="flex flex-wrap items-baseline justify-between gap-4">
+                <div>
+                  <h3 class="text-2xl font-bold">{pkg.name}</h3>
+                  <p class={`text-sm font-medium ${pkg.color === 'secondary' ? 'text-secondary-600' : 'text-primary-600'}`}>{pkg.tagline}</p>
+                </div>
+                <p class="text-3xl font-bold">£{pkg.price}</p>
+              </div>
+            </div>
+            <div class="bg-white p-8">
+              <p class="text-warm-gray mb-6">{pkg.description}</p>
+              <ul class="grid sm:grid-cols-2 gap-x-6 gap-y-2 mb-6">
+                {pkg.items.map((item) => (
+                  <li class="flex items-start gap-2 text-warm-gray">
+                    <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              {pkg.note && (
+                <p class="text-primary-600 font-medium text-sm mb-3">{pkg.note}</p>
+              )}
+              {pkg.extras && (
+                <p class="text-warm-gray text-sm bg-cream rounded-lg px-4 py-3"><strong>Need more?</strong> {pkg.extras}</p>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Remaining 4 packages — 2×2 grid */}
+        <div class="grid md:grid-cols-2 gap-6">
+          {packages.filter(p => p.name !== 'Admin Blitz').map((pkg) => (
+            <div class={`rounded-xl overflow-hidden shadow-sm border flex flex-col ${pkg.color === 'secondary' ? 'border-secondary-200' : 'border-gray-200'}`}>
+              <div class={`px-6 py-4 ${pkg.color === 'secondary' ? 'bg-secondary-50' : 'bg-primary-50'}`}>
+                <div class="flex flex-wrap items-baseline justify-between gap-3">
+                  <div>
+                    <h3 class="text-xl font-bold">{pkg.name}</h3>
+                    <p class={`text-sm font-medium ${pkg.color === 'secondary' ? 'text-secondary-600' : 'text-primary-600'}`}>{pkg.tagline}</p>
+                  </div>
+                  <p class="text-2xl font-bold">£{pkg.price}</p>
+                </div>
+              </div>
+              <div class="bg-white p-6 flex flex-col flex-1">
+                <p class="text-warm-gray text-sm mb-4">{pkg.description}</p>
+                <ul class="space-y-2 mb-4 flex-1">
+                  {pkg.items.map((item) => (
+                    <li class="flex items-start gap-2 text-warm-gray text-sm">
+                      <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                {pkg.note && (
+                  <p class="text-primary-600 font-medium text-sm mb-3">{pkg.note}</p>
+                )}
+                {pkg.extras && (
+                  <p class="text-warm-gray text-xs bg-cream rounded-lg px-4 py-3"><strong>Need more?</strong> {pkg.extras}</p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: BUNDLES
+  ============================================ -->
+  <section class="section bg-primary-600 text-white" id="bundles">
+    <div class="container-wide">
+      <h2 class="text-white text-center mb-4">Save More. Stress Less.</h2>
+      <p class="text-primary-100 text-center text-lg mb-12 max-w-2xl mx-auto">
+        Most of our customers combine packages — because once you stop worrying about the small stuff, you realise just how much small stuff there was.
+      </p>
+
+      <div class="max-w-5xl mx-auto grid md:grid-cols-3 gap-6">
+        {bundles.map((bundle, i) => (
+          <div class={`rounded-xl p-8 ${i === 2 ? 'bg-white text-gray-900 ring-4 ring-orange-400' : 'bg-white/10 text-white'}`}>
+            <div class="mb-4">
+              <h3 class={`text-xl font-bold mb-1 ${i === 2 ? 'text-gray-900' : 'text-white'}`}>{bundle.name}</h3>
+              <p class={`text-sm font-medium ${i === 2 ? 'text-orange-600' : 'text-orange-300'}`}>Save £{bundle.saving}</p>
+            </div>
+            <p class={`text-4xl font-bold mb-4 ${i === 2 ? 'text-gray-900' : 'text-white'}`}>£{bundle.price}</p>
+            <p class={`text-sm font-medium mb-4 ${i === 2 ? 'text-primary-600' : 'text-primary-200'}`}>{bundle.includes}</p>
+            <p class={`text-sm mb-6 ${i === 2 ? 'text-warm-gray' : 'text-primary-100'}`}>{bundle.description}</p>
+            <p class={`text-xs ${i === 2 ? 'text-warm-gray' : 'text-primary-200'}`}><strong>Best for:</strong> {bundle.bestFor}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="/contact/" class="btn-cta-orange">
+          GET YOUR FREE QUOTE
+        </a>
+        <p class="text-primary-200 text-sm mt-3">Add a Concierge package when you book your removal</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: ABOUT / JAY
+  ============================================ -->
+  <JayAuthorBlock
+    quote="We built the Concierge Service because we kept seeing the same thing — our customers would be thrilled with the move itself, then spend the next fortnight drowning in phone calls to utility companies and hunting for someone to hang their TV. We thought: we're already there. Why not handle the lot?"
+    description="Painless Removals has been serving Bristol since 1978. Our Concierge Service is a natural extension of what we do — making your entire move, not just the van part, genuinely stress-free."
+  />
+
+  <!-- ============================================
+       SECTION 7: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Questions About Our Concierge Service" />
+
+  <!-- ============================================
+       SECTION 8: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready for a Genuinely Painless Move?"
+    description="Get your free removal quote and add a Concierge package at checkout — or ask us about it when we call to confirm your booking."
+    bullets={['Takes 47 seconds', 'No obligation', 'Real people pick up the phone']}
+    primaryText="GET YOUR FREE QUOTE"
+    primaryHref="/contact"
+    bottomNote="We're real people, and we pick up the phone."
+  />
+
+
+</Layout>

@@ -1,0 +1,258 @@
+---
+/**
+ * /removals-bristol/bedminster/ — Bedminster neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Bedminster Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~4.5 miles' },
+        { label: 'Drive time from depot', value: '~18 minutes' },
+        { label: 'Postcode area', value: 'BS3' },
+        { label: 'Nearest motorway', value: 'M5 J19 (3.5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2–3 bed terrace' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: '4–6 hours' },
+        { label: 'Local move cost', value: '£400–£800' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Typical property', value: 'Victorian terrace' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Front gardens', value: 'None (door to pavement)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'East only, Mon–Fri 9–5' },
+        { label: 'Suspension needed', value: 'Often (street-dependent)' },
+        { label: 'Main difficulty', value: 'Match days + construction' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The three guys who moved us from one side of town to the other were brilliant. It was the least stressful day of our whole house moving process. They were friendly, relaxed and very quick.",
+  name: 'Jonny Spry',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Bedminster, Bristol';
+const description = `Bedminster removal specialists since 1978. We handle BS3 terraces, Ashton Gate match-day chaos, and Bedminster Green construction — 4.5 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Bedminster Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Bedminster, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS3", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Should I avoid Ashton Gate match days for my move?', answer: 'Yes. Match-day parking from Bristol City FC and Bristol Bears spreads well into Bedminster\'s residential streets, especially south of East Street where there\'s no RPZ. We check the fixture list before confirming every Bedminster date and will suggest alternatives if there\'s a clash.' },
+  { question: 'Will the Bedminster Green building works affect my move?', answer: 'Possibly. The regeneration project is delivering ~800 new homes with ongoing construction through 2027. Road diversions affect Dalby Avenue, Malago Road, and Whitehouse Street. We check for temporary closures before every Bedminster move and plan alternative routes.' },
+  { question: 'Do I need a parking suspension in Bedminster?', answer: 'It depends on your street. The Bedminster East RPS operates Monday to Friday, 9am–5pm. Many streets south of East Street have no RPZ at all. Your Move Manager will confirm whether a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline underline-offset-2">suspension</a> is needed for your specific address.' },
+  { question: 'How much does a Bedminster removal cost?', answer: 'A 2–3 bed Victorian terrace moving locally typically costs £400–£800 depending on access and packing. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific estimate.' },
+  { question: 'Can you move from terraces where the front door opens onto the pavement?', answer: 'Yes — this is our most common Bedminster job. We park as close as possible and use protective runners from your front door to the van. A parking suspension guarantees the space directly outside.' },
+  { question: 'Is Bedminster a good area to move to?', answer: 'Bedminster has transformed from a post-industrial neighbourhood into one of Bristol\'s more fashionable postcodes. North Street\'s independent shops and cafes have given it a strong identity. Property prices have risen accordingly, and the Bedminster Green regeneration is bringing around 800 new homes by 2027. Book a <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">free survey</a> and we\'ll talk you through the area.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Bedminster" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Bedminster"
+  slug="bedminster"
+  schema={schema}
+  ogImage="/img/areas/bedminster-victorian-terrace-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/bedminster-victorian-terrace-removal"
+  heroAlt="Painless Removals team loading a van outside a Victorian terrace in Bedminster, Bristol"
+  heroSubtitle="We've been moving families across Bristol since 1978. For home removals in Bedminster, that local know-how makes all the difference."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There's a version of Bedminster that exists in the memory of older Bristolians — a working-class neighbourhood built around factories and industry, not somewhere you'd necessarily choose to move to. That version is largely gone. The Bedminster of today is an attractive place to live, and one of the more pleasant Bristol neighbourhoods for a removal crew to work in. North Street has become one of Bristol's better independent high streets. East Street brings the practicality. Between the two, Bedminster has the bones of a community rather than a collection of houses, and buyers and renters are increasingly noticing.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">But Bedminster comes with its own set of moving-day challenges — from the Ashton Gate fixture list to the ongoing <a href="https://www.bristol.gov.uk/planning-and-building-regulations/bedminster-green" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster Green regeneration</a> that's reshaping the southern end of the neighbourhood. Here's the honest guide to what that means for your move.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The People Make the Difference -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Bedminster Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Friendly Streets Make the Difference</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Here's the thing about Bedminster that you don't read in most removal company guides: the people make the day. Like most of inner Bristol, Bedminster has its share of tighter streets — some of the roads off East Street have the narrow terraced-house feel that means parking a van and keeping traffic moving takes a bit of management. But what consistently sets Bedminster apart is how residents respond.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">In some parts of Bristol, leaving a van in the road generates immediate irritation. Horns, confrontations, the kind of stress that makes a long day longer. In Bedminster, people tend to see what's happening, accept that a removal van needs to be where it needs to be, and find another way around. We've worked streets here where we've blocked the road for extended periods without a single significant incident. That's not something you can say about every Bristol neighbourhood.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">It's a small thing in isolation. Over the course of a full moving day, it's genuinely significant.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) — before Ashton Gate section -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Ashton Gate Factor -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Ashton Gate Factor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This one matters and it's specific to Bedminster: Ashton Gate Stadium. Bristol City FC and Bristol Bears both play here, and when there's a match on — particularly an evening kick-off — the surrounding area transforms. Roads fill up, residents give over their streets to matchday parking, and the whole neighbourhood around Winterstoke Road and Ashton Road goes into a kind of controlled chaos that is fine if you've anticipated it and not fine if you haven't.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The scenario to avoid is finishing a removal job at five in the afternoon when there's a six o'clock kick-off. You will struggle to get the van out. Traffic will be building, parking will be blocked, and what should be a clean end to the day becomes an exercise in waiting.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The fix is straightforward: check the fixture list before you book your moving date. It takes two minutes and can save you hours. Midweek evening games are the ones to watch most carefully — they catch people out because they're less visible in the calendar than Saturday afternoon fixtures. If your moving date clashes, tell us when you book. We can plan our timing to be clear of the area before it gets difficult, or schedule the load for earlier in the day. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a> can run the day before to make the moving-day turnaround faster.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Bedminster?"
+      description="Get a personalised quote — we check roadworks and match-day fixtures before confirming your date."
+      buttonText="Get Your Bedminster Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: The Streets & Routes -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Streets: What to Expect</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bedminster's housing is predominantly Victorian terraced — the long rows of two-up two-down and larger bay-fronted houses that characterise inner south Bristol. These are generally good properties to move into and out of. The proportions are honest: reasonable hallways, manageable staircases, front doors that open directly onto the pavement.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The streets themselves vary. Some of the roads directly off North Street are tight, with on-street parking on both sides and not much room for a van to sit comfortably. Others — particularly the wider residential roads further back — are perfectly manageable. Parson Street and the roads around it tend to have more space than the denser streets closer to the high street. If you're moving into or out of a converted flat, let us know so we can assess the stairwell access during your <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a>. Bedminster's older terraces can have some interesting internal layouts once they've been divided.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Getting To and From Bedminster</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bedminster sits in a part of Bristol where the route choices matter. The main approaches are via the A38 (Bedminster Parade and East Street), through Coronation Road along the harbourside, or over the Cumberland Basin from the west. For removal vans coming from north Bristol — where we're based — Coronation Road is often the cleanest route outside of rush hour. The A38 can back up during commute times.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The character of the streets changes noticeably as you move through south Bristol. The steeper gradients and coloured terraces of <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> to the east, the leafier family streets of <a href="/removals-bristol/knowle/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Knowle</a> further south, and the trendier cafes and galleries of <a href="/removals-bristol/southville/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Southville</a> next door — each has its own access quirks, but Bedminster's flat terrain and wider main roads make it one of the more forgiving parts of BS3 to work in.</p>
+  </div>
+
+  <!-- S4: A Neighbourhood That's Changed -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">A Neighbourhood That's Changed — and That Helps on Moving Day</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We've been moving people in and out of Bedminster long enough to watch the neighbourhood transform. What was once a factory area is now home to young professionals, first-time buyers, and families who are choosing Bedminster specifically. The area that estate agents sometimes call "Lower Clifton" — meaning Southville, which sits alongside Bedminster — has seen particularly strong interest. There are some lovely terraced streets in and around Greville Road and Stackpool Road, and the proximity to the harbourside cycle routes and Ashton Court makes this a compelling part of the city for active families.</p>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/bedminster-terrace"
+          pattern="HALF"
+          alt="Victorian terraced street in Bedminster, Bristol — typical of the properties we move"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">A typical Bedminster terrace — front doors opening directly onto the pavement.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "One thing worth building into your moving date: Ashton Gate. On match days — or when a concert is on — the surrounding roads can move from busy to gridlocked in under an hour. It's not a reason to avoid Bedminster, but it is a reason to check the fixture list when you're picking your moving date. We do this as standard for any booking in the area."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The type of moves we handle here has shifted too — more compact one-van jobs, more people moving locally within BS3. Bedminster is one of Bristol's more affordable postcodes, and many of our customers here are first-time buyers or young families upgrading to a three-bed. That means moves tend to be smaller in volume, and we price accordingly.</p>
+  </div>
+
+
+  <!-- S5: Is Bedminster a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Bedminster a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. Bedminster scores well on the things that matter most: the Victorian terraces have honest proportions — reasonable hallways and manageable staircases wider than the Georgian flights you find in Clifton. The streets are not the easiest in Bristol, but they're far from the worst. And the people consistently make the day easier rather than harder.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The two variables to manage are the stadium and the construction. Handle the Ashton Gate fixture list and check for active Bedminster Green road closures, and the move goes well. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers both — we'll visit your property, assess the access, and confirm your date against the fixture calendar and the current roadworks schedule.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For most Bedminster moves — a two or three-bed terrace moving locally — you're looking at a team of two to three, one Luton van, and a half-day to full-day job. Bedminster tends to be slightly more affordable than neighbouring Southville due to easier parking in many streets.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bedminster Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Check the Ashton Gate fixture list.</strong> Evening games especially. Avoid moving-day clashes if at all possible.</li>
+      <li><strong>What type of property?</strong> Victorian terrace, converted flat, or newer build? Let us know so we plan access correctly.</li>
+      <li><strong>Which street?</strong> The denser streets near North Street and East Street need more parking management than the wider roads further back.</li>
+      <li><strong>Do you need a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking suspension</a>?</strong> The Bedminster East RPS operates Mon–Fri 9am–5pm. Many streets south of East Street have no RPZ.</li>
+      <li><strong>Any large items?</strong> Bay-fronted terraces usually cope well, but it's worth flagging anything oversized so we assess the staircase and hallway in advance.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

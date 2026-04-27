@@ -1,0 +1,512 @@
+---
+/**
+ * Student Removals Bristol – Service Landing Page
+ *
+ * Targeted at University of Bristol and UWE students (and their parents).
+ * Covers hall-to-hall, hall-to-house, house-to-house, summer storage,
+ * and end-of-year moves home. Warmer, more approachable tone.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+
+// Page metadata
+const pageTitle = 'Student Removals Bristol | University Moves | Painless Removals';
+const pageDescription = `Affordable student removals in Bristol for UoB and UWE students. Hall-to-hall, hall-to-house, summer storage, and end-of-year moves home. Trusted since 1978 with a ${siteConfig.company.rating.value}-star rating.`;
+
+// Service options
+const services = [
+  {
+    title: 'Hall-to-Hall Moves',
+    description: 'Switching halls between first and second year? We\'ll collect everything from your current room and have it set up in the new one the same day. No dragging bin bags across campus.',
+    icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+  },
+  {
+    title: 'Hall-to-House Moves',
+    description: 'Moving into your first shared house is a big deal. We\'ll get everything from your hall room to your new place safely, even if it means navigating the narrowest streets in Redland.',
+    icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
+  },
+  {
+    title: 'House-to-House Moves',
+    description: 'Changing student house for next year? Whether you\'re swapping Fishponds for Filton or Cotham for Clifton, we make the switch quick and painless.',
+    icon: 'M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4',
+  },
+  {
+    title: 'Summer Storage',
+    description: 'Don\'t want to haul everything home for summer? We\'ll collect your belongings, store them securely, and deliver to your new address in September. One less thing to worry about.',
+    icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+  },
+  {
+    title: 'End-of-Year Moves Home',
+    description: 'Finished uni and heading back to your parents? We handle long-distance moves across the whole UK. Your mum won\'t need to hire a roof box this time.',
+    icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
+  },
+];
+
+// Student tips
+const tips = [
+  {
+    title: 'Declutter Before You Pack',
+    description: 'Be ruthless. That broken desk lamp, the fancy dress outfits you\'ll never wear again, the textbooks you can sell online &ndash; get rid of them before moving day. Less stuff means a cheaper, faster move.',
+  },
+  {
+    title: 'Use Bin Bags for Soft Items',
+    description: 'Duvets, pillows, and clothes can go straight into bin bags. They\'re waterproof, they squash down, and they\'re free. Save the boxes for fragile and heavy items.',
+  },
+  {
+    title: 'Pack a Survival Bag',
+    description: 'Phone charger, toiletries, a change of clothes, kettle, mugs, and tea bags. Keep this separate so you\'re not ripping open boxes at midnight looking for your toothbrush.',
+  },
+  {
+    title: 'Photograph Your Room Before You Leave',
+    description: 'Take photos of your hall room or rented house before you move out. If there\'s a dispute over your deposit, you\'ll have proof of the condition you left it in.',
+  },
+  {
+    title: 'Coordinate With Your Housemates',
+    description: 'If you\'re all moving into the same house, book one van between you. It\'s cheaper per person and means everything arrives at once instead of in dribs and drabs.',
+  },
+  {
+    title: 'Check Parking in Advance',
+    description: 'Student streets are notorious for having zero parking. Let us know the address ahead of time and we\'ll plan the best approach &ndash; we probably already know the street.',
+  },
+];
+
+// Cross-link pages
+const crossLinks = [
+  {
+    title: 'Man With a Van',
+    description: 'Perfect for smaller student moves. A single van and driver for when you don\'t need a full removal team.',
+    href: '/man-with-a-van-near-bristol/',
+    icon: 'M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10 M17 16V8a1 1 0 00-1-1h-2l-3 3v6',
+  },
+  {
+    title: 'Storage Service',
+    description: 'Secure, insured storage in Bristol. Ideal for keeping your belongings safe over summer or between tenancies.',
+    href: '/storage-service/',
+    icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+  },
+  {
+    title: 'Packing Guide',
+    description: 'Free video lessons on how to pack like a pro. Covers kitchens, bedrooms, fragile items, and more.',
+    href: '/packing-guide/',
+    icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'How much does a student move in Bristol cost?',
+    answer: `It depends on how much you're moving and how far. A typical student room move within Bristol starts from around &pound;150&ndash;&pound;250. If you're sharing a van with housemates, the cost per person drops even further. Give us a call on ${siteConfig.company.contact.phone} for a quick quote &ndash; we'll give you a straight answer, not a sales pitch.`,
+  },
+  {
+    question: 'Can I share a van with my housemates to save money?',
+    answer: 'Absolutely &ndash; and we\'d recommend it. If three or four of you are moving into the same house, we can collect from multiple halls or addresses and deliver everything in one trip. You split the cost between you, which usually works out significantly cheaper than hiring separate vehicles.',
+  },
+  {
+    question: 'Do you move students during Freshers\' Week and end-of-term?',
+    answer: 'Yes, these are some of our busiest times for student moves. We\'d recommend booking at least two weeks in advance during September and June, as slots fill up quickly. The earlier you book, the more flexibility you\'ll have on timing.',
+  },
+  {
+    question: 'What about parking on narrow student streets?',
+    answer: 'We know Bristol\'s student areas inside out &ndash; the double yellows on Cotham Hill, the tight turns in Redland, the permit zones around Stoke Bishop. We plan parking and access in advance so there are no delays on the day. If we need a permit, we\'ll let you know ahead of time.',
+  },
+  {
+    question: 'Can you store my things over summer and deliver them in September?',
+    answer: 'Yes, our summer storage service is very popular with students. We collect your belongings at the end of term, keep them in our secure, insured facility over summer, and deliver to your new address in September. It saves you the hassle and cost of transporting everything home and back again.',
+  },
+  {
+    question: 'Are my belongings insured during the move?',
+    answer: 'Every van carries &pound;15,000 of Goods in Transit insurance. We\'ll treat your belongings with care whether it\'s a laptop, a guitar, or your nan\'s kitchen set. Items we move are fully covered &ndash; just let us know about anything particularly valuable beforehand.',
+  },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Student Removals Bristol",
+  "description": pageDescription,
+  "provider": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "Bristol",
+  },
+  "serviceType": "Student Removals",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "University Students",
+  },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '').replace(/&ndash;/g, '–').replace(/&mdash;/g, '—').replace(/&pound;/g, '£'),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} noindex>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-primary-100">
+      <!-- IMAGE PLACEHOLDER: Students loading boxes into a Painless Removals van outside a student house -->
+      <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+        <div class="text-center p-6">
+          <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+          <p class="text-sm font-medium">Hero image: Student removals in Bristol</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Student Removals in Bristol
+          </h1>
+
+          <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+            Uni Moves Made <span class="text-secondary-500">Painless</span>
+          </h2>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            Whether you're moving into halls, switching to a shared house, or heading home for good &ndash; we'll get you there without the stress (or the seven trips in your mate's hatchback).
+          </p>
+
+          <div class="flex flex-col gap-2 mb-5 items-center">
+            <a href="/contact/" class="btn-cta-orange">
+              GET A STUDENT MOVE QUOTE
+            </a>
+            <p class="text-warm-gray text-sm">Quick, friendly, no obligation</p>
+          </div>
+
+          <TrustpilotStrip />
+        </div>
+      </div>
+
+      <!-- Right: Full-bleed image (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden bg-primary-100">
+        <!-- IMAGE PLACEHOLDER: Students loading boxes into a Painless Removals van outside a student house -->
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+          <div class="text-center p-6">
+            <svg class="w-20 h-20 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+            <p class="text-sm font-medium">Hero image: Student removals in Bristol</p>
+            <p class="text-xs mt-1 opacity-70">Recommended: 1280x720 or larger</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: UoB & UWE – LOCAL KNOWLEDGE
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] bg-primary-50">
+        <!-- IMAGE PLACEHOLDER: Painless Removals van on a typical Bristol student street, terraced houses -->
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <p class="text-sm font-medium">Image: Bristol student streets</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">We Know Bristol's Student Areas Inside Out</h2>
+
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          We've been moving people around Bristol since 1978. When it comes to student areas, we know every tight corner, every double yellow, and every impossible parking spot.
+        </p>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-primary-600 mb-2">University of Bristol</h3>
+          <p class="text-warm-gray text-lg">
+            From Stoke Bishop halls to shared houses in Redland, Cotham, and Clifton &ndash; we know these streets like the back of our hand. The steep hills, the Victorian terraces with narrow hallways, the permit parking zones. We've navigated them all hundreds of times.
+          </p>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="text-lg font-bold text-primary-600 mb-2">UWE Bristol</h3>
+          <p class="text-warm-gray text-lg">
+            Frenchay Campus halls, student houses in Fishponds and Filton &ndash; we're regulars in these areas too. Whether it's the tight turns around Frenchay or the busy residential streets near campus, we know exactly how to get in, load up, and get out efficiently.
+          </p>
+        </div>
+
+        <p class="text-warm-gray text-lg">
+          This local knowledge isn't just a nice bonus &ndash; it means we can plan your move properly, avoid delays, and get you settled in faster.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: WHAT WE OFFER – SERVICE OPTIONS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Every Type of Student Move, Covered</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Whether you're switching rooms between terms or graduating and heading home, we've got a service to fit.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {services.map((service) => (
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d={service.icon} />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold mb-2 text-primary-600">{service.title}</h3>
+            <p class="text-warm-gray text-sm">{service.description}</p>
+          </div>
+        ))}
+
+        <!-- Extra card: group booking -->
+        <div class="bg-secondary-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300 border border-secondary-100">
+          <div class="w-12 h-12 bg-secondary-100 text-secondary-600 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold mb-2 text-secondary-600">Group Bookings</h3>
+          <p class="text-warm-gray text-sm">Moving in with your housemates? Book one van between the lot of you and split the cost. We'll collect from multiple addresses and deliver together.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: STUDENT PRICING
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="mb-4">Student-Friendly Pricing</h2>
+        <p class="text-warm-gray text-lg mb-8">
+          We know you're on a budget. That's why we offer flexible options to keep costs down &ndash; without cutting corners on care.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <!-- Option 1 -->
+        <div class="bg-cream rounded-lg p-6 text-center shadow-sm">
+          <div class="w-14 h-14 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold mb-2">Man &amp; Van</h3>
+          <p class="text-warm-gray text-sm mb-4">
+            Our most budget-friendly option. A single van and driver &ndash; ideal for moving a student room's worth of belongings. You help with the loading to keep the price down.
+          </p>
+          <p class="text-primary-600 font-semibold text-sm">Best for: Solo moves, small loads</p>
+        </div>
+
+        <!-- Option 2 -->
+        <div class="bg-cream rounded-lg p-6 text-center shadow-sm border-2 border-secondary-300 relative">
+          <span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary-500 text-white text-xs font-bold uppercase tracking-wide px-4 py-1 rounded-full">Most Popular</span>
+          <div class="w-14 h-14 bg-secondary-100 text-secondary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold mb-2">Shared Van (Group Move)</h3>
+          <p class="text-warm-gray text-sm mb-4">
+            Pool together with your housemates. We collect from multiple pick-up points and deliver to your shared house. Split the cost between you &ndash; everyone saves.
+          </p>
+          <p class="text-secondary-600 font-semibold text-sm">Best for: Groups of 2&ndash;6 housemates</p>
+        </div>
+
+        <!-- Option 3 -->
+        <div class="bg-cream rounded-lg p-6 text-center shadow-sm">
+          <div class="w-14 h-14 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold mb-2">Full Service</h3>
+          <p class="text-warm-gray text-sm mb-4">
+            We do everything &ndash; packing, loading, transporting, unloading. Perfect if your parents are booking and want peace of mind that everything is handled professionally.
+          </p>
+          <p class="text-primary-600 font-semibold text-sm">Best for: Parents booking, larger moves</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-10">
+        <p class="text-warm-gray mb-4">Every move is different, so we quote individually. Call us for a quick, honest price.</p>
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="btn-cta-orange">
+          CALL FOR A STUDENT QUOTE: {siteConfig.company.contact.phone}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: SOCIAL PROOF
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">Students &amp; Parents Love Working With Us</h2>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Really great service and <mark>excellent value</mark>. The guys were helpful and efficient. <mark>Definitely recommend them.</mark>"
+          </p>
+          <p class="font-bold text-primary-600">Eleanor Miller</p>
+          <p class="text-sm text-warm-gray">Verified Google Review</p>
+        </div>
+
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Very good service. <mark>Good response to enquiries</mark> and offer a <mark>competitive pricing</mark> for the service. Would recommend."
+          </p>
+          <p class="font-bold text-primary-600">Rahul R</p>
+          <p class="text-sm text-warm-gray">Verified Google Review</p>
+        </div>
+
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Great customer service from start to finish. <mark>Fast, efficient, and friendly</mark>, they go above and beyond and <mark>great value for money</mark> too! Thanks again Painless Removals!"
+          </p>
+          <p class="font-bold text-primary-600">Katie Stagg</p>
+          <p class="text-sm text-warm-gray">Verified Trustpilot Review</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <p class="text-warm-gray text-sm">Rated <strong>{siteConfig.company.rating.value} out of 5</strong> across hundreds of verified reviews</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: TIPS FOR STUDENT MOVES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Tips for a Smoother Student Move</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        A little preparation goes a long way. Here are the things we wish every student knew before moving day.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tips.map((tip, index) => (
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="w-10 h-10 bg-secondary-100 text-secondary-700 rounded-full flex items-center justify-center font-bold text-lg mb-4">
+              {index + 1}
+            </div>
+            <h3 class="text-lg font-bold mb-2 text-primary-600">{tip.title}</h3>
+            <p class="text-warm-gray text-sm" set:html={tip.description} />
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-10">
+        <p class="text-warm-gray mb-2">Want a deeper dive into packing properly?</p>
+        <a href="/packing-guide/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 font-medium">
+          Check out our free packing guide with video lessons &rarr;
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">More Ways We Can Help</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Explore our other services that work well alongside student moves.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        {crossLinks.map((link) => (
+          <a href={link.href} class="group bg-cream rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 no-underline hover:-translate-y-1">
+            <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d={link.icon} />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold mb-2 text-primary-600 group-hover:text-secondary-500 transition-colors">{link.title}</h3>
+            <p class="text-warm-gray text-sm">{link.description}</p>
+            <span class="text-secondary-500 text-sm font-medium mt-3 inline-block">Learn more &rarr;</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: WHY PAINLESS – TRUST SIGNALS
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-center text-white mb-4">Why Students (and Their Parents) Choose Us</h2>
+      <p class="text-center text-white/80 text-lg mb-12 max-w-2xl mx-auto">
+        We've been doing this since 1978. Here's what sets us apart from asking your mate with a van.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 backdrop-blur-sm text-center">
+          <p class="text-4xl font-bold text-white mb-2">1978</p>
+          <p class="text-white/80 text-sm">Established &ndash; nearly 50 years of Bristol removals</p>
+        </div>
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 backdrop-blur-sm text-center">
+          <p class="text-4xl font-bold text-white mb-2">{siteConfig.company.rating.value}</p>
+          <p class="text-white/80 text-sm">Star rating across hundreds of verified reviews</p>
+        </div>
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 backdrop-blur-sm text-center">
+          <p class="text-4xl font-bold text-white mb-2">&pound;15k</p>
+          <p class="text-white/80 text-sm">Goods in Transit insurance on every van</p>
+        </div>
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 backdrop-blur-sm text-center">
+          <p class="text-4xl font-bold text-white mb-2">0</p>
+          <p class="text-white/80 text-sm">Hidden fees &ndash; the price we quote is the price you pay</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Student Moves" />
+
+  <!-- ============================================
+       SECTION 10: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Make Your Uni Move Painless?"
+    description="Give us a call or drop us a message. We'll give you a straight, honest quote &ndash; no sales pitch, no pressure. Just a friendly team that's been doing this for nearly 50 years."
+    bullets={['Affordable student rates', 'UoB & UWE specialists', 'Summer storage available']}
+    primaryText="GET YOUR STUDENT QUOTE"
+    primaryHref="/contact"
+    bottomNote={`Trusted by Bristol students and parents since 1978. Rated ${siteConfig.company.rating.value} stars.`}
+  />
+
+
+</Layout>

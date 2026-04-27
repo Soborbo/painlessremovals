@@ -1,0 +1,35 @@
+---
+/**
+ * TrustpilotStrip — "Exceptional ★★★★★ ratings on [Trustpilot logo]"
+ *
+ * Compact trust signal used in heroes and CTAs across 20+ pages.
+ */
+
+export interface Props {
+  /** Text alignment */
+  align?: 'center' | 'left';
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const { align = 'center', class: className = '' } = Astro.props;
+const alignClass = align === 'center' ? 'items-center justify-center' : 'items-start justify-start';
+const textAlign = align === 'center' ? 'justify-center' : 'justify-start';
+---
+
+<div class={`flex flex-col ${alignClass} ${className}`} style="gap: 3px;">
+  <div class={`flex items-center ${textAlign} gap-2`}>
+    <span class="text-primary-600 italic text-lg">Exceptional</span>
+    <span class="text-yellow-400 text-2xl tracking-tight">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+    <span class="text-warm-gray text-lg">ratings on</span>
+  </div>
+  <div class={`flex ${textAlign} w-full`}>
+    <img
+      src="/images/trustpilot-logo.svg"
+      alt="Trustpilot"
+      class={`h-8 w-auto ${align === 'center' ? 'mx-auto' : ''}`}
+      width="150"
+      height="32"
+    />
+  </div>
+</div>

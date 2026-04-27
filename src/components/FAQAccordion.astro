@@ -1,0 +1,139 @@
+---
+/**
+ * FAQAccordion — animated FAQ section using details/summary
+ *
+ * Progressive enhancement: works without JS. CSS grid-template-rows
+ * transition for smooth open/close animation. Close-others behaviour via JS.
+ */
+
+export interface Props {
+  /** Array of FAQ items */
+  faqs: Array<{ question: string; answer: string }>;
+  /** Section heading (default: "Frequently Asked Questions") */
+  heading?: string;
+  /** Section id for anchor links (default: "faq") */
+  id?: string;
+  /** Background class for the section */
+  bgClass?: string;
+}
+
+const {
+  faqs,
+  heading = 'Frequently Asked Questions',
+  id = 'faq',
+  bgClass = '',
+} = Astro.props;
+---
+
+<section class={`section ${bgClass}`} id={id}>
+  <div class="container-wide">
+    <h2 class="text-center mb-12">{heading}</h2>
+
+    <div class="max-w-3xl mx-auto divide-y divide-gray-200" data-faq-group>
+      {faqs.map((faq) => (
+        <details class="group">
+          <summary class="flex justify-between items-center py-5 cursor-pointer font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 list-none [&::-webkit-details-marker]:hidden">
+            <span>{faq.question}</span>
+            <span class="faq-icon text-primary-600 text-2xl transition-transform duration-300 shrink-0 ml-4">+</span>
+          </summary>
+          <div class="faq-answer-wrap">
+            <div class="pb-5 text-warm-gray leading-relaxed">
+              <Fragment set:html={faq.answer} />
+            </div>
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq-answer-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  details[open] > .faq-answer-wrap {
+    grid-template-rows: 1fr;
+  }
+
+  .faq-answer-wrap > div {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  .faq-icon {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  details[open] .faq-icon {
+    transform: rotate(45deg);
+  }
+</style>
+
+<script is:inline>
+  (function() {
+    document.querySelectorAll('[data-faq-group]').forEach(function(group) {
+      group.querySelectorAll('details').forEach(function(det) {
+        var summary = det.querySelector('summary');
+        if (!summary) return;
+
+        var isAnimating = false;
+
+        summary.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (isAnimating) return;
+
+          var wrap = det.querySelector('.faq-answer-wrap');
+          if (!wrap) return;
+
+          if (det.hasAttribute('open')) {
+            // Close
+            isAnimating = true;
+            wrap.style.gridTemplateRows = '0fr';
+            function onCloseEnd() {
+              wrap.removeEventListener('transitionend', onCloseEnd);
+              det.removeAttribute('open');
+              wrap.style.gridTemplateRows = '';
+              isAnimating = false;
+            }
+            wrap.addEventListener('transitionend', onCloseEnd);
+            setTimeout(function() { if (isAnimating) onCloseEnd(); }, 400);
+          } else {
+            // Close others
+            group.querySelectorAll('details[open]').forEach(function(other) {
+              if (other === det) return;
+              var ow = other.querySelector('.faq-answer-wrap');
+              if (ow) {
+                ow.style.gridTemplateRows = '0fr';
+                function onOtherEnd() {
+                  ow.removeEventListener('transitionend', onOtherEnd);
+                  other.removeAttribute('open');
+                  ow.style.gridTemplateRows = '';
+                }
+                ow.addEventListener('transitionend', onOtherEnd);
+                setTimeout(function() { other.removeAttribute('open'); ow.style.gridTemplateRows = ''; }, 400);
+              }
+            });
+
+            // Open: set open attribute with rows at 0fr, then animate to 1fr
+            wrap.style.gridTemplateRows = '0fr';
+            det.setAttribute('open', '');
+            // Double rAF ensures the browser has painted 0fr before transitioning
+            requestAnimationFrame(function() {
+              requestAnimationFrame(function() {
+                wrap.style.gridTemplateRows = '1fr';
+                function onOpenEnd() {
+                  wrap.removeEventListener('transitionend', onOpenEnd);
+                  wrap.style.gridTemplateRows = '';
+                }
+                wrap.addEventListener('transitionend', onOpenEnd);
+              });
+            });
+          }
+        });
+      });
+    });
+  })();
+</script>

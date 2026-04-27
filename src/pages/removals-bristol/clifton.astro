@@ -1,0 +1,273 @@
+---
+/**
+ * /removals-bristol/clifton/ — Clifton neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Clifton Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~2.5 miles' },
+        { label: 'Drive time from depot', value: '~10 minutes' },
+        { label: 'Postcode area', value: 'BS8' },
+        { label: 'Nearest motorway', value: 'M5 J19 (3 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed townhouse' },
+        { label: 'Typical crew', value: '3–4 movers, 1–2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£600–£1,100' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£570,000' },
+        { label: 'Typical property', value: 'Georgian townhouse' },
+        { label: 'Typical floors', value: '3–4 storeys' },
+        { label: 'Lifts available', value: 'Rare (period buildings)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'RPS Zone CE / CV' },
+        { label: 'Suspension needed', value: 'Yes (7–10 days notice)' },
+        { label: 'Main difficulty', value: 'Stairs + narrow access' },
+        { label: 'Conservation area', value: 'Yes (since 1972)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The removal guys, Pete and Mike, were just great — nothing was too much trouble. They sorted out our stuff carefully and quickly, making the move genuinely painless. Very competitively priced too.",
+  name: 'Nicky Hodge',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Clifton, Bristol';
+const description = `Clifton removal specialists since 1978. We handle parking zones CE and CV, Georgian townhouse stairs, and high-value contents — 2.5 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Clifton Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Clifton, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS8", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-20",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Do I need a parking suspension for removal vans in Clifton?', answer: 'Yes. Clifton is covered by Residents\' Parking Scheme zones CE and CV. Apply to Bristol City Council at least 7–10 working days before your move. Your Move Manager guides you through it — we know which zone applies to your street.' },
+  { question: 'Can you move furniture down from upper floors in Clifton townhouses?', answer: 'This is one of our most common Clifton jobs. Georgian staircases are narrow and turning — we bring stair-climbing equipment and extra crew, factored into your quote from the start. Larger items like wardrobes often need disassembly on the upper floor.' },
+  { question: 'How much does a Clifton removal typically cost?', answer: 'A 3-bed townhouse moving locally runs roughly £600–£1,100 depending on floors, access, and packing. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for your specific situation.' },
+  { question: 'Do you cover high-value items like pianos and antiques?', answer: `Yes. ${siteConfig.company.insurance} Goods in Transit insurance per van. Declare items over £2,000 in advance so we can wrap and track them individually. Clifton's period properties often contain antiques — this is routine for us.` },
+  { question: 'What if my Clifton flat is in a converted house?', answer: 'Conversions are the biggest variable in Clifton moves. Some are well done with access in mind; others have stairwell doors and restricted access that make moving large furniture a serious challenge. We check conversion quality at <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey stage</a> — including whether lifts are available for removal use — and adjust the quote and crew accordingly.' },
+  { question: 'Is there a conservation area in Clifton?', answer: 'Yes. The Clifton and Hotwells Conservation Area has been designated since 1972, covering essentially the entire historic core. This can affect access for larger vehicles on certain streets. We know which routes work and plan accordingly.' },
+  { question: 'Can removals use the lift in my Clifton apartment building?', answer: 'Not always. Some Clifton apartment buildings explicitly prohibit tenants from using the lift for removals — everything must go via stairs. Check with your building management before booking. We confirm this during our <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a> so the right crew size and equipment are planned from the start.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Clifton" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Clifton"
+  slug="clifton"
+  schema={schema}
+  ogImage="/img/areas/clifton-sofa-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/clifton-sofa-removal"
+  heroAlt="Painless Removals team carefully moving a sofa through a bay window in a Clifton period property"
+  heroSubtitle="Nearly 50 years of moving Bristol homes — that's the experience behind every home removal in Clifton. A local team you can trust to get it right."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you're planning a move to or from Clifton, you're in one of Bristol's most distinctive neighbourhoods — and one that comes with its own quirks when it comes to removals. After years of moving people in and out of Clifton's grand Georgian and Victorian terraces, we've learned what to expect. The properties here are impressive: tall, wide, with large entranceways, generous hallways, and high ceilings on the staircases. Getting a king-sized bed frame or a big corner sofa through a Clifton hallway is often far easier than in many other parts of the city. Where some Bristol streets leave you calculating millimetres, Clifton's original builds give you room to breathe.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">But Clifton has changed over the decades. Many of those grand houses are no longer single-family homes, and the quality of the conversions varies enormously. Here's the honest guide to what that means for your move.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: Flat Conversion Problem -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Clifton Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Flat Conversion Problem</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Many of Clifton's grandest houses are no longer single-family homes. A four-storey townhouse that once belonged to one family might now be four separate flats, or two large maisonettes. Landlords and developers have been splitting these properties for years, and the quality of those conversions varies enormously.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Some conversions are done well. The access is good, the communal areas are well-proportioned, and moving furniture in and out is easy enough. Others are not. We have seen conversions where a door has been squeezed into a stairwell at exactly the wrong point — turning what should be a routine job into a puzzle solved in real time, with your sofa halfway up the stairs.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-2">This is why the most important thing we do before any Clifton removal is a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">personal survey</a>. We need to know:</p>
+
+    <ul class="pl-6 space-y-2 text-[17px] leading-relaxed text-gray-800 mb-4 survey-questions">
+      <li>Is this a whole house, or a converted flat?</li>
+      <li>If it's a flat, how has the conversion been done?</li>
+      <li>Where are the doors in relation to the staircase?</li>
+      <li>Is there enough height on the stairs to manoeuvre a wardrobe down, or does it need to be dismantled for transport?</li>
+      <li>Can we get a four-seater sofa around the corner at the landing?</li>
+    </ul>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">If we haven't answered these questions before the van arrives, we're taking a gamble — and the consequences of getting it wrong can be expensive and stressful for everyone.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) — before Manpower section -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Manpower Question -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Four and Five Storeys: The Manpower Question</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Even in a well-proportioned, unconverted Clifton townhouse, the sheer height of the buildings demands careful planning. Some of the larger properties here are four or five storeys tall. Loading or unloading a full house across that many floors is physically demanding — it takes time, and it takes the right number of people.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We assess every job based on volume and access. For a multi-storey Clifton property, we make sure we have enough crew on the day so that no one is pushed beyond what's safe, and so that your possessions are carried with care rather than rushed.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Under-staffing a move like this is one of the most common mistakes in this industry. Tired people make mistakes, and mistakes mean damage. We'd rather send the right team from the start.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Clifton?"
+      description="Get a personalised quote — we factor in your parking zone and floor level automatically."
+      buttonText="Get Your Clifton Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Lift Rule & Parking -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Lift Rule: A Clifton Surprise</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Clifton has apartment buildings with lifts — which you might assume solves the access problem entirely. Not always. Some of these buildings explicitly prohibit tenants from using the lift for removals. You must use the stairs regardless.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you're moving into or out of one of Clifton's apartment conversions, check this with your building management before booking. It affects how long the job takes and how many people we need to bring.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking in Clifton</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Clifton's streets are more manageable for parking than some of Bristol's tighter neighbourhoods — unlike the narrow Victorian terraces in <a href="/removals-bristol/redland/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Redland</a> or the steep lanes of <a href="/removals-bristol/hotwells/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Hotwells</a> — but the roads are busy during the day, and spaces outside properties can be hard to hold. For most of Clifton, you'll need to apply for a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking bay suspension</a> through Bristol City Council at least 7–10 working days before your move.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">For larger moves, we recommend speaking to your neighbours in advance. Getting a reserved space directly outside your property on moving day is one of the most effective things you can do to keep the move running on schedule and costs down.</p>
+  </div>
+
+  <!-- S4: When We've Had to Go Out the Window -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">When We've Had to Go Out the Window</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It's rare, but it has happened. On the odd occasion in areas like Clifton and Montpelier — where a piece of furniture is too large for the stairs, or a conversion has made the stairwell impassable — we've had to remove items through windows.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It's absolutely a last resort, not something we go looking for. But when it's the only option, having the right equipment, ropes, and a proper system means we can get the job done safely — without damage to your belongings or the property.</p>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/clifton-window-removal"
+          pattern="HALF"
+          alt="Furniture being carefully lowered through a window using rope systems during a Bristol removal"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">Furniture being lowered from a first-floor window in Montpelier — a rare scenario, but one we were ready for.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "We've had the odd job where furniture has had to come out through a window. Not because anything went wrong — because the stairs just weren't going to work. Rope systems, a controlled lower from the upper floor, van positioned below. It's genuinely rare, maybe once a year, but when it comes up we know what to do. That's why the survey matters — we spot it early, plan for it, and price it in, rather than discovering it at 11am on moving day."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is that we identify the need for this approach during the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a>, not when we're standing in your hallway with a wardrobe and nowhere to go.</p>
+  </div>
+
+
+  <!-- S5: Is Clifton a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Clifton a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not inherently. For a whole-house move, Clifton's architecture often makes things easier than in many other Bristol postcodes. The wide doors and high ceilings built into these Victorian and Georgian properties are a real advantage.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The complexity comes from the conversions — the decades of subdivision that have left some properties with awkward stairwells, unexpected doorways, and access routes that bear no relation to what the building was originally designed for.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Our advice: don't assume. Whether you're moving into a top-floor flat or a whole townhouse, let Painless Removals come and take a look first. A proper <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> takes an hour and costs nothing. Getting it wrong on the day costs far more.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Clifton Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, make sure you know the answers to these questions:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Whole house or converted flat?</strong> If it's a flat, how many flights of stairs, and how was the conversion done?</li>
+      <li><strong>How many storeys?</strong> The right crew size depends on this.</li>
+      <li><strong>Is there a lift?</strong> And if so, are removals permitted to use it?</li>
+      <li><strong>Any unusually large pieces of furniture?</strong> Wardrobes, American fridge-freezers, and large sofas all need to be assessed individually in taller properties.</li>
+      <li><strong>Parking?</strong> Have you arranged a space, or do you need to apply for a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">suspension</a>?</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

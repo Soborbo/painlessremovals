@@ -1,0 +1,28 @@
+---
+/**
+ * AuthorBox — E-E-A-T author attribution block
+ *
+ * Pulls data from siteConfig. Reusable on any guide page.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+
+const director = siteConfig.company.director;
+---
+
+<div class="author-box">
+  <OptimizedPicture
+    name="about/team/Jay-Newton"
+    pattern="SIXTH"
+    alt={`${director.name}, ${director.title} at ${siteConfig.brand.name}`}
+    sizes="64px"
+    class="author-box-photo"
+  />
+  <div>
+    <div class="author-box-name">{director.name}</div>
+    <div class="author-box-title">{director.title}, {siteConfig.brand.name}</div>
+    <div class="author-box-credentials">Personally overseen 2,000+ moves since 1978</div>
+    <a href="/about/jay-newton/" class="author-box-link">More about {director.name.split(' ')[0]} &rarr;</a>
+  </div>
+</div>

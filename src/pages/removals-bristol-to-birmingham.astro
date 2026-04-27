@@ -1,0 +1,360 @@
+---
+/**
+ * /removals-bristol-to-birmingham/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '90 miles' },
+        { label: 'Drive time', value: '~2 hours' },
+        { label: 'Primary route', value: 'M5 northbound' },
+        { label: 'Move duration', value: '1 full day' },
+        { label: 'Crew size', value: '2–3 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£600–£1,500' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Our completion was delayed multiple times and with each change, Jay was extremely accommodating. On the move day, the three gentlemen were great — on time, friendly and efficient. Would highly recommend.",
+  name: 'Harry Keith',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Birmingham — 90 Miles, One Day';
+const description = `House removals from Bristol to Birmingham, 90 miles via M5. Same-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Birmingham",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Birmingham" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'How long does a Bristol to Birmingham move take?',
+    answer: 'A single day. The drive is about two hours each way via the M5. We load in the morning at your Bristol address, drive up, and unload at your Birmingham property in the afternoon. Most moves are wrapped up by late afternoon.',
+  },
+  {
+    question: 'Is there a clean air zone charge in Birmingham?',
+    answer: 'Birmingham has a Clean Air Zone covering the city centre inside the A4540 ring road, but our vehicles are fully compliant and exempt from the charge. You won\'t pay anything extra for inner-city Birmingham deliveries.',
+  },
+  {
+    question: 'Can you move us to areas outside Birmingham city centre?',
+    answer: 'Yes. We cover the entire West Midlands — Solihull, Coventry, Wolverhampton, Walsall, Dudley, and all surrounding areas. The M5 gives us direct access to the whole region, and we quote based on your specific destination.',
+  },
+  {
+    question: 'Do you offer a packing service for this route?',
+    answer: 'Yes. Our full <a href="/home-packing-service/" class="text-secondary-500 underline underline-offset-2">packing service</a> is available on all routes. We typically pack the day before your move at your Bristol address, then load and drive to Birmingham the following morning.',
+  },
+  {
+    question: 'What if my Birmingham flat has no lift?',
+    answer: 'We carry stair-climbing equipment and are experienced with walk-up flats. Many Birmingham city centre apartments are in converted buildings or high-rises with small service lifts. We plan for this during our pre-move survey and send the right crew and equipment.',
+  },
+  {
+    question: 'Should I avoid bank holiday weekends for a Birmingham move?',
+    answer: 'If you can, yes. The M5 corridor around Birmingham carries heavy holiday traffic heading to Devon and Cornwall during bank holidays and school holidays. A bank holiday Friday can add 45 minutes to the journey — sometimes more. We check the holiday calendar when scheduling and will advise on the best dates.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Birmingham" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Birmingham' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Birmingham — 90&nbsp;Miles, One&nbsp;Day
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">The drive is manageable. The city at the other end is not always. Bristol to Birmingham is around 90 miles up the M5 — about two hours on a clear run, no tolls for the motorway itself. For smaller moves, that leaves enough room to load, drive, unload, and return in a single day. For larger moves — three or more vans' worth — splitting into two days is the safer, more practical approach.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Birmingham's housing stock is varied: inner-city terraces in the Jewellery Quarter and Digbeth, high-rise apartments near New Street Station with pre-booked goods lifts and restricted removal hours, suburban semis in Edgbaston and Moseley, and spacious detached properties in Harborne and Sutton Coldfield. Turning up on move day and hoping to find somewhere to park a Luton van outside a city centre apartment block is not a strategy — we plan every Birmingham delivery in advance.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Birmingham house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Birmingham Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The M5/M42 Interchange</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The M5/M6/M42 interchange south of Birmingham — known to locals as Spaghetti Junction — is notorious for incidents, roadworks, and unpredictable delays. A broken-down lorry or contraflow can add 45 minutes. We build this into our timing, scheduling departures to hit the interchange outside peak hours. The Friday before any school holiday is particularly bad — the corridor carries all the Devon and Cornwall traffic as well as local commuters.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Midweek moves are consistently smoother. A one-day shift from Friday to Thursday can save you time and stress. We always flag this when you book — the day you choose affects the entire experience.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">City Centre Access</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Birmingham's Clean Air Zone covers much of the city centre inside the A4540 ring road. Our vehicles are fully compliant — no charge, no disruption to your move. But access to city centre apartments is a different matter. Canal-side developments in Brindleyplace, converted warehouses in Digbeth, and high-rises near the Jewellery Quarter often require pre-booked goods lifts, restricted removal hours, and reserved loading docks.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">If your new property is in a permit parking area — common in Edgbaston, Moseley, and the Jewellery Quarter — we'll advise on whether you need a temporary parking suspension from Birmingham City Council. We handle the paperwork for you.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Wider West Midlands</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">We also cover the wider West Midlands from this route: Solihull, Coventry, Wolverhampton, Castle Bromwich, and Walsall are all accessible via the M5/M6 corridor. Harborne and Edgbaston on the suburban fringe tend to be easier — wider streets, driveways, and more room to work. Each destination gets its own access assessment.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Birmingham, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Birmingham?"
+          description="Free quote in about two minutes. Toll-free M5, compliant fleet, no hidden charges."
+          buttonText="Get Your Birmingham Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals treats Birmingham a bit like London — shorter drive, but the same principles apply for city centre access, parking, and traffic. The M5 route is toll-free and reliable for the bulk of the journey. The challenge is at the Birmingham end, particularly for city centre apartments where loading dock bookings and goods lift schedules dictate the timetable.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Birmingham" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "We treat Birmingham a bit like London — shorter drive, but the same principles apply for city centre access, parking, and traffic. Avoid a bank holiday Friday if you can — the M5 and M42 around Birmingham carry all the Devon and Cornwall holiday traffic as well as the local commuters, and it can turn a two-hour drive into something much longer. Midweek, outside school holidays, it's a completely different journey."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This route is popular in both directions. Midlands professionals moving to Bristol for work, and Bristol families relocating to Birmingham for affordability or family reasons. If your completion dates don't match, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Birmingham Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat with a single van typically costs £600–£900. A standard family home with two to three van loads runs £1,000–£1,500. City centre Birmingham with access complications — goods lift bookings, loading dock reservations, restricted hours — sits at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but splits the work across two days.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, and equipment. No hidden charges for mileage, Clean Air Zone access, or parking suspension handling. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Birmingham Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 birmingham-checklist">
+          <li><strong>Avoid Friday.</strong> The M5/M42 interchange carries holiday traffic heading to Devon and Cornwall. Midweek moves are consistently smoother.</li>
+          <li><strong>City centre apartment?</strong> Check goods lift bookings and loading dock requirements with building management before your move date.</li>
+          <li><strong>Parking permits.</strong> Edgbaston, Moseley, and Jewellery Quarter have permit zones — we arrange suspensions for you.</li>
+          <li><strong>Book 3–4 weeks ahead.</strong> City centre Birmingham benefits from 6 weeks' notice for access coordination.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then move everything the following morning.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Birmingham, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Birmingham Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Manchester" meta="~170 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+      <RouteCard from="Bristol" to="Leeds" meta="~200 miles via M5/M1" days="2 days" href="/removals-bristol-to-leeds/" />
+      <RouteCard from="Bristol" to="Oxford" meta="~75 miles via M4/A34" days="1 day" href="/removals-bristol-to-oxford/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to Birmingham?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .birmingham-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .birmingham-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .birmingham-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

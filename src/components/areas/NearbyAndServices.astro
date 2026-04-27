@@ -1,0 +1,85 @@
+---
+/**
+ * NearbyAndServices — "Nearby Neighbourhoods" + "Our Services" section
+ *
+ * Shared across all neighbourhood pages. Full-width cream background.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { getNearbyNeighbourhoods, neighbourhoodUrl } from '@/config/areas.config';
+
+export interface Props {
+  /** Current neighbourhood slug for getNearbyNeighbourhoods() */
+  slug: string;
+  /** Number of nearby neighbourhoods to show (default: 3) */
+  count?: number;
+}
+
+const { slug, count = 3 } = Astro.props;
+const nearby = getNearbyNeighbourhoods(slug, count);
+---
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Nearby Bristol Neighbourhoods</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        If you're moving from nearby, we also cover
+        {nearby.map((n, i) => (
+          <>
+            <a href={neighbourhoodUrl(n.slug)} class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">{n.name}</a>{i < nearby.length - 2 ? ', ' : i === nearby.length - 2 ? ', and ' : ''}
+          </>
+        ))}
+         — each with its own access quirks and parking rules. For the full list, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">all areas we cover</a>.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border-t-[3px] border-primary-500">
+          <div class="aspect-[3/2] overflow-hidden">
+            <OptimizedPicture
+              name="home-removals/Bristol-home-removals-service-1"
+              pattern="SIXTH"
+              alt="Professional home removals service in Bristol"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+          </div>
+        </a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border-t-[3px] border-secondary-500">
+          <div class="aspect-[3/2] overflow-hidden">
+            <OptimizedPicture
+              name="packing/Bristol-home-packing-service"
+              pattern="SIXTH"
+              alt="Professional home packing service in Bristol"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+          </div>
+        </a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden border-t-[3px] border-accent-500">
+          <div class="aspect-[3/2] overflow-hidden">
+            <OptimizedPicture
+              name="storage/painless-removals-storage"
+              pattern="SIXTH"
+              alt="Secure storage service by Painless Removals"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-5">
+            <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+            <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

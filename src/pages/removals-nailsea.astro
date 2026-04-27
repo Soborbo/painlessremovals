@@ -1,0 +1,314 @@
+---
+/**
+ * /removals-nailsea/ — Nailsea town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Nailsea Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~10 miles' },
+        { label: 'Drive time from depot', value: '~20 minutes' },
+        { label: 'Postcode area', value: 'BS48' },
+        { label: 'Nearest motorway', value: 'M5 J20 (5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi / detached' },
+        { label: 'Typical crew', value: '2 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day' },
+        { label: 'Local move cost', value: '£400–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£300–380k' },
+        { label: 'Typical property', value: '1960s–80s semi / detached' },
+        { label: 'Typical floors', value: '1–2 storeys' },
+        { label: 'Lifts available', value: 'None' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Very few' },
+        { label: 'Suspension needed', value: 'Rarely' },
+        { label: 'Main difficulty', value: 'Main road noise + rush hour' },
+        { label: 'Conservation area', value: 'Village centre only' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Had a great experience with the guys from Painless Removals. Friendly and cost effective with great communication. Would recommend if you're looking to move.",
+  name: 'Tamara Rodriguez Tendilla',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Nailsea';
+const description = `Nailsea removal specialists — 10 miles from our Bristol depot. Modern estates to historic village core, we know which streets work. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Nailsea Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Nailsea",
+    "address": { "@type": "PostalAddress", "postalCode": "BS48", "addressLocality": "Nailsea", "addressRegion": "North Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol?', answer: 'At 10 miles from our depot, the mileage component is minimal. Nailsea sits at our standard Bristol rates.' },
+  { question: 'How quickly can you reach Nailsea?', answer: 'About 20 minutes from our depot via the A370 or B3130. We time the run to arrive mid-morning when the roads are clear.' },
+  { question: 'Are the 1960s estates easy to move from?', answer: 'Yes. Decent road widths, driveways, and houses with sensible hallways. These are the kind of jobs where you turn up, get set up, and get on with it.' },
+  { question: 'What about the older properties in the village core?', answer: 'A bit narrower and more varied. Still nothing that causes real trouble — same questions as always: which floor, how wide is the doorway, where does the van go. We assess at <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey stage</a>.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 20 minutes from Nailsea.' },
+  { question: 'Does the main road traffic in Nailsea affect removals?', answer: 'The A-roads through town get busy at rush hour. We time our arrival for mid-morning. For the properties themselves, the key advice is: get a few streets back from the main road for a better quality of life and an easier move.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/nailsea-house-move-team-1200w.webp" preloadImage="/img/areas/nailsea-house-move-team-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/nailsea-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Nailsea"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Nailsea</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=nailsea`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/nailsea-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Nailsea"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Nailsea' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Nailsea is a nice area. It's got an affluent feel to parts of it, and we've done some lovely moves there. If you're looking for something outside of Bristol that gives you more property for your money and still keeps you connected to the city, it's a strong option.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The thing we always say to people about Nailsea is this: don't buy on the main road. The A-roads that run through and around the town get busy at rush hour, morning and evening. If you're on one of those roads, you hear the traffic. Get a few streets back and it's completely different — quiet, spacious, with a more countryside feel. That's the one piece of advice we'd give before anything else.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/nailsea-house-move-team" pattern="FULL" alt="Painless Removals team working on a house move in Nailsea" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Nailsea Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Housing: Mostly Modern, Mostly Easy</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It's mostly semi-detached and detached houses in Nailsea — modern builds, a lot of them, the kind that have gone up on the fields surrounding the town as it's grown. From our point of view, these are easy moves. You've got decent road widths, you've often got a driveway to park on, and the houses themselves are uncomplicated — two storeys, sensible hallways, nothing unusual. We don't tend to run into the access problems here that we get in parts of Bristol.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">There are some older streets closer to the town centre, a bit narrower, a bit more varied. Still nothing that causes us real trouble. Nailsea is predominantly houses, and that makes life simple.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Getting to Bristol</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The roads to Bristol can get congested at peak times — that's true of most of North Somerset. The A370 in particular builds up in the evening. If you're driving to Bristol every day, you feel it. So Nailsea suits people who can work flexibly, or who can use the train. Nailsea and Backwell station is outside town and gets you into Temple Meads in around twenty minutes — that changes the calculation for a lot of people.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">For us, it means we time the run from Bristol to hit Nailsea mid-morning. The roads are easy at that point.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Main Road Warning</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This bears repeating because it's the single most useful thing we can tell anyone looking at Nailsea: the properties set back from the A-roads are a different experience from those on them. A few streets' distance makes a real difference to noise, feel, and even the ease of your moving day. We can tell you which streets are good to work in and which need more thought — ask us at <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey stage</a>.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving to or from Nailsea?" description="Get a personalised quote — we know which streets need extra planning." buttonText="Get Your Nailsea Removal Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Nailsea Moves</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Nailsea doesn't give us many war stories. The moves here tend to go smoothly, the people are generally making a smart decision by moving there, and the jobs don't throw up surprises.</p>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "The one thing that matters — and I say this every time — is which street you're on. Get that right, get yourself back from the main road, and Nailsea is a great place to live and an easy place to move to."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Nailsea sits at the Bristol end of a string of villages and small towns heading southwest toward <a href="/removals-clevedon/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clevedon</a> and the coast. We cover all of these and often do moves that connect them — someone leaving Nailsea for Clevedon, or coming in from Backwell. The whole corridor is well within our regular range.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Nailsea a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">No. The moves here are among the easier work we do. Modern housing, good access, sensible road widths. The older village core needs a little more thought but nothing that causes concern.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Get in touch with Painless Removals for a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free quote and survey</a>. If you're still deciding where in Nailsea to buy, we're happy to give you our honest take on access and what different parts of the town are like to work in.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Nailsea Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 nailsea-checklist">
+          <li><strong>Main road or set back?</strong> Properties on the A-roads have different noise and access considerations from those a few streets back.</li>
+          <li><strong>Rush hour timing?</strong> We schedule arrival for mid-morning to avoid the A370 peak congestion.</li>
+          <li><strong>Train or road commute?</strong> Nailsea and Backwell station is 20 minutes to Temple Meads — worth considering.</li>
+          <li><strong>Village core property?</strong> Older streets near the centre are narrower — let us assess at survey stage.</li>
+          <li><strong>Moving within North Somerset?</strong> Nailsea to Clevedon, Portishead, or Long Ashton is all local-rate, one-day work.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Nailsea Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Nailsea Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Nailsea is close to M5 J20 — most long-distance moves route through Bristol anyway.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Nailsea" to="London" meta="~135 miles via M5/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Nailsea" to="Manchester" meta="~195 miles via M5/M6" days="1 day" href="/removals-bristol-to-manchester/" />
+      <RouteCard from="Nailsea" to="Exeter" meta="~75 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Nailsea" to="Cardiff" meta="~50 miles via M5/M4" days="1 day" href="/removals-bristol-to-cardiff/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Nailsea?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across North Somerset. If you're moving from or to
+        <a href="/removals-clevedon/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Clevedon</a>,
+        <a href="/removals-long-ashton/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Long Ashton</a>, or
+        <a href="/removals-portishead/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Portishead</a>,
+        we know these towns well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3><p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p></a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3><p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p></a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3><p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move to or from Nailsea?" description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed { margin-left: -1rem; margin-right: -1rem; }
+  @media (min-width: 640px) { .midcta-bleed { margin-left: -1.5rem; margin-right: -1.5rem; } }
+  @media (min-width: 800px) { .midcta-bleed { margin-left: 0; margin-right: 0; } }
+  .nailsea-checklist { list-style: none; padding-left: 0; }
+  .nailsea-checklist li { position: relative; padding-left: 2rem; }
+  .nailsea-checklist li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.15rem; height: 1.15rem; border: 2px solid #3b6587; border-radius: 0.25rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 0.8rem; background-position: center; background-repeat: no-repeat; }
+</style>

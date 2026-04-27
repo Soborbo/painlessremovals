@@ -1,0 +1,531 @@
+---
+/**
+ * Partners: Care Homes & Senior Living Providers
+ *
+ * B2B page targeting care homes and senior living facilities
+ * who need a patient, sensitive removal team for resident moves.
+ * Redesigned to match service page patterns with high-conversion layout.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import ProblemSolution from '@/components/ProblemSolution.astro';
+import { siteConfig } from '@/config/site.config';
+
+// Page metadata
+const pageTitle = 'For Care Homes & Senior Living | Painless Removals — Patient, Caring Moves Since 1978';
+const pageDescription = 'A removal team that works around your residents\u2019 routines — medication rounds, mealtimes, activities. Full packing, furniture placement, and a dedicated Move Manager. Trusted by Bristol care homes since 1978.';
+
+// Benefits data — alternating 50/50 sections
+const benefits = [
+  {
+    title: 'We Pack Everything. Your Resident Doesn\u2019t Lift a Finger.',
+    image: 'partners/later-life-removal',
+    imageAlt: 'Professional packing service for elderly residents downsizing',
+    content: `<p class="text-warm-gray text-lg mb-4">Clothes, kitchen items, ornaments, framed photographs &mdash; everything is carefully packed, labelled, and transported. Fragile items get individual wrapping. Furniture is protected with covers and blankets.</p>
+      <p class="text-warm-gray text-lg">Each box is labelled with its destination: &ldquo;Care home &mdash; bedroom,&rdquo; &ldquo;Sarah &mdash; London,&rdquo; &ldquo;Storage.&rdquo; Multi-destination delivery is coordinated in a single day.</p>`,
+  },
+  {
+    title: 'We Place, Not Just Deliver',
+    image: 'partners/place',
+    imageAlt: 'Furniture carefully placed in care home room exactly where resident wants it',
+    content: `<p class="text-warm-gray text-lg mb-4">We don&rsquo;t dump boxes in the middle of a room and leave. Furniture is placed where it&rsquo;s wanted. Beds are assembled. Wardrobes are positioned. The favourite chair goes by the window.</p>
+      <p class="text-warm-gray text-lg">The goal is for your resident to walk into their new room and feel like <strong class="text-primary-600">someone cared about getting it right.</strong></p>`,
+  },
+  {
+    title: 'Staged Moves - Because Not Everything Has to Happen at Once',
+    image: 'partners/elder-removal',
+    imageAlt: 'Furniture carefully placed in a care home room to feel like home',
+    content: `<p class="text-warm-gray text-lg mb-4">Some residents settle better when the move happens gradually. We can bring the essential furniture first &mdash; the bed, the wardrobe, the armchair &mdash; and let your resident spend a few days settling in.</p>
+      <p class="text-warm-gray text-lg">Then we return for the rest: the ornaments, the pictures, the personal items. This staged approach reduces overwhelm and lets residents make decisions about what they actually want in their new space <strong class="text-primary-600">after they&rsquo;ve lived in it</strong>, not before.</p>`,
+  },
+];
+
+// Services grid
+const services = [
+  {
+    title: 'Full Packing Service',
+    description: 'Every room packed professionally. Fragile items individually wrapped. Contents labelled by room, category, and destination.',
+  },
+  {
+    title: 'Multi-Destination Delivery',
+    description: 'Some items to the care home. Some to family members. Some to storage. Some to charity. We plan the route and handle all deliveries in one coordinated day.',
+  },
+  {
+    title: 'Furniture Assembly & Placement',
+    description: 'Bed assembled, wardrobe positioned, favourite chair placed by the window. We follow the resident\u2019s (or family\u2019s) instructions precisely.',
+  },
+  {
+    title: 'Temporary Storage',
+    description: 'If the room isn\u2019t ready yet, or if the family needs time to sort through belongings, we provide secure storage at our Clifton warehouse.',
+  },
+  {
+    title: 'House Clearance',
+    description: 'Once the resident has moved, we return to clear the remaining property &mdash; responsibly disposing of items, donating where appropriate, and leaving the property ready for sale.',
+  },
+  {
+    title: 'Downsizing Consultation',
+    description: 'Our team member Tamara spends time with residents helping them choose what to keep, donate, store, or remove. Patient, personal, and never rushed.',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'Can your team work around the care home\u2019s schedule?',
+    answer: 'Absolutely. If your reception hours are limited, if there are quiet times to respect, or if the delivery needs to happen within a specific window, we plan around your operations. Our Move Manager coordinates with your staff in advance &mdash; we learn your building&rsquo;s rhythm before the move, not on the day.',
+  },
+  {
+    question: 'What if the resident becomes upset during the packing?',
+    answer: 'Our team is trained to pause, give space, and follow the resident&rsquo;s lead. We&rsquo;ve handled many emotional moves. If the resident needs a break, we take a break. The schedule adapts to the person, not the other way around.',
+  },
+  {
+    question: 'Can families be involved remotely?',
+    answer: 'Yes. Our Move Manager communicates with whoever is coordinating &mdash; whether they&rsquo;re in the same city or on the other side of the world. Video calls, photo updates of the packing progress, and a final walkthrough of the care home room setup are all standard.',
+  },
+  {
+    question: 'What about high-value or sentimental items?',
+    answer: 'Items valued over &pound;2,000 should be declared before the move for insurance purposes. We carry &pound;15,000 per van in goods-in-transit cover. For extremely valuable items (antiques, art), we discuss specialist handling during the survey. Irreplaceable personal items &mdash; documents, jewellery, medications &mdash; should always travel with the resident or their family.',
+  },
+  {
+    question: 'Do you handle the house sale preparation as well?',
+    answer: 'We provide a full <a href="/house-and-waste-clearance/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">house clearance</a> service and, through our partnerships, can arrange end-of-tenancy cleaning to prepare the property for sale. We can also coordinate with the family&rsquo;s estate agent on access and timing.',
+  },
+  {
+    question: 'Are your staff DBS-checked?',
+    answer: 'We can arrange DBS-checked staff for care home moves if your facility requires it. All our team members are fully insured with public liability and employer&rsquo;s liability cover, and are selected for temperament as much as ability.',
+  },
+  {
+    question: 'Can you do a staged move over multiple days?',
+    answer: 'Yes &mdash; this is something we actively recommend for residents who may find a full move overwhelming. We bring the essentials first, let the resident settle, then return for the rest. It costs a little more but makes a significant difference to the resident&rsquo;s experience.',
+  },
+  {
+    question: 'How much does a typical care home move cost?',
+    answer: 'It varies by property size and distance, but a typical 3-bedroom downsizing move with full packing, multi-destination delivery, and furniture assembly runs between &pound;1,500 and &pound;3,500. We provide a detailed, no-obligation quote after an assessment.',
+  },
+];
+
+// Facilities we've worked with
+const facilities = [
+  { name: 'Berkley Care (Badminton Place)', logo: '/img/partners/logos/berkley-care.png' },
+  { name: 'St Peter\u2019s Hospice', logo: '/img/partners/logos/st-peters-hospice.svg' },
+  { name: 'St Monica\u2019s Trust', logo: '/img/partners/logos/st-monicas.png' },
+  { name: 'LiveWest', logo: '/img/partners/logos/livewest.svg' },
+  { name: 'Second Step', logo: '/img/partners/logos/second-step.png' },
+  { name: 'Places for People', logo: '/img/partners/logos/places-for-people.svg' },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removal Services for Care Homes — Painless Removals Bristol",
+  "description": pageDescription,
+  "provider": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+    "url": siteConfig.brand.domain,
+    "telephone": siteConfig.company.contact.phoneInternational,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bristol",
+      "addressRegion": "Bristol",
+      "addressCountry": "GB",
+    },
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "AdministrativeArea", "name": "South West England" },
+  ],
+  "serviceType": "Removal Services for Care Homes & Senior Living",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '').replace(/&ndash;/g, '\u2013').replace(/&mdash;/g, '\u2014').replace(/&pound;/g, '\u00a3').replace(/&rsquo;/g, '\u2019').replace(/&ldquo;/g, '\u201c').replace(/&rdquo;/g, '\u201d'),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       HERO — Split 50/50 (service page pattern)
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+
+    <!-- Mobile: image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture name="partners/bingo" pattern="FULL" alt="Elderly residents enjoying activities at a Bristol care home" class="absolute inset-0 w-full h-full object-cover" />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+
+        <!-- Eyebrow -->
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          For Care Homes & Senior Living
+        </p>
+
+        <!-- H1 -->
+        <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          We Know When Bingo Is. <span class="text-secondary-500">We Plan Around It.</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Your residents have routines that matter. Medication rounds, mealtimes, afternoon activities &mdash; we learn your building&rsquo;s rhythm and move around it. Not the other way around.
+        </p>
+
+        <!-- Proof bar -->
+        <div class="grid sm:grid-cols-2 gap-3 max-w-xl mx-auto text-left text-sm text-warm-gray mb-6">
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Full packing &mdash; your resident doesn&rsquo;t lift a finger</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Furniture placed exactly where it&rsquo;s wanted</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Dedicated Move Manager &mdash; one person, start to finish</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Trusted by {facilities.length}+ care facilities across Bristol</span>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/partners/#partner-form" class="btn-cta-orange">
+            Become a Care Home Partner
+          </a>
+          <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-primary-600 font-semibold no-underline hover:text-secondary-500 transition-colors text-lg mt-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            {siteConfig.company.contact.phone}
+          </a>
+        </div>
+
+        <!-- Trust signal -->
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture name="partners/bingo" pattern="FULL" alt="Elderly residents enjoying activities at a Bristol care home" class="absolute inset-0 w-full h-full object-cover" />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar hideBadge={true} />
+
+  <!-- ============================================
+       SECTION 1: THE REALITY — Emotional hook
+  ============================================ -->
+  <ProblemSolution
+    heading="This Isn't a Standard House Move. We Know That."
+    bgClass="bg-white"
+  >
+    <p class="text-xl text-primary-600 font-medium mb-6">
+      When a resident moves into your care home, they&rsquo;re leaving a property that may have been their home for 30, 40, even 50 years.
+    </p>
+    <div class="space-y-4 text-warm-gray text-lg leading-relaxed">
+      <p>
+        The furniture carries memories. The packing process is overwhelming. And the physical effort of sorting, wrapping, and boxing a lifetime of belongings is simply beyond most elderly residents.
+      </p>
+      <p>
+        Many families try to manage this themselves &mdash; often from a distance, often while working, often with limited time. The result is a stressful, rushed process that makes an already difficult transition harder.
+      </p>
+      <p>
+        We don&rsquo;t have a &ldquo;finish by 3pm&rdquo; mentality. If your resident needs us to take an extra hour because they want to sit in their garden one last time, we take that hour. <strong class="text-primary-600">The move happens at their pace, not ours.</strong>
+      </p>
+    </div>
+  </ProblemSolution>
+
+  <!-- ============================================
+       SECTION 2: TRUSTED BY — Social proof logos
+  ============================================ -->
+  <section class="py-10 lg:py-14 bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl lg:text-3xl mb-3">Trusted by Care Facilities <span class="text-secondary-500">Across Bristol</span></h2>
+        <p class="text-warm-gray text-lg">We&rsquo;ve handled resident moves for these organisations and many more.</p>
+      </div>
+      <div class="logo-carousel overflow-hidden relative">
+        <div class="logo-carousel-track flex items-center gap-16 w-max">
+          {[...facilities, ...facilities].map((facility) => (
+            <div class="shrink-0">
+              <img src={facility.logo} alt={facility.name} class="h-10 lg:h-12 w-auto object-contain" loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: ALTERNATING BENEFITS (50/50 image+text)
+  ============================================ -->
+  <section class="bg-cream">
+    {benefits.map((benefit, index) => (
+      <div class="grid lg:grid-cols-2">
+        <!-- Image -->
+        <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+          <OptimizedPicture name={benefit.image} pattern="FULL" alt={benefit.imageAlt} class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+        </div>
+        <!-- Text -->
+        <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+          <h2 class="text-2xl lg:text-3xl mb-4">{benefit.title}</h2>
+          <Fragment set:html={benefit.content} />
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- ============================================
+       SECTION 4: SERVICES GRID
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Everything Handled, <span class="text-secondary-500">From Start to Finish</span></h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {services.map((service) => (
+          <div class="bg-cream rounded-xl p-6 border border-gray-100 hover:-translate-y-1 transition-all duration-200">
+            <h3 class="font-bold text-primary-600 mb-2">{service.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed"><Fragment set:html={service.description} /></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: TYPICAL MOVE WALKTHROUGH
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-4">
+        <h2 class="text-2xl lg:text-3xl mb-4">What a Care Home Move <span class="text-secondary-500">Looks Like With Us</span></h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          Every move is different, but here&rsquo;s a typical timeline.
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto space-y-6 mt-10">
+
+        <div class="bg-white rounded-xl p-6 lg:p-8 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">1</div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">Week Before the Move</h3>
+              <p class="text-warm-gray leading-relaxed">Our Move Manager visits the property (or conducts a video survey) to assess the volume, identify fragile or high-value items, and discuss what&rsquo;s going where. The resident&rsquo;s daughter, who lives in London, joins the video call.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 lg:p-8 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">2</div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">Day Before</h3>
+              <p class="text-warm-gray leading-relaxed">Our packing team arrives. They pack the entire house over 5&ndash;6 hours. The resident sits in the living room with a cup of tea while they work. Each box is labelled with its destination.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 lg:p-8 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">3</div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">Moving Day</h3>
+              <p class="text-warm-gray leading-relaxed">The team arrives at the care home at the time that works best for your staff &mdash; not rush hour, not during lunch, not during afternoon activities. Furniture is assembled, belongings are placed, and your staff can check the room before we leave.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 lg:p-8 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">4</div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">Same Afternoon</h3>
+              <p class="text-warm-gray leading-relaxed">A second delivery takes boxes to the family. Remaining items go to our Clifton warehouse for storage. The resident is already settled in their new room.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 lg:p-8 shadow-sm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl font-bold shrink-0">5</div>
+            <div>
+              <h3 class="text-xl font-bold mb-2">One Week Later</h3>
+              <p class="text-warm-gray leading-relaxed">Our Move Manager follows up with the family and your team to confirm everything arrived safely and the resident is comfortable.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: WHAT THIS MEANS FOR YOUR TEAM
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200">
+        <div class="absolute inset-0 flex items-center justify-center">
+          <span class="text-gray-400 text-sm">Image placeholder — care home staff at reception</span>
+        </div>
+      </div>
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white">
+        <h2 class="text-2xl lg:text-3xl mb-4">What This Partnership <span class="text-secondary-500">Means for Your Team</span></h2>
+        <p class="text-warm-gray text-lg leading-relaxed mb-4">
+          You&rsquo;re already managing the care side of the transition &mdash; medical records, medication schedules, dietary requirements, introductions to staff. The last thing your team needs is to also manage the physical move.
+        </p>
+        <p class="text-warm-gray text-lg leading-relaxed mb-6">
+          By partnering with us, you give your residents&rsquo; families a trusted recommendation that removes the moving logistics from everyone&rsquo;s plate.
+        </p>
+        <div class="bg-cream rounded-xl p-6 border border-gray-100">
+          <p class="text-primary-600 font-semibold mb-2">What you can tell families:</p>
+          <p class="italic text-warm-gray">&ldquo;We work with a removal company we trust for resident moves. They specialise in downsizing, they pack everything, and they&rsquo;ll handle the whole process. Here are their details.&rdquo;</p>
+          <p class="mt-3 text-sm text-warm-gray">That&rsquo;s all you need to say. We handle everything from there.</p>
+        </div>
+        <a href="/partners/#partner-form" class="btn-cta-orange mt-8 self-start">
+          Become a Care Home Partner
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: WHY WE'RE DIFFERENT — Checklist
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Why Care Homes <span class="text-secondary-500">Choose Us</span></h2>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">We learn your building first.</strong> Access points, lift restrictions, quiet hours, staff routines &mdash; we do a site familiarisation before the first move so we don&rsquo;t disrupt your operations or your residents.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Our team is selected for temperament, not just strength.</strong> We pay above industry standard because we hire for character. They&rsquo;re patient, respectful, and understand this move isn&rsquo;t exciting for the resident &mdash; it&rsquo;s significant.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">DBS checks available.</strong> If your facility requires DBS-checked staff, we can arrange it. All team members carry full public liability and employer&rsquo;s liability insurance as standard.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">One Move Manager, one relationship.</strong> The resident (or their family) deals with one person from quote to completion. That person learns their name, understands their situation, and is available to answer questions at any point.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">We coordinate with remote families.</strong> Often, the resident&rsquo;s children are managing the move from London, from overseas, from a busy working life. Our Move Manager sends updates, handles details, and provides video walkthroughs of the finished room.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Downsizing support included.</strong> Our team member Tamara can spend time with residents, helping them decide what to keep, what to donate, what to store, and what to let go of. Patient, personal, and never rushed.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Priority scheduling when rooms need filling.</strong> If a room needs to be turned around quickly, we offer priority booking to get the new resident moved in faster.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REVIEW STRIP — Testimonial blockquote
+  ============================================ -->
+  <section class="bg-white py-10 lg:py-14">
+    <div class="container-wide max-w-3xl mx-auto text-center">
+      <div class="text-orange-400 text-2xl mb-4">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <blockquote class="text-xl lg:text-2xl text-gray-700 italic leading-relaxed mb-4">
+        &ldquo;Mum was so worried about the move, but the team were <mark>incredibly patient</mark> with her. They let her take her time, they placed everything exactly where she wanted it, and they even made her a cup of tea in her new room before they left. I can&rsquo;t thank them enough.&rdquo;
+      </blockquote>
+      <div class="flex items-center justify-center gap-3">
+        <span class="text-gray-500 text-sm font-medium">Family member of care home resident</span>
+        <span class="text-gray-300">&middot;</span>
+        <img src="/images/google-g-logo.svg" alt="Google" class="w-5 h-5" width="20" height="20" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       JAY AUTHOR BLOCK
+  ============================================ -->
+  <JayAuthorBlock
+    quote="Every resident move is personal. We don't rush, we don't cut corners, and we treat every item like it matters — because to your resident, it does."
+    heading="Serving Bristol Since 1978"
+    credential="Personally overseen 2,000+ completed moves"
+    description="Painless Removals has been serving Bristol since 1978. Jay oversees every care home partnership personally, ensuring the same standards of patience and care that built our reputation nearly five decades ago."
+    bgClass="bg-cream"
+  />
+
+  <!-- ============================================
+       FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Questions Care Home Partners Ask" bgClass="bg-white" />
+
+  <!-- ============================================
+       FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Your Residents Deserve a Move That Feels Like Someone Cared"
+    description="We do. Let's talk about how we can support your residents and their families."
+    bullets={['Full packing & placement', 'Staged moves available', 'DBS checks on request', 'Trusted by 7+ Bristol facilities']}
+    primaryText="Become a Care Home Partner"
+    primaryHref="/partners/#partner-form"
+    bottomNote="Or ask about our care home partnership — we'll call you back within 2 hours."
+  />
+
+</Layout>
+
+<style>
+  .logo-carousel {
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .logo-carousel-track {
+    animation: logo-scroll 25s linear infinite;
+  }
+
+  .logo-carousel:hover .logo-carousel-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes logo-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+</style>

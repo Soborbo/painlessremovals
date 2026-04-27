@@ -1,0 +1,246 @@
+---
+/**
+ * /removals-bristol/westbury-on-trym/ — Westbury-on-Trym neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Westbury-on-Trym Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~1.5 miles' },
+        { label: 'Drive time from depot', value: '6 minutes' },
+        { label: 'Postcode area', value: 'BS9 / BS10' },
+        { label: 'Nearest motorway', value: 'M5 J17 (3 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3–4 bed family home' },
+        { label: 'Typical crew', value: '3 movers, 1 van' },
+        { label: 'Usual duration', value: '5–7 hours' },
+        { label: 'Local move cost', value: '£500–£900' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£528,000' },
+        { label: 'Typical property', value: 'Interwar semi / detached' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Village core', value: 'Period cottages & terraces' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Narrow village core' },
+        { label: 'Conservation area', value: 'Yes (since 1971)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "We were blown away by such an excellent service. Jay felt like an old friend. Every step of the way, he was in touch and devised ways to ensure we were happy. Wonderful to feel supported.",
+  name: 'S Rob',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Westbury-on-Trym, Bristol';
+const description = `Westbury-on-Trym removal specialists — village-core access planning, interwar semis and detached villas across BS9/BS10. No RPZ, close to our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Westbury-on-Trym Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Westbury-on-Trym, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS9", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Can removal vans access the narrow streets in Westbury village?', answer: 'Yes, but with careful planning. College Road, Church Road, and Waters Lane are tight for larger vehicles. We approach via Falcondale Road (A4018) and avoid the narrow village core wherever possible. For village-centre properties, we may use a smaller relay vehicle.' },
+  { question: 'Is there a parking zone in Westbury-on-Trym?', answer: 'No. Westbury-on-Trym has no RPS/RPZ zone. The village centre car park is free with a 3-hour limit. On-street parking on residential streets is unrestricted, though the village centre itself can be heavily used.' },
+  { question: 'How much does a removal in Westbury-on-Trym cost?', answer: 'A one or two-bedroom move starts at around £500–£700. A typical family home — three or four beds — runs £900–£1,500 depending on volume and access at both properties. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Are there conservation area restrictions?', answer: 'Yes. The Westbury-on-Trym Conservation Area was designated in 1971 and expanded in 2015, covering the historic village core. Holy Trinity Church is Grade I listed and the Westbury College Gatehouse is a Scheduled Ancient Monument. This doesn\'t prevent removals but means our drivers take particular care with access.' },
+  { question: 'Do you move from retirement properties in Westbury-on-Trym?', answer: 'Yes. St Monica Trust\'s Westbury Fields and several sheltered housing complexes are in the area. We handle downsizing moves regularly, including part-loads where you\'re taking some items to a smaller property and the rest to storage.' },
+  { question: 'What about the Downs — do they affect move-day traffic?', answer: 'The roads bordering Durdham Down — Stoke Road and Ladies Mile — can get congested at weekends and during good weather when people flock to the green space. If your move falls on a sunny Saturday, the approach through that part of Westbury-on-Trym may be slower than usual. We factor this into scheduling.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Westbury-on-Trym" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Westbury-on-Trym"
+  slug="westbury-on-trym"
+  schema={schema}
+  ogImage="/img/areas/westbury-hand-truck-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/westbury-hand-truck"
+  heroAlt="Painless Removals hand truck being wheeled along a path outside a Westbury-on-Trym property"
+  heroSubtitle="We've been moving Bristol homes for nearly 50 years. Home removals in Westbury-on-Trym with the local knowledge to match."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Westbury-on-Trym is one of Bristol's most consistently desirable neighbourhoods, and the people who live there tend to know exactly why they chose it. It sits in the northwest of the city, a short walk from the Downs, with its own proper village centre — a high street with independent shops, a butcher, coffee shops — and the kind of calm residential streets that feel removed from the city while being about ten minutes from the centre. It's where you end up when you've done your research and decided you want the best of both.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">We do a lot of moves in and out of Westbury-on-Trym. It's close to where we're based, it's an area we know well, and the people moving there tend to be the kind of customers we work best with — families who want a proper move done properly, often with a full <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a>, often with good furniture worth taking care of.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Housing -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Westbury-on-Trym Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Housing Stock</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Westbury-on-Trym has some beautiful houses. Not the four and five-storey Georgian giants you find in Clifton — the scale here is more human, more liveable — but attractive properties with good proportions, decent gardens, and the kind of space that Bristol closer to the centre doesn't offer at the same price point.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There's a solid mix of semi-detached and detached houses on the residential streets spreading out from the village centre — roads like Canford Lane, Fallodon Way, and the streets around Coombe Dingle. Some are three-storey, which is worth knowing about for removals, but they're not the cliff-faces of Clifton. Internal access is generally good: wide hallways, sensible staircases, the kind of layout that doesn't make you regret buying that large corner sofa.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Further toward Stoke Bishop the properties get larger — bigger houses, bigger plots, the sort of move where we'd send a full team and take the whole day. These are among the most enjoyable jobs we do.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Access and Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Access and Parking</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For the most part, Westbury-on-Trym is good news on the access front. The roads are well laid out, there's usually enough space to position a van sensibly outside the property, and the neighbourhood doesn't have the parking chaos of somewhere like <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A few roads are worth flagging. The streets closer to the village centre, particularly around the High Street and the roads immediately off it, can get busy enough that timing matters. Not impossibly so, but parking outside a specific property on a busy shopping street during the middle of the day requires a bit of coordination. A word with the neighbours the evening before, a cone or two, and most of this is solved.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The residential streets further out — toward Coombe Dingle, toward Stoke Bishop, along the roads that border Durdham Down — are easy to work from. Space to park, no drama, the kind of access that makes for an efficient day.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving from Westbury-on-Trym?"
+      description="Get a personalised quote — we know whether your street needs the village approach or the straightforward one."
+      buttonText="Get Your Westbury-on-Trym Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: The Downs + Coombe Dingle -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Downs: An Asset with One Small Catch</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Durdham Down and Clifton Down border Westbury-on-Trym to the east and south, and they're one of the main reasons people choose this part of Bristol. Hundreds of acres of open grassland in the middle of the city, free to use, no fences. For families with children or dogs it's a significant part of daily life.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For removals there's one thing worth knowing: the roads along the edge of the Downs, particularly Stoke Road and Ladies Mile, can get congested at weekends and during good weather. If your moving day falls on a sunny Saturday in June, the approach through this part of Westbury-on-Trym may be slower than usual. It's not a dealbreaker — we factor it into the timing of the day.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Coombe Dingle and the Northern Edge</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Coombe Dingle sits at the northern end of Westbury-on-Trym, shading into more rural territory as you approach the river and the woods. It's one of those corners of Bristol that people who don't live nearby never discover, and the people who do live there tend to stay. Some lovely houses along here, good access for removal work, and a quieter feel than the main village area.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">If you're moving into one of the more rural-edged properties near the River Trym or backing onto the woodland, we'd want to check the access specifically with a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> — but there's nothing about this part of the world that causes us any particular concern.</p>
+  </div>
+
+  <!-- S4: Who Moves Here & What It Costs -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Who Moves to Westbury-on-Trym — and What It Costs</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Westbury-on-Trym attracts families — often families moving out of a smaller place in a slightly edgier part of Bristol who've reached the point where good schools, a safe street, and a village centre that works properly matter more than being five minutes from the best bars. It attracts people coming in from further afield who've done their Bristol research and landed here as a considered choice."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We notice the patterns. People also move within north Bristol — from Henleaze, from Stoke Bishop, from Redland — wanting to stay in this part of the city but after something slightly different. Whatever the reason, the moves here tend to be well-organised and the customers tend to know what they want. That makes our job easier and the results better.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Westbury-on-Trym falls within our standard Bristol local pricing. A one or two-bedroom move starts at around £500–£700. A typical family home — three or four beds, a full van or two — runs between £900 and £1,500 depending on the volume and what both properties are like. If you want a full <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a> on top, that adds time and cost but means you don't have to think about a single box yourself.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">All of this as a one-day job. Westbury-on-Trym is local to us and there's no reason to stretch it further than that. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street situation, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+  <!-- S5: Planning Your Move — Checklist -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Westbury-on-Trym a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not for most properties. The wide suburban streets that make up the majority of the area are uncomplicated for removals — no parking zone, good road access, driveways on most houses. The village core is the one area that needs thought: narrow lanes, limited parking, and period properties with access constraints. But that's a known quantity and we plan around it as a matter of course.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For most Westbury-on-Trym moves — a three or four-bed family home moving locally — you're looking at a team of three, one van, and a full day's work. Let Painless Removals come and take a look with a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> so we can get the crew size and timing right.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Westbury-on-Trym Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Village core or suburban street?</strong> Properties near the High Street, Church Road, and Waters Lane need a different access plan to the wider roads toward Coombe Dingle or Stoke Bishop. Flag your location at booking.</li>
+      <li><strong>Driveway access?</strong> Most interwar semis and detached houses have driveways — confirm yours can fit a Luton van, or let us know if we'll be loading from the road.</li>
+      <li><strong>Downs-day traffic?</strong> If your move falls on a sunny weekend, the approach via Stoke Road and Ladies Mile can be slower. We'll schedule around it.</li>
+      <li><strong>Three-storey property?</strong> Some of the larger houses have three floors. Flag this at booking so we assess staircase access and send the right crew size.</li>
+      <li><strong>Packing needed?</strong> Westbury-on-Trym moves often involve good furniture and full households. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing team</a> can come the day before to make moving day faster.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

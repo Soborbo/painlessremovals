@@ -1,0 +1,184 @@
+---
+/**
+ * NeighbourhoodLayout — wrapper component for Type B neighbourhood pages.
+ *
+ * Owns the full page shell: Layout, breadcrumbs, two-column grid with sidebar,
+ * FAQ section, Nearby & Services, and final CTA.
+ *
+ * Each page provides its unique editorial content via the default <slot />.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import NearbyAndServices from '@/components/areas/NearbyAndServices.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+
+export interface Props {
+  /** Page title — used in <title>, schema, and breadcrumbs */
+  title: string;
+  /** Meta description */
+  description: string;
+  /** Neighbourhood display name (e.g., "Clifton") */
+  areaName: string;
+  /** Slug matching areas.config (e.g., "clifton") */
+  slug: string;
+  /** Schema JSON-LD array (or single object) */
+  schema: object | object[];
+  /** OG image path */
+  ogImage: string;
+  /** FactBox component props */
+  factBox: {
+    title: string;
+    sections: Array<{
+      icon: string;
+      heading: string;
+      rows: Array<{ label: string; value: string }>;
+    }>;
+  };
+  /** ReviewInline component props */
+  review: {
+    text: string;
+    name: string;
+    context: string;
+  };
+  /** FAQ data array */
+  faqs: Array<{ question: string; answer: string }>;
+  /** Hero image name for OptimizedPicture (e.g., "areas/clifton-sofa-removal") */
+  heroImage: string;
+  /** Hero image alt text */
+  heroAlt: string;
+  /** Hero subtitle text (shown below H1) */
+  heroSubtitle?: string;
+  /** FAQ section heading (default: "What Do {areaName} Residents Ask Us?") */
+  faqHeading?: string;
+  /** Number of nearby neighbourhoods to show (default: 3) */
+  nearbyCount?: number;
+}
+
+const {
+  title,
+  description,
+  areaName,
+  slug,
+  schema,
+  ogImage,
+  factBox,
+  review,
+  faqs,
+  heroImage,
+  heroAlt,
+  heroSubtitle,
+  faqHeading = `What Do ${areaName} Residents Ask Us?`,
+  nearbyCount = 3,
+} = Astro.props;
+---
+
+<Layout title={title} description={description} schema={schema} ogImage={ogImage}>
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name={heroImage}
+      pattern="FULL"
+      alt={heroAlt}
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">{areaName}</span>
+      </h1>
+
+      {heroSubtitle && (
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          {heroSubtitle}
+        </p>
+      )}
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=${slug}`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name={heroImage}
+      pattern="FULL"
+      alt={heroAlt}
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol', href: '/areas/' },
+    { label: areaName },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+      <slot />
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBox} />
+        <ReviewInline {...review} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+  <!-- ═══ End two-column layout ═══ -->
+
+  <!-- FAQ -->
+  <div class="pt-4 border-t border-gray-200 [&>.section]:pt-8 [&>.section]:pb-8">
+    <FAQAccordion faqs={faqs} heading={faqHeading} />
+  </div>
+
+</div>
+<!-- ═══ Full-width sections (break out of container) ═══ -->
+
+<!-- Nearby & Services -->
+<NearbyAndServices slug={slug} count={nearbyCount} />
+
+<!-- Final CTA -->
+<AreaFinalCTA
+  heading={`Ready to Move to or from ${areaName}?`}
+  description={`Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">more Bristol areas we cover</a>.`}
+/>
+
+</Layout>

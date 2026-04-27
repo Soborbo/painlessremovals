@@ -1,0 +1,262 @@
+---
+/**
+ * /removals-bristol/fishponds/ — Fishponds neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Fishponds Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~3 miles' },
+        { label: 'Drive time from depot', value: '12–18 minutes' },
+        { label: 'Postcode area', value: 'BS16' },
+        { label: 'Nearest motorway', value: 'M32 J2 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed terrace or semi' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day to full day' },
+        { label: 'Local move cost', value: '£400–£800' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£330,000' },
+        { label: 'Typical property', value: 'Victorian terrace / 1930s semi' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Tight terrace streets' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Brilliant experience with Painless Removals. All of the guys were professional and personable. They made the whole process smooth and nothing was too much trouble.",
+  name: 'Elly Ponting',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Fishponds, Bristol';
+const description = `Fishponds removal specialists since 1978. We handle Victorian terraces, 1930s semis, and tight side streets off the A432 — 3 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Fishponds Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Fishponds, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS16", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Fishponds?', answer: 'No. Fishponds has no Residents\' Parking Zone — street parking is free. However, the Victorian terraces on narrower side streets mean space is limited during working hours. We plan arrival times to avoid the worst congestion on Fishponds Road.' },
+  { question: 'How much does a removal from Fishponds cost?', answer: 'A typical 3-bed terraced house moving locally runs £400–£800. The wider 1930s semis with driveways are usually at the lower end. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a quote based on your actual property.' },
+  { question: 'Can you access the narrow Victorian streets off Fishponds Road?', answer: 'Yes. These streets are tight with cars parked on both sides, but they\'re part of our regular territory. We choose the right size vehicle during your <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a> and plan the approach route to avoid peak-hour congestion on the A432.' },
+  { question: 'Do you cover student moves near UWE Glenside?', answer: 'We do, though we\'d recommend avoiding September move-in week when Stapleton Road and the surrounding streets are gridlocked with student traffic. If you\'re moving nearby, early morning starts work best during term.' },
+  { question: 'What\'s the best route into Fishponds for removal vans?', answer: 'The A432 Fishponds Road is the main artery. From our Southmead Road depot, we typically come via the M32 and join the A432. Lodge Causeway provides access to the industrial end. Our drivers know the side streets and can avoid the worst traffic pinch points.' },
+  { question: 'Is Fishponds difficult for removal vans compared to inner Bristol?', answer: 'No — Fishponds is one of the more straightforward Bristol areas for removals. It doesn\'t trigger the same access concerns as <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline underline-offset-2">Totterdown</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline underline-offset-2">Montpelier</a>. Parking is generally manageable, many properties have driveways, and the overall suburban layout gives our vans more room to work.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Fishponds" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Fishponds"
+  slug="fishponds"
+  schema={schema}
+  ogImage="/img/areas/fishponds-victorian-terrace-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/fishponds-victorian-terrace-removal"
+  heroAlt="Painless Removals van parked outside a Victorian terraced house on a Fishponds residential street"
+  heroSubtitle="Bristol's own removal company since 1978. Home removals in Fishponds backed by nearly 50 years of doing this properly."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Fishponds doesn't make the shortlist when Bristol's most fashionable neighbourhoods get discussed. It doesn't have Clifton's architectural grandeur or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier's</a> bohemian reputation. What it has is something arguably more useful for day-to-day life: decent housing, manageable streets, good access to the city, and one of the best pieces of active transport infrastructure in the whole of Bristol running right through the middle of it.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">We work in Fishponds regularly. It's a neighbourhood where jobs tend to go well, where the streets don't keep us up at night when we're planning a move, and where the housing — a genuine mix of Victorian terraces, interwar semis, and newer developments — keeps the work interesting without making it stressful. Here's the honest guide to what a Fishponds move involves.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Streets -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Fishponds Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Streets: Mixed Bag, Mostly Manageable</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Fishponds sits somewhere between the notably challenging inner-city neighbourhoods like Montpelier and the easy-access spaciousness of Stoke Bishop — neither extreme, broadly manageable, with occasional pockets that need more thought.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The streets closest to Fishponds Road itself — the tighter terraced roads that run off the main artery — can have the usual inner Bristol pinch points: cars parked on both sides, not much room for a Luton to sit comfortably while the crew works. These aren't crisis situations. They require a sensible plan for where the van goes and ideally a reserved space to put it in.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The roads further from the main road — the wider residential streets heading towards Oldbury Court and the River Frome — are more relaxed. More driveways, more space between properties, more room for a van to position without creating a road management exercise. If your property is on one of these quieter streets, the Fishponds move is a calm one.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Staple Hill Road on the eastern edge is worth knowing about as an approach route — it connects Fishponds through to Mangotsfield and Staple Hill, and at peak times it carries more traffic than its road width comfortably accommodates. Approaching a Fishponds property via Staple Hill Road during morning or evening rush hour is something we time to avoid.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Railway Path -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Bristol and Bath Railway Path</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If there is one thing that sets Fishponds apart from comparable east Bristol neighbourhoods, it's this: the Bristol and Bath Railway Path runs directly through it. The path follows the old Midland Railway line from Bristol city centre all the way to Bath — seventeen miles of traffic-free cycling and walking on a wide, well-maintained, mostly flat surface. Through Fishponds, it's not just a leisure route. It's a genuine commuter artery. People who live along its route cycle into the city centre without touching a road.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For anyone considering a move to Fishponds who commutes by bike — and increasingly that's a significant number of people — the proximity to the Railway Path is one of the most practical selling points the neighbourhood offers. Streets that back onto or sit close to the path have a quality-of-life advantage that doesn't always show up in the property listing but becomes immediately obvious once you're living there.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">From a removals perspective, the path itself is irrelevant to the logistics. But the fact that it runs through Fishponds tells you something about the neighbourhood's energy — it attracts people who value active travel, green space, and a certain kind of unpretentious practicality. Those tend to be good neighbours on moving day.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Fishponds?"
+      description="Get a personalised quote — we know which streets need care and which ones don't."
+      buttonText="Get Your Fishponds Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Ring Road & Oldbury Court -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Ring Road Question</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Fishponds' main connection to the rest of Bristol is via the ring road — the A4174 that circles the city and connects east Bristol to the motorway network. During rush hour, the ring road earns its reputation. It backs up reliably, and the sections near Fishponds slow significantly when the daily commuter flow is at its peak.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For removal vans coming from north Bristol — where we're based — Fishponds is easy to reach outside of peak hours. A mid-morning arrival comfortably avoids the worst of the morning rush. Coming back from a Fishponds job in the late afternoon requires the same timing awareness — being clear of the ring road before the evening commute builds saves meaningful time. The residential interior of Fishponds, once you're off the ring road and off Fishponds Road itself, is not troubled by through-traffic in the same way.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Oldbury Court Estate</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Oldbury Court Estate — the wooded park that runs along the River Frome on Fishponds' northern edge — is one of those Bristol green spaces that people who don't live nearby don't know about, and people who do live nearby feel quietly possessive of. It's a proper park in the old sense: wooded walks, the river running through it, enough space to feel genuinely away from the city even though you're a few minutes' walk from a suburban high street.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The streets that border the park — coming off Oldbury Court Road — have some of Fishponds' nicest housing, and the access to these streets from the south and east is generally good. If you're moving to one of the streets near Oldbury Court, you're making a choice that people who know east Bristol well will immediately understand.</p>
+  </div>
+
+  <!-- S4: The Housing -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Housing: What to Expect</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Victorian and Edwardian terraces in the older parts of Fishponds have the characteristic proportions of that era — hallways that are narrower than they look from the street, staircases with the steepness that pre-war building practice accepted as normal, rooms that are honest in size without being enormous. These are perfectly good properties to move. We know their rhythms — the corner that catches you with a large sofa, the landing that needs a specific angle of approach to get a wardrobe through.</p>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/fishponds-van-victorian"
+          pattern="HALF"
+          alt="Painless Removals van outside a Victorian terrace in Fishponds — typical of the older streets off Fishponds Road"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">A typical Fishponds Victorian terrace — the streets closest to the high street need a clear parking plan.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "The interwar semis that make up a significant portion of Fishponds' housing stock are generally easier — slightly more generous hallways, often a driveway or at least a front path, staircases that are a degree or two less steep. These are comfortable, well-built family homes that move well. For apartment buildings, we need to know which floor, what the lift situation is, and what the walk from the front door to the van looks like. A ground-floor flat and a fourth-floor flat in the same building are meaningfully different jobs."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about it before the van arrives rather than discovering it on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+
+  <!-- S5: Is Fishponds a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Fishponds a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. Fishponds is one of the more straightforward Bristol neighbourhoods for removals. There's no Residents' Parking Zone. There's no conservation area. There's no stadium to work around. The streets are not the most challenging in Bristol, and the housing is honest and familiar. The rhythm here is governed by commuter patterns rather than events — and that's easy to plan for.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The two variables to manage are timing and street choice. Get the ring road approach right, pick a sensible arrival time, and reserve a parking space on the tighter terraced streets — and the move goes well. For most Fishponds moves — a two or three-bed terrace or semi moving locally — you're looking at a team of two to three, one van, and a half-day to full-day job.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers all of this — we'll visit your property, assess the access, and confirm the right crew size and timing for your specific street. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Fishponds Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Which part of Fishponds?</strong> Closer to the main road, near Oldbury Court, or on the quieter residential streets towards Staple Hill? Access and parking vary.</li>
+      <li><strong>Terrace, semi, or flat?</strong> Each has different internal access characteristics worth discussing in advance.</li>
+      <li><strong>Any large items?</strong> Victorian terrace hallways can catch you out. Flag oversized furniture at booking so we assess the staircase and hallway.</li>
+      <li><strong>Ring road timing.</strong> Mid-morning starts and early afternoon finishes give you the clearest approach and departure routes.</li>
+      <li><strong>Parking plan for tighter streets?</strong> Reserve space in advance if you're on one of the busier terraced roads near Fishponds Road.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

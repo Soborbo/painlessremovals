@@ -1,0 +1,360 @@
+---
+/**
+ * /removals-bristol-to-exeter/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '80 miles' },
+        { label: 'Drive time', value: '~1.5–2 hours' },
+        { label: 'Primary route', value: 'M5 southbound' },
+        { label: 'Move duration', value: '1 full day' },
+        { label: 'Crew size', value: '2–3 movers, 1 van' },
+        { label: 'Typical cost', value: '£700–£1,800' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The team from Painless helped us move from Bristol to Cornwall. They worked tirelessly for two days. Their calm and friendly manner really helped us to relax and made the process much easier.",
+  name: 'Chris Pugh',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Exeter — 80 Miles, One Day';
+const description = `House removals from Bristol to Exeter, 80 miles via M5 southbound. Same-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Exeter",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Exeter" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'How long does a Bristol to Exeter move take?',
+    answer: 'About an hour and a half down the M5 in normal conditions. A full move day covers most two- to four-bedroom homes — we load in Bristol in the morning, drive down, and unload at your Exeter property in the afternoon.',
+  },
+  {
+    question: 'Do you cover areas outside Exeter?',
+    answer: 'Yes. We regularly deliver to Topsham, Exmouth, Crediton, Tiverton, and the wider Devon area. The M5 gives us direct access to the region, and we quote based on your specific destination.',
+  },
+  {
+    question: 'Can you handle narrow streets in Exeter\'s centre?',
+    answer: 'Yes. The Cathedral Quarter and medieval streets around the quayside are tight, with limited parking and restricted access zones — similar to Bath. We use smaller vans where needed and arrange parking suspensions through Exeter City Council in advance.',
+  },
+  {
+    question: 'Can I combine my move with a house clearance?',
+    answer: 'Yes. We can handle clearance alongside your move or as a separate visit. It works well when you\'re downsizing or leaving items behind at your Bristol property. We\'ll quote both together so you know the full cost upfront.',
+  },
+  {
+    question: 'Do you move people from Exeter to Bristol too?',
+    answer: 'Yes, equally common. We run this route in both directions — it\'s a clean route either way. The same crew, vehicles, and service apply whether you\'re heading south or north on the M5.',
+  },
+  {
+    question: 'What about M5 holiday traffic?',
+    answer: 'The M5 southbound is notorious during school holidays, bank holidays, and peak summer weekends — all the Devon and Cornwall traffic funnels down the same corridor. Avoid these dates if you can. A midweek move outside holiday periods makes a meaningful difference to journey times and overall stress.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Exeter" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Exeter' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Exeter — 80&nbsp;Miles, One&nbsp;Day
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Exeter is one of those destinations that sits in a sweet spot for us. Eighty miles down the M5, an hour and a half to two hours depending on the day — close enough to load, drive, unload, and wrap up without needing a second day for most homes. A single van with two movers handles a one- or two-bed flat. A three-bed family home typically needs two to three movers and still fits inside a single day. It only tips into two days at the four- or five-bedroom level, where the volume of furniture and boxes demands more trips or a slower, more careful approach.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We've done the drive to Devon on a normal Tuesday in October in under two hours. We've also been on the same road on a Friday before a bank holiday weekend watching the clock and watching the miles barely tick over. The difference between those two journeys is the difference between a smooth move and a stressful one — and it comes down almost entirely to which day you choose.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Exeter house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Exeter Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The M5 Calendar Problem</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The M5 southbound is the main artery to Devon and Cornwall, and during school holidays, bank holiday weekends, and peak summer Fridays, it is notorious for grinding to a halt. The stretch between Taunton and Exeter carries all the holiday traffic heading for the coast, and a journey that takes 90 minutes on a Wednesday in November can stretch past three hours on the wrong Friday in July.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Avoid the Friday before any school holiday like it owes you money. A midweek move outside term-time holidays is consistently faster, calmer, and better value — your crew spends less time sitting in traffic and more time doing productive work. We always flag the holiday calendar when you book and will advise on the best dates available.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Exeter's Character</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Exeter's historic centre — the Cathedral Quarter, the quayside, the medieval streets around Fore Street — presents the same kind of access challenges you find in Bath. Tight roads, limited parking, restricted zones, and buildings that were never designed for a Luton van to pull up outside. We use smaller vehicles where the streets demand it and arrange parking suspensions through Exeter City Council well before move day.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The suburbs and newer developments around Exeter are a different story. Areas like Pinhoe, Cranbrook, and the developments off the Topsham Road tend to have wider streets, driveways, and room to work. Each property gets its own access assessment during our pre-move survey — we never assume.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Beyond Exeter</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">We also cover the surrounding area from this route. Topsham, Exmouth, Crediton, and Tiverton are all within easy reach once we're off the M5. If your new home is in one of these towns rather than Exeter itself, the same service applies — we quote based on your exact destination and factor in any local access considerations.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Exeter, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Exeter?"
+          description="Free quote in about two minutes. M5 direct, no tolls, no hidden charges."
+          buttonText="Get Your Exeter Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals runs the Bristol to Exeter route regularly — it's one of our most common long-distance destinations. The M5 is direct and toll-free for the entire journey. The variable is timing. Pick the right day and the drive is unremarkable. Pick the wrong one and you're sharing the motorway with every caravan heading to Dawlish.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Exeter" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Exeter is one of the closer ones — an hour and a half to two hours depending on conditions. A single van done in a day starts from around seven or eight hundred pounds. For a typical three-bed house with two or three vans, you're looking at around £1,800, going up from there. The main thing to watch is the M5 during school holidays — the Devon and Cornwall traffic can add a lot of time to the journey if you pick the wrong day."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This route is popular in both directions. People leaving Bristol for Devon's pace of life, and Exeter professionals relocating to Bristol for work. If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Exeter Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat with a single van typically costs £700–£800. A standard family home with two to three van loads runs £1,200–£1,800. Properties in Exeter's historic centre with tight access — parking suspensions, smaller vans, restricted hours — sit at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but splits the work across two days.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, and equipment. No hidden charges for mileage or parking suspension handling. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Exeter Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 exeter-checklist">
+          <li><strong>Avoid holiday Fridays.</strong> The M5 southbound carries all the Devon and Cornwall holiday traffic. Midweek moves outside school holidays are consistently smoother.</li>
+          <li><strong>Historic centre property?</strong> Check access restrictions and parking availability before your move date — the Cathedral Quarter and quayside have tight streets.</li>
+          <li><strong>Parking suspensions.</strong> Exeter City Council handles temporary suspensions for removal vehicles. We arrange these for you in advance.</li>
+          <li><strong>Book 3–4 weeks ahead.</strong> Summer months and school holiday periods fill up quickly on this route.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then move everything the following morning.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Exeter, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Exeter Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="Cardiff" meta="~45 miles via M4/M48" days="1 day" href="/removals-bristol-to-cardiff/" />
+      <RouteCard from="Bristol" to="Southampton" meta="~80 miles via M4/M3" days="1–2 days" href="/removals-bristol-to-southampton/" />
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Birmingham" meta="~90 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready for Your Bristol to Exeter Move?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .exeter-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .exeter-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .exeter-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

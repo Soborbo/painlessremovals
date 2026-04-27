@@ -1,0 +1,351 @@
+---
+/**
+ * /removals-bath/ — Bath city hub page
+ *
+ * Type B: Hub Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Bath Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~13 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Main route', value: 'A4 / M4 J18' },
+        { label: 'Council', value: 'B&NES' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: 'Georgian townhouse / flat' },
+        { label: 'Typical crew', value: '3 movers, 1–2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£600–£1,800' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£450,000+' },
+        { label: 'Typical property', value: 'Georgian townhouse / period flat' },
+        { label: 'Typical floors', value: '3–5 storeys' },
+        { label: 'Parking zones', value: 'RPZ across centre' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Extensive RPZ' },
+        { label: 'Suspension needed', value: 'Often (city centre)' },
+        { label: 'Main difficulty', value: 'Narrow period doorways' },
+        { label: 'Conservation area', value: 'World Heritage City' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Absolutely superb. The team handled our 4th-floor Bath flat move with complete professionalism. Every piece of furniture protected, not a scratch on the Bath stone. Would use again without hesitation.",
+  name: 'Sarah Mitchell',
+  context: 'Google Review',
+};
+
+const title = 'Removals in Bath';
+const description = `Bath removal specialists — 13 miles from our Bristol depot. Georgian townhouse experts, RPZ parking handled, World Heritage City care. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Bath Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": { "@type": "City", "name": "Bath", "sameAs": "https://en.wikipedia.org/wiki/Bath,_Somerset" },
+  "description": description,
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Do I need a parking permit for my removal day in Bath?', answer: 'Most of central Bath falls within Residents\' Parking Zones (RPZ). Your Move Manager will advise on the <a href="https://beta.bathnes.gov.uk/residents-parking-zones" class="text-secondary-500 underline underline-offset-2">B&NES council parking suspension</a> process — typically 2 weeks\' notice and a small fee. We handle these moves every week.' },
+  { question: 'Can you move furniture without damaging the Bath stone?', answer: 'Yes — this is bread and butter for us. Georgian doorways are narrower than modern properties. We use quilted blankets on every contact point, protective corner shields for architraves, and specialist techniques for period staircases. We\'ve moved hundreds of families out of Bath\'s listed buildings without a scratch on the stonework.' },
+  { question: 'How much does a house removal in Bath cost?', answer: 'A 1–2 bed flat: £600–£800. A larger family home (couple of vans): £1,200–£1,800. Price increases for city centre restricted zones, upper-floor flats without lift access, and tall multi-storey properties. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific estimate.' },
+  { question: 'What about the restricted access zones in Bath city centre?', answer: 'Areas around Milsom Street, Bath Spa station, and SouthGate have timed access restrictions controlled by barriers. We coordinate with barrier controllers in advance — if we haven\'t sorted access before the day, we\'re stuck on the kerb watching the clock.' },
+  { question: 'Do you handle student moves in Bath?', answer: 'Yes. We regularly help University of Bath and Bath Spa students moving in and out of shared houses, particularly around Oldfield Park and Widcombe. Smaller van options for single-room moves keep costs down.' },
+  { question: 'Can some Bath buildings refuse removal companies lift access?', answer: 'Yes — some apartment buildings have lifts that building management will not allow removal companies to use. You carry everything up the stairs. We always check lift access during the survey so there are no surprises on the day.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/bath-georgian-townhouse-removal-1200w.webp" preloadImage="/img/areas/bath-georgian-townhouse-removal-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/bath-georgian-townhouse-removal"
+      pattern="FULL"
+      alt="Removal team carefully loading furniture outside a Georgian Bath townhouse"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Bath</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=bath`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/bath-georgian-townhouse-removal"
+      pattern="FULL"
+      alt="Removal team carefully loading furniture outside a Georgian Bath townhouse"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bath' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Bath is one of the most beautiful cities in England — and one of the trickiest to move in. The same Georgian architecture that earns its <a href="https://whc.unesco.org/en/list/428" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">UNESCO World Heritage</a> status also creates narrow doorways, curved staircases, and rear access that was designed for servants, not a three-piece sofa. We're 13 miles away — around 25 minutes on the A4 — and Bath is one of our favourite places to work.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The honey-coloured Bath stone that makes the Royal Crescent glow in afternoon light chips easily if you knock it with a wardrobe edge. The parking zones cover most of the centre. The hills would make Bristol's Totterdown blush. None of this is a problem when you know what you're doing — and we've been doing Bath moves for decades.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/bath-georgian-townhouse-removal" pattern="FULL" alt="Removal team carefully loading furniture outside a Georgian Bath townhouse" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Bath Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Georgian Architecture and What It Means for Removals</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The tall 4–5 storey townhouses along Great Pulteney Street, the Circus, and Lansdown are magnificent — and demanding. Many have been subdivided into flats, which means moving a household's worth of furniture up narrow period staircases, sometimes to the fourth floor, sometimes without lift access. Some buildings have lifts that management will not allow removal companies to use — you carry everything up the stairs.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Intact Georgian architecture is easier to work with than a poorly converted Victorian terrace in Bristol — the proportions are generous, the doorways elegant if narrow. The divided-into-flats conversions are where complexity increases. We always check during the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> whether the building allows lift use and what the staircase situation looks like.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking and Restricted Access</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Most of central Bath — from Lansdown to Widcombe — sits within <a href="https://beta.bathnes.gov.uk/residents-parking-zones" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Residents' Parking Zones</a> managed by B&NES Council. Streets around the Royal Crescent and The Circus are particularly tight, often requiring a formal parking bay suspension. Your Move Manager handles this paperwork as part of the planning process.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The restricted access zones around Milsom Street, Bath Spa station, and SouthGate are the other complication. These are barrier-controlled with timed access windows. If we turn up to load a flat near the SouthGate area and haven't sorted the access, we're stuck on the kerb watching the clock. We coordinate with barrier controllers in advance — it's something we do every week for Bath customers.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Hills</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Bath sits in a bowl. The residential areas — Widcombe, Combe Down, Odd Down, Bathwick, Lansdown — climb steeply in every direction. Gradient and van positioning on hills is part of every assessment. A fridge-freezer on a sack truck down a steep Bath garden path demands experience and the right equipment. We bring ramps, straps, and the muscle memory of hundreds of Bath moves.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Planning a Move in Bath?" description="Free quote in about two minutes. We know Bath's parking zones, access restrictions, and period staircases." buttonText="Get Your Bath Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Bath's Two Types of Move</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bath has a split personality for removals. There are the high-value family moves in Bathampton, Combe Down, and the Lansdown crescents — large properties with antiques, artwork, and complex chain timelines. And there are the student moves around Oldfield Park, where University of Bath and Bath Spa students cycle through shared houses every September and June. We handle both, adjusting crew size and vehicle choice accordingly.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/bath-period-move" pattern="HALF" alt="Period property removal in Bath" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Bath is one of our favourite places to work. The Georgian architecture is stunning — and it creates specific logistical challenges that we've learned to handle over decades. Knowing which buildings allow lift access, which streets need parking suspensions, and which approaches to use for the hillside properties — that's what experience looks like."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">The wider suburbs — Oldfield Park, Twerton, Weston, Bear Flat, Bathampton — are more operationally simple. Wider roads, driveways, and properties that don't require the same level of period-building care. Let Painless Removals match the crew and approach to your specific property.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Bath a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The suburbs: no harder than any Bristol neighbourhood. The city centre: yes, it has specific challenges — parking zones, access restrictions, tall period buildings, and hills. But these are manageable when you know the city, and we know it well.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The A4 is the main route from Bristol — it backs up through Keynsham at rush hour. The A46 from M4 J18 is better for motorway approaches. We plan timing around traffic patterns so the crew arrives ready to work, not frustrated by congestion.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bath Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 bath-checklist">
+          <li><strong>Parking zone?</strong> Most of central Bath needs a B&NES parking suspension — allow 2 weeks' notice.</li>
+          <li><strong>Restricted access?</strong> Properties near Milsom Street, SouthGate, or Bath Spa station need barrier coordination.</li>
+          <li><strong>Lift access?</strong> Check whether building management allows removal companies to use the lift.</li>
+          <li><strong>Which floor?</strong> Upper-floor flats without lift access need extra crew and time — tell us upfront.</li>
+          <li><strong>Bath stone?</strong> We protect every contact point — but flag any particular concerns about listed features.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do People Ask About Moving in Bath?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Bath Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Bath sits close to the M4 at Junction 18 — excellent motorway access heading east to London or west into Wales.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol / Bath" to="London" meta="~115 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol / Bath" to="Birmingham" meta="~100 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Bristol / Bath" to="Cardiff" meta="~55 miles via M4/M48" days="1 day" href="/removals-bristol-to-cardiff/" />
+      <RouteCard from="Bristol / Bath" to="Exeter" meta="~85 miles via A36/M5" days="1 day" href="/removals-bristol-to-exeter/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Moving From a Town Near Bath?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We cover Bath and the surrounding area. If you're moving from or to
+        <a href="/removals-keynsham/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Keynsham</a>,
+        <a href="/removals-radstock/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Radstock</a>, or
+        <a href="/removals-chew-valley/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Chew Valley</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager. Georgian property specialists.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Ideal for high-value Bath homes with antiques and artwork.</p>
+        </a>
+        <a href="/storage-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Storage</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Secure units 25 minutes from Bath. Perfect for chain moves.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move in Bath?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .bath-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .bath-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

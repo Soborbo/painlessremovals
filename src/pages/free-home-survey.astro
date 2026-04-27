@@ -1,0 +1,475 @@
+---
+/**
+ * Free Home Survey / Removal Assessment Page
+ *
+ * Explains the Painless Removals home survey & self-survey process.
+ * Two pathways: video self-survey (remote) or in-person home visit.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import SurveyOptions from '@/components/SurveyOptions.astro';
+import FilmingTipsGrid from '@/components/FilmingTipsGrid.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Free Home Survey & Removal Assessment | Painless Removals Bristol';
+const pageDescription = 'Get an accurate removal quote with our free home survey. Choose a quick video self-survey from your phone or book an in-person assessment. No obligation, no pressure.';
+
+
+// 9 filming tips are now in the <FilmingTipsGrid /> component
+
+const inPersonSteps = [
+  {
+    number: 1,
+    title: 'Book a Time',
+    description: 'Call us or fill in the contact form and we\'ll arrange a visit at a time that works for you – including evenings if needed.',
+  },
+  {
+    number: 2,
+    title: 'We Visit Your Home',
+    description: 'Your Move Manager walks through the property with you, room by room. They\'ll note everything and answer any questions on the spot.',
+  },
+  {
+    number: 3,
+    title: 'Receive Your Quote',
+    description: 'You\'ll receive a detailed, written quote – usually within 48 hours. We\'ll follow up a few days later to answer any questions.',
+  },
+];
+
+// Benefits of getting a proper survey
+const surveyBenefits = [
+  {
+    icon: '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M3 12h18M3 18h12M7.5 3v18"/></svg>',
+    title: 'Accurate Volume Assessment',
+    description: 'We measure your move in cubic feet – not guesswork. This means you get the right number of vans and the right size team, avoiding costly surprises on the day.',
+  },
+  {
+    icon: '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>',
+    title: 'Insurance That Actually Covers You',
+    description: 'Items we\'ve surveyed are fully covered under our £15,000 Goods in Transit insurance. Choose our packing service and your boxes are covered too. Got anything worth over £2,000? Let us know so we can make sure it\'s included.',
+  },
+  {
+    icon: '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"/></svg>',
+    title: 'No Hidden Costs',
+    description: 'An accurate survey means an accurate quote. The price we give you is the price you pay – no "oh, we didn\'t realise you had a loft full of boxes" surcharges.',
+  },
+  {
+    icon: '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>',
+    title: 'Access Issues Spotted Early',
+    description: 'Narrow staircase? Permit parking? Low bridge on the route? We identify potential problems before moving day, not during it.',
+  },
+  {
+    icon: '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>',
+    title: 'Packing Materials Calculated',
+    description: 'Every survey includes a full packing materials list — how many boxes, rolls of bubble wrap, and wardrobe cartons you\'ll need. We can supply them, or you can source your own. Either way, a well-packed home is an easy home to move.',
+  },
+  {
+    icon: '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+    title: 'Realistic Timeline',
+    description: 'We can tell you how long your move will take, whether you need a one-day or two-day service, and plan the logistics around property chains.',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'Is the home survey really free?',
+    answer: 'Yes, completely free with no obligation. Whether you choose the video self-survey or an in-person visit, there\'s no charge. We believe you deserve an accurate quote before making any commitments.',
+  },
+  {
+    question: 'How long does a video self-survey take?',
+    answer: 'Most people complete their walkthrough video in 5–10 minutes. A typical 2–3 bedroom home takes around 7 minutes. You don\'t need to narrate everything — just mention items that may be difficult to see or need explanation. Walk slowly and let the camera capture each room.',
+  },
+  {
+    question: 'How long does an in-person survey take?',
+    answer: 'Usually 20 to 30 minutes for a standard home. Larger properties or complex moves may take a little longer. Your Move Manager will also use this time to answer any questions you have about the moving process.',
+  },
+  {
+    question: 'What if I forget to show something in my video?',
+    answer: 'If you realise you\'ve missed something, just get in touch and we can update your quote. We also create an itemised list of everything we\'ve seen, which we can share with you to check nothing\'s been left out. If we notice any gaps on our side, we\'ll ask for clarification. It\'s important to show everything — missed items can mean not enough van space and additional costs on the day.',
+  },
+  {
+    question: 'Do I have to be home for an in-person survey?',
+    answer: 'Ideally yes, because you\'re the best person to tell us what\'s being moved and what\'s staying. However, a family member or friend who knows the details can stand in if needed.',
+  },
+  {
+    question: 'Can I do a video call instead?',
+    answer: `Absolutely. If you'd prefer a live video call on <a href="https://wa.me/${siteConfig.company.contact.whatsapp}" target="_blank" rel="noopener noreferrer">WhatsApp (${siteConfig.company.contact.whatsappDisplay})</a> or FaceTime, we can walk through your home together in real time. Just let us know when you book and we'll arrange it.`,
+  },
+  {
+    question: 'How quickly will I receive my quote after the survey?',
+    answer: 'For video self-surveys, we aim to return your quote within a few hours during business days. For in-person surveys, we aim to have your written quote back to you within 48 hours.',
+  },
+  {
+    question: 'What happens after I receive my quote?',
+    answer: 'We\'ll usually follow up with a friendly call a few days to a week after you\'ve received your quote, just to check if you have any questions. When you\'re ready to book, a 30% deposit secures your date and you\'ll be introduced to your dedicated Move Manager.',
+  },
+];
+
+const pageSchema = [
+  service({
+    name: "Free Home Survey & Removal Assessment",
+    description: pageDescription,
+    serviceType: "Home Survey",
+    url: "/free-home-survey/",
+    areaServed: [areas.bristol, areas.southWest],
+    offers: offer({ price: "0", description: "Free home survey and removal assessment with no obligation" }),
+    image: "/img/assessment/video-survey-hero-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Free Home Survey" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/assessment/video-survey-hero-1200w.webp" preloadImage="/img/assessment/video-survey-hero-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="assessment/video-survey-hero"
+        pattern="FULL"
+        alt="Hand holding phone filming a living room for a video self-survey removal quote"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Free Home Survey & Removal Assessment
+          </h1>
+
+          <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+            Know <span class="text-secondary-500">Exactly</span> What Your Move Will Cost
+          </h2>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            No guesswork. No nasty surprises on moving day. Our free home assessment gives you an accurate, honest quote you can plan around.
+          </p>
+
+          <div class="flex flex-col gap-2 mb-5 items-center">
+            <a href="/contact/" class="btn-cta-orange">
+              BOOK YOUR FREE SURVEY
+            </a>
+            <p class="text-warm-gray text-sm">No obligation. No pressure. Just an honest price.</p>
+          </div>
+
+          <TrustpilotStrip />
+        </div>
+      </div>
+
+      <!-- Right: Full-bleed image (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden">
+        <OptimizedPicture
+          name="assessment/video-survey-hero"
+          pattern="HALF"
+          alt="Hand holding phone filming a living room for a video self-survey removal quote"
+          loading="eager"
+          fetchpriority="high"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: WHY A SURVEY MATTERS
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden">
+        <OptimizedPicture
+          name="assessment/survey-manager-visit"
+          pattern="HALF"
+          alt="Painless Removals Move Manager with clipboard conducting a home survey visit"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">Why a Home Survey Makes All the Difference</h2>
+
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          Most removal quotes are based on rough estimates. You describe your home over the phone, the company takes a guess at the volume, and on moving day everyone discovers the quote was wrong.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-6">
+          A proper home survey eliminates that risk entirely. Whether we see your belongings in person or through a video walkthrough, we're measuring the actual volume of your move &ndash; not estimating it. That means the right number of vans, the right size team, and a quote that won't change on the day.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-6">
+          It also gives us the chance to spot potential challenges before they become problems. A tight staircase, a low doorframe, a piano on the second floor &ndash; these things affect how we plan the move, how long it takes, and what equipment we need to bring. Catching them early means no surprises and no delays.
+        </p>
+
+        <p class="text-warm-gray text-lg">
+          Whether you upload a video tour, join a quick video call, or have a personal visit from your Move Manager, the result is the same: a quote you can trust, and a moving day that goes to plan.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: SURVEY OPTIONS (Choose How)
+  ============================================ -->
+  <SurveyOptions />
+
+  <!-- ============================================
+       SURVEY REVIEW – Ross McCaw (standalone)
+  ============================================ -->
+  <section class="py-10 bg-gray-100">
+    <div class="container-wide max-w-3xl">
+      <div class="bg-white rounded-xl p-8 md:p-10 shadow-sm border border-gray-100">
+        <div class="flex gap-1 text-orange-400 text-2xl mb-4">
+          <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+        </div>
+        <p class="text-gray-700 text-lg md:text-xl leading-relaxed mb-6">
+          "Brilliant experience from start to finish. <mark>Jay did a visit of our house and estimated packing materials (which he got completely right)</mark>. On the day, the team arrived right on time and were incredible. Efficient and understanding of how stressful a move can be. Would definitely recommend."
+        </p>
+        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div class="flex items-center gap-3">
+            <img src="https://lh3.googleusercontent.com/a-/ALV-UjWR6ToiluAU0JA7V_CPCEaJudufnHFZBvePOt5uoZ4xQPxVUbrk=s90-c-rp-mo-ba2-br100" alt="Ross McCaw" class="w-12 h-12 rounded-full object-cover" width="48" height="48" loading="lazy" />
+            <span class="font-bold text-gray-900 text-lg">Ross McCaw</span>
+          </div>
+          <img src="/images/google-g-logo.svg" alt="Google" class="w-7 h-7" width="48" height="48" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: 9 AREAS TO FILM — VISUAL GUIDE
+  ============================================ -->
+  <FilmingTipsGrid id="hiw-survey" />
+
+  <!-- ============================================
+       SECTION 6: WHY A SURVEY BENEFITS YOU
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-center text-white mb-4">What You Get from a Proper Assessment</h2>
+      <p class="text-center text-white/80 text-lg mb-12 max-w-2xl mx-auto">
+        A quick phone estimate might feel easier, but here's why a proper survey saves you time, money, and stress.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {surveyBenefits.map((benefit) => (
+          <div class="stat-card-blue bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+            <div class="mb-3" set:html={benefit.icon} />
+            <h3 class="text-lg font-bold text-white mb-2">{benefit.title}</h3>
+            <p class="text-white/80 text-sm">{benefit.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: IN-PERSON SURVEY – HOW IT WORKS
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center order-2 lg:order-1">
+        <h2 class="text-2xl lg:text-3xl mb-4">What Happens During an In-Person Survey</h2>
+
+        <p class="text-warm-gray text-lg mb-6">
+          Jay visits your property and walks through every room with you, noting the volume of belongings, checking access points, and discussing any special requirements. Once your move is booked, your dedicated Move Manager takes over to coordinate everything on the day.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-6">
+          This isn't a sales visit. There's no presentation, no laminated brochures, no "if you sign today" offers. It's a straightforward assessment to make sure your quote is accurate and your move goes smoothly.
+        </p>
+
+        <div class="space-y-4 mb-6">
+          {inPersonSteps.map((step) => (
+            <div class="flex items-start gap-4">
+              <div class="w-8 h-8 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+                {step.number}
+              </div>
+              <div>
+                <h4 class="font-bold text-primary-600">{step.title}</h4>
+                <p class="text-warm-gray text-sm">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="btn-cta-orange text-sm !px-6 !py-3 self-start">
+          CALL TO BOOK: {siteConfig.company.contact.phone}
+        </a>
+      </div>
+
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden order-1 lg:order-2">
+        <OptimizedPicture
+          name="assessment/in-person-home-survey"
+          pattern="HALF"
+          alt="Move Manager conducting an in-person home survey"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: WHAT WE ASSESS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">What We Look At During the Assessment</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Every detail matters for an accurate quote. Here's what our team evaluates &ndash; whether by video or in person.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Inside Your Home</h3>
+          <ul class="space-y-3 text-warm-gray">
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Total volume of furniture and belongings in every room</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Large or awkward items &ndash; pianos, safes, gym equipment, hot tubs</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Fragile and high-value items requiring special packing</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Furniture that needs disassembly (beds, wardrobes, desks)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Loft contents, built-in storage, and under-stair cupboards</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Access & Logistics</h3>
+          <ul class="space-y-3 text-warm-gray">
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Parking &ndash; can a van get close enough, or do we need a permit?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Stairways, narrow hallways, and tight corners</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Lift availability for flats (size and weight limits)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Garden items, sheds, outbuildings</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Distance to the new property and any access issues there</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: SOCIAL PROOF – SURVEY-SPECIFIC REVIEWS
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Customers Say About Our Surveys</h2>
+
+      <!-- 3 reviews beside each other -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+          <div>
+            <div class="flex gap-1 text-orange-400 text-xl mb-2">
+              <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+            </div>
+            <p class="text-gray-700 text-[15px] leading-relaxed">
+              "Recently moved and we were blown away by such an excellent service. We made the inquiry online initially, within a couple of days <mark>someone offered to make a visit to our home to ensure they made an accurate evaluation</mark>. Jay felt like an old friend whilst discussing options of what would work best for us. <mark>It was so wonderful to feel heard.</mark>"
+            </p>
+          </div>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+            <span class="font-semibold text-gray-900 text-[14px]">S Rob</span>
+            <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+          <div>
+            <div class="flex gap-1 text-orange-400 text-xl mb-2">
+              <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+            </div>
+            <p class="text-gray-700 text-[15px] leading-relaxed">
+              "They quickly got back to us with <mark>a fair quote for the work, as well as a good insight into how much stuff we were likely to have to move</mark>, which can only be provided through years of experience."
+            </p>
+          </div>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+            <span class="font-semibold text-gray-900 text-[14px]">Hugh Walker</span>
+            <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+          <div>
+            <div class="flex gap-1 text-orange-400 text-xl mb-2">
+              <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+            </div>
+            <p class="text-gray-700 text-[15px] leading-relaxed">
+              "<mark>Jay came out in person to collect a careful quote</mark> &ndash; he looked in every cupboard."
+            </p>
+          </div>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+            <span class="font-semibold text-gray-900 text-[14px]">Claire G</span>
+            <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Home Surveys" bgClass="bg-white" />
+
+  <!-- ============================================
+       SECTION 11: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Get Your Free Survey &ndash; It Takes Less Than 10 Minutes"
+    description="Whether you send a quick video or book an in-person visit, you'll receive an accurate, no-obligation quote you can plan your move around."
+    bullets={['100% free, no obligation', 'Accurate volume assessment', 'Quote you can trust']}
+    primaryText="BOOK YOUR FREE SURVEY"
+    primaryHref="/contact"
+    bottomNote="Items surveyed by our team are fully covered by £15,000 Goods in Transit insurance."
+  />
+
+</Layout>

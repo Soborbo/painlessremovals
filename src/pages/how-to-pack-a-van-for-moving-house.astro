@@ -1,0 +1,550 @@
+---
+/**
+ * /how-to-pack-a-van-for-moving-house/ — How to Pack a Van for Moving House
+ *
+ * 50/50 hero + UspBar + blog layout with sticky TOC sidebar.
+ * Restored from legacy WordPress URL — has organic traffic.
+ * Merged content from both legacy van-packing posts into one comprehensive guide.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+
+const title = "How to Pack a Van for Moving House — Step-by-Step Guide";
+const description = "Learn how to pack a removal van properly for moving house. Step-by-step loading order, weight distribution, professional equipment, and common mistakes to avoid. Expert advice from Bristol movers with 45+ years' experience.";
+
+const tocItems = [
+  { id: 'before-you-start', label: 'Before You Start' },
+  { id: 'equipment', label: 'Equipment You Need' },
+  { id: 'loading-order', label: 'The Loading Order' },
+  { id: 'weight-distribution', label: 'Weight Distribution' },
+  { id: 'protecting-items', label: 'Protecting Your Items' },
+  { id: 'securing-the-load', label: 'Securing the Load' },
+  { id: 'special-items', label: 'Special Items' },
+  { id: 'common-mistakes', label: 'Common Mistakes' },
+  { id: 'diy-vs-pro', label: 'DIY vs Professional' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2022-01-20",
+  "dateModified": "2026-03-18",
+};
+
+const faqs = [
+  { question: "What size van do I need for a house move?", answer: "A one-bedroom flat typically fits in a large transit van (3.5 tonne). A two- to three-bedroom house usually needs a 7.5-tonne Luton van or larger. For a four-bedroom house, you are looking at an 18-tonne removal truck or two trips in a smaller van. If in doubt, go bigger — an overloaded van is dangerous and illegal, while a half-empty one just means less Tetris." },
+  { question: "Should I load heavy items first or last?", answer: "Heavy items go on first and at the bottom. Washing machines, fridges, and heavy furniture should sit against the bulkhead (the wall behind the cab) to keep the centre of gravity low and forward. Never stack heavy items on top of light ones — the whole stack will shift in transit." },
+  { question: "How do I stop furniture getting damaged in the van?", answer: "Use removal blankets, old duvets, or furniture covers to wrap everything. Stand mattresses on their side against the van wall. Use ratchet straps to secure tall items. Fill gaps between furniture with soft items like bin bags of bedding — movement is what causes damage, so the tighter the pack, the safer your belongings." },
+  { question: "Can I pack a fridge freezer in a removal van?", answer: "Yes, but defrost it at least 24 hours before the move. Wipe down the interior and leave the door slightly open overnight to prevent mould. Transport it upright if possible. If it must be tilted, leave it standing at the new property for the same number of hours it was tilted before switching it back on." },
+  { question: "How do professional movers pack a van so quickly?", answer: "Practice and system. A professional crew loads hundreds of vans a year. They pre-sort items by weight and size, work in pairs with one person on the van and one carrying, and follow a fixed loading sequence that maximises space. They also have the right equipment — trolleys, ramps, straps, and blankets — which eliminates the fumbling and improvising that slows a DIY move down." },
+  { question: "How long does it take to load a removal van?", answer: "For a two-bedroom house with two people loading, expect two to three hours. A three-bedroom house takes three to four hours. Professional removal teams can do it faster because they load hundreds of vans a year and know exactly how to fit everything. The time varies significantly depending on access — flights of stairs, narrow hallways, and long walks to the van all add time." },
+  { question: "What is the most common cause of damage during a house move?", answer: "Movement within the van. Items that are not properly secured shift when the van brakes, accelerates, or corners. A wardrobe that falls forward, a mirror that slides, or boxes that topple — these are all caused by inadequate strapping and gaps in the load. The second most common cause is rubbing — two hard surfaces touching without padding between them will scratch each other over even a short journey." },
+  { question: "Is it worth hiring professional movers instead of packing the van myself?", answer: "If you have a lot of heavy furniture, fragile items, or limited help on moving day, professional movers are almost always worth it. They bring the right equipment (trolleys, ramps, straps), they know how to protect your belongings, and they are insured. A DIY van load that goes wrong — a dropped washing machine, a scratched bannister, a back injury — costs more than hiring professionals in the first place." },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer },
+  })),
+};
+
+const schema = [articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/homepage/Painless-Removals-van-Bristol-1200w.jpg" preloadImage="/img/homepage/Painless-Removals-van-Bristol-750w.avif">
+
+  <!-- ============================================
+       HERO: 50/50 split
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: image top -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="homepage/Painless-Removals-van-Bristol"
+        pattern="FULL"
+        alt="Painless Removals van being loaded for a house move in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Van Packing Guide
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          How to Pack a Van for <span class="text-secondary-500">Moving House</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          The complete guide to loading a removal van safely and efficiently. Step-by-step loading order, professional techniques, weight distribution, and the mistakes that catch everyone out.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+            GET YOUR FREE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: full-bleed image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="homepage/Painless-Removals-van-Bristol"
+        pattern="FULL"
+        alt="Painless Removals van being loaded for a house move in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar />
+
+  <!-- ============================================
+       BLOG LAYOUT: article + sticky TOC sidebar
+  ============================================ -->
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <div class="blog-layout">
+
+      <!-- ARTICLE -->
+      <article class="min-w-0">
+
+        <AuthorByline lastUpdated="March 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Packing a removal van is not just about fitting everything in. It is about loading in the right order, distributing weight properly, protecting your belongings from damage, and making sure the van is safe to drive. Get it wrong and you risk broken furniture, damaged walls, and — in the worst case — an overloaded van that handles dangerously on the road.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-10">After more than 45 years of loading removal vans across Bristol and the South West, our team has packed thousands of homes. This guide shares the exact approach our crews use every day — the loading sequence, the weight rules, the professional equipment, and the tricks that keep your belongings safe from door to door. Whether you are loading your own hire van or want to understand what a professional removal crew does and why, everything you need is here.</p>
+
+        <!-- ── S1: Before You Start ── -->
+        <section id="before-you-start">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Before You Start Loading</h2>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Choose the Right Size Van</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The single most common mistake people make is hiring a van that is too small. An overloaded van is illegal, dangerous, and means you will need two trips — doubling your fuel costs and your stress levels. As a rough guide:</p>
+
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-6 van-checklist">
+            <li><strong>Studio or 1-bed flat</strong> — large transit van (3.5 tonne, roughly 14 cubic metres)</li>
+            <li><strong>2-bed flat or small house</strong> — Luton van (3.5 tonne, roughly 18–20 cubic metres)</li>
+            <li><strong>3-bed house</strong> — 7.5-tonne truck (roughly 30 cubic metres)</li>
+            <li><strong>4-bed+ house</strong> — 18-tonne removal truck or multiple trips</li>
+          </ul>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you are between sizes, always go up. The cost difference is typically small, and the stress difference is enormous.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Sort Your Stuff Before Loading</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Professional crews always do a walk-through before loading. Before a single item goes on the van, they have assessed the volume, identified the heavy and awkward items, and mentally mapped the loading order. You should do the same.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Group items by weight and fragility. Heavy items (appliances, book boxes, tool boxes) in one area. Fragile items (mirrors, screens, glassware) together. Soft items (duvets, cushions, bin bags of clothes) in another pile. This makes loading much faster because you know exactly what goes where without rummaging through everything.</p>
+        </section>
+
+        <!-- ── S2: Equipment ── -->
+        <section id="equipment" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Equipment You Need for Loading a Van</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The right equipment does not just make loading faster — it makes it safer. For your belongings and for your body. Here is what a professional removal van carries, and what you should have for a DIY load:</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Removal Blankets</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Thick, quilted padded blankets that go around every piece of furniture. A standard removal van carries 10 to 20 blankets. They protect surfaces from scratches, absorb impacts, and prevent items from rubbing against each other during the journey. They are the single most important piece of equipment on the van. Old duvets work as a substitute for DIY moves.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Ratchet Straps and Load Bars</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Ratchet straps anchor the load to the van walls and floor — you need at least four. Load-locking bars span the width of the van and act as bulkheads, preventing the load from shifting forward during braking. A well-loaded van uses both — straps for individual tall items and load bars to section the van into stable compartments. If your hire van does not have load bars, ropes tied tightly across the load serve the same purpose.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Trolleys and Sack Barrows</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A piano trolley (also called a skid) has four swivel wheels and can carry an entire wardrobe or fridge across a flat surface. A sack barrow is used for stacks of boxes and smaller heavy items. These tools are essential for protecting both your belongings and your back — carrying a washing machine down a flight of stairs is a back injury waiting to happen.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Shrink Wrap</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Industrial-grade stretch wrap goes over blankets to hold them in place and provide a waterproof outer layer during loading and unloading. It is also used to wrap sofas and mattresses to protect upholstery from dirt and rain. Never apply shrink wrap directly to polished wood — it can leave marks.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Rest</h3>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-8 van-checklist">
+            <li><strong>Rope</strong> — for tying down loads and securing items to anchor points</li>
+            <li><strong>Cardboard corner protectors</strong> — for wardrobes, dressers, and tables</li>
+            <li><strong>Mattress bags</strong> — sealed bags that keep mattresses clean and dry</li>
+            <li><strong>A loading ramp</strong> — essential for wheeling heavy items into the van safely</li>
+          </ul>
+        </section>
+
+        <!-- ── S3: The Loading Order ── -->
+        <section id="loading-order" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Loading Order: What Goes On First</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Loading a van is like building a wall — you start with the heaviest, sturdiest items at the bottom and back, then work forward and upward with progressively lighter items. Professional crews think in horizontal layers, not vertical stacks. Here is the sequence our removal teams follow:</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Layer 1: Heavy Appliances Against the Bulkhead</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Washing machines, tumble dryers, dishwashers, and fridges go in first, pushed right against the bulkhead (the wall behind the cab). These are your heaviest items, and you want them low and forward for safe weight distribution. Stand fridges and freezers upright. Wrap washing machines in a blanket and make sure the drum is secured — an unsecured drum will damage the machine in transit. Each appliance is strapped individually.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Layer 2: Large Furniture Along the Walls</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wardrobes, dressers, bookcases, sideboards, and dining tables go next, along the van walls. The walls provide lateral support, and tight packing prevents sideways movement. Stand sofas on their ends to save floor space — a three-seater sofa takes up half the floor space standing on its end compared to lying flat. Disassemble anything you can — remove table legs, take drawers out of dressers, and separate bed frames. Keep all bolts and screws in labelled bags taped to the furniture.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Layer 3: Mattresses and Bed Bases</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Stand mattresses on their side against the van wall. They act as a giant cushion protecting whatever is beside them. Divan bed bases can also stand on their ends. Wrap both in shrink wrap to keep them clean. Use a ratchet strap to stop them falling forward during the journey.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Layer 4: Boxes Fill the Centre</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Once the furniture creates the structural framework around the edges, boxes fill the centre. Heavy boxes (books, kitchenware) on the bottom, medium boxes in the middle, light boxes (bedding, soft items) on top. Never stack boxes more than four or five high — beyond that, the bottom boxes buckle. Interlock boxes like bricks rather than stacking them in neat columns — interlocked stacks are far more stable.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Layer 5: Fragile and Odd-Shaped Items Last</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Mirrors, artwork, televisions, and lamps go in last, in the most protected positions. They sit upright, surrounded by boxes and soft items, near the back of the van where they are accessible and will not be crushed. The crew leader personally places these items and checks they cannot move before closing the doors.</p>
+        </section>
+
+        <!-- Mid CTA -->
+        <MidCTA heading="Rather We Packed the Van for You?" description="Get a free quote in under 47 seconds. Fully insured, professionally loaded." buttonText="Get Your Free Quote" buttonHref="/instantquote" />
+
+        <!-- ── S4: Weight Distribution ── -->
+        <section id="weight-distribution" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Weight Distribution: Why It Matters</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A badly loaded van is a dangerous van. If the weight is too far back, the front wheels lose grip — steering becomes vague and braking distances increase dramatically. If the weight is all on one side, the van leans and handles unpredictably, especially on roundabouts and motorway slip roads.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Golden Rules</h3>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-6 van-checklist">
+            <li><strong>60% of the weight forward, 40% rearward.</strong> The heaviest items should be as close to the cab as possible.</li>
+            <li><strong>Balance left and right.</strong> If you put a washing machine on the left, put something equally heavy on the right.</li>
+            <li><strong>Keep the centre of gravity low.</strong> Heavy items on the floor, never on top of light items.</li>
+            <li><strong>Fill every gap.</strong> Gaps allow things to shift during braking and cornering. Stuff soft items, blankets, and cushions into every space.</li>
+            <li><strong>Secure the load.</strong> Use ratchet straps at multiple points. A single strap across the back is not enough — use at least one strap per metre of height.</li>
+          </ul>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">If the van feels unstable when you pull away, stop and redistribute the load before driving any further. A few minutes repacking is far better than an accident on the motorway.</p>
+        </section>
+
+        <!-- ── S5: Protecting Your Items ── -->
+        <section id="protecting-items" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Protecting Your Belongings in Transit</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Damage during a move is almost always caused by one of two things: items rubbing against each other or items shifting when the van brakes, accelerates, or turns. Eliminate both and your belongings will arrive in the same condition they left.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Furniture</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wrap every piece of furniture in a removal blanket or old duvet. Pay particular attention to corners and edges — a wooden corner can scratch a leather sofa, and a sofa arm can dent a wooden dresser. Use corner protectors on tables, wardrobes, and chests of drawers. Tape drawers and doors shut so they do not swing open during the journey.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Televisions and Monitors</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you still have the original box, use it — the polystyrene inserts are designed for exactly this purpose. If not, wrap the screen in a blanket and stand it upright between two mattresses or against a flat, padded surface. Never lay a TV flat on its back with items stacked on top — even a light box on a screen can crack it.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Mirrors and Glass</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Apply masking tape in an X across the glass — this does not prevent cracks, but stops the glass shattering into dangerous shards if it does break. Wrap in bubble wrap, then sandwich between two sheets of cardboard. Transport mirrors and pictures standing upright — never flat. Mark them clearly as fragile.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Boxes</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Use double-walled boxes and do not overload them. A box you cannot comfortably lift with two hands is too heavy. Tape the bottom with an H-pattern (one strip along the seam, one strip across each end) for maximum strength. Fill every box to the top — half-full boxes collapse when stacked.</p>
+        </section>
+
+        <!-- ── S6: Securing the Load ── -->
+        <section id="securing-the-load" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Securing the Load for Transit</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A perfectly packed van that is not properly secured will arrive as a jumbled mess. Securing the load is the step most DIY movers skip — and it is the step that prevents the most damage.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Ratchet Strap Method</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Professional crews use ratchet straps attached to the van's built-in anchor points. Tall items (wardrobes, fridges, mattresses) each get their own strap. The strap goes around the item and connects to anchor points on opposite sides of the van, pulling the item tight against the wall. A well-strapped load should not move at all when you push against it with your full body weight.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Filling Every Gap</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The final step is filling every remaining gap with soft items — bin bags of clothes, cushions, pillows, duvets, and blankets. This turns the entire load into a single solid mass with no room for movement. Our crews call this "packing to the roof" — when the van doors close, every cubic centimetre is accounted for. A van packed this way can brake hard, corner sharply, and go over speed bumps without anything shifting.</p>
+        </section>
+
+        <!-- ── S7: Special Items ── -->
+        <section id="special-items" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">How to Handle Special Items</h2>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Pianos</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">An upright piano weighs 150 to 300 kilograms and has a high centre of gravity. It requires a piano trolley, a ramp, at least three people, and straps rated for the weight. It goes against the bulkhead, as low as possible, and is strapped to the van at multiple points. Grand pianos need specialist piano movers — the legs are removed, the lid is secured, and the body is placed on a piano board before being wrapped, strapped, and loaded.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Antiques and High-Value Items</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Antiques receive extra layers of protection: acid-free tissue paper against the surface (to prevent any chemical reaction with packing materials), then bubble wrap, then a removal blanket, then shrink wrap to hold everything in place. They are positioned in the van where nothing can touch them or fall against them.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Plants</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Houseplants travel best in open-topped boxes with damp newspaper around the pot to stop it tipping. They should be loaded last and unloaded first. In winter, avoid leaving them on a cold van for extended periods. Legally, removal companies can transport houseplants, but they are not covered by standard removal insurance because they are living things.</p>
+        </section>
+
+        <!-- ── S8: Common Mistakes ── -->
+        <section id="common-mistakes" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Most Common Van-Packing Mistakes</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">After thousands of moves, we see the same problems again and again. Avoid these and your move will go significantly more smoothly:</p>
+
+          <ul class="space-y-4 text-[17px] leading-relaxed text-gray-800 mb-8">
+            <li class="flex items-start gap-3">
+              <span class="text-red-500 mt-1 shrink-0 font-bold text-lg">&times;</span>
+              <span><strong>Loading the van in room order instead of weight order.</strong> People naturally start with whichever room is nearest the front door. But if that is the living room full of light cushions and DVDs, those items end up at the back of the van where the heaviest items should be. Always sort by weight first, room second.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-500 mt-1 shrink-0 font-bold text-lg">&times;</span>
+              <span><strong>Not using straps.</strong> "It's only a short drive" is the last thing people say before their wardrobe falls over and crushes a box of wine glasses. Strap the load. Every time. Even for a one-mile trip.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-500 mt-1 shrink-0 font-bold text-lg">&times;</span>
+              <span><strong>Leaving gaps.</strong> An inch of space between items becomes a foot of movement when the van brakes hard. Fill every gap with blankets, cushions, pillows, or bin bags of soft items.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-500 mt-1 shrink-0 font-bold text-lg">&times;</span>
+              <span><strong>Stacking heavy on light.</strong> A box of books on top of a box of lampshades is a crushed box of lampshades. Heavy items at the bottom, always.</span>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="text-red-500 mt-1 shrink-0 font-bold text-lg">&times;</span>
+              <span><strong>Forgetting the essentials box.</strong> Pack a box with your kettle, mugs, phone chargers, toilet roll, snacks, and basic cleaning supplies. Load it last so it comes off the van first — or better still, keep it in the car.</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- ── S9: DIY vs Professional ── -->
+        <section id="diy-vs-pro" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">DIY Van Loading vs Hiring a Professional Crew</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Packing your own van makes sense for small moves — a student flat, a one-bed apartment, or a few pieces of furniture. But for a full house move, the economics and the risk profile change quickly.</p>
+
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-left text-[15px] border-collapse">
+              <thead>
+                <tr class="border-b-2 border-gray-200">
+                  <th class="py-3 pr-4 font-semibold text-gray-900"></th>
+                  <th class="py-3 px-4 font-semibold text-gray-900">DIY</th>
+                  <th class="py-3 pl-4 font-semibold text-gray-900">Professional</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-700">
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 pr-4 font-medium">Speed</td>
+                  <td class="py-3 px-4">4–6 hours (3-bed)</td>
+                  <td class="py-3 pl-4">2–3 hours (3-bed)</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 pr-4 font-medium">Equipment</td>
+                  <td class="py-3 px-4">Need to hire/buy</td>
+                  <td class="py-3 pl-4">Included</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 pr-4 font-medium">Insurance</td>
+                  <td class="py-3 px-4">Your responsibility</td>
+                  <td class="py-3 pl-4">Goods in transit cover</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 pr-4 font-medium">Risk of damage</td>
+                  <td class="py-3 px-4">Higher</td>
+                  <td class="py-3 pl-4">Lower</td>
+                </tr>
+                <tr class="border-b border-gray-100">
+                  <td class="py-3 pr-4 font-medium">Physical strain</td>
+                  <td class="py-3 px-4">Significant</td>
+                  <td class="py-3 pl-4">None for you</td>
+                </tr>
+                <tr>
+                  <td class="py-3 pr-4 font-medium">Typical cost (2–3 bed)</td>
+                  <td class="py-3 px-4">£100–£250 + time</td>
+                  <td class="py-3 pl-4">£400–£800</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The hidden cost of DIY is your time and your risk. A back injury on moving day costs you weeks of work. A scratched bannister costs hundreds to repair. A dropped TV costs the price of a new one. None of these are covered when you do it yourself.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">A popular middle ground is to pack your own boxes over two weeks, then hire professionals to load the van, drive, and unload. You save money on the packing labour while still getting the expertise and insurance for the heavy, risky part of the move.</p>
+        </section>
+
+        <!-- ── S10: FAQ ── -->
+        <section id="faq" class="pt-8 border-t border-gray-200">
+          <FAQAccordion faqs={faqs} heading="Frequently Asked Questions About Packing a Van" />
+        </section>
+
+      </article>
+
+      <!-- TOC SIDEBAR -->
+      <aside class="toc-sidebar">
+        <div class="mb-5">
+          <SidebarAuthorBox />
+        </div>
+
+        <div class="toc-sticky">
+          <nav aria-label="Table of contents" class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+            <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-400 mb-4">In This Guide</p>
+            <ul class="space-y-1">
+              {tocItems.map(item => (
+                <li>
+                  <a
+                    href={`#${item.id}`}
+                    class="toc-link"
+                    data-toc-id={item.id}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="border-t border-dashed border-gray-200 mt-5 pt-4">
+              <a
+                href="/instantquote"
+                class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[13px] uppercase tracking-wide py-2.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+              >
+                Get Your Free Quote &rarr;
+              </a>
+              <p class="text-[11px] text-gray-400 text-center mt-1.5">Free, no obligation</p>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Related Services -->
+  <section class="section bg-cream">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div class="mb-10">
+        <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Related Services</h2>
+        <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+          Whether you need help loading the van, packing your boxes, or the full door-to-door service, we have you covered.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves across Bristol and beyond. We load, drive, and unload — you just point.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">We pack your entire home in a day. All materials included.</p>
+        </a>
+        <a href="/packing-guide/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Free Packing Course</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">8 free video lessons on packing your home. Room-by-room walkthroughs and checklists.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <AreaFinalCTA heading="Rather We Packed the Van for You?" description="Get a free quote in under 47 seconds. Our team loads hundreds of vans a year — let us take the stress out of your move." />
+
+</Layout>
+
+<style>
+  /* Blog two-column layout */
+  .blog-layout {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      column-gap: 40px;
+    }
+
+    .toc-sidebar {
+      display: block;
+      align-self: stretch;
+    }
+
+    .toc-sticky {
+      position: sticky;
+      top: 120px;
+    }
+
+  }
+
+  /* TOC links */
+  .toc-link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: all 150ms ease;
+  }
+
+  .toc-link:hover {
+    color: #1e4240;
+    background: #f9fafb;
+  }
+
+  .toc-link.active {
+    color: #1e4240;
+    font-weight: 600;
+    border-left-color: #ea580c;
+    background: #fff7ed;
+  }
+
+  /* Checklist */
+  .van-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .van-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  /* Scroll-margin for anchors beneath sticky header */
+  section[id] {
+    scroll-margin-top: 120px;
+  }
+</style>
+
+<script>
+  // IntersectionObserver — highlight active TOC link based on visible section
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+
+  if (sections.length && tocLinks.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(link => {
+              if (link.dataset.tocId === id) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        }
+      },
+      {
+        rootMargin: '-120px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
+</script>

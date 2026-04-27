@@ -1,0 +1,70 @@
+---
+/**
+ * SidebarCTA — Elegant sticky sidebar conversion box
+ *
+ * Shows experience credibility + quick quote CTA + phone fallback.
+ * Designed for 270px sidebar width. Hidden below 990px.
+ */
+
+import { siteConfig } from '@/config/site.config';
+
+export interface Props {
+  /** CTA button href (default: /instantquote) */
+  buttonHref?: string;
+  /** CTA button text */
+  buttonText?: string;
+}
+
+const {
+  buttonHref = '/instantquote',
+  buttonText = 'Get Your Free Quote',
+} = Astro.props;
+
+const phone = siteConfig.company.contact.phone;
+const phoneHref = `tel:${phone.replace(/\s/g, '')}`;
+---
+
+<div class="sticky top-[112px]">
+  <div class="bg-white rounded-xl border border-gray-100 overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+
+    <!-- Gold accent top border -->
+    <div class="h-[3px] bg-linear-to-r from-accent-400 via-accent-500 to-accent-400"></div>
+
+    <div class="p-6">
+
+      <!-- Since badge -->
+      <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-accent-600 mb-2 text-center">Since 1978</p>
+
+      <!-- Heading -->
+      <h3 class="font-heading text-[17px] font-semibold text-primary-600 leading-snug text-center mb-3">
+        Nearly 50 Years of Moving Bristol Families Home
+      </h3>
+
+      <!-- Body -->
+      <p class="text-[13px] leading-relaxed text-gray-500 text-center mb-5">
+        Your free quote takes less than 47&nbsp;seconds.
+      </p>
+
+      <!-- CTA Button -->
+      <a
+        href={buttonHref}
+        class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[14px] uppercase tracking-wide py-3.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+        style="box-shadow: 0 1px 3px rgba(0,0,0,0.12);"
+      >
+        {buttonText} →
+      </a>
+
+      <!-- Divider -->
+      <div class="border-t border-dashed border-gray-200 my-5"></div>
+
+      <!-- Phone -->
+      <div class="text-center">
+        <a href={phoneHref} class="text-[15px] font-semibold text-primary-600 no-underline hover:text-primary-800 transition-colors">
+          {phone}
+        </a>
+        <p class="text-[11px] text-gray-400 mt-0.5">Prefer to talk? We do too.</p>
+      </div>
+
+    </div>
+  </div>
+</div>

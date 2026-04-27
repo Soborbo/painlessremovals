@@ -1,0 +1,325 @@
+---
+/**
+ * /removals-yate/ — Yate town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Yate Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~12 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'BS37' },
+        { label: 'Nearest motorway', value: 'M4 J19 (5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi / bungalow' },
+        { label: 'Typical crew', value: '2 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day' },
+        { label: 'Local move cost', value: '£400–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£280–350k' },
+        { label: 'Typical property', value: '1960s–80s semi / detached' },
+        { label: 'Typical floors', value: '1–2 storeys' },
+        { label: 'Lifts available', value: 'Rare' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Very few' },
+        { label: 'Suspension needed', value: 'Rarely' },
+        { label: 'Main difficulty', value: 'Ring road congestion at rush hour' },
+        { label: 'Conservation area', value: 'Chipping Sodbury' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Amazing and kind removals, did a fantastic job. I would highly recommend them — perfect service. Simply the best removal company you could ask for.",
+  name: 'Anneka King',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Yate';
+const description = `Yate removal specialists — 12 miles from our Bristol depot. Purpose-built estates to Chipping Sodbury period homes, easy access and free parking. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Yate Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Yate",
+    "address": { "@type": "PostalAddress", "postalCode": "BS37", "addressLocality": "Yate", "addressRegion": "South Gloucestershire" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data ── */
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol?', answer: 'At 12 miles from our depot, the mileage component is minimal. Yate sits at our standard Bristol rates — no long-distance surcharge, no out-of-area charges.' },
+  { question: 'How quickly can you reach Yate?', answer: 'About 25 minutes from our depot via the A432 through Downend and Mangotsfield, or via the ring road. On moving day, our crew arrives at your agreed start time.' },
+  { question: 'Are Yate\'s wide roads easier for removals?', answer: 'Yes. Modern housing estates were designed with vehicles in mind. Roads are wider, driveways are common, and you\'re not navigating the narrow Victorian streets that cause complications in parts of inner Bristol.' },
+  { question: 'Can you handle bungalow moves with lots of heavy furniture?', answer: 'Bungalows are common in Yate. No stairs, but often more heavy furniture at ground level — piano, large wardrobes, American fridge-freezers. We bring the right equipment for the job.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse. Units from small wardrobe to garage size.' },
+  { question: 'What about the ring road traffic?', answer: 'The A4174 ring road can get congested during morning and evening rush hours. We factor this into our start times and route planning. If completion is midday and we need to be at your Yate property by 2pm after loading in Bristol, we leave enough time.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/yate-house-move-team-1200w.webp" preloadImage="/img/areas/yate-house-move-team-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/yate-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Yate"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Yate</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=yate`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/yate-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Yate"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Yate' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Yate doesn't get the same attention as some of Bristol's more glamorous neighbours, but for us it's a place we visit regularly and enjoy working in. No drama, no horror stories, no streets that make you hold your breath as you squeeze a Luton through a gap you're not sure it'll fit. Yate is, in the best possible way, an uncomplicated place to do a removal.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The town grew from the 1960s onwards, purpose-built to absorb Bristol's overspill. The majority of the housing stock is modern — estates of semi-detached and detached houses, newer terraces, some apartment buildings. That's good news if you're moving. Modern housing estates were designed with vehicles in mind.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/yate-house-move-team" pattern="FULL" alt="Painless Removals team working on a house move in Yate" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <!-- S2: What Makes Moving in Yate Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Yate Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Access and Parking: Rarely a Problem</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">In our experience, access in Yate is generally fine. Most properties have either a driveway or a reasonable amount of road space outside, and the estate roads — while not always wide — are predictable. You're not going to find yourself at the end of a lane that narrows to hedge width, or trying to perform a twenty-point turn in a cobbled courtyard.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">There are a handful of spots where parking on a busy road means we'd want to plan more carefully — anywhere along Station Road or Goose Green Way can get congested at peak times — but this is the exception. For the vast majority of Yate addresses, moving day logistics are as uncomplicated as they get.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Ring Road Factor</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">From our base in north Bristol, Yate is an easy drive up the A432 through Downend and Mangotsfield, or via the ring road if traffic dictates. On a normal day we're looking at around 25 to 30 minutes.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The A4174 ring road that loops around Bristol's eastern and northern edges can get unpleasant during morning and evening rush hours. We factor this in when planning start times. If completion is at midday and we need to be at your Yate property by 2pm after loading up in Bristol, we leave enough time to account for what the ring road might be doing.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">What Are the Houses Like?</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Yate is predominantly modern housing — mostly two-storey houses, three up and three down being a common layout — which are some of the most manageable properties we work with. You're not dealing with the stair logistics of a four-storey Georgian townhouse or the access complications of a converted Victorian flat. The furniture goes in the front door and up one flight of stairs.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Where it gets slightly more involved is with the apartment buildings from more recent developments. Some have lifts, some don't. If you're on an upper floor of a block without a lift, that changes the manpower calculation. Always let us know your floor and whether there's lift access — it's a small detail that makes a real difference to how we plan the job.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving to or from Yate?" description="Get a personalised quote — no long-distance surcharge for Yate, it's our standard Bristol rate." buttonText="Get Your Yate Removal Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <!-- S4: Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Moving to Yate from Further Afield</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Yate comes up regularly as a destination for people moving out of Bristol — often families looking for more space, a garden, better value, and good school options, without wanting to go too far from the city. If that's you, and you're coming from somewhere like <a href="/removals-bristol/redland/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Redland</a>, <a href="/removals-bristol/bishopston/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bishopston</a>, or <a href="/removals-bristol/horfield/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Horfield</a>, we'll be loading up on Bristol streets (with all the parking and access considerations those bring) and delivering to Yate, which is the easy end of the job.</p>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Yate sits off the M4/M5 corridor, which makes it a logical destination for people relocating to the Bristol area. The motorway access is excellent, and once you're off the M4 at junction 18 and heading north, you're not far at all. For long-distance moves, this kind of uncomplicated final approach is a real bonus after a long drive."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">We also do moves into Yate from London, the Midlands, and Wales. The M4/M5 corridor access is excellent and the final approach to the property is clean.</p>
+      </div>
+
+      <!-- S5: Summary + Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Yate a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">No. For a typical family home in Yate, this is a one-day job. Load in the morning, drive, unload, done. Even for larger properties with multiple vans, the proximity to Bristol and the ease of access mean we can wrap everything up within the day.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Because Yate is close to Bristol and access is good, our pricing here is competitive. A one or two-bedroom move starts from around £500 to £700. A larger three or four-bedroom family home sits in the £900 to £1,400 range depending on volume and whether you'd like a <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a>. Let Painless Removals give you a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a> and a clear price.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Yate Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 yate-checklist">
+          <li><strong>House or flat?</strong> If it's a flat, which floor, and is there a lift?</li>
+          <li><strong>Ring road timing?</strong> We plan start times to avoid the A4174 at peak hours.</li>
+          <li><strong>Moving from Bristol?</strong> The loading end (in the city) is often the more complex half of the job.</li>
+          <li><strong>Bungalow?</strong> No stairs but often heavier ground-floor furniture — let us know so we bring the right equipment.</li>
+          <li><strong>Long-distance origin?</strong> Yate's M4/M5 access makes the final approach clean.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Yate Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Yate Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Yate sits on the M4/M5 corridor — excellent motorway access for long-distance moves.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Yate" to="London" meta="~115 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Yate" to="Birmingham" meta="~85 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Yate" to="Oxford" meta="~70 miles via M4/A34" days="1 day" href="/removals-bristol-to-oxford/" />
+      <RouteCard from="Yate" to="Manchester" meta="~175 miles via M5/M6" days="1 day" href="/removals-bristol-to-manchester/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Yate?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across South Gloucestershire. If you're moving from or to
+        <a href="/removals-thornbury/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Thornbury</a>,
+        <a href="/removals-keynsham/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Keynsham</a>, or
+        <a href="/removals-chepstow/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Chepstow</a>,
+        we know these towns well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3><p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p></a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3><p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p></a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3><p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move to or from Yate?" description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed { margin-left: -1rem; margin-right: -1rem; }
+  @media (min-width: 640px) { .midcta-bleed { margin-left: -1.5rem; margin-right: -1.5rem; } }
+  @media (min-width: 800px) { .midcta-bleed { margin-left: 0; margin-right: 0; } }
+  .yate-checklist { list-style: none; padding-left: 0; }
+  .yate-checklist li { position: relative; padding-left: 2rem; }
+  .yate-checklist li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.15rem; height: 1.15rem; border: 2px solid #3b6587; border-radius: 0.25rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 0.8rem; background-position: center; background-repeat: no-repeat; }
+</style>

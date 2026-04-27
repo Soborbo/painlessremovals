@@ -1,0 +1,250 @@
+---
+/**
+ * /removals-bristol/st-george/ — St George neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ * Covers St George and the transition into Kingswood.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'St George Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~3 miles' },
+        { label: 'Drive time from depot', value: '12–18 minutes' },
+        { label: 'Postcode area', value: 'BS5' },
+        { label: 'Nearest motorway', value: 'M32 J3 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed terrace or semi' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£400–£800' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£300–350k' },
+        { label: 'Typical property', value: 'Victorian terrace / 1930s semi' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Two Mile Hill traffic + tight corners' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Brilliant experience with Painless Removals. All of the guys were professional and personable. They made the whole process smooth and nothing was too much trouble.",
+  name: 'Elly Ponting',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in St George, Bristol';
+const description = `St George removal specialists — Church Road access, Victorian terraces, no RPZ. East Bristol moves into Kingswood since 1978. ${siteConfig.company.rating.value}-star rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "St George Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "St George, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS5", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in St George?', answer: 'No. St George has no Residents\' Parking Zone. Street parking is free but can be busy on the narrower Victorian streets near Church Road. The wider interwar streets further out typically have more space.' },
+  { question: 'How much does a removal from St George cost?', answer: 'A typical 3-bed Victorian terrace or semi moving locally runs £400–£800. The wider streets with driveway access tend to be at the lower end. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a quote based on your actual property.' },
+  { question: 'Can you access the narrower streets off Church Road?', answer: 'Yes. Some of the older streets off Church Road are tight with cars parked on both sides, but they\'re part of our regular territory. We choose the right size vehicle during your survey and plan arrival times to avoid peak congestion.' },
+  { question: 'Do you cover Kingswood as well as St George?', answer: 'Yes. Kingswood sits beyond the eastern boundary of St George in South Gloucestershire and shares similar housing stock. We cover the whole area from Two Mile Hill through to Kingswood High Street and beyond.' },
+  { question: 'Is St George difficult for removal vans?', answer: 'No — St George is one of the more manageable east Bristol areas. It doesn\'t trigger the same access concerns as <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline underline-offset-2">Totterdown</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline underline-offset-2">Montpelier</a>. The majority of roads present no significant challenge, and the suburban streets further east have good space for van access.' },
+  { question: 'Does the B2B railway path affect access?', answer: 'Some streets close to the B2B have unusual access arrangements — dead ends, one-way systems, roads that don\'t connect in the way a map suggests. If your property backs onto or sits near the B2B, we check the street access during your <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">free home survey</a> rather than relying on sat-nav routing.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "St George" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="St George"
+  slug="st-george"
+  schema={schema}
+  ogImage="/img/areas/st-george-removals-loading-van-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/st-george-removals-loading-van"
+  heroAlt="Painless Removals crew loading furniture from a Victorian terrace in St George, east Bristol"
+  heroSubtitle="Close to 50 years of Bristol removals. Home removals in St George with a team that knows the city inside out."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">St George sits on the eastern side of Bristol, stretching from the edge of the city centre out toward Kingswood and the South Gloucestershire border. It takes its name from St George's Park, the large public green space off Church Road — the main artery through the area, lined with independent shops, cafes, and the kind of local businesses that keep a neighbourhood functioning. The housing stock reflects decades of growth: Victorian and Edwardian terraces off Church Road, mid-century semis where the neighbourhood expanded post-war, and newer builds scattered through as Bristol has continued to grow. No two jobs here look the same.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">St George doesn't tend to make removal teams nervous. It doesn't trigger the same mental checklist as <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a> — that immediate question of where the van is going to go and how bad it's going to be. It's manageable, workable. But manageable doesn't mean thoughtless. There are streets that will catch you out if you haven't been here before, and roads in and out of the area that, at the wrong time of day, will add an hour to your move that nobody budgeted for.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: What Are the Streets Like? -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in St George Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Older Streets Near Church Road</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Most residential streets in St George are fine. The area doesn't have Totterdown's gradient problem or Montpelier's parking crisis. A good proportion of properties have either a driveway or enough road space that parking isn't a fight. But some of the older, more densely built parts — the terraced rows closer to the Avon, toward Crew's Hole and Conham — are narrower than they look on a map. Victorian streets built for a different era of transport, parked cars on both sides, the kind of road where you slow down and take it carefully.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The streets around St George's Park tend to be more generous. The park is surrounded by housing built with a bit more space in mind, and access here is not a problem. Coming off Church Road onto the surrounding residential streets is usually manageable. What we flag across this part of east Bristol: some roads will surprise you on the corners. Someone parks badly on a bend, the road narrows to something a Luton can barely get through, and you're doing a careful multi-point manoeuvre while a queue of cars builds up.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The wider suburban streets further east toward Kingswood are a different proposition. Interwar semis with driveways, 1930s-60s family houses with front gardens, and some newer developments. These moves are efficient and predictable: park on the driveway, load from the front door, and you're done by early afternoon.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Traffic and Timing -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Two Mile Hill and Traffic Timing</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The A420 Two Mile Hill is the main east-west route through St George and carries heavy commuter traffic during peak hours. It connects to Lawrence Hill and the city centre in one direction and to Kingswood in the other. The route down through St George toward the Bath Road and the river adds another variable — the roads tighten as you descend toward the Avon, and the junction points onto the Bath Road can be slow when traffic backs up toward Temple Meads.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We schedule moves on or near Two Mile Hill to start early — aiming to have the van loaded before the morning rush builds. The practical approach is the same across east Bristol: arrive before 8am or after 9am, and plan to be clear of the area before 4pm.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Railway Path Corridor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The Bristol and Bath Railway Path — the B2B — cuts through the residential fabric of east Bristol from Warmley Station through St George, <a href="/removals-bristol/fishponds/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Fishponds</a>, and Easton into the city centre. For removal logistics, some streets close to the B2B have unusual access arrangements — dead ends, one-way systems, roads that don't connect the way a map suggests. If your property backs onto or sits near the B2B, we check access from the street during your <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> rather than relying on sat-nav routing.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from St George?"
+      description="Get a personalised quote — we know the difference between the terraces and the suburban streets."
+      buttonText="Get Your St George Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Kingswood, Hanham, and Beyond -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Kingswood: Over the Border</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Kingswood sits beyond the Bristol city boundary in South Gloucestershire — which matters more for administrative purposes than for a removal company. We cross the boundary regularly. The housing stock leans newer: post-war semis and detached houses, some older terraces in the town centre, and a fair amount of modern development around the edges. Access in Kingswood is generally better than in the inner-city parts of Bristol. Roads are wider, more properties have off-street parking, and the estate roads are built to a standard that allows a large van to get where it needs to go without a fight.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The town centre area around Regent Street gets busy, and access for a large van on a weekday morning requires thought about timing and positioning. Not impossible, but worth a conversation before you book.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Hanham and the Avon Valley Edge</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">St George bleeds into Hanham to the south, along the Avon Valley. Hanham has some beautiful properties — older houses with serious character, gardens backing onto the valley, the kind of place people move to when they want to leave the city but aren't ready for fully rural. Access in parts of Hanham requires care: some roads down toward the river are narrow, and routes through the older village centre can be tight for a large van. Knowing which way to approach from makes a meaningful difference.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Warmley, further east, is quieter and more suburban. The housing around the former Warmley Station is mostly semi-detached and detached — easy to access, no particular surprises. Let Painless Removals come and take a look before we quote — a five-minute visit answers questions a phone call can't.</p>
+  </div>
+
+  <!-- S4: What the Properties Are Like -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "St George is similar to Fishponds — a mixed bag. Some streets can be a little tight, but the majority are fine. It's not an area where alarm bells go off."
+      <span class="block mt-1 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Victorian and Edwardian terraces near Church Road have hallways narrower than they look from the street, staircases with the steepness pre-war building practice accepted as normal, and rooms that are honest in size without being enormous. The terraced rows closer to the Avon — toward Crew's Hole and Conham — are the tightest to work with: no driveways, front doors close to the pavement, limited rear access on some rows.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The interwar semis that make up much of the eastern half of St George are generally easier — slightly more generous hallways, often a driveway or front path, and staircases that accommodate standard furniture without tight manoeuvring. A ground-floor terrace with a driveway and a clear run to the front door is at the lower end of the price range. A top-floor conversion in an older building with narrow stairs and no off-street parking is at the higher end — because it takes longer, more people, and more care.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about access challenges before the van arrives. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+  <!-- S5: Is St George Difficult? + Checklist -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is St George a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. East Bristol doesn't have a single removal profile, but St George is one of the more manageable neighbourhoods we cover. There's no Residents' Parking Zone, no conservation area, and the streets — while not uniformly spacious — are manageable in most cases. The transition from St George into Kingswood is seamless: the housing stock changes gradually from tighter Victorian terraces to more spacious suburban streets. We cover the whole corridor and know which roads need care with vehicle positioning.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For most St George moves — a two or three-bed terrace or semi moving locally — you're looking at a team of two to three, one van, and a half-day to full-day job. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to box up everything from kitchen cupboards to bookshelves — popular with families juggling work and school schedules.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your St George Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Terrace or suburban semi?</strong> The Victorian terraces near Church Road and the wider semis toward Kingswood are meaningfully different jobs — flag which you have at booking.</li>
+      <li><strong>Two Mile Hill timing.</strong> If your property is on or near the A420, an early start avoids the commuter traffic that can add an hour to your day.</li>
+      <li><strong>Railway Path access?</strong> Properties near the Bristol and Bath Railway Path can have unusual street layouts. Mention it at booking so we check the approach route.</li>
+      <li><strong>Any large items?</strong> Victorian terrace hallways can catch you out. Flag oversized furniture at booking so we assess the staircase and hallway width.</li>
+      <li><strong>Kingswood town centre?</strong> If you're moving from Regent Street or the surrounding streets, we'll plan arrival timing around weekday congestion.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

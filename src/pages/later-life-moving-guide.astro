@@ -1,0 +1,580 @@
+---
+/**
+ * /later-life-moving-guide/ — Moving Home in Later Life: A Gentle, Honest Guide
+ *
+ * 50/50 hero + UspBar + blog layout with sticky TOC sidebar.
+ */
+export const prerender = true;
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { article, faqPage, breadcrumbs } from '@/utils/schema';
+
+const title = "Moving Home in Later Life — A Gentle, Honest Guide";
+const description = "A compassionate, practical guide to moving house in your 60s, 70s, 80s and beyond. Step-by-step advice on downsizing, emotional preparation, care homes, and finding good help. By Bristol's trusted later-life removal team.";
+
+const tocItems = [
+  { id: 'why-its-hard', label: 'Why This Feels So Hard' },
+  { id: 'three-questions', label: 'Three Questions First' },
+  { id: 'step-by-step', label: 'Step-by-Step Guide' },
+  { id: 'care-homes', label: 'Moving to a Care Home' },
+  { id: 'moving-near-family', label: 'Moving Near Family' },
+  { id: 'finding-help', label: 'Finding Good Help' },
+  { id: 'common-mistakes', label: 'Common Mistakes' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const faqs = [
+  { question: "When is the right time to move in later life?", answer: "There's no single right time, but the best time is while you're well enough to plan and choose. A crisis move — after a fall or hospital stay — means fewer choices and more stress. If the house is becoming hard to manage, the stairs worry you, or you're isolated, it's worth exploring options now." },
+  { question: "How long does it take to adjust to a new home?", answer: "Research suggests 3–6 months for most people, and up to a year for some. The first few weeks will feel strange — that's normal. Maintaining small rituals (morning tea in your favourite chair, familiar photos on the walls) helps enormously." },
+  { question: "Should I move within 12 months of losing my partner?", answer: "Grief experts advise against making a major move in the first 6–12 months after bereavement. Death and house moves are separately the most stressful life events — combining them is extremely hard. If you can wait, the familiarity of your current home provides a foundation to grieve from." },
+  { question: "What is Relocation Stress Syndrome?", answer: "A clinically recognised condition causing anxiety, confusion, appetite loss, sleep problems, and depression after a move. It usually appears in the first month and can look like dementia. If symptoms appear, speak to your GP — early support makes a real difference." },
+  { question: "Can adaptations to my current home delay the need to move?", answer: "Often, yes. A grab rail, stairlift, walk-in shower, and better lighting can buy 5–10 comfortable years. The WHO recommends exploring home adaptations before considering a move. Your GP can refer you to an occupational therapist for a free assessment." },
+  { question: "Do your removal crews have experience with later-life moves?", answer: "Yes. Our team is DBS-checked and Dementia Friends trained. We work at your pace — typically over two or three days rather than one. We set up the new home before you arrive: bed made, kettle on, photos on the wall. When you walk in, it already feels like yours." },
+];
+
+const schema = [
+  article({
+    headline: title,
+    description: description,
+    url: "/later-life-moving-guide/",
+    datePublished: "2026-03-18",
+    dateModified: "2026-03-18",
+    image: "/img/later-life/later-life-moves-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Later Life Moving Guide" },
+  ]),
+];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/later-life/later-life-moves-1200w.webp" preloadImage="/img/later-life/later-life-moves-750w.avif">
+
+  <!-- ============================================
+       HERO: 50/50 split
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: image top -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="later-life/later-life-moves"
+        pattern="FULL"
+        alt="Older couple preparing for a later-life house move"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Later Life Moving Guide
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          A Gentle, Honest Guide to <span class="text-secondary-500">Moving Home</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Practical, compassionate advice for moving in your 60s, 70s, 80s and beyond. No rush. No pressure. Just the truth about what this involves and how to make it easier.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+            GET YOUR FREE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: full-bleed image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="later-life/later-life-moves"
+        pattern="FULL"
+        alt="Older couple preparing for a later-life house move"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar />
+
+  <!-- ============================================
+       BLOG LAYOUT: article + sticky TOC sidebar
+  ============================================ -->
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <div class="blog-layout">
+
+      <!-- ARTICLE -->
+      <article class="min-w-0">
+
+        <AuthorByline lastUpdated="March 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">If you're reading this, you're probably facing one of the hardest decisions you'll ever make. And we want you to know something before we say anything else: there's no rush. This page isn't going anywhere. Neither are we.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We've helped hundreds of people in their 60s, 70s, 80s and beyond move from homes they've lived in for decades. Homes where children took their first steps. Homes where Christmas dinner always happened in the same room, at the same table. Homes where a partner's coat might still hang by the door.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-10">We know what this means. And we know it's not "just a move."</p>
+
+        <!-- ── S1: Why This Feels So Hard ── -->
+        <section id="why-its-hard">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Why This Feels So Hard (And Why That's Completely Normal)</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Moving home in later life is one of the three most stressful things a person over 65 can go through. That's not our opinion; it's what researchers at major universities have found, again and again.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">By the time you've lived somewhere for 30 or 40 years, that house isn't just bricks and plaster. It's where your body knows every creaky floorboard in the dark. It's where the neighbours know your name. It's where your whole life story played out, chapter by chapter, room by room. One researcher at the University of Kentucky called it "autobiographical insideness," which is a fancy way of saying: <strong>your home has become part of who you are.</strong></p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">So when someone suggests you leave it, even kindly, even with your best interests at heart, it can feel like they're asking you to leave a piece of yourself behind. That feeling is not weakness. It's not stubbornness. It's love. And it deserves to be treated with respect.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Feelings You Might Be Having Right Now</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">You might be feeling some of these. Or all of them at once. That's normal too.</p>
+
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 later-life-list mb-6">
+            <li><strong>Grief.</strong> Even thinking about leaving can trigger it. Research shows that 78% of older adults experience grief symptoms during a move — not after, during the thinking-about-it stage.</li>
+            <li><strong>Guilt.</strong> Like you're betraying the memories. Betraying a partner who built this home with you. Betraying the version of yourself who planted that garden 35 years ago.</li>
+            <li><strong>Fear.</strong> Of the unknown. Of losing your independence. Of ending up somewhere that doesn't feel like home. About 65% of older adults report this kind of fear during a move.</li>
+            <li><strong>Relief mixed with shame about the relief.</strong> Because part of you knows the stairs are getting harder. The boiler's playing up again. The house is too quiet. And it feels wrong to admit that.</li>
+            <li><strong>Anger.</strong> At your body for changing. At the house for needing so much upkeep. At family members who "just want what's best" but don't seem to understand what they're asking.</li>
+          </ul>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Every single one of these feelings is valid. None of them mean you're making the wrong choice, and none of them mean you're making the right one either. They just mean you're human, and this is hard.</p>
+        </section>
+
+        <!-- ── S2: Three Honest Questions ── -->
+        <section id="three-questions" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Before You Decide Anything: Three Honest Questions</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">A lot of families get this backwards. They start with the answer ("Mum needs a bungalow" or "Dad should be in sheltered housing") and then try to convince everyone. That rarely goes well. A gentler starting point is three simple questions.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">One: What Matters Most to You Right Now?</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not what matters to your son in London or your daughter in Cardiff. What matters to <em>you</em>. Maybe it's fewer stairs. Maybe it's being closer to the grandchildren. Maybe it's not having to worry about the gutters and the roof. Write it down if that helps.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Two: What's Become Too Much?</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Be honest. Is the garden a joy or a burden? Can you still manage the bathroom safely? Is the heating bill for a four-bedroom house eating into your pension? Nobody's judging. We just need the truth, because the truth is what good decisions are built on.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Three: Could the Current Home Be Made to Work?</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Sometimes a grab rail, a stairlift, better lighting, and a walk-in shower can buy you another five or ten comfortable years. The World Health Organisation recommends looking at home adaptations before considering a move, and research shows the right modifications can cut the risk of falls by over a quarter. An occupational therapist can visit your home and tell you exactly what would help — your GP can refer you, or your local council can arrange an assessment.</p>
+
+          <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+            "If the answer to question three is 'no, this house just doesn't work anymore,' then a move isn't giving up. It's choosing safety, comfort, and a life that fits."
+          </blockquote>
+        </section>
+
+        <!-- ── S3: Step-by-Step Guide ── -->
+        <section id="step-by-step" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">A Step-by-Step Guide, At Your Own Pace</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">This isn't a schedule. There's no deadline. Some people work through these steps over a year. Some take two years. One lady we helped in Keynsham spent three years gently preparing, and when moving day came, she was calm as anything. Her exact words: "I've had my goodbye." Go as slowly as you need to.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 1: Say It Out Loud</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Before you do anything practical, acknowledge what's happening. You're thinking about leaving your home. That's big. Say it to someone you trust. Have a cup of tea with a friend and talk it through. This isn't a small thing, and pretending it is will only make it harder later.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 2: Get the Facts About Where You Could Go</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There are more options than most people realise. It's not just "same house but smaller" or "care home." In between, there's a whole range:</p>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 later-life-list mb-6">
+            <li><strong>A smaller house or bungalow.</strong> Your own front door, your own space, just less of it. No more stairs, smaller garden, lower bills.</li>
+            <li><strong>Sheltered housing.</strong> Your own self-contained flat with an on-site warden, emergency alarm, and communal spaces. You come and go as you please — you're still independent.</li>
+            <li><strong>Extra care housing.</strong> Like sheltered housing, but with personal care available on-site for bathing, medication, and daily tasks.</li>
+            <li><strong>Retirement villages.</strong> A community of people your age, often with restaurants, activity rooms, gardens, and care if needed.</li>
+            <li><strong>Living with or near family.</strong> This can be wonderful. It can also be complicated. More on that below.</li>
+            <li><strong>Care homes and nursing homes.</strong> For when daily care needs go beyond what can be managed at home or in supported housing.</li>
+          </ul>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Visit places. More than once. At different times of day. Talk to people who already live there. Ask the awkward questions about costs, what happens if your needs change, and what the noise is like at night.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 3: Measure the New Space Before You Decide What to Keep</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">This is the most useful practical tip in this whole guide. Before you sort a single drawer, get the floor plan of wherever you're moving to. Measure the rooms. Mark where your bed, your favourite armchair, and your dining table will go. Once you can see what fits, every decision about what to keep becomes easier.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 4: Start Sorting — Gently, With the Easy Stuff First</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Do not start with the photo albums. Do not start with your late husband's workshop. Start with the boring stuff — the stuff that carries no memories at all.</p>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 later-life-list mb-4">
+            <li><strong>First round:</strong> Kitchen duplicates, expired tins, spare sheets you haven't used in years, old phone books.</li>
+            <li><strong>Second round:</strong> Clothes you haven't worn in 18 months. Shoes that pinch. That coat you keep "just in case."</li>
+            <li><strong>Third round:</strong> Books. Keep the ones you'll read again. Donate the rest. Books are heavy — that matters on moving day.</li>
+            <li><strong>Much later:</strong> Photos, letters, keepsakes, and anything that belonged to someone you've lost.</li>
+          </ul>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The golden rule: <strong>no more than an hour or two per day.</strong> This is tiring work, physically and emotionally. Short sessions with cups of tea in between. If you feel overwhelmed, stop. Come back tomorrow.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 5: The "Four Piles" System</h3>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 later-life-list mb-6">
+            <li><strong>Keeping.</strong> It fits in the new place, you use it, or it truly brings you comfort.</li>
+            <li><strong>Giving to family.</strong> Ask first. The concept of "living inheritance" — giving treasured items while you're alive to see them enjoyed — is beautiful. But let them choose what they'd like.</li>
+            <li><strong>Donating or selling.</strong> Charity shops, local Facebook groups, auction houses. British Heart Foundation will collect furniture for free in many areas.</li>
+            <li><strong>Letting go.</strong> Recycling, skip hire, council bulky waste collection. For things that are truly done.</li>
+          </ul>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If something doesn't fit neatly into any pile, put it in a box marked "Deciding Later" with a date two weeks out. You don't have to force every decision right now.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 6: The Emotional Items Deserve Their Own Time</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Your daughter's first shoes. Your wedding photos. Your partner's favourite jumper. These things are not clutter. They're proof that you lived a full and loving life. And nobody should rush you through them.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">But you can't keep everything. What helps:</p>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 later-life-list mb-6">
+            <li><strong>Photograph items before they leave.</strong> The memories stay. The burden doesn't.</li>
+            <li><strong>Create a memory box.</strong> One box. Not ten. Choose the things that matter most — the things you'd grab if there was a fire.</li>
+            <li><strong>Write a sentence about why something matters.</strong> Stick it on a Post-it Note before you give the item away. Take a photo of the item and the note together. The story is preserved.</li>
+            <li><strong>Give things "honorary homes."</strong> Your china set might be perfect for a niece who's just moved into her first house. Knowing where something went makes letting go gentler.</li>
+          </ul>
+        </section>
+
+        <!-- MidCTA -->
+        <MidCTA heading="Need Someone to Talk It Through?" description="No pressure, no obligation. Just an honest conversation about what a later-life move looks like." buttonText="Get Your Free Quote →" buttonHref="/instantquote" />
+
+        <!-- Step 7: Grief -->
+        <section class="pt-8">
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 7: If Grief Is Part of This Story</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Many of the people we move aren't just changing address. They're carrying loss. Maybe you lost your husband two years ago and his side of the wardrobe is exactly as he left it. Maybe your wife died last spring and the garden she planted is the only place that still feels like her.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Grief experts are clear: <strong>don't make a major move in the first 6 to 12 months after losing a partner.</strong> Death and house moves are separately the first and third most stressful life events. Combining them is brutal.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">When you are ready: you don't have to sort their things all at once. Keep a small, meaningful selection — a drawer, a shelf, a box. That's enough to honour someone. And if you need to cry in the middle of packing, cry. Then make a cup of tea. Then carry on when you're ready.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 8: Paperwork and Life Admin</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Moving generates a mountain of admin. Before moving day gets close, get a folder and pull together:</p>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 later-life-list mb-6">
+            <li>GP details and referral letters</li>
+            <li>Pharmacy details for repeat prescriptions</li>
+            <li>Bank and building society details</li>
+            <li>Pension and benefits paperwork</li>
+            <li>Insurance policies and utility account numbers</li>
+            <li>Council tax reference and TV licence</li>
+            <li>A list of every direct debit</li>
+            <li>Your solicitor's details and your will</li>
+          </ul>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Sort your address changes into a list too — banks, pension providers, HMRC, DVLA, your doctor, the dentist, the electoral roll. Do them in the first week after moving, not the first month.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 9: The Last Two Weeks Before the Move</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Label every box with the room it's going to and a rough description of contents. Pack a <strong>"first night" bag or box</strong> that stays with you — never on the van:</p>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 later-life-checklist mb-6">
+            <li>Your medication, glasses, hearing aids, dentures</li>
+            <li>Phone and charger</li>
+            <li>A change of clothes and nightwear</li>
+            <li>Basic wash things</li>
+            <li>Kettle, favourite mug, and tea bags</li>
+            <li>A snack or two</li>
+            <li>A small lamp or nightlight</li>
+            <li>Toilet roll</li>
+            <li>TV remote and a cosy blanket</li>
+            <li>Important documents folder</li>
+          </ul>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">That box is your lifeline on night one. Everything else can wait until morning. Also pack valuables and irreplaceables in a small bag that travels with you in the car — jewellery, cash, family photos, legal documents. These never go on the moving van.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Step 10: Moving Day Itself</h3>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 later-life-list mb-4">
+            <li><strong>Morning moves are better.</strong> Energy is highest. Everything gets done in daylight.</li>
+            <li><strong>You don't have to be there for the heavy lifting.</strong> Some of our clients go out for lunch while the loading happens, and come back to the new place once the furniture is in.</li>
+            <li><strong>One person supervises at the old house. One meets the movers at the new house. One keeps you company.</strong> Everyone has a job. Nobody's in the way.</li>
+            <li><strong>Keep a chair, the kettle, and the first-night box out until the very end.</strong> Load them last, unload them first.</li>
+          </ul>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3 mt-8">Step 11: Making the New Place Feel Like Home</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This doesn't happen overnight. And that's fine.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The bedroom and bathroom should be set up first. Familiar bedding on the bed. Nightlights plugged in. Your own towels hung up. The things your body reaches for half-asleep at 2am should be exactly where they need to be.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Hang photos and pictures as soon as possible. A bare wall feels like a hospital. A wall with your family on it feels like home.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Try to recreate small rituals. If you always had your morning tea in a particular chair by a window, set that up. The view will be different. The feeling doesn't have to be.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Give yourself <strong>three to six months</strong> before you judge whether this was right. The first few weeks will feel strange. That's not a sign you made a mistake. It's a sign you loved where you were, and your heart needs time to catch up with your address.</p>
+        </section>
+
+        <!-- ── S4: Care Homes ── -->
+        <section id="care-homes" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Moving to a Care Home: A Separate Conversation</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This is different. It's not just a change of address — it's a change of daily life, independence, and routine.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">How to Know If It Might Be Time</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There's no single sign, but professionals talk about patterns: difficulty with daily tasks like cooking, washing, or dressing. Frequent falls. Medication getting muddled. Increasing isolation. Significant weight loss. Confusion about time or place.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you're noticing these things, it's worth having the conversation. Not because a care home is inevitable, but because understanding the options early gives you more say in the outcome.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Choosing a Care Home</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Visit at least three. Go at different times: morning, lunchtime, evening. Check the Care Quality Commission (CQC) inspection reports online. Talk to residents and their families. Ask about staff turnover.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Look at the food. Look at the garden. Notice whether people are sitting together and talking or sitting alone and staring. Notice whether staff use people's names. These small things tell you everything.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Making a Care Home Room Feel Like Yours</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Bring your own things — photos, your favourite chair, a familiar blanket, ornaments from the mantelpiece. If dementia is part of the picture, familiar objects and consistent arrangement are especially important. Try not to rearrange the room once it's set up.</p>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-6 py-5 my-6">
+            <h3 class="font-heading text-lg font-semibold text-gray-900 mb-2">Relocation Stress Syndrome Is Real</h3>
+            <p class="text-[17px] leading-relaxed text-gray-800 mb-2">A clinically recognised condition that can cause anxiety, confusion, appetite loss, sleep problems, withdrawal, and depression. Symptoms usually appear in the first month.</p>
+            <p class="text-[17px] leading-relaxed text-gray-800 mb-2">In older adults, these symptoms can look like dementia or "just settling in." They're not. If you notice a sharp decline in mood, appetite, sleep, or engagement after a move, speak to the GP.</p>
+            <p class="text-[17px] leading-relaxed text-gray-800">The single biggest thing that protects against this? <strong>Feeling like the move was your choice.</strong> The sense that you had a say changes everything.</p>
+          </div>
+        </section>
+
+        <!-- ── S5: Moving Near Family ── -->
+        <section id="moving-near-family" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Moving Closer to Family: The Honest Version</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">About a quarter of people who move in later life do it to be near their children or grandchildren. And for many, it's wonderful.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">But here's the honest bit. Your adult children have busy lives. They might not visit as often as you both imagine. Moving 200 miles to be near your son doesn't guarantee Sunday dinners every week. It does, however, mean you've left behind 40 years of friendships, your GP, your hairdresser, and the neighbours who check on you.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-2"><strong>Before committing:</strong></p>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 later-life-list mb-8">
+            <li>Have a frank conversation about expectations. How often will you see each other, realistically? What happens if their job takes them elsewhere in two years?</li>
+            <li>Try a long visit first. Stay for a month. Explore the area. Can you get to the shops? Is there a bus route? Are there clubs or groups you'd enjoy?</li>
+            <li>Build your own life there. Don't rely solely on family for your social world. Join something. Find a local cafe. Get to know the neighbours.</li>
+          </ul>
+        </section>
+
+        <!-- ── S6: Finding Good Help ── -->
+        <section id="finding-help" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Finding Good Help (And Spotting the Dodgy Kind)</h2>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">What to Look for in a Removal Company</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Get at least three written quotes. A good company will visit your home to assess the job properly before quoting — if they're pricing over the phone without seeing the place, be cautious. Ask about insurance and get it in writing.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Check for membership of a trade body. In the UK, the British Association of Removers operates under an Approved Code overseen by the Chartered Trading Standards Institute. Members get inspected, they carry insurance, and there's a proper complaints process.</p>
+
+          <div class="bg-red-50 border border-red-200 rounded-xl px-6 py-5 my-6">
+            <p class="font-semibold text-red-800 mb-2">Red flags:</p>
+            <ul class="space-y-1 text-[15px] leading-relaxed text-red-800">
+              <li>Asking for large cash deposits up front</li>
+              <li>Refusing to give a written quote</li>
+              <li>Not willing to visit and assess in person</li>
+              <li>No named contact on their paperwork</li>
+            </ul>
+          </div>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Senior Move Managers</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Senior move managers don't just shift boxes. They help you plan the whole thing: sorting, deciding what fits, arranging donations and sales, packing, coordinating the movers, unpacking, and even hanging your pictures.</p>
+
+          <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+            "The best ones understand that when an 80-year-old shows them a broken umbrella and says 'that was my husband's,' the correct response is not 'shall we bin it?' It's 'tell me about him.'"
+          </blockquote>
+        </section>
+
+        <!-- ── S7: Common Mistakes ── -->
+        <section id="common-mistakes" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Mistakes People Make (So You Don't Have To)</h2>
+
+          <ul class="space-y-4 text-[17px] leading-relaxed text-gray-800 later-life-list mb-6">
+            <li><strong>Leaving it until a crisis.</strong> A fall, a hospital stay, a sudden health scare. Now the move happens in two weeks instead of twelve months. The single best thing you can do is plan while you're well.</li>
+            <li><strong>Trying to do it alone.</strong> Whether physically or emotionally. Moving a house after 40 years is not a solo job.</li>
+            <li><strong>Keeping too much.</strong> You move the clutter from one house to a smaller house and feel cramped and overwhelmed.</li>
+            <li><strong>Getting rid of too much in a burst of energy.</strong> You declutter aggressively one weekend and regret it for years. Go slowly.</li>
+            <li><strong>Not measuring the new place.</strong> Then discovering on moving day that the dining table doesn't fit through the door.</li>
+            <li><strong>Rushing after a bereavement.</strong> Moving within months of losing a partner doubles the emotional stress.</li>
+            <li><strong>Not building a new social life.</strong> Sitting in a new house waiting for the phone to ring is a recipe for loneliness. Get out. Even when you don't feel like it.</li>
+          </ul>
+        </section>
+
+        <!-- ── Closing ── -->
+        <section class="bg-cream rounded-xl px-6 py-10 md:py-14 my-10">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">A Final Word, From Us to You</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We move people for a living. Sofas and wardrobes, boxes of books, that heavy sideboard that takes four of us and some creative geometry to get down the stairs.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">But the thing we carry most carefully isn't furniture. It's trust.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">When someone lets us into their home of 40 years, shows us the dining table where every birthday dinner happened, and says "please look after this," we feel the weight of that. Not the physical weight. The other kind.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4"><strong>Your memories don't live in the walls. They live in you.</strong> And they're coming with you, wherever you go.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800">Take your time. Ask for help. Be kind to yourself. And if you need someone to carry the heavy stuff (including the emotional stuff), we're here.</p>
+        </section>
+
+        <!-- ── S8: FAQ ── -->
+        <section id="faq" class="pt-8 border-t border-gray-200">
+          <FAQAccordion faqs={faqs} heading="Frequently Asked Questions About Later-Life Moves" />
+        </section>
+
+      </article>
+
+      <!-- TOC SIDEBAR -->
+      <aside class="toc-sidebar">
+        <div class="mb-5">
+          <SidebarAuthorBox />
+        </div>
+
+        <div class="toc-sticky">
+          <nav aria-label="Table of contents" class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+            <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-400 mb-4">In This Guide</p>
+            <ul class="space-y-1">
+              {tocItems.map(item => (
+                <li>
+                  <a
+                    href={`#${item.id}`}
+                    class="toc-link"
+                    data-toc-id={item.id}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="border-t border-dashed border-gray-200 mt-5 pt-4">
+              <a
+                href="/instantquote/"
+                class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[13px] uppercase tracking-wide py-2.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+              >
+                Get Your Free Quote →
+              </a>
+              <p class="text-[11px] text-gray-400 text-center mt-1.5">Free, no obligation</p>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Services -->
+  <section class="section bg-cream">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div class="mb-10">
+        <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Later-Life Removal Services</h2>
+        <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+          Every later-life move is different. Whether you need the full downsizing concierge or just a careful, patient removal team, we'll work at your pace.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/later-life-moves/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Later Life Moves</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Our full downsizing concierge service — from first conversation to settling in.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Let us pack carefully while you focus on decisions. Full or fragile-only options.</p>
+        </a>
+        <a href="/storage-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Storage</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Secure units while you take your time deciding. No rush, no pressure.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <AreaFinalCTA heading="Ready to Talk About Your Move?" description="Free quote in two minutes. We understand what this means — and we'll take it at your pace." />
+
+</Layout>
+
+<style>
+  /* Blog two-column layout */
+  .blog-layout {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      column-gap: 40px;
+    }
+
+    .toc-sidebar {
+      display: block;
+      align-self: stretch;
+    }
+
+    .toc-sticky {
+      position: sticky;
+      top: 120px;
+    }
+
+  }
+
+  /* TOC links */
+  .toc-link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: all 150ms ease;
+  }
+
+  .toc-link:hover {
+    color: #1e4240;
+    background: #f9fafb;
+  }
+
+  .toc-link.active {
+    color: #1e4240;
+    font-weight: 600;
+    border-left-color: #ea580c;
+    background: #fff7ed;
+  }
+
+  /* List styling */
+  .later-life-list li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .later-life-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ea580c;
+  }
+
+  /* Checklist */
+  .later-life-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .later-life-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  /* Scroll-margin for anchors beneath sticky header */
+  section[id] {
+    scroll-margin-top: 120px;
+  }
+</style>
+
+<script>
+  // IntersectionObserver — highlight active TOC link based on visible section
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+
+  if (sections.length && tocLinks.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(link => {
+              if (link.dataset.tocId === id) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        }
+      },
+      {
+        rootMargin: '-120px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
+</script>

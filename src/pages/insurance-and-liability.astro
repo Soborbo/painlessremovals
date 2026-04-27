@@ -1,0 +1,649 @@
+---
+/**
+ * Insurance & Liability Page
+ *
+ * Trust-building information page about Painless Removals' insurance
+ * coverage, liability, exclusions, claims process, and accreditations.
+ * Transparent content that differentiates from uninsured operators.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import { siteConfig } from '@/config/site.config';
+
+// Page metadata
+const pageTitle = 'Insurance & Liability — Your Belongings Are Protected';
+const pageDescription = `Painless Removals carries ${siteConfig.company.insurance} Goods in Transit insurance per van, plus full public liability cover. Learn what's covered, what's not, and how to make a claim. Transparent, honest protection since 1978.`;
+
+// FAQ data
+const faqs = [
+  {
+    question: 'Do I need to buy separate insurance for my move?',
+    answer: `No. Every Painless Removals quote includes ${siteConfig.company.insurance} Goods in Transit insurance per van at no extra cost. You do not need to arrange separate cover for items we transport. However, if you have individual items valued above ${siteConfig.company.insurance}, you may wish to speak to your home contents insurer about extending your policy for moving day.`,
+  },
+  {
+    question: 'Are items I pack myself covered by your insurance?',
+    answer: 'Items you pack yourself are covered for loss and damage to the box as a whole, but we cannot accept liability for breakages inside boxes we did not pack. This is because we have no way of knowing whether items were wrapped and cushioned adequately. If you want full protection for fragile items, our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">professional packing service</a> ensures everything is packed to insurance standards.',
+  },
+  {
+    question: 'What happens if something is damaged during the move?',
+    answer: 'Report any damage to your Move Manager on the day, or contact us within 7 days. Take photos of the damage and we will guide you through our straightforward claims process. Most claims are assessed and resolved within 14 working days. We take every claim seriously and work hard to reach a fair outcome.',
+  },
+  {
+    question: 'What does Move Assured membership mean for me?',
+    answer: 'Move Assured is a quality-assurance scheme for professional removal companies. As a Move Assured member, Painless Removals has been independently vetted for insurance cover, vehicle standards, staff training, and customer complaint handling. It means you are protected by an independent body if anything goes wrong, and it provides an additional layer of accountability beyond our own standards.',
+  },
+];
+
+// Schema: WebPage + FAQPage (array for dual schema)
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Insurance & Liability — Painless Removals",
+  "description": pageDescription,
+  "url": `${siteConfig.brand.domain}/insurance-and-liability`,
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": siteConfig.brand.name,
+    "url": siteConfig.brand.domain,
+  },
+  "about": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": siteConfig.brand.domain,
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": `${siteConfig.brand.domain}/about`,
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Insurance & Liability",
+        "item": `${siteConfig.brand.domain}/insurance-and-liability`,
+      },
+    ],
+  },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, ''),
+    },
+  })),
+};
+
+const pageSchema = [webPageSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       BREADCRUMBS
+  ============================================ -->
+  <nav class="bg-gray-50 border-b border-gray-200" aria-label="Breadcrumb">
+    <div class="container-wide py-3">
+      <ol class="flex items-center gap-2 text-sm text-gray-500">
+        <li>
+          <a href="/" class="hover:text-primary-600 transition-colors no-underline">Home</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-gray-300">/</span>
+          <a href="/about/" class="hover:text-primary-600 transition-colors no-underline">About</a>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-gray-300">/</span>
+          <span class="text-gray-900 font-medium">Insurance &amp; Liability</span>
+        </li>
+      </ol>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+          Protection You Can Count On
+        </p>
+
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-5">
+          Insurance &amp; <span class="text-secondary-500">Liability</span>
+        </h1>
+
+        <p class="text-lg lg:text-xl text-warm-gray leading-relaxed mb-6">
+          Your belongings matter. That is why every Painless Removals move comes with comprehensive insurance cover as standard &mdash; included in your quote at no extra cost. We have been protecting families' possessions since 1978, and we believe you deserve to know exactly what is covered before your move begins.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-6 text-sm text-warm-gray">
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 font-bold">&#10003;</span>
+            <span>{siteConfig.company.insurance} per van</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 font-bold">&#10003;</span>
+            <span>Public liability cover</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 font-bold">&#10003;</span>
+            <span>Move Assured accredited</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-green-500 font-bold">&#10003;</span>
+            <span>Included in every quote</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: GOODS IN TRANSIT INSURANCE
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <div class="grid lg:grid-cols-[1fr_300px] gap-10 lg:gap-16 items-start">
+          <!-- Content -->
+          <div>
+            <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+              Goods in Transit Insurance
+            </p>
+
+            <h2 class="mb-6">{siteConfig.company.insurance} Cover Per Van</h2>
+
+            <div class="text-warm-gray space-y-4 text-lg leading-relaxed">
+              <p>
+                Every van on your move carries <strong class="text-primary-600">{siteConfig.company.insurance} Goods in Transit insurance</strong>. This covers your belongings against accidental damage, loss, or destruction from the moment we collect them from your home until they are delivered to your new property.
+              </p>
+
+              <p>
+                This is not an optional add-on. It is included in every quote we provide, at no extra cost to you. We believe proper insurance should be standard, not a premium feature.
+              </p>
+
+              <p>
+                Your cover applies while your items are being loaded, in transit on the road, being unloaded, and temporarily stored in our care as part of the move. If you are using our <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage service</a> between collection and delivery, your belongings remain fully insured throughout.
+              </p>
+            </div>
+
+            <div class="mt-8 grid sm:grid-cols-2 gap-4">
+              <div class="bg-cream rounded-lg p-5">
+                <h3 class="text-base font-bold text-primary-600 mb-2">What's covered</h3>
+                <ul class="space-y-2 text-sm text-warm-gray">
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                    <span>Accidental damage during loading and unloading</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                    <span>Damage or loss while in transit on the road</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                    <span>Items in temporary storage as part of your move</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                    <span>Furniture, appliances, and household contents</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+                    <span>Items professionally packed by our team</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="bg-primary-50 rounded-lg p-5">
+                <h3 class="text-base font-bold text-primary-600 mb-2">How it protects you</h3>
+                <ul class="space-y-2 text-sm text-warm-gray">
+                  <li class="flex items-start gap-2">
+                    <span class="text-primary-500 mt-0.5 shrink-0">&#8226;</span>
+                    <span>Repair or replacement at current market value</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-primary-500 mt-0.5 shrink-0">&#8226;</span>
+                    <span>No excess to pay on valid claims</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-primary-500 mt-0.5 shrink-0">&#8226;</span>
+                    <span>Claims handled directly by us, not a third party</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-primary-500 mt-0.5 shrink-0">&#8226;</span>
+                    <span>Coverage documentation provided with your quote</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Insurance badge card -->
+          <div class="mx-auto lg:mx-0">
+            <div class="bg-white border-2 border-primary-200 rounded-xl shadow-lg p-6 text-center sticky top-32">
+              <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              </div>
+              <p class="font-heading text-3xl font-bold text-primary-600 mb-1">{siteConfig.company.insurance}</p>
+              <p class="text-sm text-warm-gray mb-4">Goods in Transit<br/>per van</p>
+              <div class="w-10 h-0.5 bg-primary-200 mx-auto mb-4"></div>
+              <p class="text-xs text-warm-gray leading-relaxed">
+                Included as standard in every Painless Removals quote. No hidden extras.
+              </p>
+              <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs text-primary-600 font-semibold">Since 1978</p>
+                <p class="text-xs text-warm-gray">Rated {siteConfig.company.rating.value} stars</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: PUBLIC LIABILITY INSURANCE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+          Public Liability Insurance
+        </p>
+
+        <h2 class="mb-6">Protection for Your Property</h2>
+
+        <div class="text-warm-gray space-y-4 text-lg leading-relaxed">
+          <p>
+            Alongside Goods in Transit cover, Painless Removals holds comprehensive public liability insurance. This protects you against accidental damage to your property &mdash; both the home you are leaving and the one you are moving into.
+          </p>
+
+          <p>
+            If our team accidentally damages a wall, doorframe, banister, floor, or any part of the property structure during the move, our public liability insurance covers the cost of repair or restoration. This applies at both the collection and delivery addresses.
+          </p>
+
+          <p>
+            We take extensive precautions to prevent property damage in the first place. Our crews use floor runners, door protectors, banister wraps, and corner guards as standard on every move. But accidents can happen, and when they do, you are fully covered.
+          </p>
+        </div>
+
+        <div class="mt-8 bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Property damage we cover includes:</h3>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div class="flex items-start gap-2 text-warm-gray">
+              <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+              <span>Walls, paintwork, and plasterwork</span>
+            </div>
+            <div class="flex items-start gap-2 text-warm-gray">
+              <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+              <span>Doorframes, banisters, and handrails</span>
+            </div>
+            <div class="flex items-start gap-2 text-warm-gray">
+              <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+              <span>Flooring, carpets, and tiles</span>
+            </div>
+            <div class="flex items-start gap-2 text-warm-gray">
+              <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+              <span>Light fittings and fixtures</span>
+            </div>
+            <div class="flex items-start gap-2 text-warm-gray">
+              <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+              <span>Garden paths, gates, and fences</span>
+            </div>
+            <div class="flex items-start gap-2 text-warm-gray">
+              <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+              <span>Communal areas in flats and apartments</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: WHAT'S NOT COVERED
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+          Honest Transparency
+        </p>
+
+        <h2 class="mb-4">What's Not Covered</h2>
+
+        <p class="text-warm-gray text-lg leading-relaxed mb-8">
+          We believe in being upfront. No removal company can cover absolutely everything, and we would rather tell you now than surprise you later. Here is what our standard insurance does <strong>not</strong> cover:
+        </p>
+
+        <div class="space-y-4">
+          <!-- Exclusion items -->
+          <div class="flex items-start gap-4 bg-red-50 border border-red-100 rounded-lg p-5">
+            <span class="text-red-400 text-xl mt-0.5 shrink-0">&times;</span>
+            <div>
+              <h3 class="text-base font-bold text-gray-900 mb-1">Items packed by you without professional packing</h3>
+              <p class="text-sm text-warm-gray">If you pack your own boxes, we cover the box as a whole unit but cannot accept liability for breakages of individual items inside. We have no way of knowing whether fragile items were wrapped properly. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">professional packing service</a> ensures everything meets insurance standards.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 bg-red-50 border border-red-100 rounded-lg p-5">
+            <span class="text-red-400 text-xl mt-0.5 shrink-0">&times;</span>
+            <div>
+              <h3 class="text-base font-bold text-gray-900 mb-1">Items of extraordinary value not declared in advance</h3>
+              <p class="text-sm text-warm-gray">If you have individual items worth more than {siteConfig.company.insurance} &mdash; fine art, antiques, rare collections &mdash; please declare them before the move. We can arrange additional specialist cover, but only if we know about them. Undeclared high-value items may not be covered to their full worth.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 bg-red-50 border border-red-100 rounded-lg p-5">
+            <span class="text-red-400 text-xl mt-0.5 shrink-0">&times;</span>
+            <div>
+              <h3 class="text-base font-bold text-gray-900 mb-1">Cash, jewellery, and personal documents</h3>
+              <p class="text-sm text-warm-gray">Keep cash, jewellery, passports, birth certificates, and important legal documents with you personally on moving day. These items should travel in your own vehicle, not on the removal van. This is standard practice across the industry.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 bg-red-50 border border-red-100 rounded-lg p-5">
+            <span class="text-red-400 text-xl mt-0.5 shrink-0">&times;</span>
+            <div>
+              <h3 class="text-base font-bold text-gray-900 mb-1">Perishable goods, plants, and living things</h3>
+              <p class="text-sm text-warm-gray">We are happy to transport plants and perishable items if you wish, but we cannot guarantee their condition on arrival. Temperature changes, movement, and transit times can affect these items in ways beyond our control. Pets should always travel with you.</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4 bg-red-50 border border-red-100 rounded-lg p-5">
+            <span class="text-red-400 text-xl mt-0.5 shrink-0">&times;</span>
+            <div>
+              <h3 class="text-base font-bold text-gray-900 mb-1">Pre-existing damage or wear</h3>
+              <p class="text-sm text-warm-gray">Damage that existed before the move &mdash; a chip already on a table, a scratch already on a wardrobe &mdash; is not something we can claim responsibility for. If you have concerns about existing damage, please point it out to the crew before loading and we will note it on the inventory.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-8 bg-primary-50 border border-primary-100 rounded-lg p-6">
+          <p class="text-primary-600 font-semibold mb-2">Why we share this openly</p>
+          <p class="text-warm-gray text-sm leading-relaxed">
+            We know this level of transparency is unusual. Many removal companies bury their exclusions in fine print, and customers only discover them when something goes wrong. We would rather you knew the full picture from the start. It is one of the ways we have built trust with families across Bristol since 1978.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: HOW TO MAKE A CLAIM
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+          Claims Process
+        </p>
+
+        <h2 class="mb-4">How to Make a Claim</h2>
+
+        <p class="text-warm-gray text-lg leading-relaxed mb-10">
+          We hope you never need this section. But if something does go wrong, we want the process to be as straightforward as the move itself. Here is exactly how it works:
+        </p>
+
+        <div class="space-y-6">
+          <!-- Step 1 -->
+          <div class="flex items-start gap-5">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+              1
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-primary-600 mb-1">Report the damage within 7 days</h3>
+              <p class="text-warm-gray">
+                Contact us by phone on <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">{siteConfig.company.contact.phone}</a> or email at <a href="mailto:{siteConfig.company.contact.email}" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">{siteConfig.company.contact.email}</a> within 7 days of delivery. If you notice damage on moving day, let your Move Manager know immediately &mdash; they can document it on the spot.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="flex items-start gap-5">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+              2
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-primary-600 mb-1">Provide photos and a description</h3>
+              <p class="text-warm-gray">
+                Take clear photographs of the damage from multiple angles. Include a brief written description of what happened, the item affected, and its approximate value or age. The more detail you provide, the faster we can process your claim.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="flex items-start gap-5">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+              3
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-primary-600 mb-1">Submit your written claim</h3>
+              <p class="text-warm-gray">
+                Send your photos and description to us via email. We will acknowledge receipt within 2 working days and provide you with a reference number for tracking.
+              </p>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="flex items-start gap-5">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">
+              4
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-primary-600 mb-1">Assessment and resolution</h3>
+              <p class="text-warm-gray">
+                We assess every claim fairly and promptly. For straightforward claims, we aim to reach a resolution within <strong>14 working days</strong>. More complex cases involving specialist repair or high-value items may take up to 28 working days. We will keep you updated throughout the process &mdash; you will never be left wondering what is happening.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-10 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <h3 class="text-base font-bold text-gray-900 mb-1">Our commitment to fair resolution</h3>
+              <p class="text-sm text-warm-gray leading-relaxed">
+                We handle claims directly &mdash; you deal with us, not a distant insurance company. Our goal is always a fair outcome, whether that means professional repair, replacement, or financial compensation at current market value. If you are ever dissatisfied with the outcome, our Move Assured membership provides an independent escalation route.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: ACCREDITATIONS — MOVE ASSURED
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide border-b-2 border-accent-500 inline-block pb-1 mb-4">
+          Accreditations
+        </p>
+
+        <h2 class="mb-6">Move Assured Member</h2>
+
+        <p class="text-warm-gray text-lg leading-relaxed mb-8">
+          Painless Removals is a proud member of Move Assured, an independent accreditation body that vets removal companies on insurance cover, vehicle standards, staff training, and complaint resolution. Membership is not automatic &mdash; it requires meeting strict professional standards and maintaining them year after year.
+        </p>
+
+        <!-- Move Assured badge (CSS-based) -->
+        <div class="inline-flex mb-10">
+          <div class="relative bg-white border-[3px] border-primary-600 rounded-2xl px-12 py-10 shadow-xl text-center group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+            <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary-600 text-white px-5 py-1.5 rounded-full text-xs uppercase tracking-[0.15em] font-bold shadow-md">
+              Accredited
+            </div>
+            <div class="mt-2 mb-4">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#3b6587" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <div class="text-4xl font-bold font-heading text-primary-700 leading-tight">Move</div>
+            <div class="text-2xl font-bold font-heading text-primary-600 mb-3">Assured</div>
+            <div class="w-12 h-0.5 bg-primary-300 mx-auto mb-3 group-hover:w-20 transition-all duration-500"></div>
+            <div class="text-primary-600 text-sm font-medium">
+              Independently verified standards
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6 text-left">
+          <div class="bg-cream rounded-lg p-6">
+            <h3 class="text-base font-bold text-primary-600 mb-2">Independent vetting</h3>
+            <p class="text-sm text-warm-gray leading-relaxed">
+              Our insurance documentation, vehicle maintenance records, and operating procedures are independently verified each year to maintain membership.
+            </p>
+          </div>
+
+          <div class="bg-cream rounded-lg p-6">
+            <h3 class="text-base font-bold text-primary-600 mb-2">Dispute resolution</h3>
+            <p class="text-sm text-warm-gray leading-relaxed">
+              If you are unhappy with how we handle a claim or complaint, Move Assured provides a free, independent mediation service to resolve the issue fairly.
+            </p>
+          </div>
+
+          <div class="bg-cream rounded-lg p-6">
+            <h3 class="text-base font-bold text-primary-600 mb-2">Professional standards</h3>
+            <p class="text-sm text-warm-gray leading-relaxed">
+              Move Assured members must meet strict criteria for staff training, vehicle condition, packing materials, and customer communication. It is the mark of a serious, professional mover.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: COMPARISON — WHY THIS MATTERS
+  ============================================ -->
+  <section class="section bg-primary-600 text-white relative overflow-hidden">
+    <!-- Subtle background pattern -->
+    <div class="absolute inset-0 opacity-5">
+      <div class="absolute top-10 left-10 w-40 h-40 border border-white rounded-full"></div>
+      <div class="absolute bottom-10 right-10 w-60 h-60 border border-white rounded-full"></div>
+    </div>
+
+    <div class="container-wide relative z-10">
+      <div class="max-w-3xl mx-auto text-center mb-12">
+        <h2 class="text-white mb-4">Why Insurance Matters When Choosing a Removal Company</h2>
+        <p class="text-primary-100 text-lg">
+          Not all removal companies are the same. Here is how our protection compares to what you typically get from an uninsured operator.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <div class="grid grid-cols-[1fr_auto_auto] gap-x-6 gap-y-3 text-sm">
+          <!-- Header -->
+          <div class="font-bold text-primary-200 text-xs uppercase tracking-wide pb-2 border-b border-white/20"></div>
+          <div class="font-bold text-white text-xs uppercase tracking-wide pb-2 border-b border-white/20 text-center">Painless Removals</div>
+          <div class="font-bold text-primary-200 text-xs uppercase tracking-wide pb-2 border-b border-white/20 text-center">Typical Man &amp; Van</div>
+
+          <!-- Rows -->
+          <div class="text-primary-100 py-2">Goods in Transit insurance</div>
+          <div class="text-center py-2"><span class="text-green-400 font-bold">{siteConfig.company.insurance}</span></div>
+          <div class="text-center py-2"><span class="text-red-300">Often none</span></div>
+
+          <div class="text-primary-100 py-2 border-t border-white/10">Public liability cover</div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-green-400 font-bold">&#10003;</span></div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-red-300">Rarely</span></div>
+
+          <div class="text-primary-100 py-2 border-t border-white/10">Independent accreditation</div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-green-400 font-bold">Move Assured</span></div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-red-300">None</span></div>
+
+          <div class="text-primary-100 py-2 border-t border-white/10">Written claims process</div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-green-400 font-bold">&#10003;</span></div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-red-300">Unlikely</span></div>
+
+          <div class="text-primary-100 py-2 border-t border-white/10">Dispute resolution body</div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-green-400 font-bold">&#10003;</span></div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-red-300">None</span></div>
+
+          <div class="text-primary-100 py-2 border-t border-white/10">Floor protection &amp; wrapping</div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-green-400 font-bold">Standard</span></div>
+          <div class="text-center py-2 border-t border-white/10"><span class="text-red-300">Extra cost</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Our Insurance" />
+
+  <!-- ============================================
+       SECTION 9: FINAL CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-gray-900 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white text-3xl md:text-4xl mb-4">Move With Confidence</h2>
+      <p class="text-gray-300 text-lg mb-4 max-w-2xl mx-auto">
+        Every Painless Removals move comes with {siteConfig.company.insurance} Goods in Transit insurance, full public liability cover, and the backing of our Move Assured accreditation. No hidden costs. No fine print surprises.
+      </p>
+      <p class="text-gray-400 mb-8 max-w-xl mx-auto">
+        Get your free, no-obligation quote and see why Bristol families have trusted us since 1978.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10">
+        <a href="/instantquote/" class="btn-cta-orange">
+          GET YOUR FREE QUOTE
+        </a>
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="btn-cta-outline">
+          CALL {siteConfig.company.contact.phone}
+        </a>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span>
+          {siteConfig.company.insurance} insured per van
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span>
+          Move Assured accredited
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span>
+          Rated {siteConfig.company.rating.value} stars
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span>
+          Serving Bristol since 1978
+        </div>
+      </div>
+
+      <p class="mt-8 text-sm text-gray-500">
+        <a href="/contact/" class="text-gray-400 hover:text-white transition-colors no-underline">Contact us</a>
+        <span class="mx-2">&middot;</span>
+        <a href="/free-home-survey/" class="text-gray-400 hover:text-white transition-colors no-underline">Free home survey</a>
+        <span class="mx-2">&middot;</span>
+        <a href="/home-packing-service/" class="text-gray-400 hover:text-white transition-colors no-underline">Professional packing</a>
+        <span class="mx-2">&middot;</span>
+        <a href="/reviews/" class="text-gray-400 hover:text-white transition-colors no-underline">Customer reviews</a>
+      </p>
+    </div>
+  </section>
+
+</Layout>

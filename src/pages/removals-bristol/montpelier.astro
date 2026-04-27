@@ -1,0 +1,268 @@
+---
+/**
+ * /removals-bristol/montpelier/ — Montpelier neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Montpelier Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~2 miles' },
+        { label: 'Drive time from depot', value: '10\u201315 minutes' },
+        { label: 'Postcode area', value: 'BS6' },
+        { label: 'Nearest motorway', value: 'M32 J3 (1.5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2\u20133 bed terrace' },
+        { label: 'Typical crew', value: '3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '\u00A3400\u2013\u00A31,100' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~\u00A3380\u2013480k' },
+        { label: 'Typical property', value: 'Georgian/Victorian terrace' },
+        { label: 'Typical floors', value: '2\u20133 storeys' },
+        { label: 'Lifts available', value: 'None' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'RPZ (strict enforcement)' },
+        { label: 'Suspension needed', value: 'Yes (7\u201310 days notice)' },
+        { label: 'Main difficulty', value: 'Street width + steep hills' },
+        { label: 'Conservation area', value: 'Yes' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Jay and Nick were fantastic in many ways. My partner could not believe the efficiency they bring to the process. They were very friendly and professional, careful and great for first time buyers.",
+  name: 'Adam Crockett',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Montpelier, Bristol';
+const description = `Montpelier removal experts \u2014 narrow hillside streets, strict RPZ, Georgian terraces with steep stairs. One of Bristol\u2019s most challenging areas, handled since 1978. ${siteConfig.company.rating.value}\u2605 rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Montpelier Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Montpelier, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS6", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Can a removal van actually fit down Montpelier\'s streets?', answer: 'Some streets are too narrow for a 7.5-tonne Luton van. We assess access during your <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a> and use smaller vehicles or a shuttle approach when needed \u2014 loading a transit van and transferring to the main vehicle parked on a wider road like Ashley Road.' },
+  { question: 'Do I need a parking suspension in Montpelier?', answer: 'Yes. Montpelier has an active RPZ with strict enforcement. Apply to Bristol City Council at least 7\u201310 working days before your move. Your Move Manager handles the application and knows which zone covers your street.' },
+  { question: 'How much does a Montpelier removal cost?', answer: 'A 2-bed terraced house moving locally typically runs \u00A3400\u2013\u00A3750 depending on access and floor levels. Larger 3-bed properties range from \u00A3650\u2013\u00A31,100. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for your specific layout.' },
+  { question: 'Can you handle the steep stairs in Montpelier\'s Georgian houses?', answer: 'Yes \u2014 steep, narrow Georgian staircases are standard in Montpelier. We bring stair-climbing trolleys and extra crew. Larger items often need disassembly upstairs and reassembly at the destination, which is included in your quote.' },
+  { question: 'Should I reserve parking spaces before my Montpelier move?', answer: 'Yes \u2014 strongly recommended. Contact the current occupants and ask them to keep two van-sized spaces clear outside the property on moving day. On streets like Coburg Road, where there\'s barely room to drive a Luton van, reserved parking can make the difference between a smooth unload and a stressful one.' },
+  { question: 'Is Montpelier in a conservation area?', answer: 'Yes. The Montpelier Conservation Area covers the hillside core from roughly Ashley Road to the railway line. This doesn\'t prevent removals, but it means limited options for vehicle access on some streets. We plan routes accordingly.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Montpelier" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Montpelier"
+  slug="montpelier"
+  schema={schema}
+  ogImage="/img/areas/montpelier-narrow-street-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/montpelier-narrow-street-removal"
+  heroAlt="Painless Removals team navigating a narrow Montpelier street during a house move"
+  heroSubtitle="Bristol removals since 1978. For home removals in Montpelier, you need a crew that's seen it all — we have."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Montpelier is the most logistically demanding neighbourhood we work in across Bristol. The streets follow hillside contours, barely wide enough for a single van in places. The Georgian and Victorian terraces have steep internal staircases and almost no off-street parking. The Residents' Parking Zone is enforced aggressively — wardens know when removal vans appear without permits. This is a part of BS6 where experience isn't optional. It changes whether your move takes four hours or eight.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">None of that should overshadow what makes Montpelier so popular. Tall Victorian houses with genuine character. Some beautiful walled gardens and elevated views over the city. Picton Street's independent cafes and shops, the proximity to St Andrews Park, the creative community around York Road and Richmond Road — it's a neighbourhood people love living in. Moving into or out of it just requires a crew that knows the layout and has the equipment to handle buildings where the front door opens directly onto a pavement with no room to stage furniture.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Streets -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Montpelier Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Streets: Bristol's Tightest</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">York Road, Richmond Road, Picton Street — narrow, sloped, many of them one-way. Montpelier was built on a hillside, and the roads follow the contours rather than running in straight lines. Some side streets physically cannot accommodate a 7.5-tonne Luton van. We won't force anything larger into certain parts of the neighbourhood. When a Luton won't fit, we use a shuttle approach: a smaller transit van loads from your front door, then transfers to the main vehicle parked on a wider road like Ashley Road or Cheltenham Road.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The other challenge is road length. Unlike <a href="/removals-bristol/bedminster/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster's</a> shorter streets where drivers can easily turn back when a van is blocking, Montpelier's longer roads mean a blocked street creates a queue that keeps building. We've done moves here where we've had to reposition the van every ten minutes to let traffic through.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking: Strictly Enforced</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Montpelier's RPZ is one of the most strictly enforced in Bristol. Without a parking bay suspension, you'll get a ticket within minutes — the wardens know when removal vans appear without permits. This isn't a neighbourhood where you can chance it and hope for the best.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Your Move Manager applies to Bristol City Council 7–10 working days ahead and confirms the suspension is in place before the crew sets out. In Montpelier specifically, we also reserve extra time on the morning of your move to walk the street and confirm the suspended bay is actually clear. Cars parked illegally in a suspended bay need to be reported and towed before we can begin — better to discover that at 7.30am than when the crew arrives with a fully loaded van at nine.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Montpelier?"
+      description="Get a personalised quote — we know which streets need shuttle vans and which ones don't."
+      buttonText="Get Your Montpelier Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: The Properties -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Properties: Georgian Character, Removal Challenges</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Georgian terraces that define Montpelier have steep, narrow staircases that pre-date any concept of modern furniture dimensions. Basement flats are reached by external stone steps. Front doors open directly onto the pavement with no porch or hallway to stage items. Many of the larger properties were bombed during the Second World War and rebuilt with different internal layouts — so even two houses side by side can have completely different access. We survey every Montpelier move in advance because assumptions don't work here.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The staircases are the consistent challenge. Three-storey Georgian houses with a staircase that twists 180 degrees on a half-landing barely wide enough for one person — that's standard in Montpelier. We bring stair-climbing trolleys, extra crew, and the expectation that larger items will need disassembly upstairs and reassembly at the destination. It's included in your quote because it's not optional here — it's the norm.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Coburg Road and the Tightest Streets</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Coburg Road is one we know particularly well — we've moved people on it many times, and it remains one of the most logistically challenging streets in Bristol. There's barely enough space to drive a Luton down it, let alone find somewhere to stop. Cars that come down the road sometimes can't reverse back and have to sit and wait for the van to be moved.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Parking reservation the night before isn't just helpful on Coburg Road — it's close to essential. Our fleet is predominantly Luton vans rather than larger lorries, a deliberate choice for Bristol's residential streets. A Luton can position in spaces a lorry simply can't reach, which matters in areas like Montpelier where the difference between fitting and not fitting is measured in inches.</p>
+  </div>
+
+  <!-- S4: What the Properties Are Like Inside (cream box) -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like Inside</h2>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/montpelier-staircase"
+          pattern="HALF"
+          alt="Steep Georgian staircase inside a Montpelier terrace — typical of the narrow stairwells our crew navigates"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">A Montpelier staircase — steep, narrow, and requiring careful planning for larger items.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "If you're moving to Montpelier — especially if it's a long-distance move finishing late in the day — please do one thing in advance: contact the current occupants of your new property and ask them to reserve parking spaces outside for your moving day. Two van-sized spaces kept clear can transform the end of a move. Arriving at your new home after a full day's work, with nowhere to park within 100 metres except the middle of the road, while commuters are heading home, is exactly the kind of stress we want to help you avoid."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Inside, these properties demand a specific approach. Wardrobes, bed frames, and sofas rarely make it through Montpelier's staircases in one piece — disassembly on the top floor and reassembly at the destination is standard practice. The hallways on the ground floor are often narrower than they appear from the street, and the angles between rooms require the kind of spatial awareness that only comes from doing this regularly.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking situation, and any items that need special handling — and price the job accordingly. In Montpelier, the survey isn't a formality. It's the difference between a quote that holds and one that doesn't.</p>
+  </div>
+
+
+  <!-- S5: Is Montpelier a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Montpelier a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Honestly, yes — Montpelier is one of the harder areas in Bristol for removals. The combination of narrow hillside streets, strict RPZ enforcement, steep Georgian staircases, no off-street parking, and a conservation area that limits vehicle access makes it genuinely challenging. It's not the kind of neighbourhood where you can wing it with a van and a couple of mates on a Saturday morning.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">But it's a neighbourhood we know extremely well. We've been moving people in and out of Montpelier since 1978. We know which streets need shuttle vans, which ones can take a Luton, where to park when the obvious spots are gone, and how to get a king-size bed frame down a Georgian staircase without damaging the banister. The difficulty is real — but it's entirely manageable with the right crew, the right equipment, and the right plan.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before — particularly useful in Montpelier's compact terraces where there's nowhere to stack boxes without blocking the staircase. We pack, label, and clear each room systematically so the crew can load efficiently the next morning.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Montpelier Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Parking suspension applied?</strong> RPZ enforcement is aggressive — apply 7–10 working days ahead. Your Move Manager handles this.</li>
+      <li><strong>Which street?</strong> Some streets take a Luton, some need a shuttle approach. We'll confirm during the survey.</li>
+      <li><strong>Reserve spaces at the destination?</strong> Contact the current occupants and ask them to keep two van-sized spaces clear on moving day.</li>
+      <li><strong>Large furniture flagged?</strong> Wardrobes, bed frames, sofas — flag anything oversized at booking so we assess the staircase.</li>
+      <li><strong>Early start agreed?</strong> Morning arrivals work best before the streets fill up and parking competition intensifies.</li>
+      <li><strong>Packing needed?</strong> Day-before packing keeps moving day efficient in compact Montpelier terraces.</li>
+    </ul>
+  </div>
+
+  <!-- Cross-links -->
+  <div class="pb-10 md:pb-12">
+    <p class="text-[17px] leading-relaxed text-gray-800">
+      Montpelier borders several other neighbourhoods we cover regularly, each with its own access profile.
+      <a href="/removals-bristol/cotham/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Cotham</a> shares similar RPZ challenges but with wider streets.
+      <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> has comparable Georgian architecture but better parking options.
+      <a href="/removals-bristol/bedminster/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster</a> and
+      <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> across the river have their own steep-street challenges but without Montpelier's RPZ severity.
+    </p>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

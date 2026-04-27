@@ -1,0 +1,512 @@
+---
+/**
+ * Contact Page
+ *
+ * Local SEO optimised contact page for Painless Removals.
+ * Includes Cloudflare Turnstile, honeypot spam protection,
+ * and email/phone scraping defence.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import ReviewQuote from '@/components/ReviewQuote.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, breadcrumbs, faqPage } from '@/utils/schema';
+
+// Page metadata – local SEO optimised
+const pageTitle = 'Contact Us – Bristol Removals Company';
+const pageDescription = `Get in touch with Painless Removals in Bristol. Call ${siteConfig.company.contact.phone} for a free moving quote. Bristol removal company since 1978. ${siteConfig.company.rating.value} star rating.`;
+
+// Turnstile site key – set via PUBLIC_TURNSTILE_SITE_KEY env var
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+
+// Trust stats (no emojis)
+const stats = [
+  { value: '1978', label: 'Year Founded' },
+  { value: siteConfig.company.rating.value, label: 'Average Rating' },
+  { value: String(siteConfig.company.rating.count), label: 'Verified Reviews' },
+  { value: '£15k', label: 'Insurance Per Van' },
+];
+
+// FAQs – locally optimised for Bristol SEO
+const faqs = [
+  {
+    question: 'What areas in Bristol do you cover for removals?',
+    answer: 'We cover all areas of Bristol and the surrounding region including Southmead, Filton, Horfield, Bishopston, Stoke Bishop, Henleaze, Westbury-on-Trym, Bradley Stoke, and Patchway. We also handle long-distance moves from Bristol to anywhere in the UK.',
+  },
+  {
+    question: 'Where are you based in Bristol?',
+    answer: 'Our base is at 290-294 Southmead Road, Bristol BS10 5EN – just 2 minutes from Southmead Hospital, a short drive from The Mall at Cribbs Causeway, and close to UWE Bristol\'s Frenchay campus.',
+  },
+  {
+    question: 'How do I get a free moving quote?',
+    answer: `The quickest way is to call us on ${siteConfig.company.contact.phone}. You can also email ${siteConfig.company.contact.email} or fill out the contact form on this page. For an instant estimate, try our online quote tool.`,
+  },
+  {
+    question: 'What are your opening hours?',
+    answer: 'Our lines are open Monday to Friday, 9:00 AM to 5:00 PM. Moves can be scheduled outside these hours by arrangement. You can leave a message or email us any time and we\'ll respond on the next working day.',
+  },
+  {
+    question: 'How quickly will you respond to my enquiry?',
+    answer: `We aim to respond to all emails and form submissions within 2 hours during office hours. For an immediate response, call us directly on ${siteConfig.company.contact.phone} – you'll speak to a real person, not an answering machine.`,
+  },
+];
+
+// Schema: ContactPage referencing canonical /#business entity
+const contactPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact Painless Removals Bristol",
+  "description": pageDescription,
+  "url": `${siteConfig.brand.domain}/contact`,
+  "mainEntity": ref.business(),
+};
+
+// Combined schema array
+const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Contact" },
+])];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} preloadImage="/img/about/team/Tom-256w.avif">
+
+  <!-- ============================================
+       HERO – Compact: contact details + Tom photo
+  ============================================ -->
+  <section class="gradient-hero py-8 lg:py-10">
+    <div class="max-w-4xl mx-auto px-5">
+      <div class="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-14">
+        <!-- Left: Content -->
+        <div class="text-center lg:text-left">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Contact Painless Removals
+          </p>
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold mb-5">
+            Get in Touch
+          </h1>
+
+          <!-- Inline contact details -->
+          <div class="flex flex-col sm:flex-row flex-wrap items-center lg:items-start gap-x-6 gap-y-3 text-sm">
+            <!-- Phone -->
+            <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-primary-600 no-underline hover:text-secondary-500 transition-colors font-semibold">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              {siteConfig.company.contact.phone}
+            </a>
+            <!-- Email -->
+            <span class="flex items-center gap-2 text-primary-600">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span data-contact="email"><noscript>hello@painlessremovals.com</noscript></span>
+            </span>
+          </div>
+          <!-- Hours on its own row -->
+          <div class="flex items-center justify-center lg:justify-start gap-2 text-sm text-warm-gray mt-3">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Mon&ndash;Fri 9am&ndash;5pm
+          </div>
+
+          <!-- Languages spoken -->
+          <div class="flex items-center justify-center lg:justify-start gap-4 mt-3">
+            <span class="text-xs text-warm-gray font-medium uppercase tracking-wide">We speak:</span>
+            <div class="flex items-center gap-3">
+              <span class="flex items-center gap-1.5 text-sm" title="English">
+                <span class="inline-block w-6 h-4 rounded-sm overflow-hidden shadow-sm border border-gray-200">
+                  <svg viewBox="0 0 60 40" class="w-full h-full"><rect width="60" height="40" fill="#012169"/><path d="M0 0L60 40M60 0L0 40" stroke="#fff" stroke-width="7"/><path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" stroke-width="4"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="13"/><path d="M30 0v40M0 20h60" stroke="#C8102E" stroke-width="8"/></svg>
+                </span>
+                English
+              </span>
+              <span class="flex items-center gap-1.5 text-sm" title="Espa&ntilde;ol">
+                <span class="inline-block w-6 h-4 rounded-sm overflow-hidden shadow-sm border border-gray-200">
+                  <svg viewBox="0 0 60 40" class="w-full h-full"><rect width="60" height="10" fill="#AA151B"/><rect y="10" width="60" height="20" fill="#F1BF00"/><rect y="30" width="60" height="10" fill="#AA151B"/></svg>
+                </span>
+                Espa&ntilde;ol
+              </span>
+              <span class="flex items-center gap-1.5 text-sm" title="Fran&ccedil;ais">
+                <span class="inline-block w-6 h-4 rounded-sm overflow-hidden shadow-sm border border-gray-200">
+                  <svg viewBox="0 0 60 40" class="w-full h-full"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>
+                </span>
+                Fran&ccedil;ais
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Tom circular photo + caption -->
+        <div class="flex flex-col items-center shrink-0">
+          <div class="w-32 h-32 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden border-4 border-white shadow-xl">
+            <OptimizedPicture
+              name="about/team/Tom"
+              pattern="SIXTH"
+              alt="Tom, Customer Relationships Manager at Painless Removals Bristol"
+              loading="eager"
+              fetchpriority="high"
+              class="w-full h-full object-cover object-top"
+            />
+          </div>
+          <p class="mt-3 font-semibold text-primary-600">You'll speak with Tom</p>
+          <p class="text-xs text-warm-gray">Customer Relationships Manager</p>
+          <div class="mt-2 flex items-center gap-2">
+            <span class="text-yellow-400 text-lg tracking-tight" aria-label="5 out of 5 stars">★★★★★</span>
+            <span class="text-warm-gray text-xs font-medium">{siteConfig.company.rating.value} from {siteConfig.company.rating.count} reviews</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FORM SECTION – Dark bg, elevated white card
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-primary-600 relative overflow-hidden">
+    <!-- Subtle decorative circles -->
+    <div class="absolute inset-0 opacity-5">
+      <div class="absolute -top-20 -left-20 w-64 h-64 border border-white rounded-full"></div>
+      <div class="absolute -bottom-16 -right-16 w-48 h-48 border border-white rounded-full"></div>
+    </div>
+
+    <div class="max-w-2xl mx-auto px-5 relative z-10">
+      <!-- Section heading on dark bg -->
+      <div class="text-center mb-8">
+        <h2 class="text-white text-2xl md:text-3xl mb-2">Send Us a Message</h2>
+        <p class="text-primary-200">
+          Tell us about your move and we'll come back to you &mdash; usually within a couple of hours.
+        </p>
+      </div>
+
+      <!-- Elevated white form card -->
+      <div id="contact-form" class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10" style="scroll-margin-top: 5rem;">
+        <form id="contact-form-el" class="space-y-5" novalidate data-phone={siteConfig.company.contact.phone}>
+          <!-- Honeypot – hidden from humans, bots fill it -->
+          <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label for="website">Leave this blank</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- Name -->
+          <div>
+            <label for="name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Name <span class="text-secondary-500">*</span></label>
+            <input type="text" id="name" name="name" required autocomplete="name"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+
+          <!-- Phone and Email row -->
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-primary-600 mb-1.5">Phone Number <span class="text-secondary-500">*</span></label>
+              <input type="tel" id="phone" name="phone" required autocomplete="tel"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-semibold text-primary-600 mb-1.5">Email Address <span class="text-secondary-500">*</span></label>
+              <input type="email" id="email" name="email" required autocomplete="email"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+          </div>
+
+          <!-- Message -->
+          <div>
+            <label for="message" class="block text-sm font-semibold text-primary-600 mb-1.5">Tell Us About Your Move</label>
+            <textarea id="message" name="message" rows="4"
+              placeholder="Number of bedrooms, any special requirements, questions..."
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+          </div>
+
+          <!-- Cloudflare Turnstile -->
+          <div>
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+          </div>
+
+          <!-- Error message area -->
+          <div id="form-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+
+          <!-- Submit -->
+          <div>
+            <button type="submit" id="submit-btn"
+              class="btn-cta-orange cursor-pointer w-full sm:w-auto">
+              SEND MESSAGE
+            </button>
+            <p class="text-warm-gray text-sm mt-3">
+              Prefer to talk? Call <span data-contact="phone-inline"><noscript>0117 287 0082</noscript></span>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       REVIEWS – Stuart Bell + Michelle Carolyn Jarrett
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-cream">
+    <div class="container-wide">
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <ReviewQuote
+          text="They responded quickly to my email and identified a date for my move. At short notice we had to change the date and they were very accommodating. On the day of the move they turned up on time, were polite and friendly, emptied the house quickly and with care and then the same at the other end. The team made it all very <mark>'painless'</mark>! Good job!!!"
+          name="Stuart Bell"
+          source="Google Review"
+        />
+        <ReviewQuote
+          text="From the initial contact via a web enquiry to the moving day and everything in between Jay and his team were excellent."
+          name="Michelle Carolyn Jarrett"
+          source="Facebook"
+        />
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="/reviews/" class="inline-flex items-center gap-2 text-primary-600 font-medium no-underline border-b-2 border-accent-500 pb-0.5 hover:text-secondary-500 hover:border-secondary-500 transition-all duration-200">
+          Read verified customer reviews <span class="text-sm">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       MAP + DRIVING DIRECTIONS
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-8">Our Location</h2>
+
+      <div class="rounded-xl overflow-hidden shadow-lg max-w-4xl mx-auto">
+        <iframe
+          src="https://maps.google.com/maps?q=290-294+Southmead+Road,+Bristol+BS10+5EN,+UK&t=&z=15&ie=UTF8&iwloc=&output=embed"
+          width="100%"
+          height="350"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Painless Removals van base – 290-294 Southmead Road, Bristol BS10 5EN"
+        ></iframe>
+      </div>
+
+      <p class="text-center text-sm text-warm-gray mt-4 mb-10">
+        Van base: 290-294 Southmead Rd, Bristol BS10 5EN &mdash; not a walk-in office
+      </p>
+
+      <!-- Driving directions -->
+      <div class="max-w-3xl mx-auto">
+        <h3 class="text-lg font-semibold text-primary-600 mb-4">How to Find Us</h3>
+        <div class="space-y-4 text-sm text-warm-gray leading-relaxed">
+          <div class="flex gap-3">
+            <span class="font-semibold text-primary-600 shrink-0 w-36">From the M5</span>
+            <p>Exit at Junction 17 (Cribbs Causeway) and take the A4018 south towards Bristol. Continue for approximately 1.5 miles along Southmead Road. Our van base is on the left-hand side, between Southmead Hospital and The Venture Inn.</p>
+          </div>
+          <div class="flex gap-3">
+            <span class="font-semibold text-primary-600 shrink-0 w-36">From City Centre</span>
+            <p>Follow the A38 (Gloucester Road) north through Bishopston and Horfield. Turn left onto Kellaway Avenue, then continue onto Southmead Road (A4018). We're approximately one mile along on the right.</p>
+          </div>
+          <div class="flex gap-3">
+            <span class="font-semibold text-primary-600 shrink-0 w-36">From the M4 / M32</span>
+            <p>Follow the M32 into Bristol. At the end of the motorway, take the A38 north towards Filton and Southmead. Turn left onto Southmead Road (A4018) and continue for about a mile.</p>
+          </div>
+        </div>
+
+        <!-- Google Business link -->
+        <div class="mt-8 text-center">
+          <a href={siteConfig.company.contact.googleBusiness} target="_blank" rel="noopener"
+            class="inline-flex items-center gap-3 bg-cream rounded-xl px-5 py-3 no-underline text-primary-600 font-medium hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 border border-warm-gray-200">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#4285F4" class="shrink-0"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            See us on Google Business
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FAQ – Full-width accordion
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Frequently Asked Questions" />
+
+  <!-- ============================================
+       TRUST STATS – Blue theme, no emojis
+  ============================================ -->
+  <section class="section bg-primary-600 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5">
+      <div class="absolute top-10 left-10 w-40 h-40 border border-white rounded-full"></div>
+      <div class="absolute bottom-10 right-10 w-60 h-60 border border-white rounded-full"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 border border-white rounded-full"></div>
+    </div>
+
+    <div class="container-wide relative z-10">
+      <div class="text-center mb-12">
+        <h2 class="text-white">Why Bristol Families Trust Us</h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <div class="stat-card-blue group">
+            <div class="font-heading text-4xl md:text-5xl font-bold text-white leading-none mb-2">
+              {stat.value}
+            </div>
+            <div class="text-sm text-primary-200 group-hover:text-white transition-colors duration-300">{stat.label}</div>
+            <div class="w-0 h-0.5 bg-white/40 mx-auto mt-4 group-hover:w-12 transition-all duration-500"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FINAL CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white mb-4">Ready to Plan Your Move?</h2>
+      <p class="text-primary-100 text-lg mb-8 max-w-xl mx-auto">
+        Get an instant estimate for your move from Bristol. No pressure, no obligation
+        – just a clear idea of what it might cost.
+      </p>
+
+      <a href="/instantquote/" class="btn-cta-orange inline-block">
+        Get Your Instant Quote
+      </a>
+
+      <p class="text-sm text-primary-200 mt-8">
+        Painless Removals Ltd &middot; 290-294 Southmead Rd, Bristol BS10 5EN &middot; Mon&ndash;Fri 9am&ndash;5pm
+      </p>
+    </div>
+  </section>
+
+  <!-- Cloudflare Turnstile script -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- Contact form submission + contact obfuscation -->
+  <script is:inline>
+    (function() {
+      // =============================================
+      // Email & phone scraping defence
+      // =============================================
+      var ph = ['0','1','1','7',' ','2','8','7',' ','0','0','8','2'];
+      var phClean = ph.join('').replace(/\s/g, '');
+      var phDisplay = ph.join('');
+      var em = ['hello','@','painlessremovals','.','com'];
+      var emDisplay = em.join('');
+
+      document.querySelectorAll('[data-contact="phone"]').forEach(function(el) {
+        el.innerHTML = '<a href="tel:' + phClean + '" class="font-bold text-primary-600 no-underline hover:text-secondary-500 transition-colors">' + phDisplay + '</a>';
+      });
+
+      document.querySelectorAll('[data-contact="phone-inline"]').forEach(function(el) {
+        el.innerHTML = '<a href="tel:' + phClean + '" class="font-semibold">' + phDisplay + '</a>';
+      });
+
+      document.querySelectorAll('[data-contact="email"]').forEach(function(el) {
+        el.innerHTML = '<a href="mailto:' + emDisplay + '" class="font-semibold text-primary-600 no-underline hover:text-secondary-500 transition-colors">' + emDisplay + '</a>';
+      });
+
+      // =============================================
+      // Form submission via fetch
+      // =============================================
+      var form = document.getElementById('contact-form-el');
+      var PHONE = form && form.dataset.phone || '0117 287 0082';
+      var errorDiv = document.getElementById('form-error');
+      var submitBtn = document.getElementById('submit-btn');
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          errorDiv.classList.add('hidden');
+          errorDiv.textContent = '';
+
+          var name = form.querySelector('#name').value.trim();
+          var phone = form.querySelector('#phone').value.trim();
+          var email = form.querySelector('#email').value.trim();
+          var message = form.querySelector('#message').value.trim();
+          var honeypot = form.querySelector('#website').value;
+
+          if (!name) {
+            window.showToast('Please enter your name.', 'error');
+            form.querySelector('#name').focus();
+            return;
+          }
+          if (!phone) {
+            window.showToast('Please enter a phone number so we can call you back.', 'error');
+            form.querySelector('#phone').focus();
+            return;
+          }
+          if (!email) {
+            window.showToast('Please enter your email address.', 'error');
+            form.querySelector('#email').focus();
+            return;
+          }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            window.showToast('That email address doesn\'t look right — please check it and try again.', 'error');
+            form.querySelector('#email').focus();
+            return;
+          }
+
+          var turnstileResponse = '';
+          var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
+          if (turnstileInput) {
+            turnstileResponse = turnstileInput.value;
+          }
+
+          if (!turnstileResponse) {
+            window.showToast('The security check is still loading — please wait a moment and try again, or call us on ' + PHONE + '.', 'warning');
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'SENDING...';
+
+          fetch('/api/contact/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: name,
+              phone: phone,
+              email: email,
+              message: message,
+              honeypot: honeypot,
+              turnstileToken: turnstileResponse,
+            }),
+          })
+          .then(function(res) {
+            if (!res.ok) {
+              return res.text().then(function(text) {
+                try { return JSON.parse(text); } catch (_e) {
+                  throw new Error('Server returned ' + res.status);
+                }
+              });
+            }
+            return res.json();
+          })
+          .then(function(data) {
+            if (data.success) {
+              // Push conversion event to GTM dataLayer
+              var tracking = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                event: 'form_submission',
+                form_name: 'contact',
+                form_source: 'contact-page',
+                utm_source: tracking.utm_source || '',
+                utm_medium: tracking.utm_medium || '',
+                utm_campaign: tracking.utm_campaign || '',
+                gclid: tracking.gclid || '',
+                fbclid: tracking.fbclid || '',
+              });
+              window.location.href = '/contact/thank-you';
+            } else {
+              window.showToast(data.error || 'Something went wrong sending your message. Please try again or call us on ' + PHONE + '.', 'error');
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'SEND MESSAGE';
+              if (window.turnstile) { window.turnstile.reset(); }
+            }
+          })
+          .catch(function(err) {
+            console.error('Contact form error:', err);
+            window.showToast('Connection error — please check your internet connection and try again, or call us on ' + PHONE + '.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SEND MESSAGE';
+          });
+        });
+      }
+    })();
+  </script>
+
+</Layout>

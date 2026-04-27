@@ -1,0 +1,347 @@
+---
+/**
+ * Lesson Cinema Page — /packing-guide/[slug]
+ *
+ * Dark-themed lesson player with video embed, sidebar navigation,
+ * transcript content, and contextual CTAs per lesson.
+ */
+
+import CourseLayout from '@/layouts/CourseLayout.astro';
+import YouTubeEmbed from '@/components/course/YouTubeEmbed.astro';
+import LessonNav from '@/components/course/LessonNav.astro';
+import type { LessonItem } from '@/components/course/LessonNav.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import Breadcrumbs from '@/components/course/Breadcrumbs.astro';
+import ProTip from '@/components/course/ProTip.astro';
+import MistakesList from '@/components/course/MistakesList.astro';
+import PackingChecklist from '@/components/course/PackingChecklist.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { getCollection, render } from 'astro:content';
+import { ref, breadcrumbs } from '@/utils/schema';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('packing-guide');
+  return lessons.map((lesson) => ({
+    params: { slug: lesson.id.replace(/\.md$/, '') },
+    props: { lesson },
+  }));
+}
+
+/** Strip .md extension from Astro 5 content collection entry id */
+const toSlug = (id: string) => id.replace(/\.md$/, '');
+
+const { lesson } = Astro.props;
+const { Content } = await render(lesson);
+const slug = toSlug(lesson.id);
+
+const allLessons = await getCollection('packing-guide');
+const sorted = [...allLessons].sort((a, b) => a.data.order - b.data.order);
+
+// Build sidebar data
+const sidebarLessons: LessonItem[] = sorted.map((l) => ({
+  slug: toSlug(l.id),
+  title: l.data.title,
+  durationMinutes: l.data.durationMinutes,
+  order: l.data.order,
+}));
+
+// Prev/next
+const currentIndex = sorted.findIndex((l) => l.id === lesson.id);
+const prevLesson = currentIndex > 0 ? sorted[currentIndex - 1] : null;
+const nextLesson = currentIndex < sorted.length - 1 ? sorted[currentIndex + 1] : null;
+
+// Related lessons
+const relatedSlugs = lesson.data.relatedLessons || [];
+const relatedLessons = sorted.filter((l) => relatedSlugs.includes(toSlug(l.id)));
+
+// ---- Unique CTAs per lesson ----
+const lessonCTAs: Record<string, { packing: string; removals: string }> = {
+  'planning-and-preparation': {
+    packing: "Overwhelmed before you've begun? Our Bristol team packs entire homes in a day",
+    removals: 'Get a free removal quote for your Bristol move',
+  },
+  'materials-and-equipment': {
+    packing: "Don't want to source materials? We bring everything — boxes, paper, tape",
+    removals: 'Planning a move? Get a free quote and we handle the lot',
+  },
+  'how-to-pack-kitchen': {
+    packing: 'Kitchen full of fragile items? Let our packers handle it',
+    removals: 'Moving soon? See our full home removals service',
+  },
+  'how-to-pack-fragile-items': {
+    packing: 'High-value items? Our insured packing service protects everything',
+    removals: 'Planning a careful move? We specialise in fragile transport',
+  },
+  'key-items': {
+    packing: 'Want everything organised from day one? Our packers label and inventory it all',
+    removals: 'Moving day sorted — get your free Bristol removal quote',
+  },
+  'how-to-label-and-organise-boxes': {
+    packing: 'Want a stress-free unpack? Our team labels and inventories everything',
+    removals: 'Organised move from start to finish — see our removals service',
+  },
+  'bedrooms-and-wardrobes': {
+    packing: 'Short on wardrobe boxes? We bring professional kit to your door',
+    removals: 'Moving wardrobes is heavy work — let our Bristol team help',
+  },
+  'dismantling-furniture': {
+    packing: 'Furniture too big to move? Our team dismantles and reassembles everything',
+    removals: 'Heavy furniture? Our experienced crew handles it all — get a quote',
+  },
+  'electronics-and-books': {
+    packing: 'Worried about expensive equipment? Our packers are fully insured',
+    removals: 'Moving a home office? We handle electronics with care',
+  },
+  'moving-plants-pianos-pets': {
+    packing: 'Got a piano or specialist items? We have the equipment and experience',
+    removals: 'Special items need special care — talk to our Bristol team',
+  },
+  'you-can-always-ask-for-help': {
+    packing: 'Ready to let the professionals handle it? See our packing service',
+    removals: 'Get a free, no-obligation removal quote for your Bristol move',
+  },
+};
+
+const cta = lessonCTAs[slug] || {
+  packing: 'Let our Bristol team handle the packing for you',
+  removals: 'Get a free removal quote for your move',
+};
+
+// ---- Schema markup ----
+const domain = siteConfig.brand.domain;
+const thumbnailUrl = `https://i.ytimg.com/vi/${lesson.data.youtubeId}/hqdefault.jpg`;
+const embedUrl = `https://www.youtube.com/embed/${lesson.data.youtubeId}`;
+const isoDuration = `PT${lesson.data.durationMinutes}M`;
+
+const uploadDate = '2025-04-15T09:00:00+00:00';
+const datePublished = '2026-02-14T09:00:00+00:00';
+const dateModified = '2026-03-12T09:00:00+00:00';
+
+const videoSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  'name': lesson.data.title,
+  'description': lesson.data.description,
+  'thumbnailUrl': thumbnailUrl,
+  'embedUrl': embedUrl,
+  'uploadDate': uploadDate,
+  'duration': isoDuration,
+  'author': ref.person(),
+  'publisher': ref.business(),
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  'headline': lesson.data.title,
+  'description': lesson.data.description,
+  'url': `${domain}/packing-guide/${slug}`,
+  'datePublished': datePublished,
+  'dateModified': dateModified,
+  'author': ref.person(),
+  'publisher': ref.business(),
+  'inLanguage': 'en-GB',
+  'video': {
+    '@type': 'VideoObject',
+    'name': lesson.data.title,
+    'description': lesson.data.description,
+    'thumbnailUrl': thumbnailUrl,
+    'embedUrl': embedUrl,
+    'uploadDate': uploadDate,
+    'duration': isoDuration,
+  },
+};
+
+const pageSchema = [
+  videoSchema,
+  articleSchema,
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'Packing Guide', path: '/packing-guide/' },
+    { name: lesson.data.title },
+  ]),
+];
+
+const canonical = `${domain}/packing-guide/${slug}`;
+---
+
+<CourseLayout
+  title={lesson.data.metaTitle}
+  description={lesson.data.description}
+  schema={pageSchema}
+  canonical={canonical}
+  ogImage={thumbnailUrl}
+>
+  <div id="lesson-cinema" class="lesson-cinema" data-focus="false">
+    <!-- Video column -->
+    <div class="cinema-video">
+      <div class="cinema-video-header">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Packing Guide', href: '/packing-guide' },
+            { label: lesson.data.title },
+          ]}
+        />
+        <button
+          id="focus-toggle"
+          class="focus-mode-btn"
+          aria-label="Toggle focus mode"
+          title="Focus mode — hide sidebar"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+          </svg>
+          Focus
+        </button>
+      </div>
+
+      <YouTubeEmbed videoId={lesson.data.youtubeId} title={lesson.data.title} />
+    </div>
+
+    <!-- Sidebar -->
+    <LessonNav
+      lessons={sidebarLessons}
+      currentSlug={slug}
+      baseUrl="/packing-guide"
+    />
+  </div>
+
+  <!-- ═══ Two-column content layout ═══ -->
+  <div class="course-content-layout">
+
+    <!-- ─── Main column ─── -->
+    <div>
+      <div class="course-transcript prose">
+        <h1>{lesson.data.title}</h1>
+        <Content />
+
+        {lesson.data.proTip && (
+          <div class="not-prose">
+            <ProTip quote={lesson.data.proTip.quote} context={lesson.data.proTip.context} />
+          </div>
+        )}
+      </div>
+
+      <!-- Mobile only: sidebar items inline -->
+      <div class="course-mobile-only">
+        {lesson.data.checklist && (
+          <div class="mb-6">
+            <PackingChecklist items={lesson.data.checklist.items} roomName={lesson.data.checklist.heading} />
+          </div>
+        )}
+
+        {lesson.data.commonMistakes && (
+          <div class="mb-6">
+            <MistakesList mistakes={lesson.data.commonMistakes} />
+          </div>
+        )}
+
+        <div class="mb-6">
+          <SidebarAuthorBox />
+        </div>
+      </div>
+
+      <!-- Related lessons -->
+      {relatedLessons.length > 0 && (
+        <div class="related-lessons">
+          <strong>Related lessons:</strong>{' '}
+          {relatedLessons.map((rel, i) => (
+            <>
+              {i > 0 && ', '}
+              <a href={`/packing-guide/${toSlug(rel.id)}`}>{rel.data.title}</a>
+            </>
+          ))}
+        </div>
+      )}
+
+      <!-- Prev / Next navigation -->
+      <nav class="lesson-prev-next" aria-label="Previous and next lessons">
+        {prevLesson ? (
+          <a href={`/packing-guide/${toSlug(prevLesson.id)}`}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5m0 0l7 7m-7-7l7-7" />
+            </svg>
+            {prevLesson.data.title}
+          </a>
+        ) : (
+          <span></span>
+        )}
+        {nextLesson ? (
+          <a href={`/packing-guide/${toSlug(nextLesson.id)}`}>
+            {nextLesson.data.title}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14m0 0l-7-7m7 7l-7 7" />
+            </svg>
+          </a>
+        ) : (
+          <span></span>
+        )}
+      </nav>
+
+      <!-- Trust micro-line -->
+      <div class="trust-micro">
+        Painless Removals — trusted by Bristol families since 1978.
+        <a href="/contact/">Get in touch</a>
+      </div>
+    </div>
+
+    <!-- ─── Sidebar column (desktop only) ─── -->
+    <aside class="course-content-sidebar">
+      <div class="space-y-5 pt-6 pb-5">
+
+        {lesson.data.checklist && (
+          <PackingChecklist items={lesson.data.checklist.items} roomName={lesson.data.checklist.heading} />
+        )}
+
+        {lesson.data.commonMistakes && (
+          <MistakesList mistakes={lesson.data.commonMistakes} />
+        )}
+
+        <SidebarAuthorBox />
+
+      </div>
+
+      <!-- Sticky CTA — direct child of aside so it has full column height to stick within -->
+      <SidebarCTA />
+    </aside>
+
+  </div>
+  <!-- ═══ End two-column layout ═══ -->
+
+  <!-- CTA section (unique per lesson) -->
+  <section class="course-cta-section">
+    <div class="course-cta-grid">
+      <a href="/home-packing-service/" class="course-cta-card">
+        <p>{cta.packing}</p>
+        <span class="cta-arrow">Our packing service &rarr;</span>
+      </a>
+      <a href="/home-removals-bristol/" class="course-cta-card">
+        <p>{cta.removals}</p>
+        <span class="cta-arrow">Home removals &rarr;</span>
+      </a>
+    </div>
+  </section>
+</CourseLayout>
+
+<script>
+  const btn = document.getElementById('focus-toggle');
+  const cinema = document.getElementById('lesson-cinema');
+
+  btn?.addEventListener('click', () => {
+    const focused = cinema?.dataset.focus === 'true';
+    const toggle = () => {
+      if (cinema) cinema.dataset.focus = String(!focused);
+    };
+    if ('startViewTransition' in document) {
+      (document as any).startViewTransition(toggle);
+    } else {
+      toggle();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && cinema) cinema.dataset.focus = 'false';
+  });
+</script>

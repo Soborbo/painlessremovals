@@ -1,0 +1,477 @@
+---
+/**
+ * /key-wait-waiver/ — Key Wait Waiver Explained
+ *
+ * 50/50 hero + UspBar + blog layout with sticky TOC sidebar.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+
+const title = "Key Wait Waiver — Peace of Mind on Moving Day";
+const description = "Worried about delays on moving day because keys haven't been released? Our Key Wait Waiver covers the extra costs so you don't have to. Learn how it works, what it costs, and whether you need one.";
+
+const tocItems = [
+  { id: 'what-is-it', label: 'What Is the Key Wait Waiver?' },
+  { id: 'why-delays-happen', label: 'Why Delays Happen' },
+  { id: 'what-it-covers', label: 'What It Covers' },
+  { id: 'pricing', label: 'How Much Does It Cost?' },
+  { id: 'storage-backup', label: 'What If the Keys Never Come?' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-03-11",
+  "dateModified": "2026-03-11",
+};
+
+const faqs = [
+  { question: "Do I need the Key Wait Waiver if I'm a first-time buyer?", answer: "Probably not. First-time buyers at the bottom of a short chain rarely experience key delays. The waiver is most valuable for people in longer chains — particularly those at the top, where every link below has to complete before you get your keys." },
+  { question: "What if the delay is your fault — a van breakdown or wrong time estimate?", answer: "You won't be charged. If we have a mechanical problem, underestimate load times, or make any other mistake in our planning, there are no additional charges — with or without the waiver. The waiver only covers delays that are outside both our and your control." },
+  { question: "Does the waiver cover a second day if the move can't be completed?", answer: "No. The Key Wait Waiver covers additional hours on the scheduled moving day. If the move has to continue on a second day, there will be additional charges — but we offer heavily discounted rates because we understand it's not your fault." },
+  { question: "What happens if the keys haven't arrived by 5pm?", answer: "5pm is our cutoff. If unloading hasn't started by then, we'll move your belongings into secure storage and arrange delivery once your keys are released. If we have space in our own facility, we offer up to two weeks of free storage." },
+  { question: "Does the number of vans affect the waiver price?", answer: "No. The waiver is calculated purely on crew size — the number of people on the job. Whether we use one van or six, the waiver price stays the same because it's covering wage costs, not vehicle costs." },
+  { question: "How many customers actually end up needing the waiver?", answer: "Only one or two jobs per month experience significant delays. But those delays can add hundreds of pounds in additional costs. Several customers each week pay for the waiver — most never need it, but the ones who do are very glad they have it." },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer },
+  })),
+};
+
+const schema = [articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/key-wait-waiver/hero-1200w.webp" preloadImage="/img/key-wait-waiver/hero-750w.avif">
+
+  <!-- ============================================
+       HERO: 50/50 split
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: image top -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="key-wait-waiver/hero"
+        pattern="FULL"
+        alt="Watercolour illustration of house keys being handed over on moving day"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Key Wait Waiver
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          Don't Let a Key Delay <span class="text-secondary-500">Cost You Extra</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Chains collapse. Solicitors run late. Keys don't arrive on time. Our Key Wait Waiver means you won't pay a penny more if moving day runs over because of delays you can't control.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+            GET YOUR FREE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: full-bleed image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="key-wait-waiver/hero"
+        pattern="FULL"
+        alt="Watercolour illustration of house keys being handed over on moving day"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar />
+
+  <!-- ============================================
+       BLOG LAYOUT: article + sticky TOC sidebar
+  ============================================ -->
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <div class="blog-layout">
+
+      <!-- ARTICLE -->
+      <article class="min-w-0">
+
+        <AuthorByline lastUpdated="March 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">You've packed the house. The van is loaded. The team is ready. And then you're sat outside your new property, staring at a locked front door, waiting for a phone call that should have come two hours ago.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-10">It happens more often than you'd think. And when it does, the clock keeps ticking — and so does your removal bill. That's exactly why we created the Key Wait Waiver.</p>
+
+        <!-- ── S1: What Is It? ── -->
+        <section id="what-is-it">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Is the Key Wait Waiver?</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">When we quote your move, we calculate an expected work time — loading, driving, breaks, unloading, and the return to our depot. A typical day starts around 8am and finishes by 4 or 4:30pm. Sometimes it's an eight-hour day, sometimes nine or ten, depending on the size of the job.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If the move runs beyond those quoted hours for reasons outside our control, there are normally additional charges to cover the extra wage bill. The Key Wait Waiver is a one-off payment that removes those charges entirely.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Think of it as an insurance policy for your moving day. A small, fixed cost upfront so you don't face a surprise bill at the end of a stressful day.</p>
+
+          <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+            "Several customers each week pay for the Key Wait Waiver. Only one or two a month actually need it. But the ones who do are always relieved they have it — because the alternative can be hundreds of pounds in additional costs at the worst possible moment."
+            <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+          </blockquote>
+        </section>
+
+        <!-- ── S2: Why Delays Happen ── -->
+        <section id="why-delays-happen" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Why Key Delays Happen</h2>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="key-wait-waiver/key-delay" pattern="HALF" alt="Watercolour illustration of a removal crew waiting outside a property with loaded vans while the customer makes a phone call" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The most common cause of moving day delays isn't traffic, weather, or awkward furniture. It's the property chain.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Here's how it works. On completion day, money has to transfer sequentially through every link in the chain. The first-time buyer at the bottom pays their solicitor. That solicitor confirms, presses a button, and the funds move to the next person's solicitor. Then the next. Then the next. Each transfer has to be verified, confirmed, and authorised before the next one can begin.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you're in a chain of two or three people, this usually goes smoothly. But if you're in a chain of five, six, or seven — and especially if you're near the top — you're waiting for every single person below you to complete before your keys are released.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">And if just one person in that chain is disorganised — they haven't finished packing, they haven't vacated the property, their paperwork isn't in order — the entire chain stalls. We've had days where the new property is sitting empty, our vans are fully loaded, and we're parked on the street for three or four hours waiting for a phone call.</p>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-6 py-5 my-8">
+            <p class="font-semibold text-amber-800 text-[15px] mb-2">Pro Tip: Know Your Chain Position</p>
+            <p class="text-[15px] leading-relaxed text-amber-900">Ask your solicitor exactly where you sit in the chain and how many links there are. If you're fourth or higher, delays are significantly more likely. That's when the Key Wait Waiver pays for itself. People at the bottom of short chains almost never experience delays.</p>
+          </div>
+        </section>
+
+        <!-- ── S3: What It Covers ── -->
+        <section id="what-it-covers" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Waiver Covers (and What It Doesn't)</h2>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">It Covers</h3>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 kww-checklist mb-6">
+            <li>Additional hours worked because keys were released late</li>
+            <li>Delays caused by problems in your property chain</li>
+            <li>Unexpected complications on the day that aren't anyone's fault — and aren't ours</li>
+            <li>Extra time needed if unforeseen issues arise at the new property</li>
+          </ul>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">It Doesn't Cover</h3>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 kww-cross-list mb-6">
+            <li>A second day of removal — if the move can't be completed on the scheduled day, there will be additional charges (though we offer heavily discounted rates)</li>
+            <li>Working beyond our 5pm cutoff — we can't have our team working until 9 or 10pm, so if unloading hasn't started by 5pm, we'll arrange storage instead</li>
+            <li>Additional items you ask us to move on the day that weren't in the original quote</li>
+          </ul>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="key-wait-waiver/our-mistakes" pattern="HALF" alt="Watercolour illustration of a Painless Removals van with a flat tyre being repaired on the roadside" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">You'll Never Be Charged For Our Mistakes</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This is important to understand — whether or not you have the waiver. If the delay is our fault, you don't pay extra. Full stop. If our van breaks down, if we underestimate the load time, if we've made errors in our calculations — that's on us. The waiver exists solely for situations that are outside everyone's control.</p>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-6 py-5 my-8">
+            <p class="font-semibold text-amber-800 text-[15px] mb-2">Pro Tip: The Furniture Trap</p>
+            <p class="text-[15px] leading-relaxed text-amber-900">One of the most common causes of unexpected extra time is furniture that needs dismantling on the day. If you have wardrobes, bed frames, or large desks that need taking apart, let us know during the survey. If we know about it in advance, it's included in the quote. If it surprises us on the morning, it adds time — and without the waiver, that means additional charges.</p>
+          </div>
+        </section>
+
+        <!-- MidCTA -->
+        <MidCTA heading="Want the Waiver on Your Move?" description="Get a free quote and we'll include the Key Wait Waiver option. Most customers add it for complete peace of mind." buttonText="Get Your Free Quote →" buttonHref="/instantquote" />
+
+        <!-- ── S4: Pricing ── -->
+        <section id="pricing" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">How Much Does the Key Wait Waiver Cost?</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The waiver price depends on one thing: the size of your crew. It's calculated at just under two hours of your team's hourly wage bill — a fraction of what the actual overtime charges could be.</p>
+
+          <div class="bg-cream rounded-xl px-6 py-8 my-8">
+            <h3 class="font-heading text-lg font-semibold text-gray-900 mb-5">Typical Key Wait Waiver Prices</h3>
+            <div class="space-y-4">
+              <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                <div>
+                  <p class="font-semibold text-gray-900">3-Man Crew</p>
+                  <p class="text-sm text-gray-500">Hourly wage bill: ~£60/hr</p>
+                </div>
+                <p class="text-2xl font-bold text-secondary-500">~£100</p>
+              </div>
+              <div class="flex items-center justify-between border-b border-gray-200 pb-3">
+                <div>
+                  <p class="font-semibold text-gray-900">4-Man Crew</p>
+                  <p class="text-sm text-gray-500">Hourly wage bill: ~£80/hr</p>
+                </div>
+                <p class="text-2xl font-bold text-secondary-500">~£140</p>
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-semibold text-gray-900">5-Man Crew</p>
+                  <p class="text-sm text-gray-500">Hourly wage bill: ~£100/hr</p>
+                </div>
+                <p class="text-2xl font-bold text-secondary-500">~£180</p>
+              </div>
+            </div>
+            <p class="text-sm text-gray-500 mt-5">The number of vans on the job doesn't affect the waiver price — it's purely based on crew size.</p>
+          </div>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">To put that in perspective: if your five-man team has to work an extra three hours because of a key delay, the wage bill alone is £300. The waiver at £180 represents a considerable saving — and you know the cost before moving day, not after it.</p>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-6 py-5 my-8">
+            <p class="font-semibold text-amber-800 text-[15px] mb-2">Pro Tip: The Maths Behind the Waiver</p>
+            <p class="text-[15px] leading-relaxed text-amber-900">The waiver costs roughly what two extra hours of crew time would cost — but it covers you for significantly more than that. If your team ends up working three or four hours overtime, you've effectively saved hundreds of pounds. And if no delay happens? Think of it as £100–£180 for a stress-free moving day.</p>
+          </div>
+        </section>
+
+        <!-- ── S5: Storage Backup ── -->
+        <section id="storage-backup" class="pt-8 pb-10">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What If the Keys Never Come?</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It's rare — roughly once a year out of hundreds of moves — but sometimes the chain completely falls apart. A form hasn't been signed correctly. A solicitor can't be reached. The money simply doesn't come through. When that happens, we have a backup plan.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The 5pm Rule</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If unloading hasn't started by 5pm, we call it. We can't have our team sitting outside a property all evening hoping for a phone call. We need to act within working hours, because the next step requires making arrangements — and that means places need to be open.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">We Move You to Storage</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If we can't unload, we'll take your belongings to a secure storage facility. If it's in Bristol, we'll use our own warehouse. If the move was to another city, we'll call a local self-storage unit and book a facility for you.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If we have availability at our own storage facility, we offer up to two weeks of free storage. We understand this situation is incredibly stressful and it's not your fault — we're not going to add a storage bill on top of everything else if we can avoid it.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Second Delivery</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Once your keys are released, we'll arrange to deliver your belongings from storage to your new home. If the storage is in Bristol, we'll do this ourselves at heavily discounted rates. If it's in another city, a local removal company may be more cost-effective, and we're happy to advise.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">It's not a free move — we do have a second set of wages to cover — but we do everything we can to make it affordable during what is already a very stressful time.</p>
+
+          <div class="bg-amber-50 border border-amber-200 rounded-xl px-6 py-5 my-8">
+            <p class="font-semibold text-amber-800 text-[15px] mb-2">Pro Tip: Breaking the Chain on Purpose</p>
+            <p class="text-[15px] leading-relaxed text-amber-900">Sometimes customers choose to move into storage deliberately — to break a problematic chain, secure a buyer they don't want to lose, or bridge the gap between exchange and completion dates. If that's your situation, talk to us. We can offer short-term storage and help you plan a two-stage move that keeps things under control.</p>
+          </div>
+        </section>
+
+        <!-- ── S6: FAQ ── -->
+        <section id="faq" class="pt-8 border-t border-gray-200">
+          <FAQAccordion faqs={faqs} heading="Common Questions About the Key Wait Waiver" />
+        </section>
+
+      </article>
+
+      <!-- TOC SIDEBAR -->
+      <aside class="toc-sidebar">
+        <div class="mb-5">
+          <SidebarAuthorBox />
+        </div>
+
+        <div class="toc-sticky">
+          <nav aria-label="Table of contents" class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+            <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-400 mb-4">In This Guide</p>
+            <ul class="space-y-1">
+              {tocItems.map(item => (
+                <li>
+                  <a
+                    href={`#${item.id}`}
+                    class="toc-link"
+                    data-toc-id={item.id}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="border-t border-dashed border-gray-200 mt-5 pt-4">
+              <a
+                href="/instantquote/"
+                class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[13px] uppercase tracking-wide py-2.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+              >
+                Get Your Free Quote →
+              </a>
+              <p class="text-[11px] text-gray-400 text-center mt-1.5">Free, no obligation</p>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Services -->
+  <section class="section bg-cream">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div class="mb-10">
+        <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Related Services</h2>
+        <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+          The Key Wait Waiver is one part of a moving day plan designed to remove stress. These services work alongside it.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with a dedicated Move Manager who plans your day down to the hour.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Professional packing the day before your move. One less thing to worry about on the big day.</p>
+        </a>
+        <a href="/storage-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Storage</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Secure storage if completion dates don't align. Up to two weeks free in qualifying situations.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <AreaFinalCTA heading="Ready to Plan a Stress-Free Move?" description="Get your free quote and ask about adding the Key Wait Waiver. One less thing to worry about on moving day." />
+
+</Layout>
+
+<style>
+  /* Blog two-column layout */
+  .blog-layout {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      column-gap: 40px;
+    }
+
+    .toc-sidebar {
+      display: block;
+      align-self: stretch;
+    }
+
+    .toc-sticky {
+      position: sticky;
+      top: 120px;
+    }
+
+  }
+
+  /* TOC links */
+  .toc-link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: all 150ms ease;
+  }
+
+  .toc-link:hover {
+    color: #1e4240;
+    background: #f9fafb;
+  }
+
+  .toc-link.active {
+    color: #1e4240;
+    font-weight: 600;
+    border-left-color: #ea580c;
+    background: #fff7ed;
+  }
+
+  /* Checklist (green ticks) */
+  .kww-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .kww-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  /* Cross list (red crosses) */
+  .kww-cross-list li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .kww-cross-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23dc2626'%3E%3Cpath d='M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  /* Scroll-margin for anchors beneath sticky header */
+  section[id] {
+    scroll-margin-top: 120px;
+  }
+</style>
+
+<script>
+  // IntersectionObserver — highlight active TOC link based on visible section
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+
+  if (sections.length && tocLinks.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(link => {
+              if (link.dataset.tocId === id) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        }
+      },
+      {
+        rootMargin: '-120px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
+</script>

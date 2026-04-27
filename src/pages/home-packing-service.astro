@@ -1,0 +1,676 @@
+---
+/**
+ * Packing Service Landing Page
+ *
+ * Professional home packing service for Painless Removals Bristol.
+ * Optimised for: packing service, home packing service, house packing service,
+ * professional packing services, removal and packing service, house packing company.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import AccreditationLogos from '@/components/AccreditationLogos.astro';
+import HowItWorksHome from '@/components/HowItWorksHome.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import PackingGuideCinema from '@/components/PackingGuideCinema.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { bristolNeighbourhoods, neighbourhoodUrl } from '@/config/areas.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+
+// Page metadata
+const pageTitle = 'Professional Packing Service Bristol | Painless Removals';
+const pageDescription = 'Expert home packing service in Bristol. All materials included, £15k insurance, trained specialists for fragile items. Book your packing service quote today.';
+
+// Data structures
+
+const benefits = [
+  {
+    imageName: 'packing/Tamara-packing',
+    title: 'Your China and Glassware in Safe Hands',
+    content: `<p class="text-warm-gray text-lg mb-4">Our professional packers are specifically trained to handle fragile and delicate items. From your grandmother's tea set to fine crystal, every piece is individually wrapped in acid-free tissue paper and cushioned with bubble wrap before being placed in double-walled boxes.</p>
+      <p class="text-warm-gray text-lg">We use a layered packing technique for plates, bowls, and glassware — the same method used by fine art handlers — so nothing shifts during transit. It's the kind of care that turns a stressful house move into a genuinely painless experience.</p>`,
+  },
+  {
+    imageName: 'packing/Bristol-packing-tv-removals',
+    title: 'TVs, Mirrors & Artwork Professionally Protected',
+    content: `<p class="text-warm-gray text-lg mb-4">High-value electronics and artwork need more than a blanket and a prayer. We use specialist TV boxes, custom picture cartons, and corner protectors designed for each item type — from 65-inch flat screens to oversized gilt-framed mirrors.</p>
+      <p class="text-warm-gray text-lg">Every item is measured, wrapped, and secured individually. Our packing service team handles hundreds of these items every month, so your expensive electronics and irreplaceable artwork are in experienced hands.</p>`,
+  },
+  {
+    imageName: 'packing/tamara-packing3',
+    title: 'Everything Labelled, Organised & Accounted For',
+    content: `<p class="text-warm-gray text-lg mb-4">Every box our packing team seals is clearly labelled by room and contents. When you arrive at your new home, you'll know exactly which box goes where — no guesswork, no rummaging through twenty boxes to find the kettle.</p>
+      <p class="text-warm-gray text-lg">We can also provide a detailed written inventory of every packed item for your records and insurance purposes. Our systematic room-by-room approach means your unpacking is as organised as the packing itself.</p>`,
+  },
+];
+
+// Fragile only pricing (separate from size-based)
+const fragileOnlyPricing = {
+  name: 'Fragile Only',
+  description: 'Perfect if you\'re happy packing clothes and books, but want expert packers for the delicate stuff.',
+  price: '£435',
+  features: [
+    'Kitchen items professionally packed',
+    'China, glassware & ceramics',
+    'Mirrors, pictures & artwork',
+    'All materials provided',
+    '£15k insurance coverage',
+  ],
+};
+
+// Size-based full packing pricing
+const pricingTiers = [
+  {
+    name: 'Small',
+    description: 'Flats and smaller homes',
+    price: '£395',
+    features: [
+      '250-750 cu ft',
+      '2-person team',
+      'Half-day service',
+      'Everything in your home packed',
+      'All materials provided',
+      '£15k insurance coverage',
+    ],
+    popular: false,
+  },
+  {
+    name: 'Medium',
+    description: '2-3 bedroom homes',
+    price: '£580',
+    features: [
+      '751-1350 cu ft',
+      '3-person team',
+      'Half-day service',
+      'Everything in your home packed',
+      'All materials provided',
+      '£15k insurance coverage',
+    ],
+    popular: true,
+  },
+  {
+    name: 'Large',
+    description: '3-4 bedroom family homes',
+    price: '£725',
+    features: [
+      '1351-2000 cu ft',
+      '4-person team',
+      'Full-day service',
+      'Everything in your home packed',
+      'All materials provided',
+      '£15k insurance coverage',
+    ],
+    popular: false,
+  },
+  {
+    name: 'Extra',
+    description: '5+ bedrooms or lots of stuff',
+    price: '£990',
+    features: [
+      '2001+ cu ft',
+      '5-person team',
+      'Up to 2 days',
+      'Everything in your home packed',
+      'All materials provided',
+      '£15k insurance coverage',
+    ],
+    popular: false,
+  },
+];
+
+const packingSteps = [
+  {
+    icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 8h4l1.5 2L15 7h2"/>',
+    title: 'Request a Survey',
+    description: 'Book online or call us for a free survey — we can do it in person or via video call. We\'ll assess your home and give you an accurate packing service quote.',
+    link: '/free-home-survey',
+    linkText: 'Book your survey',
+  },
+  {
+    icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+    title: 'Accept Your Quote',
+    description: 'Review your detailed quote with no hidden fees. Once accepted, we\'ll confirm your booking and your dedicated Move Manager takes over.',
+  },
+  {
+    icon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+    title: 'We Pack Everything',
+    description: 'Our professional packing team arrives the day before your move and carefully packs your entire home — room by room, wrapped properly, labelled clearly.',
+  },
+  {
+    icon: '<rect x="1" y="3" width="15" height="13" rx="2"/><path d="m16 8 5 2.5V16l-5-2.5V8z"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><path d="M2 16h14"/>',
+    title: 'Moving Day',
+    description: 'Wake up to a house of neatly stacked, labelled boxes. The removal team loads up and you\'re on your way — moving day runs smoothly from the start.',
+  },
+  {
+    icon: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+    title: 'Optional Unpacking',
+    description: 'Need help settling in? We can unpack everything at your new home, place items where you want them, and remove all the boxes. Just ask.',
+  },
+];
+
+const reviews = [
+  {
+    html: 'We went for the full packing and removal package when we moved. <mark>The whole process was painless</mark> from start to finish and the team was exceptionally friendly, efficient, and helpful from start to finish. Would strongly recommend their service to anyone.',
+    name: 'Caspian Johnson',
+    image: '/images/reviews/caspian-johnson.avif',
+    platform: 'trustpilot',
+  },
+  {
+    html: 'Great customer service from start to finish. <mark>Fast, efficient, and friendly</mark>, they go above and beyond and great value for money too! Thanks again Painless Removals!',
+    name: 'Katie Stagg',
+    image: '/images/reviews/katie-stagg.avif',
+    platform: 'trustpilot',
+  },
+  {
+    html: 'Painless Removals were brilliant. They did what it says on the tin — <mark>made the whole process very painless</mark>. They were <mark>friendly and efficient</mark> and the whole process was completed super quickly. Would strongly recommend and will use them again. Thank you!',
+    name: 'Emma Henry',
+    image: '/images/reviews/emma-henry.avif',
+    platform: 'trustpilot',
+  },
+];
+
+const faqs = [
+  {
+    question: 'How long does packing take?',
+    answer: 'A typical 3-bedroom house takes 4-6 hours with a 2-person team. Larger properties or those with many fragile items may need a full day or two-person days.',
+  },
+  {
+    question: 'What packing materials do you use?',
+    answer: 'We use double-walled removal boxes, acid-free tissue paper, bubble wrap, wardrobe boxes with hanging rails, specialist TV and picture boxes, tape, and mattress covers.',
+  },
+  {
+    question: 'Do I need to be home during packing?',
+    answer: 'Ideally yes for the start, to discuss any special items. After that, many customers leave us to it and return to a packed house.',
+  },
+  {
+    question: 'What\'s included in the price?',
+    answer: 'All materials and labour. We quote per day or per job - the price includes boxes, tape, bubble wrap, tissue paper, and everything else we use.',
+  },
+  {
+    question: 'Is a professional packing service worth the cost?',
+    answer: 'Think of it this way: the time you\'d spend packing is time off work or away from family. Our team packs in hours what takes most people days. Plus, properly packed items are far less likely to break - potentially saving the cost of the service in protected valuables alone.',
+  },
+  {
+    question: 'Can I pack some things myself?',
+    answer: 'Absolutely. Many customers pack personal items, clothes, and books themselves, then have us handle fragile items and the kitchen. We\'re flexible - whatever combination works for you.',
+  },
+  {
+    question: 'What if I\'m not ready when you arrive?',
+    answer: 'We work around you. If certain rooms aren\'t accessible yet, we start elsewhere. Need to keep the kettle out until the last moment? No problem. We adapt to your needs.',
+  },
+  {
+    question: 'What about valuable or sentimental items?',
+    answer: 'You can pack these yourself, or point them out for special attention. We can photograph high-value items and create an inventory. Ultimately, everything is covered by our £15k insurance.',
+  },
+  {
+    question: 'Can you pack my garden shed/garage?',
+    answer: 'Yes, though these items often don\'t need the same careful packing as household items. We\'ll discuss what\'s appropriate during the quote.',
+  },
+  {
+    question: 'What happens if something breaks?',
+    answer: 'All items packed by our team are covered by our £15,000 insurance per van. We photograph high-value items and you can claim directly if needed.',
+  },
+  {
+    question: 'Do you unpack at the other end?',
+    answer: 'Yes, we offer unpacking services. Many customers prefer to unpack themselves at their own pace, but we can help if needed.',
+  },
+  {
+    question: 'How far in advance should I book?',
+    answer: 'Ideally 2-3 weeks, though we can sometimes accommodate shorter notice. Peak times (summer, month-ends) book up faster.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "Professional Packing Service",
+    description: pageDescription,
+    serviceType: "Packing Service",
+    url: "/home-packing-service/",
+    areaServed: areas.bristol,
+    offers: offer({ price: "580", description: "Full packing service from £580 for a 2–3 bed home" }),
+    image: "/img/packing/Bristol-home-packing-service-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Packing Service" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/packing/Bristol-home-packing-service-1200w.webp" preloadImage="/img/packing/Bristol-home-packing-service-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="packing/Bristol-home-packing-service"
+        pattern="FULL"
+        alt="Professional home packing service in Bristol - trained specialists carefully packing belongings"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Professional Home Packing Service in Bristol
+        </h1>
+
+        <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+          Your Entire Home Packed the Day Before You <span class="text-secondary-500">Move</span>
+        </h2>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          No weeks of living among boxes. Our team arrives the day before, packs everything professionally, and your life stays completely uninterrupted until moving day.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote?service=packing" class="btn-cta-orange">
+            GET MY FREE QUOTE IN 47 SECONDS
+          </a>
+          <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="packing/Bristol-home-packing-service"
+        pattern="FULL"
+        alt="Professional home packing service in Bristol - trained specialists carefully packing belongings"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USPs - Full width bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: LIVE YOUR NORMAL LIFE (50/50 layout)
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px]">
+        <OptimizedPicture
+          name="packing/day-before-packing-family"
+          pattern="HALF"
+          alt="Happy family enjoying their home before professional packers arrive the day before moving"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover object-left-top"
+        />
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-6">Live Your <span class="text-secondary-500">Normal Life</span> Until Moving Day</h2>
+
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          Most people spend weeks surrounded by boxes. With our packing service, your life stays normal until the very last day.
+        </p>
+
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            <strong class="text-primary-600">No disruption until we arrive.</strong> While others start packing weeks in advance — eating from paper plates, losing socks in half-sealed boxes, and stepping around towers of cardboard — your home stays exactly as it is. Cook in your kitchen, play with your kids, sleep in your made-up bed. Nothing changes until the day before your move.
+          </p>
+
+          <p>
+            <strong class="text-primary-600">One day is all it takes.</strong> Our trained packing team arrives the morning before moving day and packs your entire home — room by room, wrapped properly, labelled clearly. By evening, everything is neatly boxed and ready. The next morning, the removal team loads up and you're on your way.
+          </p>
+
+          <p>
+            <strong class="text-primary-600">The whole thing is over before you know it.</strong> From a normal Tuesday to fully moved in by Thursday. No drawn-out packing marathon, no stress, no chaos — and our professional packing service is more affordable than most people expect.
+          </p>
+        </div>
+
+        <a href="#how-it-works" class="soft-cta mt-8 inline-flex">
+          See how our packing service works
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: REVIEW STRIP
+  ============================================ -->
+  <section class="bg-cream py-10 lg:py-14">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="flex justify-center gap-1 text-orange-400 text-2xl mb-4">
+          <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+        </div>
+        <blockquote class="text-xl lg:text-2xl text-gray-700 italic leading-relaxed mb-4">
+          "We had the full packing service, and it's just <mark>unbelievable how quickly and efficiently they packed everything</mark>, labelled all the boxes based on room and contents, and did it in a few hours, even while we continued to work. I 100% recommend this!"
+        </blockquote>
+        <div class="flex items-center justify-center gap-3">
+          <img src="/images/reviews/james-collard.avif" alt="James Collard" class="w-10 h-10 rounded-full object-cover" width="80" height="80" loading="lazy" />
+          <span class="font-semibold text-gray-900">James Collard</span>
+          <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6 ml-2" width="48" height="48" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       BENEFITS (Full-width alternating, no gaps)
+  ============================================ -->
+  <section class="bg-cream">
+    <div>
+      {benefits.map((benefit, index) => (
+        <div class="grid lg:grid-cols-2">
+          <!-- Image (50% width, full height) -->
+          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+            <OptimizedPicture
+              name={benefit.imageName}
+              pattern="HALF"
+              alt={benefit.title}
+              loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            />
+          </div>
+          <!-- Text (50% width) -->
+          <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
+            <h3 class="text-2xl lg:text-3xl mb-4">{benefit.title}</h3>
+            <div set:html={benefit.content} />
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: PRICING CARDS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="mb-4">Simple, Transparent Pricing</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          Estimated pricing based on property size. All materials included.
+        </p>
+      </div>
+
+      <!-- Fragile Only - Full width card with image -->
+      <div class="bg-cream border border-gray-200 rounded-xl overflow-hidden mb-8 transition-all duration-300 hover:shadow-lg">
+        <div class="grid md:grid-cols-[250px_1fr] lg:grid-cols-[300px_1fr]">
+          <div class="relative h-48 md:h-full">
+            <OptimizedPicture
+              name="packing/Tamara-packing2"
+              pattern="QUARTER"
+              alt="Professional kitchen packing service - wrapping dishes and fragile items"
+              loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
+          <div class="p-4 sm:p-6 lg:p-8">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+              <div class="flex-1">
+                <h3 class="text-xl lg:text-2xl font-bold text-primary-600 mb-2">{fragileOnlyPricing.name}</h3>
+                <p class="text-warm-gray mb-4">{fragileOnlyPricing.description}</p>
+                <ul class="flex flex-wrap gap-x-6 gap-y-2">
+                  {fragileOnlyPricing.features.map((feature) => (
+                    <li class="flex items-center gap-2">
+                      <span class="text-green-500">✓</span>
+                      <span class="text-gray-600 text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div class="flex flex-row lg:flex-col items-center lg:items-end gap-4 lg:gap-2">
+                <div class="text-3xl lg:text-4xl font-bold text-gray-900">
+                  {fragileOnlyPricing.price}
+                </div>
+                <a
+                  href="/instantquote?service=packing&tier=fragile-only"
+                  class="inline-block bg-primary-600 hover:bg-primary-700 text-white py-3 px-6 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg whitespace-nowrap"
+                >
+                  Get Quote
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full House Packing - Size based, 4 columns -->
+      <h3 class="text-xl font-bold text-center mb-6">Full House Packing Service</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        {pricingTiers.map((tier) => (
+          <div class={`relative bg-white rounded-xl p-4 sm:p-5 lg:p-6 flex flex-col h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl group ${tier.popular ? 'border-2 border-secondary-500 shadow-xl' : 'border border-gray-200 shadow-sm'}`}>
+            {tier.popular && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary-500 text-white text-xs font-bold uppercase px-3 py-1 rounded-full whitespace-nowrap">
+                Most Popular
+              </div>
+            )}
+
+            <div class="text-center mb-4">
+              <h3 class="text-lg lg:text-xl font-bold text-primary-600 mb-1">{tier.name}</h3>
+              <p class="text-warm-gray text-sm mb-3 min-h-[2.5em]">{tier.description}</p>
+              <div class="text-2xl lg:text-3xl font-bold text-gray-900">
+                {tier.price}
+              </div>
+            </div>
+
+            <div class="w-full h-px bg-gray-200 mb-4"></div>
+
+            <ul class="space-y-2 mb-6 flex-grow">
+              {tier.features.map((feature) => (
+                <li class="flex items-center gap-2">
+                  <span class="text-green-500 flex-shrink-0">✓</span>
+                  <span class="text-gray-600 text-xs sm:text-sm">{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href={`/instantquote?service=packing&tier=${tier.name.toLowerCase()}`}
+              class={`mt-auto block text-center py-3 px-4 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 ${tier.popular ? 'bg-secondary-500 hover:bg-secondary-600 text-white hover:shadow-lg' : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'}`}
+            >
+              Get Quote
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-sm text-warm-gray mt-8">
+        * Prices are estimates only. Your exact quote will be based on a free survey of your property.
+      </p>
+    </div>
+  </section>
+
+  <!-- Accreditation Logos -->
+  <AccreditationLogos class="-mt-5" />
+
+  <!-- ============================================
+       SECTION 6: HOW IT WORKS (5 steps)
+  ============================================ -->
+  <div id="how-it-works">
+    <HowItWorksHome
+      heading="How Our Packing Service Works in"
+      headingAccent="Five Simple Steps"
+      subtitle="From your first enquiry to settling into your new home — here's exactly how our professional packing service makes it painless."
+      steps={packingSteps}
+      ctaText="GET YOUR FREE PACKING QUOTE →"
+      ctaLink="/instantquote?service=packing"
+      id="hiw-packing"
+    />
+  </div>
+
+  <!-- ============================================
+       SECTION 7: SOCIAL PROOF
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Our Packing Service Customers Say</h2>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {reviews.map((review) => (
+          <div class="bg-white rounded-xl p-6 flex flex-col justify-between shadow-sm border border-gray-100">
+            <div>
+              <div class="flex gap-1 text-orange-400 text-xl mb-2">
+                <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+              </div>
+              <p class="text-gray-700 text-[15px] leading-relaxed" set:html={review.html} />
+            </div>
+            <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
+              <div class="flex items-center gap-3">
+                <img src={review.image} alt={review.name} class="w-10 h-10 rounded-full object-cover" width="80" height="80" loading="lazy" />
+                <span class="font-semibold text-gray-900 text-[14px]">{review.name}</span>
+              </div>
+              {review.platform === 'google' ? (
+                <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+              ) : (
+                <img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="w-[96px] h-auto" width="220" height="50" />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/reviews/" class="soft-cta">Read more verified customer reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: WHAT TO EXPECT ON PACKING DAY
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image (left) -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden">
+        <OptimizedPicture
+          name="packing/packing-home-professional"
+          pattern="HALF"
+          alt="Professional packing service team carefully wrapping and boxing household items"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Text (right) -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-6">What to Expect on Packing Day <span class="text-secondary-500">(Hint: Very Little From You)</span></h2>
+
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            <strong class="text-primary-600">Before we arrive:</strong> You don't need to empty drawers, sort through cupboards, or buy a single roll of tape. Just set aside anything you don't want us to pack — personal documents, medications, valuables you'd rather keep with you. Everything else is our job.
+          </p>
+
+          <p>
+            <strong class="text-primary-600">When we get there:</strong> Our packing team leader walks through your home with you, room by room. You point out anything fragile, sentimental, or that needs special care. After that, you're free to carry on with your day — work from home, take the kids to school, or just put the kettle on.
+          </p>
+
+          <p>
+            <strong class="text-primary-600">While we work:</strong> We pack systematically, one room at a time. Each box is clearly labelled with room name and contents. Fragile items are individually wrapped. Wardrobes go on hanging rails. By the end of the day, your home is a neat stack of labelled boxes — ready for the removal team the next morning.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: ABOUT – TAMARA (PACKING TEAM LEADER)
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <div class="grid md:grid-cols-[200px_1fr] gap-8 lg:gap-12 items-start">
+          <div>
+            <OptimizedPicture
+              name="about/team/Tamara"
+              pattern="QUARTER"
+              alt="Tamara, Packing Team Leader at Painless Removals"
+              sizes="200px"
+              class="rounded-xl"
+            />
+          </div>
+
+          <div>
+            <h2 class="mb-2">Meet Your Packing Team Leader</h2>
+            <p class="text-secondary-500 font-semibold mb-5">Tamara, Packing Team Leader</p>
+
+            <div class="credential-badge mb-5">
+              &#10003; Personally led hundreds of professional packing jobs
+            </div>
+
+            <blockquote class="director-quote my-6">
+              &ldquo;People are always surprised how fast we work, but honestly, the bit I care about most is putting them at ease. Moving is stressful — you can see it on their faces when we arrive. By lunchtime they're making us tea and chatting away. Jay and the lads handle the big move the next day, but our job is to make sure everything's packed properly and the customer feels looked after. That's what I love about it.&rdquo;
+            </blockquote>
+
+            <p class="text-warm-gray mb-6">
+              Tamara leads our professional packing service team with care and precision. She personally oversees every packing job, ensuring your belongings are wrapped, labelled, and ready for a smooth moving day.
+            </p>
+
+            <a href="/about/" class="soft-cta">
+              Learn more about our team
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: PACKING GUIDE
+  ============================================ -->
+  <PackingGuideCinema />
+
+  <!-- ============================================
+       SECTION 11: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Frequently Asked Questions About Our Packing Service" />
+
+  <!-- ============================================
+       NEIGHBOURHOOD CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">We Pack Homes Across Bristol</h2>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10">From period properties in Clifton to new builds in Stoke Gifford, our packing team knows how to handle every type of home.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {bristolNeighbourhoods.slice(0, 8).map(n => (
+          <a href={neighbourhoodUrl(n.slug)} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            {n.name} <span class="text-warm-gray font-normal">({n.postcode})</span>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/areas/" class="soft-cta">See all areas we cover</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 12: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Take Packing Off Your List?"
+    description="Let our professional packing service team handle the hard part. You focus on the exciting bit - your new home."
+    bullets={['All materials included', 'Fragile item specialists', '£15k insurance protection']}
+    primaryText="BOOK YOUR PACKING SERVICE"
+    primaryHref="/instantquote?service=packing"
+    bottomNote="Every item packed by our team is fully insured. If something breaks, we cover it."
+  />
+
+
+</Layout>

@@ -1,0 +1,24 @@
+---
+/**
+ * ReviewInline — Inline review quote with gold left border
+ */
+
+export interface Props {
+  text: string;
+  name: string;
+  context?: string;
+  stars?: number;
+}
+
+const { text, name, context, stars = 5 } = Astro.props;
+const starString = '★'.repeat(stars);
+---
+
+<blockquote class="border-l-[3px] border-accent-500 bg-primary-50 rounded-r-lg p-5 not-italic">
+  <div class="text-accent-500 text-sm mb-2" aria-label={`${stars} out of 5 stars`}>{starString}</div>
+  <p class="text-gray-700 text-sm leading-relaxed italic mb-3">&ldquo;{text}&rdquo;</p>
+  <footer class="text-xs text-gray-500">
+    <strong class="text-gray-800 font-medium not-italic">{name}</strong>
+    {context && <span> — {context}</span>}
+  </footer>
+</blockquote>

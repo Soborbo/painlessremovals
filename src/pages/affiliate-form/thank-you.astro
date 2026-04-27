@@ -1,0 +1,57 @@
+---
+/**
+ * Affiliate Referral — Thank You Page
+ *
+ * Shown after a successful referral submission.
+ * Reads client name from ?name= query parameter.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+
+const pageTitle = 'Referral Registered — Partner Programme';
+const pageDescription = 'Your referral has been registered with Painless Removals.';
+---
+
+<Layout title={pageTitle} description={pageDescription} noindex={true}>
+
+  <section class="section bg-cream">
+    <div class="container-narrow">
+
+      <div class="text-center mb-10">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Painless Removals Partner Programme
+        </p>
+      </div>
+
+      <div class="bg-green-50 border border-green-200 rounded-xl p-8 text-center max-w-lg mx-auto">
+        <div class="text-4xl mb-4">&#10003;</div>
+        <h1 class="text-2xl font-bold text-primary-600 mb-3">Referral Registered</h1>
+        <p id="success-message" class="text-warm-gray leading-relaxed mb-6">
+          We've registered your referral and sent our introduction. Thank you!
+        </p>
+        <a href="/affiliate-form/"
+          class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40">
+          Submit Another Referral
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <script is:inline>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var name = params.get('name');
+      var warning = params.get('warning');
+      var msg = document.getElementById('success-message');
+      if (msg && name) {
+        if (warning) {
+          msg.textContent = "We've registered your referral for " + name + ". Note: the introduction email to the client could not be sent — our team will follow up manually.";
+        } else {
+          msg.textContent = "We've registered your referral and sent our introduction to " + name + ". Thank you!";
+        }
+      }
+    })();
+  </script>
+
+</Layout>

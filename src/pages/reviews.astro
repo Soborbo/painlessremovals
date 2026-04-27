@@ -1,0 +1,768 @@
+---
+/**
+ * Reviews Page — Painless Removals
+ *
+ * Curated, editorial reviews page with themed sections.
+ * LocalBusiness + AggregateRating schema (no individual Review schema).
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { ENTITY, ref, faqPage, breadcrumbs } from '@/utils/schema';
+
+// ── Page Meta ──────────────────────────────────────────────────────────────────
+
+const pageTitle = 'Reviews | Painless Removals Bristol';
+const pageDescription = `Read real reviews from families, professionals, and repeat customers who moved with Painless Removals Bristol. ${siteConfig.company.rating.value} stars across ${siteConfig.company.rating.count}+ reviews on Google and Trustpilot.`;
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface Review {
+  name: string;
+  platform: 'google' | 'trustpilot' | 'facebook';
+  rating: number;
+  html: string;
+}
+
+interface ReviewSection {
+  id: string;
+  heading: string;
+  navLabel: string;
+  intro: string;
+  reviews: Review[];
+  bg: string;
+  accent: string;
+  chipBg: string;
+}
+
+// ── Featured Quote ────────────────────────────────────────────────────────────
+
+const featuredQuote: Review = {
+  name: 'Claire G.',
+  platform: 'google',
+  rating: 5,
+  html: 'I had been dreading this move and came into it extremely stressed, but moving with these guys was a pleasure. Despite everything, <mark>our Painless removal was as painless as moving house can possibly get</mark>. In fact I have lasting happy memories.',
+};
+
+// ── Review Sections ───────────────────────────────────────────────────────────
+
+const sections: ReviewSection[] = [
+  {
+    id: 'stress-free',
+    heading: 'They made the worst day\u2026 easy',
+    navLabel: 'Made Easy',
+    intro: 'Moving day is supposed to be one of life\u2019s most stressful experiences. Our customers keep telling us the same thing: it wasn\u2019t.',
+    bg: '#F8F4F0',
+    accent: '#C45D3E',
+    chipBg: '#E8D2C4',
+    reviews: [
+      {
+        name: 'Christopher Nelson',
+        platform: 'google',
+        rating: 5,
+        html: 'We\u2019ve just had <mark>the most stressful day of our lives made insanely easy</mark> by three absolute champions. Honestly, three of the nicest guys I\u2019ve probably ever met took great care of everything we own. They were careful, considerate and a bloody pleasure to move house with \u2014 I absolutely cannot recommend them highly enough.',
+      },
+      {
+        name: 'Marco Balvin Ortega',
+        platform: 'google',
+        rating: 5,
+        html: 'We were not ready on the day, and quite overwhelmed. Then Painless\u2019s friendly, helpful team arrived, and <mark>suddenly everything looked under control</mark>. From cleaners to furniture removers, each person was lovely, and pitched in with whatever needed to be done. They paid incredible attention to detail, and took great care to see that things were done the way we wanted. <mark>Our house move ended up being a really lovely experience.</mark>',
+      },
+      {
+        name: 'Laura Pepworth',
+        platform: 'google',
+        rating: 5,
+        html: 'I can honestly say that throughout the whole selling process, <mark>moving day was the least stressful day we had</mark>. From the initial consultation and quote with Jay, the fitting us in with short notice, and the guys that helped us move on the day \u2014 it was seamless.',
+      },
+    ],
+  },
+  {
+    id: 'first-call',
+    heading: 'From first call to final box',
+    navLabel: 'Clear Comms',
+    intro: 'A great move doesn\u2019t start on moving day. It starts with a quote that\u2019s accurate, communication that\u2019s clear, and a plan you can trust.',
+    bg: '#F0F8F8',
+    accent: '#2A7B7B',
+    chipBg: '#BDE0E0',
+    reviews: [
+      {
+        name: 'James Collard',
+        platform: 'google',
+        rating: 5,
+        html: '<mark>The level of communication was fantastic.</mark> We had the full packing service, and it\u2019s just unbelievable how quickly and efficiently they packed everything, labelled all the boxes based on room and contents, and did it in a few hours, even while we continued to work. On moving day, everything was back in the right room without any fuss, damages, or issues, and the furniture was remade. It was all done by 5 P.M.!',
+      },
+      {
+        name: 'Sarah-Jane Liddington',
+        platform: 'trustpilot',
+        rating: 5,
+        html: 'Jay was responsive to all our enquiries and <mark>much more transparent with the components of the quotation than any of the other companies</mark> we spoke to. He offered a flexible and supportive service during a stressful period without any hidden costs. They definitely went the extra mile throughout.',
+      },
+      {
+        name: 'Sarah Belsten',
+        platform: 'google',
+        rating: 5,
+        html: 'Jay was quick to visit and send us a quote, which was a good price. Jay answered all my questions before the move \u2014 and there were quite a few! I admit to being very stressed at the start of the day but <mark>they literally made the move \u2018painless\u2019</mark>. We could not fault them in any way.',
+      },
+    ],
+  },
+  {
+    id: 'problems',
+    heading: 'When things don\u2019t go to plan',
+    navLabel: 'Plan B',
+    intro: 'Completion delays. Bank systems crashing. Chains collapsing on the morning of your move. These things happen \u2014 and how your removal company handles them is what matters.',
+    bg: '#FAF6EC',
+    accent: '#A67820',
+    chipBg: '#ECD9A0',
+    reviews: [
+      {
+        name: 'Charlotte',
+        platform: 'google',
+        rating: 5,
+        html: 'Things didn\u2019t go to plan on moving day due to an issue with our exchange/completion. <mark>Pete and the team were very understanding and helped us out with storage</mark> of our items until the issue resolved a day later \u2014 something I know any other company would not have been so understanding or helpful about!',
+      },
+      {
+        name: 'George Wilyman',
+        platform: 'google',
+        rating: 5,
+        html: 'Even with a massive hiccup, thanks to Barclays Bank crashing, meaning a delay on completion, <mark>the team at Painless really were, Painless!</mark>',
+      },
+      {
+        name: 'Joanna Wong',
+        platform: 'trustpilot',
+        rating: 5,
+        html: 'Great moving company, who applied a lot of common sense and were communicative and helpful throughout. <mark>Dealt well with the last minute ups and downs involving our chain</mark> \u2014 very late exchange \u2014 and were reassuring to us during what could have been a stressful time.',
+      },
+    ],
+  },
+  {
+    id: 'long-distance',
+    heading: 'Bristol to\u2026 anywhere',
+    navLabel: 'Long Distance',
+    intro: 'We\u2019re long-distance specialists. Our sweet spot is 100+ miles, and Bristol\u2019s location means we\u2019re often already on the way.',
+    bg: '#EFF4FA',
+    accent: '#3B6EA8',
+    chipBg: '#B8CFEA',
+    reviews: [
+      {
+        name: 'Sibi Catley-Chandar',
+        platform: 'google',
+        rating: 5,
+        html: 'We had a long distance move from Bristol to Yorkshire and went for the full service including packing and furniture dis/re-assembly. They worked tirelessly for three days straight, almost dawn to dusk, and never once complained, and even offered extra help with moving furniture around in the new house and <mark>wouldn\u2019t leave until we were 100% happy with everything</mark>. We\u2019ve moved house a few times and none of the other removals companies came close to the same level of service.',
+      },
+      {
+        name: 'Chris Pugh',
+        platform: 'google',
+        rating: 5,
+        html: 'The team from Painless helped us move from Bristol to Cornwall. They worked tirelessly for two days. <mark>The painless team\u2019s calm and friendly manner throughout a difficult move really helped us to relax.</mark> They worked really well as a team and had answers for questions we hadn\u2019t even considered.',
+      },
+      {
+        name: 'Kevin Briggs',
+        platform: 'google',
+        rating: 5,
+        html: 'We moved from Bristol to Southampton and Painless Removals did a really great job. They worked very hard and were careful with our belongings. <mark>They wouldn\u2019t leave until we were happy</mark> that our furniture had been reassembled and put in the right place.',
+      },
+    ],
+  },
+  {
+    id: 'repeat',
+    heading: 'We keep coming back',
+    navLabel: 'Come Back',
+    intro: 'Some of our customers have been with us for decades. Others come back for their second, third, or fourth move. We think that says more than any star rating.',
+    bg: '#EEF8F2',
+    accent: '#306844',
+    chipBg: '#AEDCC0',
+    reviews: [
+      {
+        name: 'Adrian Place',
+        platform: 'trustpilot',
+        rating: 5,
+        html: 'We used Painless Removals <mark>25 years ago</mark> to move house and <mark>a quarter of a century later they were just as good</mark>. Peter, Mike and Ra were a great team to work with and made our house move as painless as possible.',
+      },
+      {
+        name: 'Lily Khandker',
+        platform: 'google',
+        rating: 5,
+        html: 'I have used Painless Removals for <mark>nearly 20 years</mark>. They are efficient, fast, reliable and have always provided me and my family members a fantastic service. I would recommend them without reservation.',
+      },
+      {
+        name: 'Geoff Barnes',
+        platform: 'google',
+        rating: 5,
+        html: '<mark>This is the third time with the same high standards every time.</mark> Their quote was 50% lower than the other firm I contacted. Efficient, friendly, helpful, reasonable in price. They moved all my possessions and lots of furniture from Bristol to Haverfordwest with the minimum of fuss. I will never use anyone else.',
+      },
+    ],
+  },
+  {
+    id: 'packing',
+    heading: 'They packed everything \u2014 I just sat on the sofa',
+    navLabel: 'Full Pack',
+    intro: 'Our full packing service is one of the things customers love most. We pack your entire home \u2014 carefully labelled, room by room \u2014 usually the day before your move.',
+    bg: '#F2EFF9',
+    accent: '#6B4E97',
+    chipBg: '#CABEE8',
+    reviews: [
+      {
+        name: 'Jeremy Vize',
+        platform: 'google',
+        rating: 5,
+        html: 'I\u2019m disabled as I had a stroke last year so I decided to get movers for my move and they were absolutely great. <mark>They literally did everything, packed my whole flat</mark> and were lovely guys! I just sat on the sofa and did some work while they packed away my whole flat. Really great movers, lovely people, cannot recommend enough.',
+      },
+      {
+        name: 'Will Loughborough',
+        platform: 'trustpilot',
+        rating: 5,
+        html: 'We opted for the full packing and removal service. The day before completion, <mark>our belongings were packed carefully, efficiently and effectively</mark>. On the day of the removal/completion, the 5 lads were all very friendly and helpful. Reasonably priced compared to competitors.',
+      },
+    ],
+  },
+];
+
+// ── FAQ Data ─────────────────────────────────────────────────────────────────
+
+const faqs = [
+  {
+    question: 'Are these reviews real?',
+    answer: 'Every review on this page comes from a customer on <a href="https://g.page/painlessremovals" target="_blank" rel="noopener">Google</a> or <a href="https://www.trustpilot.com" target="_blank" rel="noopener">Trustpilot</a>. We never edit, filter, or incentivise reviews. You can verify them yourself by visiting our profiles on either platform.',
+  },
+  {
+    question: `How do you maintain a ${siteConfig.company.rating.value} star rating?`,
+    answer: 'For chain moves, we allocate a full day — no double-booking, no rushing. Every customer gets a dedicated Move Manager who handles scheduling and logistics personally. That level of care is what Steve built this company on in 1978, and it\'s what keeps our rating where it is. <a href="/about/">Learn more about our story</a>.',
+  },
+  {
+    question: 'Can I leave a review after my move?',
+    answer: 'Absolutely. After your move, we\'ll send a follow-up email with links to our Google and Trustpilot profiles. We appreciate all feedback — it helps us keep improving.',
+  },
+  {
+    question: 'What happens if something goes wrong during a move?',
+    answer: `Every van carries £15,000 of Goods in Transit insurance. If something is damaged, we fix it or replace it — no arguments. That accountability is one reason our rating stays at ${siteConfig.company.rating.value}. <a href="/contact/">Get in touch</a> if you have concerns about a recent move.`,
+  },
+  {
+    question: 'Do you have reviews for long-distance moves?',
+    answer: 'Yes — several reviews on this page cover moves of 100+ miles, including Bristol to Yorkshire. Long-distance moves are one of our specialities. <a href="/home-removals-bristol/">See our home removals service</a>.',
+  },
+  {
+    question: 'How many moves have you completed?',
+    answer: 'Over 2,000 under current director Jay Newton alone, and thousands more since Steve founded the company in 1978. <a href="/about/jay-newton/">Learn more about Jay</a>.',
+  },
+];
+
+// ── Schema ───────────────────────────────────────────────────────────────────
+
+// Review[] attached to the /#business entity via @id — no duplicate MovingCompany
+const reviewSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'MovingCompany',
+  '@id': ENTITY.business,
+  'review': [
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Christopher Nelson' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'We\'ve just had the most stressful day of our lives made insanely easy by three absolute champions. Honestly, three of the nicest guys I\'ve probably ever met took great care of everything we own. They were careful, considerate and a bloody pleasure to move house with — I absolutely cannot recommend them highly enough.',
+      'datePublished': '2024-11-15',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'James Collard' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'The level of communication was fantastic. We had the full packing service, and it\'s just unbelievable how quickly and efficiently they packed everything, labelled all the boxes based on room and contents, and did it in a few hours. On moving day, everything was back in the right room without any fuss, damages, or issues.',
+      'datePublished': '2024-09-20',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Sarah-Jane Liddington' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'Jay was responsive to all our enquiries and much more transparent with the components of the quotation than any of the other companies we spoke to. He offered a flexible and supportive service during a stressful period without any hidden costs. They definitely went the extra mile throughout.',
+      'datePublished': '2024-08-10',
+      'publisher': { '@type': 'Organization', 'name': 'Trustpilot' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Sibi Catley-Chandar' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'We had a long distance move from Bristol to Yorkshire and went for the full service including packing and furniture dis/re-assembly. They worked tirelessly for three days straight, almost dawn to dusk, and never once complained, and even offered extra help with moving furniture around in the new house and wouldn\'t leave until we were 100% happy with everything.',
+      'datePublished': '2024-07-05',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Adrian Place' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'We used Painless Removals 25 years ago to move house and a quarter of a century later they were just as good. Peter, Mike and Ra were a great team to work with and made our house move as painless as possible.',
+      'datePublished': '2024-10-28',
+      'publisher': { '@type': 'Organization', 'name': 'Trustpilot' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Laura Pepworth' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'I can honestly say that throughout the whole selling process, moving day was the least stressful day we had. From the initial consultation and quote with Jay, the fitting us in with short notice, and the guys that helped us move on the day — it was seamless.',
+      'datePublished': '2024-06-18',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Claire G.' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'I had been dreading this move and came into it extremely stressed, but moving with these guys was a pleasure. Despite everything, our Painless removal was as painless as moving house can possibly get. In fact I have lasting happy memories.',
+      'datePublished': '2024-05-22',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Marco Balvin Ortega' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'We were not ready on the day, and quite overwhelmed. Then Painless\'s friendly, helpful team arrived, and suddenly everything looked under control. From cleaners to furniture removers, each person was lovely, and pitched in with whatever needed to be done. Our house move ended up being a really lovely experience.',
+      'datePublished': '2024-04-12',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Geoff Barnes' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'This is the third time with the same high standards every time. Their quote was 50% lower than the other firm I contacted. Efficient, friendly, helpful, reasonable in price. They moved all my possessions and lots of furniture from Bristol to Haverfordwest with the minimum of fuss. I will never use anyone else.',
+      'datePublished': '2024-03-08',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+    {
+      '@type': 'Review',
+      'author': { '@type': 'Person', 'name': 'Jeremy Vize' },
+      'reviewRating': { '@type': 'Rating', 'ratingValue': '5', 'bestRating': '5' },
+      'reviewBody': 'I\'m disabled as I had a stroke last year so I decided to get movers for my move and they were absolutely great. They literally did everything, packed my whole flat and were lovely guys! I just sat on the sofa and did some work while they packed away my whole flat. Really great movers, lovely people, cannot recommend enough.',
+      'datePublished': '2025-01-14',
+      'publisher': { '@type': 'Organization', 'name': 'Google' },
+    },
+  ],
+};
+
+const schema = [
+  reviewSchema,
+  faqPage(faqs),
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'Reviews' },
+  ]),
+];
+
+// Google logo SVG
+const googleSvg = `<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`;
+
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={schema}
+  canonical={`${siteConfig.brand.domain}/reviews`}
+>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       HERO SECTION
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="gradient-hero">
+    <div class="container-wide py-8 lg:py-10">
+      <div class="lg:grid lg:grid-cols-2 lg:gap-10 items-center">
+
+        <!-- Left: Heading + CTA -->
+        <div class="text-center lg:text-left mb-8 lg:mb-0">
+          <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Bristol Removals Reviews
+          </h1>
+
+          <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 font-bold font-heading">
+            We Are Extremely Proud of <span class="text-secondary-500">Our Reviews</span>
+          </p>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 leading-relaxed max-w-xl mx-auto lg:mx-0">
+            We have some of the highest-rated removal reviews in Bristol &amp; Bath. Almost exclusively five-star recommendations across all major review platforms.
+          </p>
+
+          <div class="flex flex-col gap-2 items-center lg:items-start">
+            <a href="/instantquote/" class="btn-cta-orange">
+              GET YOUR FREE QUOTE
+            </a>
+            <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+          </div>
+        </div>
+
+        <!-- Right: Aggregate Rating + Platform Breakdown -->
+        <div class="flex flex-col justify-center">
+          <!-- Rating card -->
+          <div class="bg-white rounded-2xl shadow-lg p-5 mb-3" id="review-meter" data-rating={siteConfig.company.rating.value}>
+            <div class="flex items-center justify-center gap-3 mb-3">
+              <span class="font-heading text-5xl font-bold text-primary-600 leading-none" id="meter-value">0.0</span>
+              <div class="text-left">
+                <div class="text-yellow-400 text-xl tracking-wider leading-none mb-0.5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <span class="text-xs font-semibold text-primary-600 uppercase tracking-wide">Aggregate Rating</span>
+              </div>
+            </div>
+
+            <div class="relative h-2.5 bg-gray-100 rounded-full overflow-hidden mb-4">
+              <div class="absolute inset-y-0 left-0 bg-linear-to-r from-yellow-400 via-yellow-400 to-green-500 rounded-full transition-all duration-[2000ms] ease-out" id="meter-fill" style="width: 0%"></div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center" id="meter-stats">
+              <div class="bg-primary-50 rounded-lg py-2.5 px-2">
+                <div class="font-heading font-bold text-primary-600 text-xl" data-count={String(siteConfig.company.rating.count)} data-suffix="">0</div>
+                <div class="text-warm-gray text-xs">Total Reviews</div>
+              </div>
+              <div class="bg-green-50 rounded-lg py-2.5 px-2">
+                <div class="font-heading font-bold text-green-600 text-xl" data-count="117" data-suffix="">0</div>
+                <div class="text-warm-gray text-xs">Five-Star</div>
+              </div>
+              <div class="bg-yellow-50 rounded-lg py-2.5 px-2">
+                <div class="font-heading font-bold text-yellow-600 text-xl" data-count="3" data-suffix="">0</div>
+                <div class="text-warm-gray text-xs">Four-Star</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Platform breakdown -->
+          <div class="grid grid-cols-2 gap-2">
+            <a href={siteConfig.company.contact.googleBusiness} target="_blank" rel="noopener" class="bg-white rounded-lg px-3 py-2.5 shadow-sm border border-gray-100 no-underline flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 group">
+              <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform" width="48" height="48" />
+              <div>
+                <div class="font-heading font-bold text-primary-600 text-sm leading-tight">98 reviews</div>
+                <div class="text-yellow-500 text-[10px]">&#9733;&#9733;&#9733;&#9733;&#9733; {siteConfig.company.rating.value} avg</div>
+              </div>
+            </a>
+            <a href="https://uk.trustpilot.com/review/painlessremovals.com" target="_blank" rel="noopener" class="bg-white rounded-lg px-3 py-2.5 shadow-sm border border-gray-100 no-underline flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 group">
+              <img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="h-4 w-auto shrink-0 group-hover:scale-110 transition-transform" width="220" height="50" />
+              <div>
+                <div class="font-heading font-bold text-primary-600 text-sm leading-tight">33 reviews</div>
+                <div class="text-yellow-500 text-[10px]">&#9733;&#9733;&#9733;&#9733;&#9733; {siteConfig.company.rating.value} avg</div>
+              </div>
+            </a>
+            <a href="https://www.yell.com/biz/painless-removals-bristol-7066268/" target="_blank" rel="noopener" class="bg-white rounded-lg px-3 py-2.5 shadow-sm border border-gray-100 no-underline flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 group">
+              <img src="/images/yell-logo.svg" alt="Yell" class="h-4 w-auto shrink-0 group-hover:scale-110 transition-transform" width="120" height="40" />
+              <div>
+                <div class="font-heading font-bold text-primary-600 text-sm leading-tight">5 reviews</div>
+                <div class="text-yellow-500 text-[10px]">&#9733;&#9733;&#9733;&#9733;&#9733; 5.0 avg</div>
+              </div>
+            </a>
+            <a href="https://www.facebook.com/painlessremovals/" target="_blank" rel="noopener" class="bg-white rounded-lg px-3 py-2.5 shadow-sm border border-gray-100 no-underline flex items-center gap-2 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 group">
+              <img src="/images/facebook-logo.svg" alt="Facebook" class="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform" width="24" height="24" />
+              <div>
+                <div class="font-heading font-bold text-primary-600 text-sm leading-tight">15 recs</div>
+                <div class="text-yellow-500 text-[10px]">&#9733;&#9733;&#9733;&#9733;&#9733; 5.0 avg</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar hideBadge />
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       FEATURED PULL QUOTE
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section style="background-color: #E8F3F3;">
+    <div class="container-wide py-10 md:py-14">
+      <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-md px-8 py-10 md:px-12 md:py-12">
+        <div class="flex items-center gap-1.5 mb-4">
+          <span class="text-yellow-400 text-lg tracking-wider leading-none">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="text-warm-gray text-xs">&middot;</span>
+          <span class="inline-flex items-center gap-1 text-xs text-warm-gray">
+            <Fragment set:html={googleSvg} />Google Review
+          </span>
+        </div>
+        <span class="font-heading text-5xl leading-none block mb-3" style="color: #2A7B7B; opacity: 0.4;">&ldquo;</span>
+        <blockquote
+          class="font-heading text-xl md:text-2xl italic leading-relaxed mb-6 text-primary-800 featured-quote-text"
+          set:html={featuredQuote.html}
+        />
+        <cite class="not-italic">
+          <span class="font-semibold text-primary-700 text-base">&mdash; {featuredQuote.name}</span>
+        </cite>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SECTION NAVIGATION
+       ═══════════════════════════════════════════════════════════════════ -->
+  <nav
+    class="review-section-nav sticky left-0 right-0 w-full bg-white border-b border-gray-200 shadow-sm"
+    style="z-index: 20; top: var(--top-bar-h, 88px); transition: top 500ms ease-out;"
+    aria-label="Review sections"
+  >
+    <div class="overflow-x-auto scrollbar-hide">
+      <div class="review-nav-inner flex items-center gap-1.5 py-2 px-4">
+        {sections.map(section => (
+          <a
+            href={`#section-${section.id}`}
+            class="reviews-nav-link whitespace-nowrap px-3 py-1.5 rounded text-xs font-semibold transition-all duration-200 no-underline"
+            style={`color: ${section.accent}; background-color: ${section.chipBg};`}
+            data-section-target={`section-${section.id}`}
+            data-accent={section.accent}
+            data-chipbg={section.chipBg}
+          >
+            {section.navLabel}
+          </a>
+        ))}
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       THEMED REVIEW SECTIONS
+       ═══════════════════════════════════════════════════════════════════ -->
+  {sections.map((section, sectionIndex) => (
+    <Fragment>
+      <section
+        class="section"
+        style={`background-color: ${section.bg};`}
+        aria-labelledby={`section-${section.id}`}
+      >
+        <div class="container-wide">
+          <h2 id={`section-${section.id}`} class="text-center mb-3 font-heading" style={`color: ${section.accent};`}>
+            {section.heading}
+          </h2>
+          <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10 text-lg">
+            {section.intro}
+          </p>
+
+          <div class={`grid gap-6 ${section.reviews.length === 2 ? 'md:grid-cols-2 max-w-4xl mx-auto' : 'md:grid-cols-3'}`}>
+            {section.reviews.map(review => (
+              <div class="bg-white rounded-xl p-6 md:p-8 shadow-sm border border-gray-100 flex flex-col">
+                <span class="text-4xl font-heading leading-none opacity-35 mb-2" style={`color: ${section.accent};`}>&ldquo;</span>
+                <blockquote class="text-gray-700 text-[17px] leading-relaxed mb-6 flex-1" set:html={review.html} />
+                <div class="pt-4 border-t border-gray-100">
+                  <div class="flex items-center justify-between">
+                    <cite class="not-italic font-semibold text-primary-600 text-sm">{review.name}</cite>
+                    <div class="text-yellow-500 text-sm tracking-wider leading-none">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                  </div>
+                  <div class="flex items-center gap-1.5 mt-1.5">
+                    {review.platform === 'google' ? (
+                      <Fragment><Fragment set:html={googleSvg} /><span class="text-xs text-warm-gray">Google Review</span></Fragment>
+                    ) : review.platform === 'trustpilot' ? (
+                      <Fragment><img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="h-3.5 w-auto" width="220" height="50" loading="lazy" /><span class="text-xs text-warm-gray">Trustpilot Review</span></Fragment>
+                    ) : (
+                      <Fragment><img src="/images/facebook-logo.svg" alt="Facebook" class="h-3.5 w-auto" width="24" height="24" loading="lazy" /><span class="text-xs text-warm-gray">Facebook</span></Fragment>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Mid-page CTA after section 3 */}
+      {sectionIndex === 2 && (
+        <FinalCTA
+          heading="Convinced? Get Your Free Quote"
+          description={`Join ${siteConfig.company.rating.count}+ happy customers. Get your personalised quote in under a minute — or call us to chat through your move.`}
+          bullets={['Full day for chain moves', 'Dedicated move manager', '\u00A315k insurance protection']}
+          primaryText="GET YOUR INSTANT QUOTE"
+          primaryHref="/instantquote"
+        />
+      )}
+    </Fragment>
+  ))}
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       OUR SERVICES
+       ═══════════════════════════════════════════════════════════════════ -->
+  <section class="py-16 bg-gray-50">
+    <div class="container-wide">
+      <h2 class="text-2xl font-bold font-heading text-gray-900 mb-2 text-center">See What We Offer</h2>
+      <p class="text-gray-500 text-center mb-10">Our most popular services — trusted by Bristol families since 1978.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+          <div class="text-lg font-semibold font-heading text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Home Removals</div>
+          <p class="text-gray-500 text-sm">Full-day allocation, dedicated move manager, £15k insurance. One move a day — yours.</p>
+          <span class="mt-4 inline-block text-primary-600 text-sm font-medium">Learn more →</span>
+        </a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+          <div class="text-lg font-semibold font-heading text-gray-900 mb-2 group-hover:text-secondary-600 transition-colors">Professional Packing</div>
+          <p class="text-gray-500 text-sm">Room-by-room packing by trained specialists. All materials included, fully insured.</p>
+          <span class="mt-4 inline-block text-secondary-600 text-sm font-medium">Learn more →</span>
+        </a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-green-500">
+          <div class="text-lg font-semibold font-heading text-gray-900 mb-2 group-hover:text-green-700 transition-colors">Secure Storage</div>
+          <p class="text-gray-500 text-sm">Flexible, insured storage in Bristol. 50% off your first month when booked with a removal.</p>
+          <span class="mt-4 inline-block text-green-700 text-sm font-medium">Learn more →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       FAQ
+       ═══════════════════════════════════════════════════════════════════ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Our Reviews" bgClass="bg-white" />
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       BOTTOM CTA
+       ═══════════════════════════════════════════════════════════════════ -->
+  <FinalCTA
+    heading="Ready to experience it yourself?"
+    description="Get a free quote in minutes — no pressure, no obligation."
+    primaryText="GET YOUR FREE QUOTE"
+    primaryHref="/instantquote"
+    bottomNote="Or read about our process to see exactly how your move works, step by step."
+  />
+
+</Layout>
+
+
+<!-- ─── Styles ──────────────────────────────────────────────────────────────── -->
+<style>
+  /* Featured quote mark — stronger highlight on white card */
+  .featured-quote-text mark {
+    background: none;
+    background-image: linear-gradient(120deg, #f8c9a0 0%, #fde8d0 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 45%;
+    background-position: 0 88%;
+    color: inherit;
+    padding: 0 2px;
+  }
+
+  /* Section nav — centered when items fit, scrollable when they don't */
+  .review-nav-inner {
+    width: max-content;
+    min-width: 100%;
+    justify-content: center;
+  }
+
+  /* Nav chip active state */
+  .reviews-nav-link.active {
+    box-shadow: inset 0 0 0 2px currentColor;
+    font-weight: 700;
+  }
+</style>
+
+
+<!-- ─── Review Meter Animation ────────────────────────────────────────────── -->
+<script is:inline>
+  (function() {
+    var meter = document.getElementById('review-meter');
+    if (!meter) return;
+
+    var animated = false;
+    var targetRating = parseFloat(meter.dataset.rating) || 4.9;
+    var targetPercent = (targetRating / 5) * 100;
+
+    function animateNumber(el, target, duration) {
+      var startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function animateRating(el, target, duration) {
+      var startTime = null;
+      function step(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = (eased * target).toFixed(1);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    function runAnimation() {
+      if (animated) return;
+      animated = true;
+      var fill = document.getElementById('meter-fill');
+      if (fill) fill.style.width = targetPercent + '%';
+      var ratingEl = document.getElementById('meter-value');
+      if (ratingEl) animateRating(ratingEl, targetRating, 2000);
+      document.querySelectorAll('#meter-stats [data-count]').forEach(function(counter) {
+        animateNumber(counter, parseInt(counter.getAttribute('data-count'), 10), 1800);
+      });
+    }
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) { setTimeout(runAnimation, 300); observer.disconnect(); }
+        });
+      }, { threshold: 0.3 });
+      observer.observe(meter);
+    } else {
+      setTimeout(runAnimation, 500);
+    }
+  })();
+</script>
+
+
+<!-- ─── Section Nav: Scroll Spy + Smooth Scroll ───────────────────────────── -->
+<script is:inline>
+  (function() {
+    var nav = document.querySelector('.review-section-nav');
+    if (!nav) return;
+
+    var links = nav.querySelectorAll('.reviews-nav-link');
+    var sectionData = [];
+
+    links.forEach(function(link) {
+      var targetId = link.getAttribute('data-section-target');
+      var section = document.getElementById(targetId);
+      if (section) sectionData.push({ link: link, section: section });
+    });
+
+    if (!sectionData.length) return;
+
+    // Smooth scroll on click — offset by nav height + top bar
+    links.forEach(function(link) {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        var targetId = link.getAttribute('data-section-target');
+        var target = document.getElementById(targetId);
+        if (!target) return;
+        var offset = nav.offsetHeight + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-bar-h') || '88') + 8;
+        var top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      });
+    });
+
+    // Scroll spy
+    var ticking = false;
+    function updateActive() {
+      var navOffset = nav.offsetHeight + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--top-bar-h') || '88') + 16;
+      var active = null;
+
+      for (var i = sectionData.length - 1; i >= 0; i--) {
+        var rect = sectionData[i].section.getBoundingClientRect();
+        if (rect.top <= navOffset) {
+          active = sectionData[i];
+          break;
+        }
+      }
+
+      links.forEach(function(l) { l.classList.remove('active'); });
+      if (active) active.link.classList.add('active');
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) { requestAnimationFrame(updateActive); ticking = true; }
+    }, { passive: true });
+
+    updateActive();
+  })();
+</script>

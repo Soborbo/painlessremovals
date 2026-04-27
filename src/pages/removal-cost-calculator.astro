@@ -1,0 +1,242 @@
+---
+/**
+ * /removal-cost-calculator — Removal Cost Calculator SEO Landing Page
+ *
+ * Targets: "removals calculator", "removal calculator", "removal cost calculator",
+ *          "instant removals quote", "instant online removal quote",
+ *          "removal online quote", "removal quotes online", "removal price calculator"
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, faqPage, breadcrumbs } from '@/utils/schema';
+
+const title = "Removal Cost Calculator — Instant Removals Quote Online";
+const description = "Use our free removal calculator to get an instant online removal quote in 60 seconds. Enter your postcodes and property size — see your removal price before we ask for your details. Bristol-based, nationwide.";
+const canonical = `${siteConfig.brand.domain}/removal-cost-calculator`;
+const calculatorUrl = "/instantquote";
+
+const faqs = [
+  {
+    question: "How accurate is the online removal calculator?",
+    answer: "It's a realistic starting point. Most final quotes come within 10–15% of the calculator estimate. The main variable is actual volume — a free video survey takes about ten minutes and locks in an exact price.",
+  },
+  {
+    question: "Do I need a survey after getting my instant removals quote?",
+    answer: "For a binding quote, yes. We offer free video surveys — walk through your home with your phone camera — and in-person visits. The survey ensures the quoted price is the price you pay.",
+  },
+  {
+    question: "Is the calculator price the final price?",
+    answer: "No. It's a guide. Your final quote is confirmed after a survey and is valid for 30 days. We don't charge more than the quoted amount, except for overtime if keys arrive late and you haven't opted for the Key Wait Waiver.",
+  },
+  {
+    question: "What if my home has more than five bedrooms?",
+    answer: 'Properties exceeding approximately 2,000 cubic feet need a bespoke assessment rather than an automated estimate. <a href="/contact/" class="underline hover:text-primary-700 transition-colors">Contact us</a> and we\'ll arrange a survey.',
+  },
+  {
+    question: "Can I add packing to my removal quote online?",
+    answer: 'Yes. The calculator includes a packing option. Full professional packing ranges from £400 for smaller properties to £725 for larger homes. <a href="/home-packing-service/" class="underline hover:text-primary-700 transition-colors">More about our packing service →</a>',
+  },
+  {
+    question: "What payment methods do you accept?",
+    answer: "A 30% deposit confirms your booking, with the balance due on or before move day. Payment is by bank transfer (BACS) only.",
+  },
+];
+
+const webAppSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Removal Cost Calculator",
+  "description": "Get an instant online removal quote based on property size, distance, and requirements.",
+  "url": `${siteConfig.brand.domain}/removal-cost-calculator`,
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "GBP",
+  },
+  "provider": ref.business(),
+};
+
+const schema = [
+  webAppSchema,
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Removal Cost Calculator" },
+  ]),
+];
+---
+
+<Layout title={title} description={description} schema={schema} canonical={canonical}>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section style="background-color: #0E3C54;" class="py-16 md:py-24 text-white text-center">
+    <div class="container-narrow px-4 sm:px-6">
+      <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-4 leading-tight">
+        Removal Cost Calculator
+      </h1>
+      <p class="text-xl md:text-2xl text-white/80 mb-8 max-w-2xl mx-auto leading-relaxed">
+        Get an instant removals quote in 60 seconds. No email required — see your removal price first.
+      </p>
+      <a href={calculatorUrl} class="btn btn-primary text-base md:text-lg px-8 py-3.5 inline-block">
+        Get Your Instant Quote →
+      </a>
+
+      <!-- Trust bar -->
+      <div class="mt-8 flex flex-wrap justify-center items-center gap-4 md:gap-6 text-sm text-white/70">
+        <span class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 shrink-0" style="color: #D4A84B;" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          {siteConfig.company.rating.value}&#9733; average
+        </span>
+        <span class="text-white/30 hidden sm:inline" aria-hidden="true">·</span>
+        <span>Since 1978</span>
+        <span class="text-white/30 hidden sm:inline" aria-hidden="true">·</span>
+        <span>£15,000 insured per van</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SEO CONTENT
+  ============================================================ -->
+  <div class="container-narrow px-4 sm:px-6 py-12 md:py-16">
+
+    <!-- How the Removal Calculator Works -->
+    <section class="mb-14">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-primary-700 mb-5">How the Removal Calculator Works</h2>
+      <p class="mb-6 text-warm-gray leading-relaxed">Our removals calculator gives you a realistic price in under a minute — no account, no email, no phone call. Enter three things and see your figure immediately.</p>
+
+      <ol class="space-y-4 mb-7">
+        <li class="flex gap-4">
+          <span class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #C65D3B;">1</span>
+          <div>
+            <p class="font-semibold text-primary-700 mb-0.5">Your property size and how much you have</p>
+            <p class="text-warm-gray text-sm leading-relaxed">Select your number of bedrooms and whether you'd call your belongings light, average, or heavy. The removal volume calculator converts this to cubic footage and works out how many crew and vans you need.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #C65D3B;">2</span>
+          <div>
+            <p class="font-semibold text-primary-700 mb-0.5">Your collection and delivery postcodes</p>
+            <p class="text-warm-gray text-sm leading-relaxed">The removal price calculator measures the full return route — depot to collection, collection to delivery, delivery back to depot — and applies tiered mileage rates. Longer moves get a better per-mile price.</p>
+          </div>
+        </li>
+        <li class="flex gap-4">
+          <span class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #C65D3B;">3</span>
+          <div>
+            <p class="font-semibold text-primary-700 mb-0.5">Any complications or extras</p>
+            <p class="text-warm-gray text-sm leading-relaxed">Stairs, restricted parking, packing service — each is priced individually. Add what applies; leave out what doesn't. Your instant removal quote adjusts in real time.</p>
+          </div>
+        </li>
+      </ol>
+
+      <a href={calculatorUrl} class="btn btn-primary inline-block">Try the removal calculator →</a>
+    </section>
+
+    <!-- What Affects Your Removal Cost -->
+    <section class="mb-14">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-primary-700 mb-5">What Affects Your Removal Cost</h2>
+      <p class="mb-5 text-warm-gray leading-relaxed">Every move is different. The estimate reflects your specific circumstances, not an industry average.</p>
+
+      <p class="mb-4 leading-relaxed"><strong>Property size and volume.</strong> A studio flat needs one mover and one van. A four-bedroom house needs four movers and two or three vans. The number of bedrooms is a starting point — the volume of belongings within that property determines crew and vehicle requirements. Our removals calculator maps your property size and belongings level to cubic footage, then assigns resources from there.</p>
+
+      <p class="mb-4 leading-relaxed"><strong>Distance.</strong> We measure the full route: our Bristol depot to your collection address, then to your delivery address, then back. A local Bristol move might total 20 miles. Bristol to London is roughly 280 miles return. Bristol to Edinburgh is over 800. Mileage is calculated on a tiered rate — the first 50 miles at one rate, the next 50 at a lower rate, and so on. Longer moves get a better per-mile price.</p>
+
+      <p class="mb-4 leading-relaxed"><strong>Access and complications.</strong> Stairs without a lift, narrow doorways, restricted parking, or a long carry from the van to your front door all add time to the job. Each complication adds approximately 7% to the base cost. A third-floor flat with no lift and tight parking is a meaningfully different job from a ground-floor house with a driveway.</p>
+
+      <p class="mb-4 leading-relaxed"><strong>Packing.</strong> Professional packing is priced separately based on volume. Smaller properties (up to 750 cubic feet) cost around £400 for a full pack including all materials. Larger homes run up to £725. If you'd prefer to pack most things yourself but want us to handle the fragile items — glassware, mirrors, artwork — that starts at £435.</p>
+
+      <p class="mb-7 leading-relaxed"><strong>Property chains.</strong> If you're in a chain, we allocate a full day regardless of estimated duration. We don't schedule another job before yours, so we're never late because someone else's move ran over.</p>
+
+      <a href={calculatorUrl} class="btn btn-primary inline-block">Get your personalised removal quote online →</a>
+    </section>
+
+    <!-- What Typical Moves Cost -->
+    <section class="mb-14">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-primary-700 mb-5">What Typical Moves Cost</h2>
+      <p class="mb-6 text-warm-gray leading-relaxed">These are real ranges from moves we've completed, not national averages.</p>
+
+      <div class="space-y-4 mb-7">
+        <div class="rounded-xl p-5 border border-gray-100" style="background-color: #FAF7F2;">
+          <p class="font-semibold text-primary-700 mb-1.5">Local moves within Bristol</p>
+          <p class="text-warm-gray leading-relaxed">A studio or one-bed flat with average belongings: <strong>£600–£800</strong>. A three-bedroom house with full packing: <strong>£1,500–£2,500</strong> depending on access and volume.</p>
+        </div>
+        <div class="rounded-xl p-5 border border-gray-100" style="background-color: #FAF7F2;">
+          <p class="font-semibold text-primary-700 mb-1.5">Medium distance — up to 100 miles</p>
+          <p class="text-warm-gray leading-relaxed">Bristol to Bath, Weston-super-Mare, or Cardiff. A two-bed typically falls between <strong>£800 and £1,500</strong>. A three or four-bed with packing: <strong>£2,000–£4,000</strong>.</p>
+        </div>
+        <div class="rounded-xl p-5 border border-gray-100" style="background-color: #FAF7F2;">
+          <p class="font-semibold text-primary-700 mb-1.5">Long distance — 100+ miles</p>
+          <p class="text-warm-gray leading-relaxed">Bristol to London, Manchester, Edinburgh, or Cornwall. These are one-to-three day jobs depending on volume. A typical three-bed family home moving Bristol to London: <strong>£2,500–£5,000</strong>. Bristol to Edinburgh with full packing: <strong>£4,000–£8,000</strong> or higher for larger properties.</p>
+        </div>
+      </div>
+
+      <p class="mb-5 text-warm-gray leading-relaxed">The ranges are wide because every house is different. The removal calculator narrows it down based on your specific inputs — property size, belongings, distance, and any complications.</p>
+
+      <p class="text-sm text-warm-gray leading-relaxed">For help estimating the full cost of moving including stamp duty and legal fees, <a href="https://www.gov.uk/stamp-duty-land-tax" rel="noopener" class="underline hover:text-primary-700 transition-colors">GOV.UK's stamp duty calculator</a> is a useful starting point.</p>
+    </section>
+
+    <!-- What's Included in Every Quote -->
+    <section class="mb-14">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-primary-700 mb-5">What's Included in Every Quote</h2>
+      <p class="mb-4 leading-relaxed">Every move includes mattress protectors, sofa covers, TV bags and picture protection at no extra charge. Furniture disassembly and reassembly is included where agreed during the survey. Each van carries £15,000 of goods-in-transit insurance — items worth over £2,000 should be declared in writing before the move.</p>
+      <p class="mb-4 leading-relaxed">You get a dedicated move manager throughout the process. One person, one phone number, from survey to completion.</p>
+      <p class="leading-relaxed">Standard quotes cover moves completing by 5pm. If you're in a property chain and keys arrive late, the Key Wait Waiver removes all overtime charges — worth considering if your chain has more than two links. For full details on pricing and what's included, see our <a href="/pricing/" class="underline hover:text-primary-700 transition-colors">pricing page</a>.</p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-14" id="faq">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-primary-700 mb-5">Frequently Asked Questions</h2>
+      <div class="space-y-2">
+        {faqs.map((faq, i) => (
+          <details class="faq-item border border-gray-200 rounded-xl overflow-hidden" open={i === 0}>
+            <summary class="cursor-pointer select-none px-5 py-4 font-semibold text-primary-700 hover:bg-primary-50 transition-colors flex items-center justify-between gap-4">
+              <span>{faq.question}</span>
+              <svg class="faq-chevron w-5 h-5 shrink-0 text-primary-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </summary>
+            <p class="px-5 pb-5 pt-1 text-warm-gray leading-relaxed" set:html={faq.answer} />
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="rounded-2xl px-6 py-10 md:px-12 md:py-14 text-center" style="background-color: #0E3C54;">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-white mb-3">Ready for an Exact Quote?</h2>
+      <p class="text-white/80 mb-7 max-w-xl mx-auto leading-relaxed">
+        The removal calculator gives you a fast estimate. For a fixed price,
+        <a href="/contact/" class="underline text-white hover:text-white/80 transition-colors">book a free video survey</a>
+        — ten minutes, no obligation. Or get your instant removals quote now.
+      </p>
+      <a href={calculatorUrl} class="btn btn-primary text-base md:text-lg px-8 py-3.5 inline-block">
+        Get Your Instant Removal Quote →
+      </a>
+      <p class="mt-5 text-sm text-white/60">
+        For a complete guide to planning your move, see our
+        <a href="/home-removals-guide-bristol-bath/" class="underline text-white/80 hover:text-white transition-colors">Moving Handbook</a>.
+      </p>
+    </section>
+
+  </div>
+
+</Layout>
+
+<style>
+  details.faq-item[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+  details.faq-item > summary {
+    list-style: none;
+  }
+  details.faq-item > summary::-webkit-details-marker {
+    display: none;
+  }
+</style>

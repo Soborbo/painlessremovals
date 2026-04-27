@@ -1,0 +1,668 @@
+---
+/**
+ * Terms & Conditions
+ *
+ * Interactive, understandable T&C page with visual excerpt
+ * (animated charts, timeline) followed by full legal text.
+ * Source: painless-removals-tos2.docx (29 clauses, no international).
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import KeyTermsGlance from '@/components/KeyTermsGlance.astro';
+import CancellationChart from '@/components/CancellationChart.astro';
+import OvertimeChart from '@/components/OvertimeChart.astro';
+import CoverageCard from '@/components/CoverageCard.astro';
+
+const pageTitle = 'Terms & Conditions';
+const pageDescription = 'Terms and conditions for Painless Removals Ltd. Plain-English summary with interactive visuals, plus full legal terms governing our removal, packing, storage and related services.';
+
+// ---------------------------------------------------------------------------
+// Data: Cancellation tiers
+// ---------------------------------------------------------------------------
+const cancellationTiers = [
+  { notice: 'More than 15 working days', pct: 0,   label: '0% — full deposit refund', color: 'green',      targetWidth: '2%'  },
+  { notice: '10–15 working days',        pct: 30,  label: '30% of total quote',       color: 'gold',       targetWidth: '30%' },
+  { notice: 'Less than 10 working days', pct: 60,  label: '60% of total quote',       color: 'orange',     targetWidth: '60%' },
+  { notice: 'Less than 3 working days',  pct: 75,  label: '75% of total quote',       color: 'terracotta', targetWidth: '75%' },
+  { notice: 'Less than 24 hours',        pct: 100, label: '100% of total quote',      color: 'red',        targetWidth: '100%'},
+];
+
+// ---------------------------------------------------------------------------
+// Data: Key stats
+// ---------------------------------------------------------------------------
+const keyStats = [
+  { number: '£15k',   label: 'Cover per van',        detail: 'Included as standard' },
+  { number: '30%',    label: 'Standard deposit',      detail: '14+ working days' },
+  { number: '7 days', label: 'Damage notification',   detail: 'From delivery date' },
+  { number: '30 days',label: 'Quote validity',        detail: 'From date issued' },
+  { number: '14 days',label: 'Cooling-off period',    detail: 'Consumer right' },
+];
+
+// ---------------------------------------------------------------------------
+// Data: Overtime slots
+// ---------------------------------------------------------------------------
+const overtimeSlots = [
+  { time: '5:00–5:30 pm', blocks: 1 },
+  { time: '5:30–6:00 pm', blocks: 2 },
+  { time: '6:00–6:30 pm', blocks: 3 },
+  { time: '6:30–7:00 pm', blocks: 4 },
+];
+
+// ---------------------------------------------------------------------------
+// Data: Timeline milestones
+// ---------------------------------------------------------------------------
+const timelineMilestones = [
+  { label: 'Quote issued',       detail: 'Valid for 30 days',               icon: '&#x1F4CB;' },
+  { label: 'Booking confirmed',  detail: 'Deposit paid (30% or 50%)',       icon: '&#x2713;'  },
+  { label: 'Balance due',        detail: '3 working days before move',      icon: '&#x00A3;'  },
+  { label: 'Move day',           detail: 'Service delivered',               icon: '&#x1F69A;' },
+  { label: 'Report damage',      detail: 'Within 7 days of delivery',      icon: '&#x1F4F7;' },
+];
+
+// ---------------------------------------------------------------------------
+// Data: Part A plain-English summary TOC
+// ---------------------------------------------------------------------------
+const partAToc = [
+  { id: 'summary-deposits',     label: 'Deposits & Payment' },
+  { id: 'summary-insurance',    label: 'Insurance & Cover' },
+  { id: 'summary-cancellation', label: 'Cancellation & Changes' },
+  { id: 'summary-cooling-off',  label: 'Cooling-Off Rights' },
+  { id: 'summary-overtime',     label: 'Late Keys & Overtime' },
+  { id: 'summary-on-the-day',   label: 'On the Day' },
+  { id: 'summary-storage',      label: 'Storage' },
+  { id: 'summary-no-move',      label: "What We Don't Move" },
+  { id: 'summary-disputes',     label: 'Disputes & Complaints' },
+];
+
+// ---------------------------------------------------------------------------
+// Data: Part B clause groups
+// ---------------------------------------------------------------------------
+const partBGroups = [
+  {
+    heading: 'General',
+    clauses: [
+      { num: '1', title: 'Definitions', content: `<ul class="list-disc pl-6 space-y-1.5 mt-2"><li><strong>"Quotation"</strong> — Our written estimate of costs for your removal and/or storage.</li><li><strong>"Goods"</strong> — All furniture and effects to be moved and/or stored.</li><li><strong>"Services"</strong> — All work we undertake for you including packing, removal, delivery and storage.</li><li><strong>"Agreement"</strong> — The contract formed by your acceptance of our Quotation together with these conditions and any schedules.</li><li><strong>"Subcontractor"</strong> — Any person or company (not our employee) engaged by us to perform any part of the Services.</li><li><strong>"Working Days"</strong> — Monday–Friday excluding public holidays in England &amp; Wales.</li><li><strong>"Lien"</strong> — Our legal right to hold your Goods until all charges are paid.</li><li><strong>"Force Majeure"</strong> — An event beyond reasonable control (including severe weather, strikes, war, terrorism, epidemic, acts of government, pandemic and similar events).</li><li><strong>"Distance Contract"</strong> — A contract concluded without both parties being physically present at the same time, including contracts made online, by phone, email or WhatsApp.</li></ul>` },
+      { num: '2', title: 'Quotation', content: `<p class="mb-2"><strong>2.1</strong> Quotations are valid for 30 days from issue and assume normal working hours (08:00–18:00, Mon–Fri) unless stated otherwise.</p><p class="mb-2"><strong>2.2</strong> Quotations exclude (unless expressly included): cancellation/postponement waivers, government fees, customs charges, port/bond/demurrage/container detention, quarantine charges, storage beyond that specified, and extraordinary expenses.</p><p class="mb-2"><strong>2.3</strong> If the Services vary materially from the Quotation or are delayed/prevented for reasons outside our control, we may make a reasonable additional charge and will notify you before incurring it where practicable.</p><p><strong>2.4</strong> All prices are in GBP.</p>` },
+      { num: '3', title: 'What Is Not Included Unless Agreed in Writing', content: `<p class="mb-2">We do not: (a) take down or put up fitted/unit furniture or fixtures; (b) disconnect/reconnect appliances; (c) lift fitted floor coverings; (d) access lofts without safe lighting, access and flooring; (e) move loaded fridges/freezers; (f) move night-storage heaters unless dismantled; (g) dismantle/assemble garden structures (sheds, greenhouses, trampolines, hot tubs, etc.); (h) move items excluded by Clause 12.</p><p class="mb-2">Our staff are not qualified tradespeople. Where specialist work is required you must arrange a competent professional.</p><p><strong>3.1</strong> We will only move items in accordance with Manual Handling Operations Regulations 1992 or equivalent. If an item cannot be moved safely, we will inform you and accept no further responsibility for moving that item.</p>` },
+    ],
+  },
+  {
+    heading: 'Obligations & Charges',
+    clauses: [
+      { num: '4', title: 'Our Obligations', content: `<p>We will: (a) exercise reasonable skill and care; (b) use materials of satisfactory quality fit for purpose; (c) comply with applicable laws; (d) take due care of Goods in our possession.</p>` },
+      { num: '5', title: 'Additional Charges', content: `<p class="mb-2">Additional charges may apply if:</p><p class="mb-2">(a) The move does not take place within 28 days of the quoted date; (b) storage exceeds 6 months where redelivery was included; (c) there are changes in currency, taxes, freight, fuel, ferry or tolls beyond our control; (d) work is requested on Saturdays, Sundays, public holidays or outside 08:00–18:00; (e) collection/delivery is above first floor without suitable lift, or distance exceeds 20 metres from vehicle to doorway; (f) additional items or services are requested; (g) mechanical equipment or structural alteration is required due to access restrictions or unsuitable roads/drives; (h) unforeseeable delays or events impact resources or timescales.</p><p>You agree to pay any reasonable charges arising from the above. We will notify you of additional charges before incurring them where reasonably practicable.</p>` },
+    ],
+  },
+  {
+    heading: 'Liability Cover',
+    clauses: [
+      { num: '6', title: 'Liability Cover', content: `<p class="mb-2"><strong>6.1</strong> All moves include our Goods in Transit liability cover up to £15,000 per Luton van in aggregate (not per item) as standard. This is administered by us and is not an insurance policy.</p><p class="mb-2"><strong>6.2</strong> You must notify us in writing before the move of any single item valued over £2,000. We may need to inspect or pack such items as we reasonably require (additional charges may apply). Items valued over £2,000 that are not declared in advance are not covered.</p><p class="mb-2"><strong>6.3</strong> Our liability is limited to repair or replacement (whichever is lower), considering age and condition immediately prior to loss or damage.</p><p class="mb-2"><strong>6.4</strong> Where collecting from or delivering to third-party storage/premises, our liability cover does not apply while Goods are under third-party control or care. You may arrange your own cover for such periods.</p><p><strong>6.5</strong> We recommend you obtain additional all-risks insurance cover against perils such as fire, flood and theft, particularly for high-value items.</p>` },
+    ],
+  },
+  {
+    heading: 'Payment',
+    clauses: [
+      { num: '7', title: 'Payment', content: `<p class="mb-2"><strong>7.1</strong> A deposit is due upon acceptance of our Quotation as follows: (a) where the move date is 14 or more Working Days from the date of booking, 30% of the total charges; (b) where the move date is less than 14 Working Days from the date of booking, 50% of the total charges. The higher short-notice deposit reflects the greater commitment of resources (including staff scheduling and vehicle allocation) that cannot easily be reassigned at short notice. The booking is not secured until cleared funds are received.</p><p class="mb-2"><strong>7.2</strong> The balance is due no later than 3 Working Days before the move.</p><p class="mb-2"><strong>7.3</strong> If payment is not received when due, we may suspend or withhold Services or place Goods into storage at your cost until payment clears.</p><p class="mb-2"><strong>7.4</strong> You should not withhold sums due without first raising a written complaint. We will deal with any genuine dispute fairly and promptly.</p><p class="mb-2"><strong>7.5</strong> Overdue sums accrue interest daily at 3% per annum above the Bank of England base rate. We may recover reasonable costs of collection (including debt-collection and solicitor fees).</p><p><strong>7.6</strong> Deposit &amp; cancellation interaction: The deposit is applied against any cancellation or postponement charges under Clause 8. If the applicable charge is less than the deposit, we will refund the difference. If the charge exceeds the deposit, you must pay the balance.</p>` },
+    ],
+  },
+  {
+    heading: 'Cancellation',
+    clauses: [
+      { num: '8', title: 'Cancellation & Postponement', content: `<p class="mb-3">If you change or cancel an agreed Service date, the following charges apply based on notice given:</p><div class="overflow-x-auto mb-3"><table class="w-full text-sm border-collapse"><thead><tr class="bg-primary-50"><th class="text-left p-2.5 font-semibold border-b border-gray-200">Notice Given (Working Days)</th><th class="text-left p-2.5 font-semibold border-b border-gray-200">Charge</th></tr></thead><tbody><tr class="border-b border-gray-100"><td class="p-2.5">More than 15 Working Days</td><td class="p-2.5">No charge (deposit refundable or transferable per 7.6)</td></tr><tr class="border-b border-gray-100 bg-gray-50"><td class="p-2.5">10–15 Working Days (inclusive)</td><td class="p-2.5">30% of the total charges</td></tr><tr class="border-b border-gray-100"><td class="p-2.5">Less than 10 Working Days</td><td class="p-2.5">60% of the total charges</td></tr><tr class="border-b border-gray-100 bg-gray-50"><td class="p-2.5">Less than 3 Working Days</td><td class="p-2.5">75% of the total charges</td></tr><tr><td class="p-2.5">Within 24 hours of the move start</td><td class="p-2.5">100% of the total charges</td></tr></tbody></table></div><p><strong>8.1</strong> Waiver option (if offered): If purchased at booking and you notify us in writing by 12:00 on the preceding Working Day, we will waive the above fees once per booking.</p>` },
+      { num: '8A', title: 'Distance Contract Cooling-Off Rights', content: `<p class="mb-2">This clause applies where the Agreement is a Distance Contract (as defined in Clause 1).</p><p class="mb-2"><strong>8A.1</strong> You have the right to cancel this contract within 14 days without giving any reason. The cancellation period expires 14 days after the day the contract is formed (typically the date we confirm your booking).</p><p class="mb-2"><strong>8A.2</strong> To exercise the right to cancel, you must inform us by a clear statement (e.g. a letter sent by post, email to ${siteConfig.company.contact.email} or using the Model Cancellation Form in Schedule 1). To meet the cancellation deadline, it is sufficient for you to send your communication before the cancellation period expires.</p><p class="mb-2"><strong>8A.3</strong> If you cancel within the 14-day period, we will reimburse all payments received from you, including the deposit, without undue delay and in any event not later than 14 days after the day on which we are informed of your decision to cancel.</p><p class="mb-2"><strong>8A.4</strong> Early service start: Because most removals are booked with a move date falling within the 14-day cooling-off period, we will ask you to give express consent for the service to begin before the period ends. The Services include preparatory work such as resource scheduling, staff and vehicle allocation, turning away other bookings for the same date, route planning, procurement of packing materials and any pre-move survey or assessment. If you give such consent and subsequently cancel before the move is complete, you will be liable to pay us a reasonable amount proportionate to the services already provided up to the point of cancellation, which may include the reasonable cost of preparatory work already undertaken. If the service is fully performed within the 14-day period, you will lose your right to cancel.</p><p class="mb-2"><strong>8A.5</strong> Where this Clause 8A applies and conflicts with Clause 8, this Clause 8A takes precedence during the 14-day cooling-off period.</p><p><strong>8A.6</strong> This clause does not apply to contracts entered into at our business premises with both parties physically present.</p>` },
+    ],
+  },
+  {
+    heading: 'Delivery & Access',
+    clauses: [
+      { num: '9', title: 'Delivery, Access & Delays', content: `<p class="mb-2"><strong>9.1</strong> Any times given are estimates. Transit and delivery can be delayed by weather, traffic, industrial action, ferry/shipping schedules, route changes, port congestion and similar factors outside our control. We are not liable for losses caused by such delays unless due to our negligence or breach.</p><p class="mb-2"><strong>9.2</strong> If we cannot deliver because no authorised person is present, access is unavailable, or for reasons beyond our control, we may place Goods into storage and charge reasonable storage and redelivery costs.</p><p class="mb-2"><strong>9.3</strong> We reserve the right to select an appropriate storage facility.</p><p><strong>9.4</strong> Once Goods are stored under 9.2, the Agreement is treated as satisfied in respect of the original delivery. Any additional services are at your cost.</p>` },
+      { num: '10', title: 'Route, Method & Subcontracting', content: `<p class="mb-2"><strong>10.1</strong> Unless agreed otherwise in writing, we may optimise vehicle/container space and route alongside other consignments.</p><p class="mb-2"><strong>10.2</strong> We may transport Goods by any reasonable route.</p><p><strong>10.3</strong> We may subcontract some or all Services; these conditions still apply in full.</p>` },
+    ],
+  },
+  {
+    heading: 'Storage',
+    clauses: [
+      { num: '11', title: 'Storage Terms', content: `<p class="mb-2"><strong>11.1</strong> We may prepare an inventory for storage; please check it carefully. If you do not dispute it within 7 days of receipt, it will be treated as prima facie evidence of Goods received (meaning it is accepted as accurate unless you can show otherwise).</p><p class="mb-2"><strong>11.2</strong> You must keep us informed of your current contact details. Notices are deemed received 7 days after posting to your last known address.</p><p class="mb-2"><strong>11.3</strong> Storage is payable monthly in advance. Unused parts of a paid month are non-refundable.</p><p class="mb-2"><strong>11.4</strong> On reasonable notice you may inspect Goods in store (a reasonable charge may apply).</p><p class="mb-2"><strong>11.5</strong> We may end storage by giving 2 months' written notice if payments are up to date. You may terminate storage with 14 Working Days' notice (charges apply to the date notice should have taken effect).</p><p class="mb-2"><strong>11.6</strong> Our liability ends when Goods are handed out from store to you or your representative.</p><p class="mb-2"><strong>11.7</strong> All charges (including any removal charges) must be paid before Goods are released.</p><p class="mb-2"><strong>11.8</strong> If you fail to pay for storage, we may require you to remove Goods and pay all sums due. We will give written notice before any sale or disposal where reasonably possible. If you fail to collect, we may sell or dispose of Goods under the Torts (Interference with Goods) Act 1977, applying proceeds to sums owed (reasonable sale/disposal costs will be deducted). Any surplus will be paid to you without interest.</p><p><strong>11.9</strong> For preparation/disposal, you authorise us to open containers/boxes to identify contents and determine items for sale/disposal as reasonably necessary.</p>` },
+    ],
+  },
+  {
+    heading: 'Prohibited Items',
+    clauses: [
+      { num: '12', title: 'Goods We Will Not Move or Store', content: `<p class="mb-2">Do not present the following for removal or storage: passports, travel documents, wallets, jewellery, watches, precious metals/stones, cash, bank/credit cards, deeds, securities, stamps/coins/collections; perishable or temperature-controlled items; dangerous or explosive items (paint, aerosols, ammunition, firearms, weapons); animals, plants, food likely to attract vermin or cause infection; items needing special licence/permission for export/import; prohibited, stolen goods or drugs.</p><p class="mb-2"><strong>12.1</strong> If such items are included, we accept no liability for loss or damage and may remove, destroy or sell them. You will indemnify us for losses or claims arising from their presence.</p><p><strong>12.2</strong> We may refuse unsanitary or hazardous goods and will notify you of conditions for acceptance where applicable.</p>` },
+    ],
+  },
+  {
+    heading: 'Warranties & Responsibilities',
+    clauses: [
+      { num: '13', title: 'Your Warranties', content: `<p class="mb-2">You warrant that: (a) information you provide for quotation/planning is accurate; (b) you are the owner or authorised agent of the Goods; (c) self-packed items are packed to withstand ordinary risks of removal, carriage and storage; (d) any duties or quarantine restrictions have been disclosed; (e) all intended Goods are uplifted and none taken or left in error; (f) Goods are free of any legal charge or you have authority from those with an interest and have notified us of their details in writing; (g) if transferring this Agreement to a third party, you will notify us in writing so we can issue a new agreement.</p><p>You will indemnify us for losses if these warranties prove untrue.</p>` },
+      { num: '14', title: 'Your Responsibilities', content: `<p>You agree to: (a) respond promptly and accurately to our requests; (b) arrange all-risks insurance if you want cover beyond our limits; (c) obtain required permits, licences and parking suspensions; (d) reimburse parking/traffic penalties incurred in carrying out Services unless our fault; (e) attend in person or appoint an authorised representative for the whole move (except store jobs); (f) sign inventories and jobsheets as proof of collection/delivery; (g) ensure all intended items are collected and none taken in error before we leave; (h) supervise premises where others (tradesmen, tenants) are present; (i) prepare electronic appliances; (j) defrost, empty and clean fridges/freezers; (k) drain and clean appliances containing liquids or fuel; (l) provide contact details during the move/storage; (m) make your own arrangements for items excluded by Clause 12.</p>` },
+    ],
+  },
+  {
+    heading: 'Damage & Liability',
+    clauses: [
+      { num: '15', title: 'Damage Liability', content: `<p class="mb-2"><strong>15.1</strong> Our liability for loss or damage caused by our negligence or breach while Goods are in our custody is subject to the limits set out in Clause 6 (£15,000 per Luton van in aggregate). Liability is limited to repair or replacement (whichever is lower), considering age and condition.</p><p class="mb-2"><strong>15.2</strong> We are not liable for loss or damage to any single item valued over £2,000 that was not declared to us in writing before the move (see Clause 6.2).</p><p class="mb-2"><strong>15.3</strong> We are not liable for loss or damage arising from defective or inadequate packing where we did not pack the item.</p><p class="mb-2"><strong>15.4</strong> We are not liable if you dispose of or replace items before we have a reasonable opportunity to inspect them.</p><p class="mb-2"><strong>15.5</strong> Liability for Goods applies only while in our possession, or where loss or damage is proven to result from our failure to pack suitably where we were contracted to pack.</p><p class="mb-2"><strong>15.6</strong> We are not liable for Goods seized or confiscated by authorities unless due to our negligence or breach.</p><p class="mb-2 font-semibold">Damage to premises (other than Goods):</p><p class="mb-2"><strong>15.7</strong> Where third parties are present it may be difficult to establish causation. If we cause damage through negligence or breach, our liability is limited to making good the damaged area only.</p><p class="mb-2"><strong>15.8</strong> If we move Goods at your express instruction against our advice and damage occurs likely from that method, we are not liable.</p><p><strong>15.9</strong> You must note any property damage on the jobsheet or delivery receipt before we leave. This is important to support any claim.</p>` },
+      { num: '16', title: 'Notification of Loss or Damage', content: `<p class="mb-2"><strong>16.1</strong> For Goods we deliver, you must notify us in writing within 7 days of delivery with full details. This timeframe is required so we can investigate while evidence and staff recollection remain available. We will consider late notifications where you can show good reason for the delay.</p><p class="mb-2"><strong>16.2</strong> For misplaced items or causation queries, please notify us within 7 Working Days to aid investigation.</p><p class="mb-2"><strong>16.3</strong> When collecting from our premises, you or your representative must inspect at collection and note any loss or damage on paperwork. We may not be able to consider claims once Goods have left our premises unless you can show the loss or damage occurred while in our care.</p><p class="mb-2"><strong>16.4</strong> These time limits are important to enable fair investigation.</p><p><strong>16.5</strong> Any value estimates you provide may be treated as evidence the total value did not exceed that estimate at the time of loss or damage.</p>` },
+      { num: '17', title: 'Exclusions of Liability', content: `<p class="mb-2">We are not liable for: (a) loss or damage during services provided by a third party; (b) loss or damage from inadequate packing where we did not pack; (c) excluded valuables in Clause 12; (d) perishable or controlled-environment items; (e) electrical or mechanical derangement without related external damage; (f) loss involving data restoration or consequential losses; (g) normal wear and tear, natural deterioration, leakage/evaporation, moth/vermin, atmospheric conditions (damp, mould, mildew, rust, tarnish, corrosion) unless linked to ingress of water due to our negligence; (h) goods in drawers, wardrobes or containers not both packed and unpacked by us; (i) inherent vice or defect; (j) animals or plants; (k) items listed in Clause 12; (l) self-assembly or interconnecting furniture damage from dismantling/reassembly; (m) indirect or consequential losses.</p><p class="mb-2"><strong>17.1</strong> Nothing in these Terms excludes or limits liability for death or personal injury caused by our negligence, for fraud or fraudulent misrepresentation, or for any liability that cannot be limited under law.</p><p class="mb-2"><strong>17.2</strong> We are not liable where there is no breach by us or where loss or damage was not reasonably foreseeable.</p><p><strong>17.3</strong> We are not liable for loss or delay caused by events beyond reasonable control (see Force Majeure, Clause 22).</p>` },
+    ],
+  },
+  {
+    heading: 'Late Key & Overtime',
+    clauses: [
+      { num: '18', title: 'Late Key & Overtime', content: `<p class="mb-2"><strong>18.1</strong> Our Quotations exclude time incurred after 17:00 and any waiting for keys/access after 17:00.</p><p class="mb-2"><strong>18.2</strong> On the day, if keys or access are delayed, our team will wait at no charge up to 17:00.</p><p class="mb-2"><strong>18.3</strong> From 17:00 onwards, a Key-Wait &amp; Overtime charge of £35 per 30 minutes per staff member applies until unloading can commence or the vehicle is released. This charge applies only while the team is waiting on site or actively working. If the job cannot be completed and is abandoned, the charge stops at that point and additional day re-attendance may be charged at our standard day rate.</p><p class="mb-2"><strong>18.4</strong> This clause applies regardless of the cause of delay where outside our control (e.g. chain delays, vendor overrun, funds not released).</p><p><strong>18.5</strong> An optional waiver (if offered at booking) may cover these charges; see your Quotation if selected.</p>` },
+    ],
+  },
+  {
+    heading: 'Lien, Subcontracting & Claims',
+    clauses: [
+      { num: '19', title: 'Lien (Our Right to Hold Goods)', content: `<p>We may withhold and ultimately sell or dispose of some or all Goods if you fail to pay sums due (including taxes or levies paid on your behalf). We will give written notice before any sale or disposal where reasonably possible. While holding Goods, storage and other necessary expenses continue to apply. Sales are conducted in accordance with law; proceeds are applied to your debt with surplus returned to you without interest.</p>` },
+      { num: '20', title: 'Subcontracting & Third-Party Terms', content: `<p>We may use service partners and subcontractors; these terms still apply. You also agree to be bound by relevant carrier terms (Bills of Lading, Consignment Notes) where we act as your agent.</p>` },
+      { num: '21', title: 'Third-Party Claims & Charges', content: `<p>You are responsible for expenses, penalties or charges claimed against us in respect of the Goods unless caused by our negligence or breach (including parking levies where not otherwise agreed in writing).</p>` },
+    ],
+  },
+  {
+    heading: 'Force Majeure & Anti-Bribery',
+    clauses: [
+      { num: '22', title: 'Force Majeure', content: `<p>Neither party is liable for delay or failure due to Force Majeure provided the affected party: (a) promptly notifies the other; (b) gives a reasonable duration estimate; (c) updates when ended; (d) takes reasonable steps to mitigate; and (e) resumes immediately after the event.</p>` },
+      { num: '23', title: 'Anti-Bribery', content: `<p>We comply with applicable anti-bribery and anti-corruption laws including the Bribery Act 2010 and maintain internal policies.</p>` },
+    ],
+  },
+  {
+    heading: 'Disputes, Data & General',
+    clauses: [
+      { num: '24', title: 'Disputes & Alternative Dispute Resolution', content: `<p>If a dispute arises, either party may give written notice. Services will continue where practicable. If not resolved directly, you may refer to the Association of Independent Movers (AIM) dispute resolution service at <a href="https://www.aim.org.uk" target="_blank" rel="noopener noreferrer">www.aim.org.uk</a>. We are willing to participate in alternative dispute resolution through AIM. Use of that service does not prejudice your right to court proceedings in England &amp; Wales.</p>` },
+      { num: '25', title: 'Data Protection & Privacy', content: `<p class="mb-2"><strong>25.1</strong> We are the data controller for personal data collected in connection with the Services. We collect and process personal data (including names, addresses, contact details, and photographs/videos for quotations and claims) to perform our contract with you and to comply with our legal obligations.</p><p class="mb-2"><strong>25.2</strong> Our lawful basis for processing is: (a) contractual necessity (to provide the Services); (b) legal obligation (accounting, tax, regulatory requirements); and (c) legitimate interests (improving our services, fraud prevention) where these do not override your rights.</p><p class="mb-2"><strong>25.3</strong> You have the right to access, rectify, erase, restrict or port your personal data, and to object to processing. To exercise these rights, contact us at ${siteConfig.company.contact.email}.</p><p class="mb-2"><strong>25.4</strong> We retain personal data for the duration of our contract and for 6 years afterwards (to comply with limitation periods and regulatory requirements), unless a longer period is required by law.</p><p><strong>25.5</strong> Full details of how we handle your data are in our <a href="/privacy-policy/">Privacy Policy</a>. Our processing complies with the UK General Data Protection Regulation and Data Protection Act 2018.</p>` },
+      { num: '26', title: 'Notices', content: `<p>Notices must be in writing and sent to our registered office or your notified address by recorded/next-day delivery, commercial courier, or email. Delivery is deemed: on signature for physical delivery, or one Business Day after email transmission.</p>` },
+      { num: '27', title: 'Law & Jurisdiction', content: `<p>This Agreement (and non-contractual obligations arising from it) is governed by the laws of England &amp; Wales and subject to the exclusive jurisdiction of its courts.</p>` },
+      { num: '28', title: 'Entire Agreement', content: `<p>This Agreement is the entire agreement between us and supersedes all previous assurances or representations, whether oral or written, relating to the Services, save for fraudulent misrepresentation.</p>` },
+      { num: '29', title: 'Your Statutory Rights', content: `<p>Nothing in these Terms &amp; Conditions affects your statutory rights as a consumer under UK law, including the Consumer Rights Act 2015 and the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013.</p>` },
+    ],
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Schema
+// ---------------------------------------------------------------------------
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": pageTitle,
+  "description": pageDescription,
+  "url": `${siteConfig.brand.domain}/terms-conditions`,
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "dateModified": "2026-02-14",
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": siteConfig.brand.domain },
+      { "@type": "ListItem", "position": 2, "name": "Terms & Conditions", "item": `${siteConfig.brand.domain}/terms-conditions` },
+    ],
+  },
+};
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={schema}>
+
+  <!-- ================================================================== -->
+  <!-- Breadcrumbs                                                        -->
+  <!-- ================================================================== -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="container-wide py-3">
+      <nav class="text-sm text-warm-gray" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Terms & Conditions</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ================================================================== -->
+  <!-- Hero Intro                                                         -->
+  <!-- ================================================================== -->
+  <section class="py-12 md:py-16 gradient-hero">
+    <div class="container-narrow text-center">
+      <h1 class="text-3xl lg:text-4xl font-bold mb-3">Terms & Conditions</h1>
+      <p class="text-lg text-warm-gray mb-2 max-w-xl mx-auto">Everything you need to know before your move — in plain English</p>
+      <p class="text-sm text-warm-gray/70 mb-6">Last updated: 14 February 2026</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#at-a-glance" class="soft-cta">Key terms at a glance</a>
+        <a href="#full-terms" class="soft-cta">Jump to full terms</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- AT A GLANCE — Interactive Excerpt                                  -->
+  <!-- ================================================================== -->
+  <section id="at-a-glance" class="section bg-white" style="scroll-margin-top: 5rem;">
+    <div class="container-wide">
+      <KeyTermsGlance stats={keyStats} />
+      <CancellationChart tiers={cancellationTiers} />
+      <OvertimeChart slots={overtimeSlots} />
+      <CoverageCard />
+    </div>
+  </section>
+
+  <!-- ─── Key Dates Timeline ─── -->
+  <section class="pb-12 md:pb-16 bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-2xl font-bold mb-8 text-center">Your Move Timeline</h2>
+        <div id="key-dates-timeline" class="timeline-wrapper">
+          <ol class="timeline-track">
+            {timelineMilestones.map((m, i) => (
+              <li class="timeline-node" style={`--delay: ${i}`}>
+                <div class="timeline-dot" aria-hidden="true">
+                  <Fragment set:html={m.icon} />
+                </div>
+                <div class="timeline-label">{m.label}</div>
+                <div class="timeline-detail">{m.detail}</div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- Transition Divider                                                 -->
+  <!-- ================================================================== -->
+  <div class="py-8 bg-cream text-center border-y border-gray-100">
+    <p class="text-warm-gray text-sm">That covers the highlights. Full terms below.</p>
+  </div>
+
+  <!-- ================================================================== -->
+  <!-- FULL TERMS                                                         -->
+  <!-- ================================================================== -->
+  <section id="full-terms" class="section bg-cream" style="scroll-margin-top: 5rem;">
+    <div class="container-narrow">
+
+      <!-- Table of Contents -->
+      <nav class="bg-white rounded-lg border border-gray-100 p-5 mb-12" aria-label="Table of contents">
+        <p class="font-semibold text-primary-600 mb-3">Contents</p>
+
+        <div class="grid md:grid-cols-2 gap-x-8 gap-y-1">
+          <div>
+            <p class="text-xs font-semibold text-warm-gray/60 uppercase tracking-wider mb-2">Part A — Plain-English Summary</p>
+            <ol class="space-y-1 list-none text-sm mb-4">
+              {partAToc.map((s) => (
+                <li>
+                  <a href={`#${s.id}`} class="text-primary-600 hover:text-secondary-500 no-underline">{s.label}</a>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <p class="text-xs font-semibold text-warm-gray/60 uppercase tracking-wider mb-2">Part B — Full Legal Terms</p>
+            <ol class="space-y-1 list-none text-sm">
+              {partBGroups.map((group) => (
+                <li>
+                  <a href={`#group-${group.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} class="text-primary-600 hover:text-secondary-500 no-underline">{group.heading}</a>
+                  <span class="text-warm-gray/50 text-xs ml-1">({group.clauses.map(c => c.num).join(', ')})</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </nav>
+
+      <!-- ================================================================ -->
+      <!-- Part A: Plain-English Summary                                    -->
+      <!-- ================================================================ -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-2">Part A — How We Work</h2>
+        <p class="text-warm-gray mb-8">This is a plain-English summary of the key points. Where there is any conflict, the full Terms in Part B apply.</p>
+
+        <div class="space-y-8 text-warm-gray leading-relaxed">
+
+          <!-- Deposits & Payment -->
+          <div id="summary-deposits" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Deposits & Payment</h3>
+            <p class="mb-3">To secure your booking, we require a deposit as follows:</p>
+            <div class="grid sm:grid-cols-2 gap-3 mb-4">
+              <div class="bg-primary-50 rounded-lg p-4">
+                <div class="font-bold text-primary-600 text-lg">30% deposit</div>
+                <div class="text-sm">Standard bookings<br><span class="text-warm-gray/70">Move date 14+ working days away</span></div>
+              </div>
+              <div class="bg-primary-50 rounded-lg p-4">
+                <div class="font-bold text-primary-600 text-lg">50% deposit</div>
+                <div class="text-sm">Short-notice bookings<br><span class="text-warm-gray/70">Move date &lt;14 working days away</span></div>
+              </div>
+            </div>
+            <p class="mb-2">The deposit represents advance costs and reserved resources. If you cancel, it will be applied against cancellation charges under Clause 8. If the cancellation charge is less than the deposit, we refund the difference.</p>
+            <p>The balance is due no later than <strong>3 working days</strong> before your move. We take payment by bank transfer (BACS).</p>
+          </div>
+
+          <!-- Insurance & Cover -->
+          <div id="summary-insurance" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Insurance & Cover</h3>
+            <p class="mb-3">All moves are covered by our Goods in Transit liability up to <strong>£15,000 per Luton van</strong> (aggregate, not per item). This is included as standard on every move.</p>
+            <div class="bg-orange-50 border-l-4 border-orange-400 rounded-r-lg p-4 mb-3">
+              <p class="text-sm"><strong>Important:</strong> If you have any single item worth more than £2,000, you must let us know in writing before the move. Items over £2,000 that are not declared in advance are not covered.</p>
+            </div>
+            <p class="mb-2">If anything goes wrong, you must notify us in writing <strong>within 7 days</strong> of delivery with full details. This timeframe is needed so we can investigate promptly while evidence and staff recollection remain available.</p>
+            <p>We are not liable for loss or damage caused by inadequate packing where we did not pack the item. If you pack items yourself, please ensure they are packed to withstand ordinary risks of removal and carriage.</p>
+          </div>
+
+          <!-- Cancellation & Changes -->
+          <div id="summary-cancellation" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Cancellations & Changes</h3>
+            <p class="mb-3">Sometimes plans change. The following charges apply based on notice given (working days = Monday–Friday, excluding public holidays):</p>
+            <div class="overflow-x-auto mb-4">
+              <table class="w-full text-sm border-collapse">
+                <thead>
+                  <tr class="bg-primary-50">
+                    <th class="text-left p-3 font-semibold border-b border-gray-200">Notice Given</th>
+                    <th class="text-left p-3 font-semibold border-b border-gray-200">Charge</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-gray-100"><td class="p-3">More than 15 working days</td><td class="p-3 text-green-700 font-medium">No charge (deposit refundable)</td></tr>
+                  <tr class="border-b border-gray-100 bg-gray-50"><td class="p-3">10–15 working days</td><td class="p-3">30% of total quote</td></tr>
+                  <tr class="border-b border-gray-100"><td class="p-3">Less than 10 working days</td><td class="p-3">60% of total quote</td></tr>
+                  <tr class="border-b border-gray-100 bg-gray-50"><td class="p-3">Less than 3 working days</td><td class="p-3">75% of total quote</td></tr>
+                  <tr><td class="p-3">Within 24 hours of move start</td><td class="p-3 text-red-700 font-medium">100% of total quote</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Your deposit is applied against any cancellation charge. If the charge is less than the deposit, we refund the difference. If it exceeds the deposit, you pay the balance.</p>
+          </div>
+
+          <!-- Cooling-Off Rights -->
+          <div id="summary-cooling-off" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Your Right to Cancel (Distance Contracts)</h3>
+            <p class="mb-3">If you booked online, by phone, email or any other method where we were not both physically present, you have a statutory <strong>14-day cooling-off period</strong> under the Consumer Contracts (Information, Cancellation and Additional Charges) Regulations 2013.</p>
+            <p class="mb-3">This 14-day period starts the day after the contract is formed (typically when we confirm your booking). During this period you may cancel for any reason and receive a <strong>full refund</strong>, including your deposit.</p>
+            <div class="bg-primary-50 rounded-lg p-4 mb-3">
+              <p class="text-sm"><strong>Early service start:</strong> If your move is scheduled within the 14-day cooling-off period, we will ask you to confirm in writing that you request the service to begin before the period ends. If you do, and you later cancel before the move is completed, you may be charged a reasonable amount for services already provided. If the move is fully completed within the cooling-off period, you lose your right to cancel.</p>
+            </div>
+            <p class="text-sm text-warm-gray/70">See Clause 8A for the full legal wording. A model cancellation form is provided in Schedule 1.</p>
+          </div>
+
+          <!-- Late Keys & Overtime -->
+          <div id="summary-overtime" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Late Keys & Overtime</h3>
+            <p class="mb-3">Our quotes cover moves up to <strong>5:00 pm</strong>. If keys are late or the move runs over for reasons outside our control, we charge <strong>£35 per 30 minutes per staff member</strong> from 5:00 pm onwards.</p>
+            <p>You can purchase our <strong>Key Wait Waiver</strong> at booking to remove these charges.</p>
+          </div>
+
+          <!-- On the Day -->
+          <div id="summary-on-the-day" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">On the Day</h3>
+            <p class="mb-3">Our vans come with mattress protectors, sofa covers, TV bags and picture bags. Furniture assembly/disassembly is only included if stated in your quote.</p>
+            <p>Please ensure there is space for the van to park and unload — any parking fines or restrictions are your responsibility.</p>
+          </div>
+
+          <!-- Storage -->
+          <div id="summary-storage" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Storage</h3>
+            <p>We can provide storage in our Clifton warehouse (access by appointment only). If you need more regular access, we can arrange discounted rates at local self-storage facilities.</p>
+          </div>
+
+          <!-- What We Don't Move -->
+          <div id="summary-no-move" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">What We Don't Move</h3>
+            <p class="mb-3">We do not carry hazardous items (chemicals, gas bottles, explosives, etc.) or valuables such as jewellery, cash, passports or important documents — these should travel with you.</p>
+            <p class="text-sm text-warm-gray/70">See Clause 12 for the full list.</p>
+          </div>
+
+          <!-- Disputes & Complaints -->
+          <div id="summary-disputes" style="scroll-margin-top: 5rem;">
+            <h3 class="text-lg font-bold text-primary-600 mb-3">Disputes & Complaints</h3>
+            <p class="mb-3">If something goes wrong, please contact us first and we will do our best to resolve it. If we cannot reach agreement, you may refer the matter to the Association of Independent Movers (AIM) dispute resolution service at <a href="https://www.aim.org.uk" target="_blank" rel="noopener noreferrer">www.aim.org.uk</a>.</p>
+            <p>Use of ADR does not affect your right to take court proceedings.</p>
+          </div>
+
+        </div>
+
+        <div class="mt-8 bg-white rounded-lg border border-gray-100 p-5 text-sm text-warm-gray">
+          <p>By booking with us and paying your deposit, you confirm you have read and accepted these Terms & Conditions. See <a href="#how-terms-apply" class="text-primary-600">How These Terms Apply</a> for full details.</p>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- Part B: Full Legal Terms                                         -->
+      <!-- ================================================================ -->
+      <div class="mb-16">
+        <h2 class="text-2xl font-bold mb-2">Part B — Full Terms & Conditions</h2>
+        <p class="text-warm-gray mb-8">The complete legal text. Click any clause to expand it.</p>
+
+        <div class="space-y-10">
+          {partBGroups.map((group) => (
+            <div id={`group-${group.heading.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} style="scroll-margin-top: 5rem;">
+              <h3 class="text-lg font-semibold text-primary-600 mb-4 uppercase tracking-wide text-sm">{group.heading}</h3>
+              <div class="space-y-2">
+                {group.clauses.map((clause) => (
+                  <details class="group bg-white rounded-lg border border-gray-100 overflow-hidden">
+                    <summary class="flex items-center justify-between cursor-pointer px-5 py-4 hover:bg-primary-50 transition-colors duration-200 list-none">
+                      <span class="font-medium text-primary-600">
+                        <span class="text-warm-gray/50 mr-2">{clause.num}.</span>{clause.title}
+                      </span>
+                      <svg class="w-5 h-5 text-warm-gray/40 transition-transform duration-200 group-open:rotate-180 flex-shrink-0 ml-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </summary>
+                    <div class="px-5 pb-5 text-warm-gray leading-relaxed text-[0.9375rem] border-t border-gray-50">
+                      <div class="pt-4" set:html={clause.content} />
+                    </div>
+                  </details>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- How These Terms Apply                                            -->
+      <!-- ================================================================ -->
+      <div id="how-terms-apply" class="mb-16" style="scroll-margin-top: 5rem;">
+        <h2 class="text-2xl font-bold mb-6">How These Terms Apply</h2>
+        <div class="space-y-6 text-warm-gray leading-relaxed">
+
+          <div class="bg-white rounded-lg border border-gray-100 p-5">
+            <h3 class="font-semibold text-primary-600 mb-2">In-person bookings</h3>
+            <p>Where you accept our Quotation in person (for example at a home survey), the Agreement is formed when you sign the Acceptance on the Quotation and pay the deposit. These Terms & Conditions form part of that Agreement.</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-gray-100 p-5">
+            <h3 class="font-semibold text-primary-600 mb-2">Distance contracts (online, phone, email, WhatsApp)</h3>
+            <p>Where you accept our Quotation remotely, the Agreement is formed when you confirm your booking and pay the deposit. By doing so, you confirm you have read and agree to these Terms & Conditions. You have the right to cancel within 14 days as set out in Clause 8A.</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-gray-100 p-5">
+            <h3 class="font-semibold text-primary-600 mb-2">Early service start</h3>
+            <p>Where your move date falls within the 14-day cooling-off period, we will ask you to give express consent for the service to begin before the period ends. This consent is obtained during the booking process (on our booking form, quote acceptance or confirmation email) and is not part of these Terms. See Clause 8A for full details.</p>
+          </div>
+
+          <div class="bg-white rounded-lg border border-gray-100 p-5">
+            <h3 class="font-semibold text-primary-600 mb-2">Where to find these Terms</h3>
+            <p>These Terms are available on our website, attached to our Quotation, and provided in our booking confirmation email. If you would like a copy in any other format, please ask.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- Schedule 1: Model Cancellation Form                              -->
+      <!-- ================================================================ -->
+      <div id="cancellation-form" class="mb-16" style="scroll-margin-top: 5rem;">
+        <h2 class="text-2xl font-bold mb-6">Schedule 1 — Model Cancellation Form</h2>
+        <div class="bg-white rounded-lg border border-gray-200 p-6 text-warm-gray leading-relaxed">
+          <p class="text-sm text-warm-gray/70 mb-4">(Complete and return this form only if you wish to cancel the contract)</p>
+
+          <p class="mb-4"><strong>To:</strong> {siteConfig.company.name}<br>
+          {siteConfig.legal.companyAddress}<br>
+          {siteConfig.company.contact.email}</p>
+
+          <p class="mb-4">I/We (*) hereby give notice that I/We (*) cancel my/our (*) contract for the supply of the following service:</p>
+
+          <div class="space-y-3 mb-4 text-sm">
+            <p>Service description: _______________________________________________</p>
+            <p>Move date: _______________________________________________</p>
+            <p>Booking reference: _______________________________________________</p>
+            <p>Ordered on (*) / Confirmed on (*): _______________________________________________</p>
+            <p>Name of consumer(s): _______________________________________________</p>
+            <p>Address of consumer(s): _______________________________________________</p>
+            <p>Signature of consumer(s) (only if sent on paper): _______________________________________________</p>
+            <p>Date: _______________________________________________</p>
+          </div>
+
+          <p class="text-sm text-warm-gray/70">(*) Delete as appropriate.</p>
+        </div>
+      </div>
+
+      <!-- ================================================================ -->
+      <!-- Contact Box                                                      -->
+      <!-- ================================================================ -->
+      <div class="bg-white rounded-lg border border-gray-100 p-6">
+        <h3 class="font-semibold text-primary-600 mb-2">Questions about these terms?</h3>
+        <p class="text-warm-gray text-sm mb-1">{siteConfig.company.name}</p>
+        <p class="text-warm-gray text-sm mb-1">{siteConfig.legal.companyAddress}</p>
+        <p class="text-warm-gray text-sm mb-1">Email: {siteConfig.company.contact.email}</p>
+        <p class="text-warm-gray text-sm">Phone: {siteConfig.company.contact.phone}</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================================== -->
+  <!-- Final CTA                                                          -->
+  <!-- ================================================================== -->
+  <section class="py-14 bg-primary-600 text-white text-center">
+    <div class="container-narrow">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-white mb-2">Ready to Plan Your Move?</h2>
+      <p class="text-white/80 mb-6 max-w-md mx-auto">Get a free, no-obligation quote for your Bristol removal.</p>
+      <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40">
+        Get Your Instant Quote
+      </a>
+    </div>
+  </section>
+
+  <p class="text-center text-xs text-warm-gray/50 py-4">&copy; 2026 {siteConfig.company.name}. All rights reserved.</p>
+
+</Layout>
+
+<!-- ====================================================================== -->
+<!-- Scoped Styles                                                          -->
+<!-- ====================================================================== -->
+<style>
+  /* ── Timeline ── */
+  .timeline-wrapper {
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .timeline-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+  .timeline-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-width: 600px;
+    position: relative;
+    padding: 0 1rem;
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    counter-reset: none;
+  }
+  .timeline-track::before {
+    content: '';
+    position: absolute;
+    top: 1.5rem;
+    left: 2rem;
+    right: 2rem;
+    height: 3px;
+    background: linear-gradient(to right, #3b6587, #C65D3B);
+    border-radius: 2px;
+    z-index: 0;
+  }
+  .timeline-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s ease;
+    transition-delay: calc(var(--delay) * 120ms);
+  }
+  .timeline-visible .timeline-node {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .timeline-dot {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: #3b6587;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .timeline-label {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: #2D2D2D;
+    margin-bottom: 0.25rem;
+  }
+  .timeline-detail {
+    font-size: 0.75rem;
+    color: #6B6B6B;
+    max-width: 8rem;
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    .timeline-node {
+      transition: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+
+  /* ── Accordion chevron on native details ── */
+  details summary::-webkit-details-marker,
+  details summary::marker {
+    display: none;
+  }
+</style>
+
+<!-- ====================================================================== -->
+<!-- Scripts                                                                 -->
+<!-- ====================================================================== -->
+
+<!-- Timeline animation -->
+<script is:inline>
+(function () {
+  var timeline = document.getElementById('key-dates-timeline');
+  if (!timeline) return;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    timeline.classList.add('timeline-visible');
+    return;
+  }
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        timeline.classList.add('timeline-visible');
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+  observer.observe(timeline);
+})();
+</script>

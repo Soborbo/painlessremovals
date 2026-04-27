@@ -1,0 +1,722 @@
+---
+/**
+ * Partners Hub Page
+ *
+ * B2B partnership hub for Painless Removals.
+ * Targets estate agents, solicitors, care homes,
+ * relocation agents, and home staging companies.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import ProblemSolution from '@/components/ProblemSolution.astro';
+import { ref } from '@/utils/schema';
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+
+// Page metadata
+const pageTitle = 'Trade Partners | Painless Removals Bristol — Trusted Since 1978';
+const pageDescription = `A removal partner your clients will thank you for. Dedicated Move Managers, full-day chain move allocation, and ${siteConfig.company.rating.value}\u2605 average reviews. Trusted by Bristol property professionals since 1978.`;
+
+// Partner categories
+const partnerCategories = [
+  {
+    title: 'Estate Agents & Property Professionals',
+    description: 'You need completion day to go smoothly. We guarantee it won\'t be our team holding things up. Full-day allocation, Key Wait Waiver, and priority booking for your referred clients.',
+    href: '/partners/estate-agents/',
+  },
+  {
+    title: 'Solicitors & Conveyancers',
+    description: 'Chain moves are complex enough without an unreliable removal company. We coordinate around your completion timeline and provide real-time updates so you&rsquo;re never chasing.',
+    href: '/partners/solicitors/',
+  },
+  {
+    title: 'Care Homes & Senior Living Providers',
+    description: 'Downsizing moves need patience, sensitivity, and a team your residents can trust. We handle everything &mdash; from full packing to furniture placement &mdash; so the transition feels as gentle as possible.',
+    href: '/partners/care-homes/',
+  },
+  {
+    title: 'Corporate Relocation Agents',
+    description: 'Relocating employees to or through Bristol? We specialise in long-distance moves across the UK, with a dedicated Move Manager and transparent pricing your clients can rely on.',
+    href: '/partners/relocation-agents/',
+  },
+  {
+    title: 'Home Staging & Interior Design',
+    description: 'High-value furniture, tight timelines, and repeat bookings. We handle staging deliveries and collections with the care your pieces deserve &mdash; and we never rush.',
+    href: '/partners/home-staging/',
+  },
+];
+
+// Commitments
+const commitments = [
+  {
+    title: 'Same-day response',
+    description: 'Every partner enquiry receives a response within the same working day. Urgent completion-day queries get a callback within 2 hours.',
+  },
+  {
+    title: 'Named account contact',
+    description: 'You\'ll have a direct line to someone who knows your business and your clients. Not a generic enquiry inbox.',
+  },
+  {
+    title: 'Full-day chain move allocation',
+    description: 'We don\'t book another job before your client\'s move. We\'re ready when the keys are ready.',
+  },
+  {
+    title: 'Priority booking window',
+    description: 'Referred clients get early access to peak-season dates. We hold capacity for our partners.',
+  },
+  {
+    title: 'Real-time move updates',
+    description: 'On move day, your contact can reach our team directly for live status. No chasing. No guessing.',
+  },
+  {
+    title: 'Price agreed = price paid',
+    description: 'We don\'t surprise your client with hidden charges. Our quotes are transparent, and we explain everything upfront.',
+  },
+];
+
+// How it works steps
+const steps = [
+  {
+    number: 1,
+    title: 'Register',
+    description: 'Fill in the short form below. Tell us about your business, how many clients you\'d typically refer per month, and what matters most to you in a removal partner. We\'ll arrange an introductory call.',
+  },
+  {
+    number: 2,
+    title: 'We Set You Up',
+    description: 'You\'ll receive a named account contact, a dedicated partner referral link, and co-branded materials you can share with your clients &mdash; including our printable Moving Day Checklist with your logo alongside ours.',
+  },
+  {
+    number: 3,
+    title: 'Refer with Confidence',
+    description: 'When your client needs a removal company, send them our way. They\'ll receive priority treatment, a dedicated Move Manager, and the same quality we\'ve delivered for 47 years. We\'ll keep you informed throughout.',
+  },
+];
+
+// Partnership tiers
+const tiers = [
+  {
+    name: 'Referral Partner',
+    tagline: 'For professionals who occasionally recommend removal services.',
+    features: [
+      'Named account contact',
+      'Priority booking for referred clients',
+      'Co-branded Moving Day Checklist',
+      'Quarterly partnership check-in',
+    ],
+  },
+  {
+    name: 'Preferred Partner',
+    tagline: 'For agents, solicitors, and care homes who regularly refer clients.',
+    badge: 'Most Popular',
+    features: [
+      'Everything in Referral, plus:',
+      'Custom co-branded materials (print & digital)',
+      'Move status updates sent directly to you',
+      'Dedicated phone line for urgent move-day queries',
+      'Bi-monthly partnership review',
+    ],
+  },
+  {
+    name: 'Strategic Partner',
+    tagline: 'For relocation companies, developers, and high-volume referral sources.',
+    features: [
+      'Everything in Preferred, plus:',
+      'Tailored service level agreement',
+      'Volume-based pricing discussions',
+      'Integration with your client management workflow',
+      'Monthly performance review and pipeline planning',
+    ],
+  },
+];
+
+// Toolkit items
+const toolkitItems = [
+  {
+    title: 'Moving Day Checklist',
+    description: 'A printable, professionally designed checklist your clients will actually use. Your branding alongside ours. Hand it over at exchange, and your client remembers you as the agent who thought of everything.',
+    image: 'homepage/home-removals-painless-boxes',
+    alt: 'Painless Removals boxes packed and ready for moving day',
+  },
+  {
+    title: 'Video Packing Guide',
+    description: 'A short, practical video your clients can watch before moving day. Covers how to pack room by room, what to leave for the crew, and how to prepare fragile items. Fewer questions, smoother move.',
+    image: 'homepage/packing-video-guide',
+    alt: 'Video packing guide for home removals',
+  },
+  {
+    title: 'Instant Quote Calculator',
+    description: 'A trackable link to our instant quote calculator, so you can see which referrals convert and your clients get an immediate price indication.',
+    image: 'homepage/home-removal-calculator-wide',
+    alt: 'Online instant quote calculator for home removals',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'Is there a referral fee?',
+    answer: 'We focus on building partnerships based on service quality, not financial incentives. Our priority is ensuring your clients receive an exceptional experience that reflects well on your recommendation. We\'re happy to discuss commercial arrangements once the partnership is established and working well.',
+  },
+  {
+    question: 'What areas do you cover?',
+    answer: 'We\'re based in Bristol and cover the entire UK, with a particular strength in long-distance moves (100+ miles). Our sweet spot is moves between the South West, Wales, London, and the North &mdash; Bristol\'s location makes us the natural choice for these corridors.',
+  },
+  {
+    question: 'How quickly can you quote a referred client?',
+    answer: 'Most referred clients receive a quote within 24 hours. For urgent chain completions, we can often provide a same-day estimate via video survey.',
+  },
+  {
+    question: 'What happens if something goes wrong on move day?',
+    answer: 'Your named account contact is reachable directly. We carry &pound;15,000 insurance per van, and items valued over &pound;2,000 can be declared for additional cover. In 47 years, our approach has always been: fix it first, discuss it later.',
+  },
+  {
+    question: 'Can you handle moves at short notice?',
+    answer: 'Yes &mdash; chain completions often come together quickly. Preferred and Strategic partners get priority access to our calendar, and we hold capacity specifically for partner referrals during peak periods.',
+  },
+  {
+    question: 'Do you provide packing services?',
+    answer: 'Full packing, fragile-only packing, or supply-only &mdash; whatever the client needs. Particularly relevant for care home referrals where the resident may not be able to pack themselves.',
+  },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Trade Partnership Programme — Painless Removals Bristol",
+  "description": pageDescription,
+  "provider": ref.business(),
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "AdministrativeArea", "name": "South West England" },
+  ],
+  "serviceType": "Trade Partnership Programme",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/&mdash;/g, '—').replace(/&pound;/g, '£'),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))] max-h-dvh overflow-hidden">
+
+      <!-- Mobile: Image at top -->
+      <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+        <OptimizedPicture name="partners/partners-hero" pattern="FULL" alt="Professional trade partnership for home removals" class="absolute inset-0 w-full h-full object-cover" />
+      </div>
+
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+            Trade Partnerships
+          </p>
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold mb-5">
+            Give Your Client a <span class="text-secondary-500">Painless</span> Move.<br/>Refer Us Today.
+          </h1>
+          <p class="text-lg lg:text-xl text-warm-gray leading-relaxed mb-6">
+            The removal company your clients will actually thank you for recommending.
+          </p>
+
+          <!-- Proof bar -->
+          <div class="flex flex-col gap-2 text-sm text-warm-gray mb-8">
+            <div class="flex items-center gap-2">
+              <span class="text-green-500 shrink-0">&#10003;</span>
+              <span>We&rsquo;ve been moving Bristol since 1978</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-500 shrink-0">&#10003;</span>
+              <span>Full day allocated to every chain move</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-green-500 shrink-0">&#10003;</span>
+              <span>A dedicated contact for you and your client</span>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+            <a href="#partner-form" class="btn-cta-orange">
+              Become a Partner
+            </a>
+            <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-primary-600 font-semibold no-underline hover:text-secondary-500 transition-colors text-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              {siteConfig.company.contact.phone}
+            </a>
+          </div>
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-yellow-400 text-xl tracking-tight">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span class="text-warm-gray text-sm font-medium">{siteConfig.company.rating.value} from {siteConfig.company.rating.count} reviews</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Full-bleed image (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden">
+        <OptimizedPicture name="partners/partners-hero" pattern="FULL" alt="Professional trade partnership for home removals" class="absolute inset-0 w-full h-full object-cover" />
+      </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: THE PROBLEM WE SOLVE
+  ============================================ -->
+  <ProblemSolution
+    heading="Your Reputation Is Safe With Us"
+    bgClass="bg-cream"
+  >
+    <div class="space-y-4 text-warm-gray text-lg leading-relaxed">
+      <p>
+        You've worked hard to build trust with your client. The last thing you need is a removal company that turns up late, damages belongings, or creates stress on completion day.
+      </p>
+      <p>
+        We understand that when you recommend us, you're putting your name alongside ours. That's a responsibility we take seriously.
+      </p>
+      <p>
+        Every client you refer to us gets a <strong class="text-primary-600">dedicated Move Manager</strong> &mdash; a single point of contact from first quote to final box. No call centres. No being passed between departments. One person who knows their move inside out.
+      </p>
+      <p>
+        We allocate a <strong class="text-primary-600">full day to every chain move</strong>. That means no rushing to finish a prior job. No turning up late because the morning booking overran. Your client's move starts when it needs to start.
+      </p>
+      <p>
+        This isn't how most removal companies operate. It's how we've operated for 47 years.
+      </p>
+    </div>
+  </ProblemSolution>
+
+  <!-- ============================================
+       SECTION 3: WHO WE WORK WITH
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Built for Professionals Who Value Their Client Relationships</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          We work with property professionals across Bristol, Bath, and the wider South West. Each partnership is different, but the principle is the same: your client gets a better moving experience, and you get a reliable partner you never have to worry about.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {partnerCategories.map((partner) => (
+          <a href={partner.href} class="block bg-white rounded-lg p-6 lg:p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 no-underline group hover:-translate-y-1">
+            <h3 class="text-lg font-bold text-primary-600 mb-2 group-hover:text-secondary-500 transition-colors">{partner.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed mb-3"><Fragment set:html={partner.description} /></p>
+            <span class="text-secondary-500 text-sm font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+              Learn more
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: OUR COMMITMENTS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Our Commitments to You</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          This isn't a vague partnership promise. These are operational commitments we honour on every referred job.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {commitments.map((item) => (
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 mt-1 shrink-0 text-lg">&#10003;</span>
+            <div>
+              <h3 class="font-bold text-primary-600 mb-1">{item.title}</h3>
+              <p class="text-warm-gray text-sm leading-relaxed">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: HOW IT WORKS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Three Steps to a Trusted Partnership</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-4xl mx-auto">
+        {steps.map((step) => (
+          <div class="text-center group cursor-default">
+            <div class="w-14 h-14 lg:w-16 lg:h-16 bg-primary-600 text-white rounded-full flex items-center justify-center text-xl lg:text-2xl font-bold mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:bg-primary-700">
+              {step.number}
+            </div>
+            <h3 class="text-base lg:text-lg font-bold mb-2 transition-colors duration-300 group-hover:text-primary-600">{step.title}</h3>
+            <p class="text-warm-gray text-sm"><Fragment set:html={step.description} /></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: PARTNERSHIP TIERS
+  ============================================ -->
+  <section class="section bg-primary-600 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5">
+      <div class="absolute top-10 left-10 w-40 h-40 border border-white rounded-full"></div>
+      <div class="absolute bottom-10 right-10 w-60 h-60 border border-white rounded-full"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 border border-white rounded-full"></div>
+    </div>
+
+    <div class="container-wide relative z-10">
+      <div class="text-center mb-12">
+        <h2 class="text-white">Choose the Level That Suits Your Business</h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {tiers.map((tier) => (
+          <div class={`relative bg-white/10 backdrop-blur-sm rounded-xl p-6 lg:p-8 border border-white/20 ${tier.badge ? 'ring-2 ring-white/40' : ''}`}>
+            {tier.badge && (
+              <span class="absolute top-0 left-6 -translate-y-1/2 bg-white text-primary-600 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                {tier.badge}
+              </span>
+            )}
+            <h3 class="text-white text-xl font-bold mb-2">{tier.name}</h3>
+            <p class="text-primary-200 text-sm mb-4">{tier.tagline}</p>
+            <ul class="space-y-2 text-sm text-primary-100">
+              {tier.features.map(f => (
+                <li class="flex items-start gap-2">
+                  <span class="text-green-400 mt-0.5 shrink-0">&#10003;</span>
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: CO-BRANDED TOOLKIT
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Materials That Make You Look Good</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          We don't just want your referral. We want to make the referral easy &mdash; and valuable for your client. Every partner receives access to our co-branded toolkit.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-4xl mx-auto">
+        {toolkitItems.map((item) => (
+          <div class="bg-cream rounded-lg overflow-hidden border border-gray-100">
+            <OptimizedPicture name={item.image} pattern="HALF" alt={item.alt} class="w-full h-48 object-cover" loading="lazy" />
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-primary-600 mb-2">{item.title}</h3>
+              <p class="text-warm-gray text-sm leading-relaxed">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: PARTNER REGISTRATION FORM
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-primary-600 relative overflow-hidden">
+    <div class="absolute inset-0 opacity-5">
+      <div class="absolute -top-20 -left-20 w-64 h-64 border border-white rounded-full"></div>
+      <div class="absolute -bottom-16 -right-16 w-48 h-48 border border-white rounded-full"></div>
+    </div>
+
+    <div class="max-w-2xl mx-auto px-5 relative z-10">
+      <div class="text-center mb-8">
+        <h2 class="text-white text-2xl md:text-3xl mb-2">Let's Talk</h2>
+        <p class="text-primary-200">
+          Tell us about your business and we'll arrange an introductory call. No hard sell &mdash; just a conversation about how we can help your clients.
+        </p>
+      </div>
+
+      <div id="partner-form" class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10" style="scroll-margin-top: 5rem;">
+
+        <!-- Success message (hidden by default) -->
+        <div id="form-success" class="hidden text-center py-8">
+          <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-primary-600 mb-2">Registration Received</h3>
+          <p class="text-warm-gray leading-relaxed">
+            Thank you for your interest in partnering with us. We'll respond within one working day to arrange an introductory call.
+          </p>
+        </div>
+
+        <form id="partner-form-el" class="space-y-5" novalidate data-phone={siteConfig.company.contact.phone}>
+          <!-- Honeypot -->
+          <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label for="website">Leave this blank</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <!-- Name -->
+          <div>
+            <label for="name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Name <span class="text-secondary-500">*</span></label>
+            <input type="text" id="name" name="name" required autocomplete="name"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+
+          <!-- Company Name -->
+          <div>
+            <label for="companyName" class="block text-sm font-semibold text-primary-600 mb-1.5">Company Name <span class="text-secondary-500">*</span></label>
+            <input type="text" id="companyName" name="companyName" required autocomplete="organization"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+
+          <!-- Role -->
+          <div>
+            <label for="role" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Role</label>
+            <input type="text" id="role" name="role" placeholder="e.g. Branch Manager, Senior Partner" autocomplete="organization-title"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+
+          <!-- Business Type and Estimated Referrals row -->
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="businessType" class="block text-sm font-semibold text-primary-600 mb-1.5">Business Type <span class="text-secondary-500">*</span></label>
+              <select id="businessType" name="businessType" required
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                <option value="">Select your business type...</option>
+                <option value="estate-agent">Estate Agent</option>
+                <option value="solicitor">Solicitor / Conveyancer</option>
+                <option value="care-home">Care Home / Senior Living</option>
+                <option value="relocation-agent">Corporate Relocation</option>
+                <option value="home-staging">Home Staging / Interior Design</option>
+                <option value="property-developer">Property Developer</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="estimatedReferrals" class="block text-sm font-semibold text-primary-600 mb-1.5">Estimated Referrals/Month</label>
+              <select id="estimatedReferrals" name="estimatedReferrals"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                <option value="">Select...</option>
+                <option value="1-2">1&ndash;2</option>
+                <option value="3-5">3&ndash;5</option>
+                <option value="6-10">6&ndash;10</option>
+                <option value="10+">10+</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Email and Phone row -->
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="email" class="block text-sm font-semibold text-primary-600 mb-1.5">Email Address <span class="text-secondary-500">*</span></label>
+              <input type="email" id="email" name="email" required autocomplete="email"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-primary-600 mb-1.5">Phone Number <span class="text-secondary-500">*</span></label>
+              <input type="tel" id="phone" name="phone" required autocomplete="tel"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+          </div>
+
+          <!-- What Matters Most -->
+          <div>
+            <label for="whatMatters" class="block text-sm font-semibold text-primary-600 mb-1.5">What Matters Most to You in a Removal Partner?</label>
+            <textarea id="whatMatters" name="whatMatters" rows="3"
+              placeholder="Reliability, communication, handling of fragile items..."
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+          </div>
+
+          <!-- Preferred Contact Method -->
+          <fieldset>
+            <legend class="block text-sm font-semibold text-primary-600 mb-2">Preferred Contact Method</legend>
+            <div class="flex gap-6">
+              <label class="flex items-center gap-2 text-sm text-warm-gray cursor-pointer">
+                <input type="radio" name="preferredContact" value="phone" class="text-primary-600 focus:ring-primary-500" />
+                Phone
+              </label>
+              <label class="flex items-center gap-2 text-sm text-warm-gray cursor-pointer">
+                <input type="radio" name="preferredContact" value="email" class="text-primary-600 focus:ring-primary-500" />
+                Email
+              </label>
+              <label class="flex items-center gap-2 text-sm text-warm-gray cursor-pointer">
+                <input type="radio" name="preferredContact" value="either" checked class="text-primary-600 focus:ring-primary-500" />
+                Either
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Cloudflare Turnstile -->
+          <div>
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light"></div>
+          </div>
+
+          <!-- Error message area -->
+          <div id="form-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+
+          <!-- Submit -->
+          <div>
+            <button type="submit" id="submit-btn"
+              class="btn-cta-orange cursor-pointer w-full sm:w-auto">
+              Register as a Partner
+            </button>
+            <p class="text-warm-gray text-sm mt-3">
+              We'll respond within one working day. No hard sell &mdash; just a conversation about how we can help your clients.
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions from Partners" />
+
+  <!-- ============================================
+       SECTION 10: FOOTER CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white mb-4">Ready to Give Your Clients a Removal Experience Worth Recommending?</h2>
+      <p class="text-primary-100 text-lg mb-8 max-w-xl mx-auto">
+        Nearly five decades of service. Hundreds of verified five-star reviews. A team that understands the importance of your recommendation.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="#partner-form" class="btn-cta-orange inline-block">
+          Register as a Partner
+        </a>
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-white font-semibold no-underline hover:text-primary-200 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          {siteConfig.company.contact.phone}
+        </a>
+      </div>
+
+      <p class="text-sm text-primary-200 mt-8">
+        {siteConfig.company.name} &middot; {siteConfig.company.address.streetAddress}, {siteConfig.company.address.addressLocality} {siteConfig.company.address.postalCode} &middot; Mon&ndash;Fri 9am&ndash;5pm
+      </p>
+    </div>
+  </section>
+
+  <!-- Cloudflare Turnstile script -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- Partner form submission -->
+  <script is:inline>
+    (function() {
+      var form = document.getElementById('partner-form-el');
+      var PHONE = form && form.dataset.phone || '0117 287 0082';
+      var errorDiv = document.getElementById('form-error');
+      var submitBtn = document.getElementById('submit-btn');
+      var successDiv = document.getElementById('form-success');
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          errorDiv.classList.add('hidden');
+          errorDiv.textContent = '';
+
+          var name = form.querySelector('#name').value.trim();
+          var companyName = form.querySelector('#companyName').value.trim();
+          var role = form.querySelector('#role').value.trim();
+          var businessType = form.querySelector('#businessType').value;
+          var estimatedReferrals = form.querySelector('#estimatedReferrals').value;
+          var email = form.querySelector('#email').value.trim();
+          var phone = form.querySelector('#phone').value.trim();
+          var whatMatters = form.querySelector('#whatMatters').value.trim();
+          var preferredContact = form.querySelector('input[name="preferredContact"]:checked');
+          preferredContact = preferredContact ? preferredContact.value : 'either';
+          var honeypot = form.querySelector('#website').value;
+
+          if (!name || !companyName || !email || !phone || !businessType) {
+            errorDiv.textContent = 'Please fill in all required fields (name, company, business type, email, and phone).';
+            errorDiv.classList.remove('hidden');
+            return;
+          }
+
+          var turnstileResponse = '';
+          var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
+          if (turnstileInput) {
+            turnstileResponse = turnstileInput.value;
+          }
+
+          if (!turnstileResponse) {
+            errorDiv.textContent = 'The security check is still loading. Please wait a moment and try again, or call us on ' + PHONE + '.';
+            errorDiv.classList.remove('hidden');
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'SUBMITTING...';
+
+          fetch('/api/partner-register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: name,
+              companyName: companyName,
+              role: role,
+              businessType: businessType,
+              estimatedReferrals: estimatedReferrals,
+              email: email,
+              phone: phone,
+              whatMatters: whatMatters,
+              preferredContact: preferredContact,
+              honeypot: honeypot,
+              turnstileToken: turnstileResponse,
+            }),
+          })
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            if (data.success) {
+              window.location.href = '/partners/thank-you/';
+            } else {
+              errorDiv.textContent = data.error || 'Something went wrong. Please try again or call us directly.';
+              errorDiv.classList.remove('hidden');
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'REGISTER AS A PARTNER';
+              if (window.turnstile) { window.turnstile.reset(); }
+            }
+          })
+          .catch(function() {
+            errorDiv.textContent = 'Connection error. Please try again or call us on ' + PHONE + '.';
+            errorDiv.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'REGISTER AS A PARTNER';
+          });
+        });
+      }
+    })();
+  </script>
+
+</Layout>

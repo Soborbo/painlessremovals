@@ -1,0 +1,606 @@
+---
+/**
+ * Cleaning Service Landing Page
+ *
+ * Moving house cleaning services for Painless Removals Bristol.
+ * Surface Clean, Deep Clean, and Specialist Cleaning options.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Cleaning Services | Painless Removals Bristol';
+const pageDescription = 'Surface clean, deep clean, or specialist cleaning alongside your Bristol removal. We clean your old place, your new place, or both. Prices from £90.';
+
+// Pricing data
+const surfacePricing = [
+  { bedrooms: '1 bedroom', price: 90 },
+  { bedrooms: '2 bedrooms', price: 105 },
+  { bedrooms: '3 bedrooms', price: 120 },
+  { bedrooms: '4 bedrooms', price: 155 },
+  { bedrooms: '5 bedrooms', price: 180 },
+  { bedrooms: '6 bedrooms', price: 210 },
+];
+
+// FAQ data
+const faqs = [
+  {
+    question: "What's the difference between a Surface Clean and a Deep Clean?",
+    answer: "A Surface Clean covers hoovering, sweeping, wiping down all surfaces, and leaving the property tidy and presentable. A Deep Clean goes much further — we bring in machine carpet cleaning, scrub bathrooms and kitchens thoroughly, clean behind and inside appliances, and treat every surface to a professional standard. Surface Cleans are ideal for leaving your old place in good shape. Deep Cleans are what you want for the home you're about to live in.",
+  },
+  {
+    question: "Can you deep clean my new home before you unload the van?",
+    answer: "Unfortunately not — a proper deep clean takes several hours, and having the removal team wait would add significant cost. What we can do is unload your belongings first, then carry out the deep clean the same day or the following day. Because most items are still loosely placed and easy to move around, we can still access every surface effectively.",
+  },
+  {
+    question: "When is the best time to book a Deep Clean at my new place?",
+    answer: "Right after you move in is ideal. Your furniture hasn't been fully arranged yet, boxes are still easy to shift, and we can get into every room properly. We typically do this on the same day as your move (after unloading) or the very next day. But even if you want to wait a week or two while you settle in or finish some DIY, the deep clean still works — we'll work around your furniture.",
+  },
+  {
+    question: "Do you always deep clean the kitchen and bathroom?",
+    answer: "Yes — both the kitchen and bathroom always receive a deep clean, even if you've chosen a Surface Clean for the rest of the house. These are the rooms where hygiene matters most, especially when you're moving into someone else's former home.",
+  },
+  {
+    question: "What counts as Specialist Cleaning?",
+    answer: "Specialist cleaning covers anything beyond standard dirt and dust — for example, heavy pet hair embedded in carpets, post-clearance messes, staining, or situations that require industrial-grade equipment and treatment. We work with a specialist cleaning partner for these jobs and can arrange it as part of your move.",
+  },
+  {
+    question: "Can I book a Surface Clean at my old place AND a Deep Clean at my new place?",
+    answer: "Absolutely — that's one of the most popular combinations. We clean your old property after loading the van (so you leave it in good condition), then deep clean your new home after we've unloaded. Two properties, one coordinated service.",
+  },
+  {
+    question: "Do you clean outside Bristol?",
+    answer: "Our cleaning service covers Bristol only. Our removal service operates more widely, but the cleaning team is Bristol-based.",
+  },
+  {
+    question: "Can I book just a clean without a removal?",
+    answer: "Our cleaning service is available as an add-on to Painless Removals bookings. For standalone cleaning, we'd recommend contacting Bristol Cleaning Heroes directly.",
+  },
+  {
+    question: "Who does the cleaning?",
+    answer: "We use a mix of our own trained staff and our trusted partner Bristol Cleaning Heroes. For standard surface and deep cleans, our in-house team handles the work. For specialist jobs that require industrial equipment or particular expertise, we bring in Bristol Cleaning Heroes. Either way, we coordinate everything and stand behind the quality.",
+  },
+];
+
+// Deep clean scenarios
+const deepCleanScenarios = [
+  "You're in a chain and we've just unloaded at your new home — we deep clean same day or next day while things are still easy to move around.",
+  "Your tenancy is ending and the next tenant isn't moving in immediately — we deep clean the empty property to inspection standard.",
+  "You're moving out of a second home, weekend house, or holiday let and want it properly cleaned between occupants.",
+  "You're moving into storage first and then into your new place later — we deep clean the new property before or after you arrive.",
+  "A renovation has just finished and the property needs a thorough clean before you move your belongings in.",
+];
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "Moving House Cleaning Services Bristol",
+    description: pageDescription,
+    serviceType: "Cleaning Service",
+    url: "/cleaning-service/",
+    areaServed: areas.bristol,
+    image: "/img/cleaning/cleaning-service-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Cleaning Service" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/cleaning/cleaning-service-1200w.webp" preloadImage="/img/cleaning/cleaning-service-750w.avif">
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="cleaning/cleaning-service"
+        pattern="FULL"
+        alt="Professional cleaning service after house removal in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Moving House Cleaning Services in Bristol
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          Leave the Old Place <span class="text-secondary-500">Spotless.</span> Move Into a <span class="text-secondary-500">Fresh Start.</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Whether it's a quick surface clean at the property you're leaving or a thorough deep clean at the home you're moving into — we handle both, timed around your removal so there's nothing extra to organise.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/contact/" class="btn-cta-orange">
+            ADD CLEANING TO YOUR MOVE
+          </a>
+          <p class="text-warm-gray text-sm">Surface clean from just £90</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="cleaning/cleaning-service"
+        pattern="FULL"
+        alt="Professional cleaning service after house removal in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USPs - Full width bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: TWO TYPES OF CLEAN
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">Two Levels of Clean. One Coordinated Service.</h2>
+        <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+          We offer two distinct cleaning services that can be used separately or combined — one for the place you're leaving, and one for the home you're moving into.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Surface Clean -->
+          <div class="bg-cream rounded-xl p-8 border-2 border-gray-200 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+            <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Surface Clean</h3>
+            <p class="text-primary-600 font-semibold text-sm mb-4">From £90 — Ideal for your old property</p>
+            <div class="space-y-3 text-warm-gray text-sm">
+              <p>A thorough wipe-down and tidy-up designed to leave the property in good, presentable condition. We hoover every floor, sweep corners, wipe down all surfaces, and clean the kitchen and bathroom properly.</p>
+              <p>This is the clean you do when you want to <strong class="text-gray-700">leave the old place the way you'd hope to find a new one</strong> — tidy, cared for, and ready to hand back.</p>
+              <p>We can also do a surface clean at your new property — wiping everything down so you're not unpacking into someone else's dust.</p>
+            </div>
+            <ul class="mt-4 space-y-2 text-sm">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">All floors hoovered and swept</span></li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Every surface wiped down</span></li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Kitchen and bathroom properly cleaned</span></li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Done on moving day or whenever suits you</span></li>
+            </ul>
+          </div>
+
+          <!-- Deep Clean -->
+          <div class="bg-cream rounded-xl p-8 border-2 border-primary-600 transition-all duration-300 hover:shadow-md hover:-translate-y-1 relative">
+            <div class="absolute -top-3 right-6 bg-primary-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-full">Recommended</div>
+            <div class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center mb-4">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold mb-2">Deep Clean</h3>
+            <p class="text-primary-600 font-semibold text-sm mb-4">Ideal for your new home</p>
+            <div class="space-y-3 text-warm-gray text-sm">
+              <p>A proper, professional deep clean — machine carpet cleaning, thorough scrubbing of kitchens and bathrooms, behind appliances, inside cupboards, and every surface treated to a high standard.</p>
+              <p><strong class="text-gray-700">When better to deep clean than when you're moving in?</strong> You shouldn't have to live in the previous occupant's dirt. And because your belongings haven't been fully arranged yet, everything is easier to move — making it the perfect time for a deep clean.</p>
+              <p>Kitchen and bathroom always receive a full deep clean — these are the rooms where hygiene matters most in a new home.</p>
+            </div>
+            <ul class="mt-4 space-y-2 text-sm">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Professional machine carpet cleaning</span></li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Full kitchen and bathroom deep clean</span></li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Behind and inside appliances</span></li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span><span class="text-warm-gray">Every surface brought to professional standard</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-8 bg-primary-50 border-l-4 border-primary-600 rounded-r-lg p-6">
+          <p class="text-primary-800 font-medium">
+            <strong>The best combination?</strong> A Surface Clean at your old place (leave it properly) and a Deep Clean at your new home (start fresh). We coordinate both around your move so there's nothing extra to arrange.
+          </p>
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="/contact/" class="btn-cta-orange">
+            GET A CLEANING QUOTE
+          </a>
+          <p class="text-warm-gray text-sm mt-2">Tell us about your move and we'll recommend the right option</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: HOW DEEP CLEAN TIMING WORKS
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden">
+        <OptimizedPicture
+          name="cleaning/deep-clean-new-home"
+          pattern="HALF"
+          alt="Professional deep cleaning a newly moved-into home in Bristol"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Steps -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-3">How the Deep Clean Works at Your New Home</h2>
+        <p class="text-warm-gray mb-8">
+          You might wonder: can you deep clean before we unload? Here's how we handle the timing — and why it actually works better this way.
+        </p>
+
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center text-lg font-bold shrink-0">1</div>
+            <div>
+              <h3 class="text-lg font-bold mb-1">We Unload First</h3>
+              <p class="text-warm-gray text-sm">
+                A proper deep clean takes several hours. If we had the removal team wait, you'd be paying for a van and crew sitting idle for half a day. So we unload your belongings first.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center text-lg font-bold shrink-0">2</div>
+            <div>
+              <h3 class="text-lg font-bold mb-1">You Settle In, Then We Deep Clean</h3>
+              <p class="text-warm-gray text-sm">
+                Our cleaning team comes in — either later that same day or the following day. <strong class="text-gray-700">This is actually the ideal time.</strong> Nothing is permanently placed yet. Boxes and furniture can be easily shifted, so we can get into every corner and machine-clean the carpets.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center text-lg font-bold shrink-0">3</div>
+            <div>
+              <h3 class="text-lg font-bold mb-1">Flexible — Days or Even Weeks Later</h3>
+              <p class="text-warm-gray text-sm">
+                Want to do some DIY first? No problem. We can come back days or even weeks later. The deep clean still works well because we'll move things around as needed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <a href="/contact/" class="btn-cta-orange mt-8 self-start">
+          BOOK A DEEP CLEAN
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: SURFACE CLEAN — OLD OR NEW
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">Surface Clean — At Your Old Place or Your New One</h2>
+        <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+          Quick, effective, and flexible. The Surface Clean works wherever you need it, whenever it suits you.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="bg-cream rounded-xl overflow-hidden">
+            <div class="p-8">
+              <h3 class="text-lg font-bold mb-3 text-primary-600">At Your Old Property</h3>
+              <p class="text-warm-gray mb-3">
+                Leave your old home the way you'd hope to find a new one. After the van pulls away, we clean the place properly — floors, surfaces, kitchen, bathroom — so you can hand the keys back with confidence.
+              </p>
+              <p class="text-warm-gray text-sm mb-4">
+                Whether you're returning keys to a landlord, completing a sale, or simply want to leave the right impression — a surface clean handles it.
+              </p>
+              <a href="/contact/" class="soft-cta text-sm font-semibold">Add to your move &rarr;</a>
+            </div>
+          </div>
+
+          <div class="bg-cream rounded-xl overflow-hidden">
+            <div class="p-8">
+              <h3 class="text-lg font-bold mb-3 text-primary-600">At Your New Property</h3>
+              <p class="text-warm-gray mb-3">
+                Don't want a full deep clean but still want to wipe everything down before you start unpacking? A surface clean at the new place gives you a fresh starting point — all surfaces wiped, floors cleaned, and the kitchen and bathroom properly done.
+              </p>
+              <p class="text-warm-gray text-sm mb-4">
+                We can do this the day after your move, or whenever suits you — even weeks later if you've been busy with other things first.
+              </p>
+              <a href="/contact/" class="soft-cta text-sm font-semibold">Add to your move &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: PRICING
+  ============================================ -->
+  <section class="section bg-cream" id="pricing">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Surface Clean Pricing</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Simple, transparent pricing based on the number of bedrooms. Deep Clean and Specialist Cleaning are quoted individually based on the property and scope of work.
+      </p>
+
+      <div class="max-w-2xl mx-auto">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {surfacePricing.map((item) => (
+            <div class="bg-white rounded-xl p-5 text-center shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md hover:-translate-y-1 group">
+              <p class="text-sm font-medium text-primary-600 mb-2">{item.bedrooms}</p>
+              <p class="text-3xl font-bold">£{item.price}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-8 bg-white rounded-lg p-6">
+          <p class="text-warm-gray text-sm mb-3">
+            <strong class="text-gray-700">A note on how we count rooms:</strong> When we say "bedrooms," we're using it as shorthand for the size of the property overall. A 3-bedroom house typically has a kitchen, a living room, a hallway, a bathroom, and three bedrooms — and we clean all of those spaces, not just the bedrooms themselves.
+          </p>
+          <p class="text-warm-gray text-sm">
+            If your property has an unusual layout — a large conservatory, a utility room, a second reception room, or anything that makes it significantly bigger than typical — just let us know when you book and we'll adjust the quote accordingly.
+          </p>
+        </div>
+
+        <div class="mt-6 bg-primary-50 border-l-4 border-primary-600 rounded-r-lg p-6">
+          <p class="text-primary-800 text-sm">
+            <strong>Deep Clean pricing</strong> depends on the size, condition, and specific requirements of the property. <a href="/contact/" class="soft-cta">Get in touch</a> and we'll give you a clear quote after understanding your situation.
+          </p>
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="/contact/" class="btn-cta-orange">
+            GET YOUR CLEANING QUOTE
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: WHEN DEEP CLEAN WORKS BEST
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">When a Deep Clean Works Best</h2>
+        <p class="text-center text-warm-gray text-lg mb-8 max-w-2xl mx-auto">
+          A deep clean is most effective when there's a little breathing room in the schedule. Here are the most common scenarios where it fits perfectly.
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          {deepCleanScenarios.map((scenario) => (
+            <div class="flex items-start gap-3 bg-cream rounded-lg p-4 shadow-sm">
+              <span class="text-green-500 mt-0.5 shrink-0">✓</span>
+              <p class="text-warm-gray text-sm">{scenario}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="text-center mt-8">
+          <a href="/contact/" class="btn-cta-orange">
+            ASK US ABOUT DEEP CLEANING
+          </a>
+          <p class="text-warm-gray text-sm mt-2">Not sure if your situation allows time? We'll help you figure out the timing.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: SPECIALIST CLEANING
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden">
+        <OptimizedPicture
+          name="cleaning/specialist-cleaning"
+          pattern="HALF"
+          alt="Specialist deep cleaning service in Bristol"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-4">Specialist Cleaning for Tough Jobs</h2>
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            Sometimes a property needs more than a standard clean. Maybe the previous owner had pets and the carpets are matted with hair. Maybe the place has been through a clearance and needs serious attention. Maybe there are stains, odours, or damage that require <strong class="text-gray-700">industrial-grade equipment and specialist treatment</strong>.
+          </p>
+          <p>
+            For these situations, we bring in our specialist cleaning partner — <strong class="text-gray-700">Bristol Cleaning Heroes</strong>. They handle everything from extreme carpet restoration and biohazard cleaning to post-renovation deep cleans and heavily soiled properties.
+          </p>
+          <p>
+            We coordinate the entire process. You tell us what you're dealing with, we assess the situation, and we arrange the right level of cleaning — whether that's our in-house team, our specialist partner, or a combination of both.
+          </p>
+        </div>
+        <a href="/contact/" class="btn-cta-orange mt-6 self-start">
+          TELL US WHAT YOU NEED
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: KITCHEN & BATHROOM DEEP CLEAN
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Text -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center order-2 lg:order-1">
+        <h2 class="mb-4">Kitchen &amp; Bathroom Deep Clean — Always Recommended</h2>
+        <p class="text-warm-gray mb-8">
+          Whether you choose a Surface Clean or a Deep Clean, the kitchen and bathroom always get the deep treatment. These are the rooms where you prepare food and wash yourself — they need to be properly clean, especially when you're inheriting them from a stranger.
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-6">
+          <div class="bg-cream rounded-xl p-6">
+            <h3 class="font-bold text-lg mb-3 text-primary-600">Kitchen</h3>
+            <ul class="space-y-2 text-warm-gray text-sm">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Hob, oven exterior, and splashback</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>All worktops and surfaces</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Sink and taps descaled</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Cupboard fronts wiped</li>
+            </ul>
+          </div>
+          <div class="bg-cream rounded-xl p-6">
+            <h3 class="font-bold text-lg mb-3 text-primary-600">Bathroom</h3>
+            <ul class="space-y-2 text-warm-gray text-sm">
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Toilet thoroughly cleaned</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Bath or shower scrubbed</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Basin and taps descaled</li>
+              <li class="flex items-start gap-2"><span class="text-green-500 mt-0.5 shrink-0">✓</span>Tiles and grouting cleaned</li>
+            </ul>
+          </div>
+        </div>
+
+        <a href="/contact/" class="btn-cta-orange mt-8 self-start">
+          ADD CLEANING TO YOUR MOVE
+        </a>
+      </div>
+
+      <!-- Image -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden order-1 lg:order-2">
+        <OptimizedPicture
+          name="cleaning/kitchen-bathroom-deep-clean"
+          pattern="HALF"
+          alt="Deep cleaned kitchen and bathroom ready for new occupants"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: FOR LANDLORDS & AGENTS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">For Landlords and Letting Agents</h2>
+        <p class="text-center text-warm-gray text-lg mb-8 max-w-2xl mx-auto">
+          Managing property turnovers is one of the less glamorous parts of the job, but it matters. A clean property photographs better, lets faster, and starts the landlord-tenant relationship on the right foot.
+        </p>
+
+        <div class="bg-cream rounded-xl p-8 shadow-sm">
+          <div class="space-y-4 text-warm-gray">
+            <p>
+              If you're managing a property in Bristol and the outgoing tenant is using Painless Removals, adding our Surface Clean to their booking is the simplest way to ensure the property is left in decent condition without any extra coordination on your part.
+            </p>
+            <p>
+              For deeper cleans between tenancies — particularly when the property will sit empty for a few days or more — we can arrange a full Deep Clean, or bring in our specialist partner Bristol Cleaning Heroes for tougher jobs. Either way, one call to us sets the whole process in motion.
+            </p>
+            <p>
+              We also work with <strong class="text-gray-700">estate agents</strong> preparing properties for sale or for new owners moving in. Whether it's a quick surface clean to make a property presentable for viewings, or a deep clean before the new buyers arrive — we coordinate the cleaning around the property schedule.
+            </p>
+            <p>
+              If you regularly manage turnovers or property handovers in Bristol, get in touch about ongoing arrangements.
+            </p>
+          </div>
+          <a href="/contact/" class="inline-block bg-secondary-500 hover:bg-secondary-600 text-white px-8 py-3 text-base font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg mt-6 hover:text-white/90">
+            DISCUSS YOUR REQUIREMENTS
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: BOOK YOUR CLEANING CTA
+  ============================================ -->
+  <section class="bg-linear-to-br from-primary-600 to-primary-700 text-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Left: Content -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <div class="max-w-xl">
+          <h2 class="text-white mb-4">Book Your Cleaning</h2>
+          <p class="text-primary-100 mb-6">
+            Adding cleaning to your Painless Removals booking takes about thirty seconds. Just mention it when you get your removal quote, or add it any time before your moving day.
+          </p>
+          <p class="text-primary-100 mb-8">
+            Not sure which level of clean you need? Tell us about your move and we'll recommend the right option — Surface Clean, Deep Clean, Specialist, or a combination.
+          </p>
+
+          <ul class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-8 text-primary-100">
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Surface clean from £90
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Old place, new place, or both
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">✓</span> Specialist cleaning available
+            </li>
+          </ul>
+
+          <a href="/contact/" class="inline-block bg-white hover:bg-gray-100 text-primary-600 px-8 py-3 text-lg font-bold uppercase no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            GET IN TOUCH TODAY
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="hidden lg:block relative min-h-[400px]">
+        <OptimizedPicture
+          name="cleaning/book-your-cleaning"
+          pattern="HALF"
+          alt="Clean property ready for handover after Painless Removals cleaning service"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: ABOUT
+  ============================================ -->
+  <JayAuthorBlock
+    quote="People kept asking us: can you clean while you're at it? So we built a proper cleaning service around our removals. Whether it's leaving the old place right or making the new place feel like yours from day one — we handle it."
+    description="Painless Removals has been serving Bristol since 1978. Our cleaning service is a natural extension of what we do — making your moving day as stress-free as possible."
+  />
+
+  <!-- ============================================
+       SECTION 11: FAQ
+  ============================================ -->
+  <FAQAccordion
+    faqs={faqs}
+    heading="Common Questions About Our Cleaning Service"
+  />
+
+  <!-- ============================================
+       SECTION 12: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Start Fresh. Leave Clean. We Handle Both."
+    description="Add cleaning to your Painless Removals booking — Surface Clean, Deep Clean, or both. We'll coordinate everything around your move."
+    bullets={['Surface clean from £90', 'Deep clean your new home', 'Specialist cleaning for tough jobs']}
+    primaryText="ADD CLEANING TO YOUR MOVE"
+    primaryHref="/contact"
+    bottomNote="One company. One coordinated move. No extra hassle."
+  />
+
+
+</Layout>

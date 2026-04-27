@@ -1,0 +1,40 @@
+---
+/**
+ * AuthorByline — Jay Newton attribution (inline or block variant)
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+
+export interface Props {
+  lastUpdated: string;
+  variant?: 'inline' | 'block';
+}
+
+const { lastUpdated, variant = 'inline' } = Astro.props;
+const director = siteConfig.company.director;
+---
+
+{variant === 'inline' ? (
+  <p class="text-sm text-gray-500 mt-1">
+    By <a href="/about/jay-newton/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">{director.name}</a>,
+    {director.title} · Updated {lastUpdated}
+  </p>
+) : (
+  <div class="flex items-start gap-4 py-6 border-t border-gray-200">
+    <OptimizedPicture
+      name="about/team/Jay-Newton"
+      pattern="SIXTH"
+      alt={director.name}
+      sizes="56px"
+      class="w-14 h-14 rounded-full object-cover"
+    />
+    <div>
+      <a href="/about/jay-newton/" class="font-medium text-gray-900 no-underline hover:text-primary-700 transition-colors">{director.name}</a>
+      <p class="text-sm text-gray-500 mt-0.5">{director.title}, {siteConfig.brand.name}</p>
+      <p class="text-xs text-gray-400 mt-1">
+        Jay has personally overseen 2,000+ moves since taking over leadership of {siteConfig.brand.name}. Updated {lastUpdated}.
+      </p>
+    </div>
+  </div>
+)}

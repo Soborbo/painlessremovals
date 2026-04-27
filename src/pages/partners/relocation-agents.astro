@@ -1,0 +1,324 @@
+---
+/**
+ * Partners: Corporate Relocation Agents
+ *
+ * B2B page targeting relocation agents who need a reliable
+ * long-distance removal partner for employee relocations.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+
+// Page metadata
+const pageTitle = 'For Relocation Agents | Painless Removals — Long-Distance Specialists Since 1978';
+const pageDescription = 'Long-distance UK removal specialists for corporate relocation agents. Dedicated Move Managers, transparent pricing, and national coverage from our Bristol base. Since 1978.';
+
+// Corridors
+const corridors = [
+  'South West \u2192 London (Cornwall, Devon, Plymouth, Bath)',
+  'Wales \u2192 London and Midlands (Swansea, Cardiff, Newport)',
+  'Bristol \u2192 Northern England (Birmingham, Manchester, Leeds, Sheffield)',
+  'Bristol \u2192 Scotland (Edinburgh, Glasgow)',
+  'Cross-country (Cornwall \u2192 London, Wales \u2192 Midlands)',
+];
+
+// Services menu
+const servicesMenu = [
+  {
+    title: 'Home Removal',
+    description: 'The core service. Properly assessed, properly resourced, properly executed. Video or in-person survey. Dedicated Move Manager. Full-day allocation.',
+  },
+  {
+    title: 'Full Packing',
+    description: 'We pack the entire property the day before the move. Everything labelled, wrapped, and boxed professionally. Valuable for employees who are still working up to the moving date.',
+  },
+  {
+    title: 'Temporary Storage',
+    description: 'Secure warehouse storage in Clifton, Bristol. Ideal for employees who arrive at a new role before finding permanent accommodation.',
+  },
+  {
+    title: 'Concierge Service',
+    description: 'Utility transfers, mail redirection, key management, cleaning coordination. Removes the administrative burden from an employee already managing a new job in a new city.',
+  },
+  {
+    title: 'Furniture Assembly',
+    description: 'Beds, wardrobes, desks reassembled at the destination. Quoted per item, ranging from \u00a320 (simple tables) to \u00a3120 (complex fitted furniture).',
+  },
+  {
+    title: 'Multi-Stop Delivery',
+    description: 'Some items to the new property, some to storage, some to a family member. Coordinated in a single day.',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'Can you handle multiple employee relocations simultaneously?',
+    answer: 'Yes. We have the fleet and team capacity to manage concurrent moves. For high-volume relocation partners, we hold dedicated capacity during agreed periods.',
+  },
+  {
+    question: 'Do you provide corporate invoicing?',
+    answer: 'Yes. Itemised invoices with clear line items for each service, suitable for corporate expense processing. We can invoice the relocation agent, the employer, or the employee directly &mdash; whichever suits your process.',
+  },
+  {
+    question: 'What\'s your coverage area?',
+    answer: 'The entire UK mainland. We\'re based in Bristol (BS10) and specialise in moves of 100+ miles. We do not offer international removals.',
+  },
+  {
+    question: 'Can employees get an instant quote?',
+    answer: 'Yes. Our <a href="/instantquote/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">online calculator</a> provides an immediate price indication based on property size, distance, and services required. For more accurate quotes, we offer free video surveys.',
+  },
+  {
+    question: 'What insurance do you carry?',
+    answer: '&pound;15,000 per van for goods in transit. Items valued over &pound;2,000 must be declared in writing before the move. We can discuss enhanced cover for high-value relocations during the survey.',
+  },
+  {
+    question: 'What\'s your cancellation policy?',
+    answer: '10+ working days\' notice: free cancellation. Under 10 days, a sliding scale applies. For corporate relocations where start dates frequently shift, we discuss flexible arrangements with Strategic partners.',
+  },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Corporate Relocation Removal Services — Painless Removals Bristol",
+  "description": pageDescription,
+  "provider": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+    "url": siteConfig.brand.domain,
+    "telephone": siteConfig.company.contact.phoneInternational,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bristol",
+      "addressRegion": "Bristol",
+      "addressCountry": "GB",
+    },
+  },
+  "areaServed": {
+    "@type": "Country",
+    "name": "United Kingdom",
+  },
+  "serviceType": "Corporate Employee Relocation Services",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '').replace(/&ndash;/g, '–').replace(/&mdash;/g, '—').replace(/&pound;/g, '£'),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} noindex>
+
+  <!-- ============================================
+       HERO
+  ============================================ -->
+  <section class="gradient-hero py-12 lg:py-20">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+          For Corporate Relocation Agents
+        </p>
+        <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold mb-5">
+          Long-Distance Removal Specialists <span class="text-secondary-500">for Corporate Relocation</span>
+        </h1>
+        <p class="text-lg lg:text-xl text-warm-gray leading-relaxed mb-6 max-w-2xl mx-auto">
+          Your clients are relocating for work. They need a removal company that handles the logistics &mdash; so they can focus on the new job, not the new postcode.
+        </p>
+
+        <!-- Proof bar -->
+        <div class="grid sm:grid-cols-2 gap-3 max-w-xl mx-auto text-left text-sm text-warm-gray mb-8">
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>National UK coverage &mdash; long-distance specialists (100+ miles)</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Bristol base &mdash; ideal for South West, Wales, London & Northern corridors</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Dedicated Move Manager for every relocating employee</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Transparent, pre-agreed pricing &mdash; no surprises</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/partners/#partner-form" class="btn-cta-orange">
+            Register as a Relocation Partner
+          </a>
+          <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-primary-600 font-semibold no-underline hover:text-secondary-500 transition-colors text-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            {siteConfig.company.contact.phone}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 1: THE RELOCATION CHALLENGE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-narrow">
+      <h2 class="text-center mb-6">Why Standard Removal Companies Struggle with Corporate Relocation</h2>
+      <div class="space-y-4 text-warm-gray text-lg leading-relaxed">
+        <p>
+          Corporate relocation isn't a typical house move. The employee is often starting a new role under pressure. The timeline is dictated by an employer, not by personal preference. The budget may be allocated by the company, requiring clear invoicing and pre-approved costs. And the distances involved are usually significant.
+        </p>
+        <p>
+          Most removal companies are optimised for local moves &mdash; short distances, quick turnarounds, volume over service. That's the opposite of what a relocation agent needs.
+        </p>
+        <p>
+          We specialise in <strong class="text-primary-600">long-distance UK moves</strong>. Moves of 100 miles or more are our sweet spot. Bristol's geographic position means we sit naturally on the major relocation corridors: South West to London. Wales to the Midlands. Bristol to Manchester, Leeds, Edinburgh, Glasgow.
+        </p>
+        <p>
+          For relocation agents, this means a single removal partner who can handle the majority of UK corridor moves from one base, with consistent service quality and a pricing model that works for corporate budgets.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: THE BRISTOL ADVANTAGE
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Why Bristol Is the Ideal Base for Long-Distance UK Moves</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          Bristol sits at the crossroads of the UK's main moving corridors. This isn't a marketing claim &mdash; it's geography.
+        </p>
+      </div>
+
+      <div class="max-w-3xl mx-auto">
+        <div class="space-y-4 text-warm-gray text-lg leading-relaxed mb-8">
+          <p>
+            An employee relocating from Swansea to London passes through Bristol. Someone moving from Plymouth to Birmingham drives past our depot. A family relocating from Cornwall to Manchester is on our route.
+          </p>
+          <p>
+            This means we can service these moves at the same cost as a company based in the origin or destination city. There's no extra mileage premium because Bristol is already on the way.
+          </p>
+        </div>
+
+        <div class="bg-cream rounded-lg p-6 border border-gray-100">
+          <h3 class="font-bold text-primary-600 mb-4">Key Corridors We Serve</h3>
+          <ul class="space-y-2">
+            {corridors.map((corridor) => (
+              <li class="flex items-start gap-2 text-warm-gray">
+                <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+                <span>{corridor}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p class="text-warm-gray text-lg mt-6">
+          For a relocation agent managing employee moves across these routes, having one trusted partner who covers all of them simplifies your operations significantly.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: WHAT RELOCATION AGENTS GET
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">A Service Built for Repeated, High-Quality Corporate Moves</h2>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Dedicated account contact.</strong> One person at our end who knows your business, your clients, and your expectations. When you send us a new relocation, they already understand the process.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Pre-agreed pricing framework.</strong> For Strategic partners, we establish a pricing structure upfront &mdash; based on property size, distance bands, and service level. No re-quoting every time. Your client's employer gets a predictable cost.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Comprehensive service options.</strong> Every relocation is different. Some employees want full <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing</a>. Some need temporary <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a>. Some need cleaning at the property they're leaving. We offer all of it, quoted separately and transparently.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Professional documentation.</strong> Clear invoicing, itemised quotes, and confirmation documents suitable for corporate expense claims and employer reimbursement processes.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Flexible scheduling.</strong> Relocation timelines shift. Start dates move. Temporary accommodation extends. We build flexibility into our booking process, and Preferred/Strategic partners get priority rescheduling.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: SERVICES MENU
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">The Full Suite for Employee Moves</h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {servicesMenu.map((service) => (
+          <div class="bg-cream rounded-lg p-6 border border-gray-100">
+            <h3 class="font-bold text-primary-600 mb-2">{service.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">{service.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Questions Relocation Agents Ask" />
+
+  <!-- ============================================
+       FOOTER CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white mb-4">One Removal Partner. Every UK Corridor. Consistent Quality.</h2>
+      <p class="text-primary-100 text-lg mb-8 max-w-xl mx-auto">
+        Simplify your operations with a single, trusted long-distance removal partner.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/partners/#partner-form" class="btn-cta-orange inline-block">
+          Register as a Relocation Partner
+        </a>
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-white font-semibold no-underline hover:text-primary-200 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          {siteConfig.company.contact.phone}
+        </a>
+      </div>
+
+      <p class="text-sm text-primary-200 mt-8">
+        <a href="/partners/" class="text-primary-200 no-underline hover:text-white transition-colors">&larr; Back to all partnerships</a>
+      </p>
+    </div>
+  </section>
+
+</Layout>

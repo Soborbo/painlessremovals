@@ -1,0 +1,895 @@
+---
+/**
+ * Main Layout
+ *
+ * Base layout for Painless Removals website.
+ */
+
+import { siteConfig } from '@/config/site.config';
+import { ENTITY } from '@/utils/schema';
+import MobileContactBar from '@/components/MobileContactBar.astro';
+import MobileMenu from '@/components/MobileMenu.astro';
+import '@/styles/global.css';
+
+export interface Props {
+  /** Page title */
+  title?: string;
+  /** Page description */
+  description?: string;
+  /** Schema markup (JSON-LD) */
+  schema?: object;
+  /** Canonical URL */
+  canonical?: string;
+  /** Open Graph image URL */
+  ogImage?: string;
+  /** Prevent search engine indexing */
+  noindex?: boolean;
+  /** Preload image URL for LCP optimisation (page-specific hero image) */
+  preloadImage?: string;
+}
+
+const {
+  title = siteConfig.seo?.defaultTitle || siteConfig.brand.name,
+  description = siteConfig.seo?.defaultDescription,
+  schema,
+  canonical,
+  ogImage,
+  noindex = false,
+  preloadImage,
+} = Astro.props;
+
+// Build full title with template
+const fullTitle = title === siteConfig.brand.name
+  ? title
+  : siteConfig.seo?.titleTemplate?.replace('%s', title) || title;
+
+const canonicalUrl = canonical || new URL(Astro.url.pathname, siteConfig.brand.domain).toString();
+
+const resolvedOgImage = ogImage
+  ? (ogImage.startsWith('/') ? `${siteConfig.brand.domain}${ogImage}` : ogImage)
+  : `${siteConfig.brand.domain}${siteConfig.brand.ogImageFallback}`;
+
+// ── Site-wide MovingCompany entity (canonical @id anchor) ────────────────────
+// This is THE definitive entity. All other pages reference it via @id only.
+const localBusinessSchema = {
+  "@context": "https://schema.org",
+  "@type": "MovingCompany",
+  "@id": ENTITY.business,
+  "name": siteConfig.brand.name,
+  "legalName": siteConfig.company.legalName,
+  "alternateName": siteConfig.company.shortName,
+  "url": siteConfig.brand.domain,
+  "description": siteConfig.seo.defaultDescription,
+  "slogan": siteConfig.brand.tagline,
+  "foundingDate": siteConfig.company.foundingDate,
+  "priceRange": siteConfig.company.priceRange,
+  "isicV4": "4942",
+  "currenciesAccepted": "GBP",
+  "paymentAccepted": "Cash, Credit Card, Debit Card, Bank Transfer",
+  "knowsAbout": [
+    "Home Removals",
+    "Long Distance Removals",
+    "Office Removals",
+    "Packing Services",
+    "Storage Solutions",
+    "House Clearance",
+    "End of Tenancy Cleaning",
+    "Chain Moves",
+    "Property Chain Coordination",
+  ],
+  "knowsLanguage": ["en", "es", "fr"],
+
+  // ── Identity ──
+  "logo": {
+    "@type": "ImageObject",
+    "@id": ENTITY.logo,
+    "url": `${siteConfig.brand.domain}/images/logo.svg`,
+    "width": "1440",
+    "height": "460",
+    "caption": siteConfig.brand.logoAlt,
+  },
+  "image": `${siteConfig.brand.domain}/img/homepage/painless-removals-team-1200w.webp`,
+
+  // ── Location ──
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": siteConfig.company.address.streetAddress,
+    "addressLocality": siteConfig.company.address.addressLocality,
+    "addressRegion": siteConfig.company.address.addressRegion,
+    "postalCode": siteConfig.company.address.postalCode,
+    "addressCountry": siteConfig.company.address.addressCountry,
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": siteConfig.company.geo.latitude,
+    "longitude": siteConfig.company.geo.longitude,
+  },
+  "hasMap": siteConfig.company.contact.googleBusiness,
+
+  // ── Contact ──
+  "telephone": siteConfig.company.contact.phoneInternational,
+  "email": siteConfig.company.contact.email,
+  "contactPoint": [
+    {
+      "@type": "ContactPoint",
+      "telephone": siteConfig.company.contact.phoneInternational,
+      "contactType": "customer service",
+      "areaServed": "GB",
+      "availableLanguage": ["English", "Spanish", "French"],
+      "hoursAvailable": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "17:00",
+      },
+    },
+    {
+      "@type": "ContactPoint",
+      "telephone": `+${siteConfig.company.contact.whatsapp}`,
+      "contactType": "customer service",
+      "areaServed": "GB",
+      "availableLanguage": ["English"],
+    },
+  ],
+
+  // ── Service areas ──
+  "areaServed": [
+    { "@type": "City", "name": "Bristol", "sameAs": "https://en.wikipedia.org/wiki/Bristol" },
+    { "@type": "City", "name": "Bath", "sameAs": "https://en.wikipedia.org/wiki/Bath,_Somerset" },
+    { "@type": "City", "name": "Weston-super-Mare", "sameAs": "https://en.wikipedia.org/wiki/Weston-super-Mare" },
+    { "@type": "AdministrativeArea", "name": "South West England" },
+    { "@type": "Country", "name": "United Kingdom", "sameAs": "https://en.wikipedia.org/wiki/United_Kingdom" },
+  ],
+
+  // ── Opening hours ──
+  "openingHoursSpecification": siteConfig.company.openingHours.map((h) => ({
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": h.dayOfWeek,
+    "opens": h.opens,
+    "closes": h.closes,
+  })),
+
+  // ── People ──
+  "founder": {
+    "@type": "Person",
+    "name": "Steve Fanger",
+  },
+  "employee": {
+    "@type": "Person",
+    "@id": ENTITY.person,
+    "name": siteConfig.company.director.name,
+    "jobTitle": siteConfig.company.director.title,
+  },
+  "numberOfEmployees": {
+    "@type": "QuantitativeValue",
+    "minValue": 5,
+    "maxValue": 10,
+  },
+
+  // ── Ratings ──
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": siteConfig.company.rating.value,
+    "reviewCount": siteConfig.company.rating.count,
+    "bestRating": "5",
+    "worstRating": "1",
+  },
+
+  // ── Services offered ──
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Removal & Moving Services",
+    "itemListElement": [
+      {
+        "@type": "OfferCatalog",
+        "name": "Home Removals",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@id": `${siteConfig.brand.domain}/home-removals-bristol/#service` } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Long Distance Removals" } },
+          { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Chain Move Coordination" } },
+        ],
+      },
+      {
+        "@type": "OfferCatalog",
+        "name": "Additional Services",
+        "itemListElement": [
+          { "@type": "Offer", "itemOffered": { "@id": `${siteConfig.brand.domain}/home-packing-service/#service` } },
+          { "@type": "Offer", "itemOffered": { "@id": `${siteConfig.brand.domain}/office-removals/#service` } },
+          { "@type": "Offer", "itemOffered": { "@id": `${siteConfig.brand.domain}/storage-service/#service` } },
+          { "@type": "Offer", "itemOffered": { "@id": `${siteConfig.brand.domain}/house-and-waste-clearance/#service` } },
+          { "@type": "Offer", "itemOffered": { "@id": `${siteConfig.brand.domain}/cleaning-service/#service` } },
+        ],
+      },
+    ],
+  },
+
+  // ── Social / Knowledge Graph ──
+  "sameAs": [
+    "https://www.google.com/maps?cid=10222747834737099273",
+    "https://www.facebook.com/painlessremovals",
+    "https://www.linkedin.com/company/painless-removals",
+    "https://www.youtube.com/@painlessremovals",
+    "https://www.instagram.com/painlessremovals",
+    "https://uk.trustpilot.com/review/painlessremovals.com",
+    "https://www.yelp.co.uk/biz/painless-removals-bristol-3",
+    "https://find-and-update.company-information.service.gov.uk/company/13774359",
+    "https://www.yell.com/biz/painless-removals-bristol-7066268/",
+    "https://www.moveassured.com/member/new-member-27",
+    "https://www.aimovers.org.uk/united-kingdom/westbury-on-trym/mover/painless-removals-ltd",
+    "https://www.autismcentral.org.uk/directory/service/painless-removals-autism-friendly-home-removals-packing-service-bristol",
+  ],
+};
+---
+
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  <link rel="canonical" href={canonicalUrl} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" href="/favicon.ico" sizes="32x32" />
+
+  <!-- Fonts (self-hosted, loaded via global.css @font-face) -->
+  <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <!-- DM Sans italic: non-blocking (font-display:optional, not above-the-fold) -->
+  <link rel="stylesheet" href="/fonts/dm-sans-italic.css" media="print" onload="this.media='all'" />
+
+  {/* Page-specific LCP image preload */}
+  {preloadImage && (
+    <link rel="preload" as="image" href={preloadImage} type="image/avif" fetchpriority="high" />
+  )}
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={resolvedOgImage} />
+  <meta property="og:site_name" content={siteConfig.brand.name} />
+  <meta property="og:locale" content="en_GB" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={resolvedOgImage} />
+
+  <!-- Site-wide LocalBusiness Schema -->
+  <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
+
+  <!-- Page-specific Schema Markup -->
+  {schema && (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  )}
+
+  <!-- Google Tag Manager -->
+  <script is:inline>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PXTH5JJK');
+  </script>
+
+  <!-- Capture UTM params, gclid, fbclid into sessionStorage -->
+  <script is:inline>
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'];
+      var stored = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
+      var updated = false;
+      keys.forEach(function(k) {
+        var v = params.get(k);
+        if (v) { stored[k] = v; updated = true; }
+      });
+      if (updated) {
+        stored._landing = window.location.pathname;
+        stored._ts = new Date().toISOString();
+        sessionStorage.setItem('pr_tracking', JSON.stringify(stored));
+      }
+      // Push tracking data to dataLayer for GTM
+      window.dataLayer = window.dataLayer || [];
+      if (Object.keys(stored).length > 0) {
+        window.dataLayer.push({ event: 'tracking_params', tracking: stored });
+      }
+    })();
+  </script>
+
+  <slot name="head" />
+</head>
+<body class="bg-warm-white antialiased">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PXTH5JJK" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- Skip navigation -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-primary-600 focus:text-white focus:px-4 focus:py-2 focus:rounded">Skip to main content</a>
+  <!-- Header -->
+  <slot name="header">
+    <!-- Main header (fixed, toggles on scroll) -->
+    <header id="site-header" class="fixed top-0 left-0 right-0 z-[45] w-full transition-transform duration-500 ease-out" style="background-color: #0E3C54;">
+      <div class="w-full px-4 sm:px-6 lg:px-10">
+        <nav aria-label="Main navigation" class="flex items-center justify-between h-12 md:h-16">
+          <!-- Logo -->
+          <a href="/" class="flex items-center no-underline" aria-label={siteConfig.brand.name}>
+            <img src="/images/logo.svg" alt={siteConfig.brand.logoAlt} class="h-10 md:h-14 w-auto" width="1440" height="460" />
+          </a>
+
+          <!-- Navigation -->
+          <div class="hidden lg:flex items-center gap-3 xl:gap-5 text-[13px] xl:text-[14px]">
+            <a href="/" class="text-white/80 no-underline hover:text-white transition-colors">
+              Home
+            </a>
+            <a href="/about/" class="text-white/80 no-underline hover:text-white transition-colors">
+              About
+            </a>
+            <!-- Guides dropdown -->
+            <div class="relative" id="guides-dropdown">
+              <button type="button" class="text-white/80 no-underline hover:text-white transition-colors flex items-center gap-1" id="guides-dropdown-btn" aria-expanded="false" aria-controls="guides-dropdown-menu">
+                Guides
+                <svg class="w-3.5 h-3.5 transition-transform duration-200" id="guides-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+              <div id="guides-dropdown-menu" class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-52 rounded-lg shadow-lg border border-gray-200 overflow-hidden opacity-0 invisible transition-all duration-200 bg-white">
+                <a href="/moving-advice/" class="block px-4 py-2.5 text-sm text-gray-700 no-underline hover:bg-primary-50 hover:text-primary-700 transition-colors">Moving Advice</a>
+                <a href="/packing-guide/" class="block px-4 py-2.5 text-sm text-gray-700 no-underline hover:bg-primary-50 hover:text-primary-700 transition-colors">Packing Guide</a>
+                <a href="/areas/" class="block px-4 py-2.5 text-sm text-gray-700 no-underline hover:bg-primary-50 hover:text-primary-700 transition-colors">Areas We Cover</a>
+              </div>
+            </div>
+            <a href="/reviews/" class="text-white/80 no-underline hover:text-white transition-colors">
+              Reviews
+            </a>
+            <a href="/pricing/" class="text-white/80 no-underline hover:text-white transition-colors">
+              Pricing
+            </a>
+            <a href="/faq/" class="text-white/80 no-underline hover:text-white transition-colors">
+              FAQ
+            </a>
+            <a href="/contact/" class="text-white/80 no-underline hover:text-white transition-colors">
+              Contact
+            </a>
+            <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-1.5 text-white font-semibold no-underline hover:text-secondary-300 transition-colors whitespace-nowrap">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              {siteConfig.company.contact.phone}
+            </a>
+            <a href="/instantquote/" class="btn btn-primary whitespace-nowrap shrink-0">
+              Online Quote
+            </a>
+          </div>
+
+          <!-- Mobile CTA + menu button -->
+          <div class="flex lg:hidden items-center gap-2">
+            <a href="/instantquote/" class="btn btn-primary !py-1.5 !px-3 !text-[11px] shrink-0">
+              Online Quote
+            </a>
+          <button
+            id="mobile-menu-toggle"
+            type="button"
+            class="p-2 text-white relative w-10 h-10 flex items-center justify-center"
+            aria-label="Open menu"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <span class="mobile-hamburger">
+              <span class="hamburger-line hamburger-line-1"></span>
+              <span class="hamburger-line hamburger-line-2"></span>
+              <span class="hamburger-line hamburger-line-3"></span>
+            </span>
+          </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Mobile menu (component) -->
+    <MobileMenu />
+
+    <!-- Services sub-nav (always visible) -->
+    <nav aria-label="Services" id="services-nav" class="hidden lg:block fixed left-0 right-0 w-full bg-white border-b border-gray-200 shadow-sm transition-[top] duration-500 ease-out" style="top: 48px; z-index: 25;">
+      <div class="w-full px-5 xl:px-10">
+        <div class="flex items-center justify-between h-9 md:h-10 text-[13px] overflow-x-auto scrollbar-hide">
+          <!-- Languages spoken (visible from lg breakpoint, hidden below) -->
+          <div class="hidden lg:flex items-center gap-2 text-gray-400 text-[12px] shrink-0 mr-4">
+            <span class="font-medium">We speak:</span>
+            <span class="inline-block w-5 h-3.5 rounded-[2px] overflow-hidden shadow-sm border border-gray-200" title="English">
+              <svg viewBox="0 0 60 40" class="w-full h-full"><rect width="60" height="40" fill="#012169"/><path d="M0 0L60 40M60 0L0 40" stroke="#fff" stroke-width="7"/><path d="M0 0L60 40M60 0L0 40" stroke="#C8102E" stroke-width="4"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="13"/><path d="M30 0v40M0 20h60" stroke="#C8102E" stroke-width="8"/></svg>
+            </span>
+            <span class="inline-block w-5 h-3.5 rounded-[2px] overflow-hidden shadow-sm border border-gray-200" title="Espa&ntilde;ol">
+              <svg viewBox="0 0 60 40" class="w-full h-full"><rect width="60" height="10" fill="#AA151B"/><rect y="10" width="60" height="20" fill="#F1BF00"/><rect y="30" width="60" height="10" fill="#AA151B"/></svg>
+            </span>
+            <span class="inline-block w-5 h-3.5 rounded-[2px] overflow-hidden shadow-sm border border-gray-200" title="Fran&ccedil;ais">
+              <svg viewBox="0 0 60 40" class="w-full h-full"><rect width="20" height="40" fill="#002395"/><rect x="20" width="20" height="40" fill="#fff"/><rect x="40" width="20" height="40" fill="#ED2939"/></svg>
+            </span>
+          </div>
+          <div class="flex items-center gap-1">
+          <a href="/free-home-survey/" class="services-nav-link !bg-secondary-500 !text-white hover:!bg-secondary-600 !rounded !px-2.5 !py-0.5 !font-semibold mr-1">Free Survey</a>
+          <a href="/send-survey-video/" class="services-nav-link">Send Video</a>
+          <a href="/home-removals-bristol/" class="services-nav-link">Home Removals</a>
+          <a href="/office-removals/" class="services-nav-link">Office Removals</a>
+          <a href="/home-packing-service/" class="services-nav-link">Packing Service</a>
+          <a href="/storage-service/" class="services-nav-link">Storage</a>
+          <a href="/house-and-waste-clearance/" class="services-nav-link">House Clearance</a>
+          <a href="/cleaning-service/" class="services-nav-link">Cleaning</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Spacer for fixed header + services nav -->
+    <div id="header-spacer" class="w-full" style="height: 48px; /* mobile: header only */"></div>
+    <style>
+      @media (min-width: 1024px) {
+        #header-spacer { height: calc(64px + 40px) !important; /* desktop: header 64px + nav 40px */ }
+      }
+      @media (min-width: 768px) and (max-width: 1023px) {
+        #header-spacer { height: 64px !important; /* tablet: header only */ }
+      }
+    </style>
+
+    <!-- Sticky CTA bar (appears after 200px scroll, replaces header) -->
+    <div id="sticky-cta" class="fixed top-0 left-0 right-0 z-40 w-full shadow-lg transition-transform duration-500 ease-out" style="background-color: #0E3C54; transform: translateY(-100%);">
+      <div class="w-full px-4 sm:px-6 lg:px-10">
+        <div class="relative flex items-center justify-between h-11 text-[13px]">
+          <!-- Logo (left) -->
+          <a href="/" class="flex items-center no-underline shrink-0" aria-label={siteConfig.brand.name}>
+            <img src="/images/logo.svg" alt={siteConfig.brand.logoAlt} class="h-10 w-auto" width="1440" height="460" />
+          </a>
+
+          <!-- Contact info (center) -->
+          <div class="hidden lg:flex items-center gap-4 text-white absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap">
+            <span class="hidden xl:flex items-center gap-2 text-white">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              {siteConfig.company.address.streetAddress}, {siteConfig.company.address.addressLocality} {siteConfig.company.address.postalCode}
+            </span>
+            <span class="hidden xl:block w-px h-4 bg-white/20"></span>
+            <a href={`mailto:${siteConfig.company.contact.email}`} class="flex items-center gap-2 no-underline hover:text-white/70 transition-colors">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              {siteConfig.company.contact.email}
+            </a>
+            <span class="w-px h-4 bg-white/20"></span>
+            <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 no-underline hover:text-white/70 transition-colors">
+              <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+              {siteConfig.company.contact.phone}
+            </a>
+            <span class="w-px h-4 bg-white/20"></span>
+            <a href={`https://wa.me/${siteConfig.company.contact.whatsapp}`} target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 no-underline hover:text-white/70 transition-colors text-white">
+              <img src="/images/whatsapp-logo.svg" alt="WhatsApp" class="w-3.5 h-3.5 shrink-0" width="14" height="14" />
+              {siteConfig.company.contact.whatsappDisplay}
+            </a>
+          </div>
+
+          <!-- CTA button + hamburger (right) -->
+          <div class="flex items-center gap-2">
+            <a href="/instantquote/" class="btn btn-primary !py-1.5 !px-5 !text-[12px] shrink-0">
+              Online Quote
+            </a>
+            <button
+              id="sticky-menu-toggle"
+              type="button"
+              class="lg:hidden p-2 text-white relative w-10 h-10 flex items-center justify-center"
+              aria-label="Open menu"
+              aria-expanded="false"
+              aria-controls="mobile-menu"
+            >
+              <span class="mobile-hamburger">
+                <span class="hamburger-line hamburger-line-1"></span>
+                <span class="hamburger-line hamburger-line-2"></span>
+                <span class="hamburger-line hamburger-line-3"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      (function() {
+        var header = document.getElementById('site-header');
+        var spacer = document.getElementById('header-spacer');
+        var stickyCta = document.getElementById('sticky-cta');
+        var servicesNav = document.getElementById('services-nav');
+        var lastScrollY = 0;
+        var ticking = false;
+
+        // Measure and set heights
+        var headerH = header.offsetHeight;
+        var servicesNavH = servicesNav.offsetHeight;
+        function syncSizes() {
+          headerH = header.offsetHeight;
+          servicesNavH = servicesNav.offsetHeight;
+          spacer.style.height = (headerH + servicesNavH) + 'px';
+          servicesNav.style.top = headerH + 'px';
+          document.documentElement.style.setProperty('--header-h', (headerH + servicesNavH) + 'px');
+          document.documentElement.style.setProperty('--top-bar-h', (headerH + servicesNavH) + 'px');
+        }
+        syncSizes();
+        window.addEventListener('resize', syncSizes);
+
+        function update() {
+          var currentScrollY = window.scrollY;
+          var scrollingDown = currentScrollY > lastScrollY;
+          var isDesktop = window.innerWidth >= 1024;
+
+          if (!isDesktop) {
+            // Mobile/tablet: header stays fixed, no sticky CTA
+            header.style.transform = 'translateY(0)';
+            stickyCta.style.transform = 'translateY(-100%)';
+            lastScrollY = currentScrollY;
+            ticking = false;
+            return;
+          }
+
+          // Desktop: header + services nav hide together, sticky CTA replaces
+          if (scrollingDown && currentScrollY > 200) {
+            header.style.transform = 'translateY(-100%)';
+            stickyCta.style.transform = 'translateY(0)';
+            servicesNav.style.top = -(servicesNavH + 2) + 'px';
+            document.documentElement.style.setProperty('--top-bar-h', stickyCta.offsetHeight + 'px');
+          } else if (!scrollingDown) {
+            header.style.transform = 'translateY(0)';
+            stickyCta.style.transform = 'translateY(-100%)';
+            servicesNav.style.top = headerH + 'px';
+            document.documentElement.style.setProperty('--top-bar-h', (headerH + servicesNavH) + 'px');
+          }
+
+          lastScrollY = currentScrollY;
+          ticking = false;
+        }
+
+        window.addEventListener('scroll', function() {
+          if (!ticking) {
+            requestAnimationFrame(update);
+            ticking = true;
+          }
+        }, { passive: true });
+
+        // Desktop guides dropdown
+        var guidesDropdown = document.getElementById('guides-dropdown');
+        var guidesBtn = document.getElementById('guides-dropdown-btn');
+        var guidesMenu = document.getElementById('guides-dropdown-menu');
+        var guidesDropChevron = document.getElementById('guides-chevron');
+
+        if (guidesDropdown && guidesMenu) {
+          var hideTimeout;
+
+          function showGuides() {
+            clearTimeout(hideTimeout);
+            guidesMenu.classList.remove('opacity-0', 'invisible');
+            guidesMenu.classList.add('opacity-100', 'visible');
+            if (guidesDropChevron) guidesDropChevron.classList.add('rotate-180');
+            if (guidesBtn) guidesBtn.setAttribute('aria-expanded', 'true');
+          }
+
+          function hideGuides() {
+            hideTimeout = setTimeout(function() {
+              guidesMenu.classList.remove('opacity-100', 'visible');
+              guidesMenu.classList.add('opacity-0', 'invisible');
+              if (guidesDropChevron) guidesDropChevron.classList.remove('rotate-180');
+              if (guidesBtn) guidesBtn.setAttribute('aria-expanded', 'false');
+            }, 150);
+          }
+
+          guidesDropdown.addEventListener('mouseenter', showGuides);
+          guidesDropdown.addEventListener('mouseleave', hideGuides);
+          guidesBtn.addEventListener('click', function() {
+            var isVisible = guidesMenu.classList.contains('visible');
+            if (isVisible) { hideGuides(); } else { showGuides(); }
+          });
+
+          // Keyboard support for dropdown
+          guidesBtn.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { hideGuides(); guidesBtn.focus(); }
+          });
+          guidesMenu.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') { hideGuides(); guidesBtn.focus(); }
+          });
+        }
+      })();
+    </script>
+  </slot>
+
+  <!-- Main content -->
+  <main id="main-content">
+    <slot />
+  </main>
+
+  <!-- Footer -->
+  <slot name="footer">
+    <footer class="bg-gray-900 text-gray-300">
+      <div class="container-wide py-12 md:py-16">
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+          <!-- Company info -->
+          <div class="col-span-2 md:col-span-2">
+            <div class="text-xl font-bold text-white mb-4 font-heading">
+              {siteConfig.brand.name}
+            </div>
+            <p class="text-gray-400 mb-2">
+              Bristol removals and packing experts. Serving Bristol and the South West since 1978.
+            </p>
+            <p class="text-gray-400 text-sm italic">
+              {siteConfig.brand.tagline}
+            </p>
+          </div>
+
+          <!-- Services -->
+          <div class="col-span-1">
+            <h3 class="text-white font-semibold mb-4">Services</h3>
+            <div class="space-y-2">
+              <a href="/home-removals-bristol/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Home Removals
+              </a>
+              <a href="/home-packing-service/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Packing Service
+              </a>
+              <a href="/storage-service/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Storage
+              </a>
+              <a href="/house-and-waste-clearance/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                House Clearance
+              </a>
+              <a href="/office-removals/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Office Removals
+              </a>
+            </div>
+          </div>
+
+          <!-- Resources -->
+          <div class="col-span-1">
+            <h3 class="text-white font-semibold mb-4">Resources</h3>
+            <div class="space-y-2">
+              <a href="/moving-advice/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Moving Advice
+              </a>
+              <a href="/packing-guide/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Packing Guide
+              </a>
+              <a href="/moving-house-checklist/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Moving Checklist
+              </a>
+              <a href="/how-much-does-a-home-removal-company-cost-in-bristol/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Pricing Guide
+              </a>
+              <a href="/areas/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Areas We Cover
+              </a>
+              <a href="/reviews/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Reviews
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+            <div class="space-y-2">
+              {siteConfig.legal.termsUrl && (
+                <a href={siteConfig.legal.termsUrl} class="block text-gray-300 no-underline hover:text-white transition-colors">
+                  Terms & Conditions
+                </a>
+              )}
+              <a href="/jobs/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Jobs
+              </a>
+              <a href="/partners/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Partnerships
+              </a>
+              <a href="/affiliate-form/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Affiliate Programme
+              </a>
+              <a href="/vehicle-check/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Vehicle Check
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Popular Areas -->
+        <div class="mt-12 pt-8 border-t border-gray-800">
+          <div class="grid md:grid-cols-[auto_1fr] gap-x-8 gap-y-4 items-start">
+            <h3 class="text-white font-semibold text-sm uppercase tracking-wide whitespace-nowrap">Popular Areas</h3>
+            <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+              <a href="/removals-bristol/clifton/" class="text-gray-300 no-underline hover:text-white transition-colors">Clifton</a>
+              <a href="/removals-bristol/bedminster/" class="text-gray-300 no-underline hover:text-white transition-colors">Bedminster</a>
+              <a href="/removals-bristol/redland/" class="text-gray-300 no-underline hover:text-white transition-colors">Redland</a>
+              <a href="/removals-bristol/southville/" class="text-gray-300 no-underline hover:text-white transition-colors">Southville</a>
+              <a href="/removals-bristol/cotham/" class="text-gray-300 no-underline hover:text-white transition-colors">Cotham</a>
+              <a href="/removals-bristol/montpelier/" class="text-gray-300 no-underline hover:text-white transition-colors">Montpelier</a>
+              <a href="/removals-bristol/bishopston/" class="text-gray-300 no-underline hover:text-white transition-colors">Bishopston</a>
+              <a href="/removals-bristol/fishponds/" class="text-gray-300 no-underline hover:text-white transition-colors">Fishponds</a>
+              <a href="/removals-bath/" class="text-gray-300 no-underline hover:text-white transition-colors">Bath</a>
+              <a href="/removals-weston-super-mare/" class="text-gray-300 no-underline hover:text-white transition-colors">Weston-super-Mare</a>
+              <span class="text-gray-600" aria-hidden="true">·</span>
+              <a href="/removals-bristol-to-london/" class="text-gray-300 no-underline hover:text-white transition-colors">Bristol → London</a>
+              <a href="/removals-bristol-to-cardiff/" class="text-gray-300 no-underline hover:text-white transition-colors">Bristol → Cardiff</a>
+              <a href="/removals-bristol-to-birmingham/" class="text-gray-300 no-underline hover:text-white transition-colors">Bristol → Birmingham</a>
+              <a href="/areas/" class="text-white no-underline hover:text-gray-300 transition-colors font-semibold">See all areas →</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- NAP + Contact -->
+        <div class="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-400 flex flex-wrap justify-center gap-x-6 gap-y-2 text-center">
+          <span>{siteConfig.company.name}</span>
+          <span>{siteConfig.company.address.streetAddress}, {siteConfig.company.address.addressLocality}, {siteConfig.company.address.postalCode}</span>
+          <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="text-gray-400 no-underline hover:text-white transition-colors">{siteConfig.company.contact.phone}</a>
+          <a href={`mailto:${siteConfig.company.contact.email}`} class="text-gray-400 no-underline hover:text-white transition-colors">{siteConfig.company.contact.email}</a>
+        </div>
+
+        <!-- Copyright -->
+        <div class="mt-4 text-sm text-gray-400 text-center">
+          &copy; {new Date().getFullYear()} {siteConfig.company.name}. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  </slot>
+
+  <MobileContactBar />
+
+  <!-- Global smooth <details> animation -->
+  <script>
+    function initDetailsAnimation() {
+      document.querySelectorAll('details').forEach((det) => {
+        if (det.hasAttribute('data-anim-init')) return;
+        det.setAttribute('data-anim-init', '');
+
+        // Skip if already wrapped (e.g. by FAQAccordion component or FAQ page)
+        if (det.querySelector('.faq-answer-wrap') || det.querySelector('.faq-page-answer')) return;
+
+        const summary = det.querySelector('summary');
+        if (!summary) return;
+
+        // Collect all sibling nodes after <summary>
+        const children: Node[] = [];
+        let node = summary.nextSibling;
+        while (node) {
+          children.push(node);
+          node = node.nextSibling;
+        }
+        if (children.length === 0) return;
+
+        // Create wrapper divs for the grid animation
+        const wrap = document.createElement('div');
+        wrap.className = 'details-anim-wrap';
+        const inner = document.createElement('div');
+        inner.className = 'details-anim-inner';
+
+        children.forEach((child) => inner.appendChild(child));
+        wrap.appendChild(inner);
+        det.appendChild(wrap);
+
+        // Intercept toggle to animate close
+        let isClosing = false;
+        summary.addEventListener('click', (e) => {
+          if (isClosing) return;
+          if (det.open) {
+            // Animate close: keep open attr until transition ends
+            e.preventDefault();
+            isClosing = true;
+            wrap.style.gridTemplateRows = '0fr';
+            const unlock = () => {
+              det.removeAttribute('open');
+              isClosing = false;
+              wrap.style.gridTemplateRows = '';
+            };
+            wrap.addEventListener('transitionend', unlock, { once: true });
+            setTimeout(() => { if (isClosing) unlock(); }, 400);
+          }
+        });
+      });
+    }
+
+    // Run on initial load and after Astro view transitions
+    initDetailsAnimation();
+    document.addEventListener('astro:after-swap', initDetailsAnimation);
+  </script>
+
+  <!-- Toast notification container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="false" style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:0.5rem;width:22rem;max-width:calc(100vw - 2.5rem);pointer-events:none;"></div>
+
+  <script is:inline>
+    // Global toast notification system
+    window.showToast = function(message, type, duration) {
+      type = type || 'error';
+      duration = duration || 6000;
+      var container = document.getElementById('toast-container');
+      if (!container) return;
+
+      var styles = {
+        error:   { bg: '#fef2f2', border: '#fca5a5', text: '#991b1b', iconBg: '#fee2e2', icon: '&#10005;' },
+        success: { bg: '#f0fdf4', border: '#86efac', text: '#166534', iconBg: '#dcfce7', icon: '&#10003;' },
+        warning: { bg: '#fffbeb', border: '#fcd34d', text: '#92400e', iconBg: '#fef3c7', icon: '&#33;' },
+        info:    { bg: '#eff6ff', border: '#93c5fd', text: '#1e40af', iconBg: '#dbeafe', icon: '&#105;' },
+      };
+      var s = styles[type] || styles.error;
+
+      var toast = document.createElement('div');
+      toast.setAttribute('role', 'alert');
+      toast.style.cssText = [
+        'pointer-events:auto',
+        'display:flex',
+        'align-items:flex-start',
+        'gap:0.625rem',
+        'padding:0.875rem 1rem',
+        'border-radius:0.5rem',
+        'border:1px solid ' + s.border,
+        'background:' + s.bg,
+        'color:' + s.text,
+        'box-shadow:0 4px 16px rgba(0,0,0,0.12)',
+        'font-size:0.875rem',
+        'line-height:1.5',
+        'opacity:0',
+        'transform:translateX(110%)',
+        'transition:opacity 0.25s ease, transform 0.25s ease',
+      ].join(';');
+
+      var icon = document.createElement('span');
+      icon.innerHTML = s.icon;
+      icon.style.cssText = [
+        'flex-shrink:0',
+        'width:1.25rem',
+        'height:1.25rem',
+        'border-radius:50%',
+        'display:flex',
+        'align-items:center',
+        'justify-content:center',
+        'font-size:0.6875rem',
+        'font-weight:700',
+        'background:' + s.iconBg,
+        'color:' + s.text,
+        'margin-top:0.125rem',
+      ].join(';');
+
+      var msg = document.createElement('span');
+      msg.style.flex = '1';
+      msg.textContent = message;
+
+      var close = document.createElement('button');
+      close.innerHTML = '&times;';
+      close.setAttribute('aria-label', 'Dismiss');
+      close.style.cssText = [
+        'flex-shrink:0',
+        'background:none',
+        'border:none',
+        'cursor:pointer',
+        'color:inherit',
+        'opacity:0.5',
+        'font-size:1.125rem',
+        'line-height:1',
+        'padding:0',
+        'margin-top:-0.125rem',
+      ].join(';');
+
+      toast.appendChild(icon);
+      toast.appendChild(msg);
+      toast.appendChild(close);
+      container.appendChild(toast);
+
+      function remove() {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(110%)';
+        setTimeout(function() {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 280);
+      }
+
+      close.addEventListener('click', remove);
+
+      var timer = setTimeout(remove, duration);
+      toast.addEventListener('mouseenter', function() { clearTimeout(timer); });
+      toast.addEventListener('mouseleave', function() { timer = setTimeout(remove, 2500); });
+
+      // Trigger entrance animation
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+          toast.style.opacity = '1';
+          toast.style.transform = 'translateX(0)';
+        });
+      });
+    };
+  </script>
+</body>
+</html>

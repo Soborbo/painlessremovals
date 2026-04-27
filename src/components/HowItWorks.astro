@@ -1,0 +1,162 @@
+---
+/**
+ * HowItWorks — reusable tabbed steps component
+ *
+ * Based on the storage-service.astro pattern. Scoped via unique `id`
+ * so multiple instances on one page won't conflict.
+ *
+ * Icons: phone, truck, lock, home, quote, clipboard, box, calendar,
+ *        camera, broom, recycle, handshake, check
+ */
+export interface Step {
+  number: number;
+  title: string;
+  description: string;
+  detail?: string;
+  icon?: string;
+}
+
+interface Props {
+  id: string;
+  steps: Step[];
+  title?: string;
+  subtitle?: string;
+  ctaText?: string;
+  ctaHref?: string;
+  class?: string;
+}
+
+const {
+  id,
+  steps,
+  title,
+  subtitle,
+  ctaText,
+  ctaHref = '/instantquote',
+  class: className = '',
+} = Astro.props;
+---
+
+<section id={id} class:list={['section bg-white', className]}>
+  <div class="container-wide">
+    {title && <h2 class="text-center mb-4">{title}</h2>}
+    {subtitle && <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10">{subtitle}</p>}
+
+    <!-- Step selector tabs -->
+    <div class="relative flex justify-center gap-2 sm:gap-3 mb-8" data-hiw-tabs={id}>
+      <!-- Dashed connector line (desktop only) -->
+      <div class="hidden sm:block absolute top-1/2 -translate-y-1/2 left-0 right-0 mx-12 h-0 border-t-2 border-dashed border-gray-300 pointer-events-none"></div>
+
+      {steps.map((step, i) => (
+        <button
+          type="button"
+          class={`hiw-tab relative z-10 flex flex-col items-center gap-1 px-3 py-2.5 sm:px-5 sm:py-3.5 rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+            i === 0
+              ? 'border-primary-600 bg-primary-600 text-white shadow-lg'
+              : 'border-gray-200 bg-white text-gray-500 hover:border-primary-300 hover:text-primary-600'
+          }`}
+          data-step={i}
+        >
+          <span class="text-lg sm:text-2xl font-bold leading-none">{step.number}</span>
+          <span class="text-[9px] sm:text-xs font-medium leading-tight text-center hidden sm:block max-w-[70px]">
+            {step.title.split(' ').slice(0, 2).join(' ')}
+          </span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Content panels -->
+    <div class="max-w-4xl mx-auto" data-hiw-panels={id}>
+      {steps.map((step, i) => (
+        <div
+          class={`hiw-panel bg-cream rounded-2xl p-6 lg:p-10 shadow-sm border border-gray-100 ${i === 0 ? '' : 'hidden'}`}
+          data-panel={i}
+        >
+          <div class="flex items-center gap-3 mb-4">
+            <span class="w-10 h-10 bg-primary-600 text-white rounded-full flex items-center justify-center text-lg font-bold flex-shrink-0">
+              {step.number}
+            </span>
+            <h3 class="text-xl lg:text-2xl">{step.title}</h3>
+          </div>
+          <p class="text-warm-gray text-lg mb-3" set:html={step.description} />
+          {step.detail && <p class="text-warm-gray text-sm leading-relaxed">{step.detail}</p>}
+        </div>
+      ))}
+    </div>
+
+    <!-- Progress dots -->
+    <div class="flex justify-center gap-2 mt-6" data-hiw-dots={id}>
+      {steps.map((_, i) => (
+        <button
+          type="button"
+          class={`hiw-dot w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+            i === 0 ? 'bg-primary-600 scale-125' : 'bg-gray-300 hover:bg-primary-300'
+          }`}
+          data-step={i}
+          aria-label={`Step ${i + 1}`}
+        />
+      ))}
+    </div>
+
+    {ctaText && (
+      <div class="text-center mt-10">
+        <a
+          href={ctaHref}
+          class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-lg font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-600/40"
+        >
+          {ctaText}
+        </a>
+      </div>
+    )}
+  </div>
+</section>
+
+<script is:inline define:vars={{ id }}>
+  (function() {
+    var container = document.getElementById(id);
+    if (!container) return;
+
+    var tabs = container.querySelectorAll('.hiw-tab');
+    var panels = container.querySelectorAll('.hiw-panel');
+    var dots = container.querySelectorAll('.hiw-dot');
+
+    function setActive(index) {
+      tabs.forEach(function(tab, i) {
+        if (i === index) {
+          tab.classList.add('border-primary-600', 'bg-primary-600', 'text-white', 'shadow-lg');
+          tab.classList.remove('border-gray-200', 'bg-white', 'text-gray-500');
+        } else {
+          tab.classList.remove('border-primary-600', 'bg-primary-600', 'text-white', 'shadow-lg');
+          tab.classList.add('border-gray-200', 'bg-white', 'text-gray-500');
+        }
+      });
+
+      panels.forEach(function(panel, i) {
+        if (i === index) panel.classList.remove('hidden');
+        else panel.classList.add('hidden');
+      });
+
+      dots.forEach(function(dot, i) {
+        if (i === index) {
+          dot.classList.add('bg-primary-600', 'scale-125');
+          dot.classList.remove('bg-gray-300');
+        } else {
+          dot.classList.remove('bg-primary-600', 'scale-125');
+          dot.classList.add('bg-gray-300');
+        }
+      });
+    }
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        setActive(parseInt(tab.getAttribute('data-step') || '0'));
+      });
+    });
+
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        setActive(parseInt(dot.getAttribute('data-step') || '0'));
+      });
+    });
+  })();
+</script>

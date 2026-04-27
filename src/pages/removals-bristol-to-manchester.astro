@@ -1,0 +1,360 @@
+---
+/**
+ * /removals-bristol-to-manchester/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '170 miles' },
+        { label: 'Drive time', value: '~3 hours' },
+        { label: 'Primary route', value: 'M5/M6 northbound' },
+        { label: 'Move duration', value: '1–2 days' },
+        { label: 'Crew size', value: '3–4 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£900–£2,500' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "I only had a three day turnaround between exchange and completion. Jay was incredibly helpful from the very first contact. The team were so polite, helpful and efficient. Absolutely second to none!",
+  name: 'DT',
+  context: 'Trustpilot Review',
+};
+
+const title = 'Removals Bristol to Manchester — 170 Miles';
+const description = `House removals from Bristol to Manchester, 170 miles via M5/M6. One- and two-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Manchester",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Manchester" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'Can a Bristol to Manchester move be done in one day?',
+    answer: 'Yes, for smaller properties — a one- or two-bed flat with a single van load. The drive is around three hours each way, which leaves enough time to load, travel, and unload in a long day. For larger homes with three or more bedrooms, two days is the standard. Trying to squeeze a family home into one day means a rushed unload at the Manchester end, and we avoid that.',
+  },
+  {
+    question: 'Where does your crew stay overnight?',
+    answer: 'We book a hotel near your Manchester address, included in your quote at no extra charge. The crew arrives fresh the following morning to finish unloading and placing furniture. This is standard for all two-day Bristol to Manchester moves.',
+  },
+  {
+    question: 'Do you serve areas outside Manchester city centre?',
+    answer: 'Yes. We cover all of Greater Manchester — Stockport, Sale, Altrincham, Bury, Oldham, Rochdale — plus parts of Cheshire and Lancashire. Suburban destinations like Didsbury, Chorlton, and Cheadle are common for us. We quote based on your specific address.',
+  },
+  {
+    question: 'How do you handle high-rise apartment moves?',
+    answer: 'We book service lifts in advance, use protective blankets on all shared corridors, and bring specialist trolleys for narrow hallways. High-rise developments in the Northern Quarter, Ancoats, and Salford Quays often have specific move-in protocols and restricted loading hours — we coordinate all of this before your move day.',
+  },
+  {
+    question: 'Is there a clean air zone charge for Manchester?',
+    answer: 'Greater Manchester\'s Clean Air Zone applies to certain commercial vehicles, but our fleet is fully compliant. There is no additional charge on your quote for Manchester deliveries.',
+  },
+  {
+    question: 'Why do most Bristol to Manchester moves take two days?',
+    answer: 'Three hours each way means six hours of driving in a single day, on top of loading and unloading. Splitting the move across two days means the crew is not rushing, your belongings are handled carefully, and there is proper time to place furniture and reassemble beds at the Manchester end. It also avoids the risk of arriving late in the evening when building access may be restricted.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Manchester" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Manchester' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Manchester — 170&nbsp;Miles
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Bristol to Manchester is around 170 miles up the M5 and M6 — about three hours on a clear run. It sits in that awkward middle distance: too far to treat casually, close enough that people are tempted to try cramming it into one long day and regretting it. For a one- or two-bed flat, a single-day move is realistic. For a family home, two days is the standard — and it produces a better result at both ends.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Manchester's housing stock is as varied as its neighbourhoods. Victorian terraces in Didsbury, high-rise apartments in Ancoats and Salford Quays, suburban semis in Sale and Stockport, warehouse conversions in the Northern Quarter — each has its own access character, parking situation, and loading constraints. The move plan we write for a Deansgate apartment looks nothing like the one for a four-bed in Cheadle.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Manchester house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Manchester Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The M6 North of Birmingham</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The M5 out of Bristol is predictable — steady motorway driving through Gloucester and into the West Midlands. The picture changes once you join the M6 north of Birmingham. This stretch carries some of the heaviest commercial traffic in Europe, with HGV convoys, roadworks, and variable speed limits between junctions 10 and 19. A clear run takes about 90 minutes from Birmingham to Manchester. A bad one can double that.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Avoid Friday moves on this route — more firmly than almost any other. Friday afternoon on the M6 is a collision of commuter traffic, weekend travellers, and commercial vehicles trying to make final deliveries. A midweek departure, timed to pass through the Birmingham interchange before the morning peak, makes the whole journey more predictable.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">City Centre Access</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Manchester city centre presents its own challenges. Narrow one-way streets in the Northern Quarter, restricted loading bays around Deansgate, and apartment buildings in Ancoats and Salford Quays that require pre-booked service lifts and specific move-in time slots. Some developments limit removals to weekday mornings only. We confirm all access arrangements with building management before your move day — turning up without a booking is not an option.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Greater Manchester's Clean Air Zone applies to certain commercial vehicles, but our fleet is fully compliant. No additional charge, no disruption. If your new property is in a permit parking area, we'll advise on suspension requirements and handle the paperwork.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Greater Manchester Suburbs</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Didsbury, Chorlton, Sale, Stockport, and Cheadle are among the most common suburban destinations we deliver to. These areas tend to be more forgiving than the city centre — wider streets, driveways, and fewer access restrictions. We also cover Bury, Oldham, Rochdale, and parts of Cheshire and Lancashire from this route. Each address gets its own access assessment during the pre-move survey.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Manchester, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Manchester?"
+          description="Free quote in about two minutes. Compliant fleet, overnight stays included, no hidden charges."
+          buttonText="Get Your Manchester Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals runs the Manchester route regularly — it is one of our most popular long-distance corridors along with London and Edinburgh. Two days is the standard for family homes. The crew loads at your Bristol address on day one, drives to Manchester, and stays overnight in a hotel near your new property. Day two is a fresh start: unloading, furniture placement, and bed reassembly without the pressure of a six-hour round trip hanging over the schedule.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Manchester" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Manchester is roughly a three-hour drive — similar distance logic to Cornwall. Small moves might get done in one day, but typically it's a two-day move. It's a big, varied city — the housing stock goes from Victorian terraces to high-rise apartments to suburban semis, and each neighbourhood has its own access character."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This route runs in both directions. Manchester professionals relocating to Bristol, and Bristol families moving north for work, affordability, or to be closer to family. If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Manchester Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat with a single van typically costs £900–£1,200. A standard family home with two to three van loads runs £1,500–£2,500. City centre Manchester with access complications — service lift bookings, restricted loading hours, apartment move-in protocols — sits at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but means your Bristol home is packed the day before, ready for a clean start on move morning.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, equipment, and overnight accommodation for two-day moves. No hidden charges for mileage, Clean Air Zone compliance, or parking suspension handling. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Manchester Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 manchester-checklist">
+          <li><strong>Avoid Friday.</strong> The M6 north of Birmingham carries heavy commercial and commuter traffic. Midweek departures are consistently smoother.</li>
+          <li><strong>City centre apartment?</strong> Check service lift bookings, loading bay access, and move-in time slots with building management well in advance.</li>
+          <li><strong>Two-day move?</strong> Overnight hotel for the crew is included in your quote — no extra charge.</li>
+          <li><strong>Book 4–6 weeks ahead.</strong> Two-day moves and city centre deliveries benefit from early scheduling for access coordination.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then load and drive the following morning.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Manchester, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Manchester Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Birmingham" meta="~90 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Bristol" to="Leeds" meta="~200 miles via M5/M1" days="2 days" href="/removals-bristol-to-leeds/" />
+      <RouteCard from="Bristol" to="Edinburgh" meta="~380 miles via M6/M74" days="2–3 days" href="/removals-bristol-to-edinburgh/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to Manchester?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .manchester-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .manchester-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .manchester-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

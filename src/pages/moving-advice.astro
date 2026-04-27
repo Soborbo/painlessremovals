@@ -1,0 +1,339 @@
+---
+/**
+ * /moving-advice/ — Moving Advice hub page
+ *
+ * Content hub linking to all informational guides, checklists, and resources.
+ * Serves as the topic cluster centre for informational moving content.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { ref, breadcrumbs } from '@/utils/schema';
+
+const pageTitle = 'Moving Advice — Free Guides & Checklists | Painless Removals';
+const pageDescription = 'Free moving advice from Bristol\'s trusted removal team. Packing guides, moving checklists, area tips, and practical resources to make your move stress-free.';
+
+const director = siteConfig.company.director;
+
+// Featured guides — displayed as large cards
+const featuredGuides = [
+  {
+    title: 'Home Removals Guide for Bristol & Bath',
+    description: 'Everything you need to know about moving house in Bristol and Bath. Area-specific tips, typical costs, parking challenges, and a step-by-step moving timeline.',
+    href: '/home-removals-guide-bristol-bath/',
+    tag: 'Guide',
+    tagColor: 'bg-primary-100 text-primary-700',
+    imageName: 'homepage/painless-removals-home',
+    alt: 'Painless Removals team loading a home removal in Bristol',
+  },
+  {
+    title: 'Free Packing Guide — 8 Video Lessons',
+    description: 'Room-by-room video walkthroughs showing you exactly how to pack your home. Kitchen, fragile items, electronics, wardrobes, and more — with printable checklists.',
+    href: '/packing-guide/',
+    tag: 'Video Course',
+    tagColor: 'bg-secondary-100 text-secondary-700',
+    imageName: 'homepage/packing-video-guide',
+    alt: 'Packing video guide showing professional packing techniques',
+  },
+  {
+    title: 'Moving House Checklist',
+    description: 'A week-by-week timeline covering everything from instructing your solicitor to settling into your new home. Never miss a step.',
+    href: '/moving-house-checklist/',
+    tag: 'Checklist',
+    tagColor: 'bg-emerald-100 text-emerald-700',
+    imageName: 'homepage/home-removals-painless-boxes',
+    alt: 'Moving boxes packed and labelled ready for removal day',
+  },
+];
+
+// Additional resources — displayed as smaller cards
+const resources = [
+  {
+    title: 'What The Pack? — Quick Reference',
+    description: 'A single-page packing guide covering decluttering, materials, room-by-room tips, fragile items, electronics, and labelling. The digital companion to our printed guide.',
+    href: '/packing-guide-home-removal/',
+    tag: 'Quick Ref',
+    imageName: 'packing/Bristol-home-packing-service',
+    alt: 'Professional packing service for home removal in Bristol',
+  },
+  {
+    title: 'Moving With Children',
+    description: 'Age-by-age advice for moving house with children — from toddlers to teenagers. Practical tips for before, during, and after moving day.',
+    href: '/moving-with-children/',
+    tag: 'Parents',
+    imageName: 'children/hero',
+    alt: 'Family moving house with children',
+  },
+  {
+    title: 'Free Home Survey',
+    description: 'Get an accurate removal quote with our free home assessment. Video self-survey or in-person visit — no obligation.',
+    href: '/free-home-survey/',
+    tag: 'Free Tool',
+    imageName: 'assessment/in-person-home-survey',
+    alt: 'Removal surveyor conducting a free home survey',
+  },
+  {
+    title: 'Removals FAQ — 60 Questions Answered',
+    description: 'Pricing, packing, insurance, moving day, storage, tricky items — straight-talking answers to the questions we hear most.',
+    href: '/faq/',
+    tag: 'FAQ',
+    imageName: 'home-removals/Bristol-home-removals-service-main',
+    alt: 'Painless Removals team in Bristol',
+  },
+  {
+    title: 'Areas We Serve',
+    description: 'Every Bristol neighbourhood, surrounding towns from Bath to Chepstow, and long-distance routes across the UK. Find your area.',
+    href: '/areas/',
+    tag: 'Areas',
+    imageName: 'areas/painless-removals-van-bristol-areas',
+    alt: 'Painless Removals van serving areas across Bristol and beyond',
+  },
+  {
+    title: 'House Clearance Guide',
+    description: 'When you need a clearance, what can and can\'t be cleared, how it works, typical costs, and eco-friendly disposal options in Bristol.',
+    href: '/clearance-guide/',
+    tag: 'Guide',
+    imageName: 'house-clearance/Bristol-clearance-service',
+    alt: 'House clearance service in Bristol',
+  },
+  {
+    title: 'Home Removals with Autism',
+    description: 'How we adapt our service with clear timelines, sensory awareness, and consistent crews to make moving day calmer and more predictable.',
+    href: '/home-removals-with-autism/',
+    tag: 'Accessibility',
+    imageName: 'autism/1.moving-with-autism',
+    alt: 'Calm and predictable home removal for autistic individuals',
+  },
+  {
+    title: 'Key Wait Waiver Explained',
+    description: 'Worried about key delays on completion day? Our Key Wait Waiver covers extra costs if the chain runs late — so you don\'t face a surprise bill.',
+    href: '/key-wait-waiver/',
+    tag: 'Moving Day',
+    imageName: 'key-wait-waiver/hero',
+    alt: 'Key Wait Waiver for removal day key delays',
+  },
+  {
+    title: 'How Much Does a Removal Cost?',
+    description: 'Typical Bristol removal costs from a 1-bed flat to a 4-bed house. Honest pricing with no hidden fees — what affects the price and how to budget.',
+    href: '/how-much-does-a-home-removal-company-cost-in-bristol/',
+    tag: 'Pricing',
+    imageName: 'pricing/removal-cost-calculator-bristol',
+    alt: 'Removal cost calculator for Bristol home moves',
+  },
+  {
+    title: 'Insurance & Liability',
+    description: 'What\'s covered, what\'s not, and how to make a claim. Transparent protection for your belongings during a move.',
+    href: '/insurance-and-liability/',
+    tag: 'Insurance',
+    imageName: 'home-removals/Bristol-home-removals-valuables',
+    alt: 'Protected valuables during a home removal in Bristol',
+  },
+  {
+    title: 'Video Self-Assessment Guide',
+    description: 'How to film your home so we can give you an accurate removal quote. Room-by-room checklist, filming tips, and what to say on camera.',
+    href: '/video-self-assessment-guide/',
+    tag: 'Video Guide',
+    imageName: 'assessment/self-survey-phone-walkthrough',
+    alt: 'Video self-assessment guide for removal quote',
+  },
+  {
+    title: 'How to Pack a Van for Moving House',
+    description: 'Step-by-step guide to loading a removal van. Loading order, weight distribution, professional equipment, protecting items, and common mistakes to avoid.',
+    href: '/how-to-pack-a-van-for-moving-house/',
+    tag: 'Guide',
+    imageName: 'homepage/Painless-Removals-van-Bristol',
+    alt: 'Removal van being packed for a house move in Bristol',
+  },
+];
+
+// Schema
+const webPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Moving Advice",
+  "description": pageDescription,
+  "url": `${siteConfig.brand.domain}/moving-advice`,
+  "publisher": ref.business(),
+  "inLanguage": "en-GB",
+};
+
+const pageSchema = [
+  webPageSchema,
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/about/team/Jay-Newton-750w.webp">
+
+  <!-- ============================================
+       HERO
+  ============================================ -->
+  <section class="section !pt-8 !pb-10 bg-white">
+    <div class="container-wide">
+      <nav class="text-sm text-warm-gray mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Moving Advice</li>
+        </ol>
+      </nav>
+
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+        Moving Advice
+      </h1>
+      <p class="text-lg text-warm-gray max-w-2xl leading-relaxed mb-6">
+        Free guides, checklists, and practical resources from a removal team with nearly 50 years&rsquo; experience. Everything you need to plan, pack, and complete your move &mdash; whether you are doing it yourself or hiring us to help.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <span class="text-sm font-semibold bg-cream px-3.5 py-1.5 rounded-full border border-gray-200">&#9733; {siteConfig.company.rating.value} average rating</span>
+        <span class="text-sm font-semibold bg-cream px-3.5 py-1.5 rounded-full border border-gray-200">Since 1978</span>
+        <span class="text-sm font-semibold bg-cream px-3.5 py-1.5 rounded-full border border-gray-200">100% free resources</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FEATURED GUIDES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Essential Guides</h2>
+      <p class="text-warm-gray mb-8 max-w-xl">Start here. These three resources cover the full journey from planning your move to unpacking at the other end.</p>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {featuredGuides.map((guide) => (
+          <a href={guide.href} class="group bg-white rounded-xl border border-gray-200 overflow-hidden no-underline hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+            <div class="relative h-40 overflow-hidden">
+              <div class="absolute top-3 left-3 z-10 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full" class:list={[guide.tagColor]}>
+                {guide.tag}
+              </div>
+              <OptimizedPicture
+                name={guide.imageName}
+                pattern="THIRD"
+                alt={guide.alt}
+                loading="lazy"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">{guide.title}</h3>
+              <p class="text-warm-gray text-sm mb-4 leading-relaxed">{guide.description}</p>
+              <span class="text-primary-600 text-sm font-bold">Read guide &rarr;</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       MORE RESOURCES
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">More Resources</h2>
+      <p class="text-warm-gray mb-8 max-w-xl">Specialist guides, tools, and answers for specific situations.</p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {resources.map((resource) => (
+          <a href={resource.href} class="group flex flex-col bg-cream rounded-lg border border-gray-200 overflow-hidden no-underline hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+            <div class="relative h-36 overflow-hidden">
+              <div class="absolute top-3 left-3 z-10">
+                <span class="text-xs font-bold uppercase tracking-wide text-primary-600 bg-white/90 px-2 py-0.5 rounded-full">{resource.tag}</span>
+              </div>
+              <OptimizedPicture
+                name={resource.imageName}
+                pattern="THIRD"
+                alt={resource.alt}
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="text-base font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">{resource.title}</h3>
+              <p class="text-warm-gray text-sm leading-relaxed mb-4 flex-1">{resource.description}</p>
+              <span class="text-primary-600 text-sm font-bold">View &rarr;</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       JAY'S NOTE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-narrow">
+      <div class="bg-white rounded-xl border border-gray-200 p-8 md:p-10">
+        <div class="flex flex-col md:flex-row gap-6 items-start">
+          <div class="w-16 h-16 shrink-0">
+            <OptimizedPicture
+              name="about/team/Jay-Newton"
+              pattern="SIXTH"
+              alt={`${director.name}, Director of Painless Removals`}
+              class="w-full h-full rounded-full object-cover"
+              loading="lazy"
+            />
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-3">A Note from {director.name}</h2>
+            <p class="text-warm-gray leading-relaxed mb-4">
+              &ldquo;I started putting these guides together because we kept seeing the same problems on moving day &mdash; boxes that weren&rsquo;t sealed properly, fragile items thrown in without wrapping, whole rooms left unpacked because people ran out of time. Every guide on this page comes from real experience, not recycled advice from the internet. If it&rsquo;s here, it&rsquo;s because our team has seen it work.&rdquo;
+            </p>
+            <p class="text-warm-gray leading-relaxed">
+              &ldquo;And if packing isn&rsquo;t your thing, that&rsquo;s fine too &mdash; our <a href="/home-packing-service/" class="text-primary-600 underline hover:text-primary-700">packing team</a> will handle the lot. Either way, the advice here will help you understand what goes into a smooth move.&rdquo;
+            </p>
+            <p class="text-sm text-warm-gray mt-4">
+              <strong class="text-gray-900">{director.name}</strong> &middot; {director.title}, <a href="/about/jay-newton/" class="text-primary-600 no-underline hover:underline">Painless Removals</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       OUR SERVICES
+  ============================================ -->
+  <section class="py-16 bg-gray-50">
+    <div class="container-wide">
+      <h2 class="text-2xl font-bold font-heading text-gray-900 mb-2 text-center">Our Services</h2>
+      <p class="text-gray-500 text-center mb-10">Ready to move? Here's what we can take off your plate.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+          <div class="text-lg font-semibold font-heading text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">Home Removals</div>
+          <p class="text-gray-500 text-sm">Full-day allocation, dedicated move manager, £15k insurance. One move a day — yours.</p>
+          <span class="mt-4 inline-block text-primary-600 text-sm font-medium">Learn more →</span>
+        </a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+          <div class="text-lg font-semibold font-heading text-gray-900 mb-2 group-hover:text-secondary-600 transition-colors">Professional Packing</div>
+          <p class="text-gray-500 text-sm">Room-by-room packing by trained specialists. All materials included, fully insured.</p>
+          <span class="mt-4 inline-block text-secondary-600 text-sm font-medium">Learn more →</span>
+        </a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-green-500">
+          <div class="text-lg font-semibold font-heading text-gray-900 mb-2 group-hover:text-green-700 transition-colors">Secure Storage</div>
+          <p class="text-gray-500 text-sm">Flexible, insured storage in Bristol. 50% off your first month when booked with a removal.</p>
+          <span class="mt-4 inline-block text-green-700 text-sm font-medium">Learn more →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Get Started?"
+    description="Whether you're packing yourself or leaving it to us, the first step is the same — get an accurate quote you can plan around."
+    primaryText="BOOK YOUR FREE SURVEY"
+    primaryHref="/free-home-survey/"
+  />
+
+</Layout>

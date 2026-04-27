@@ -1,0 +1,1087 @@
+---
+/**
+ * Office & Commercial Removals Service Page
+ *
+ * Rewritten around Jay Newton's real insights — disruption-cost framing,
+ * phased moves, document accountability, and IT handling specifics.
+ * Conversion-optimised with social proof, step-by-step process, and FAQs.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import ClientLogos from '@/components/ClientLogos.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import QuoteTeaser from '@/components/QuoteTeaser.astro';
+import { siteConfig } from '@/config/site.config';
+import { bristolNeighbourhoods, neighbourhoodUrl } from '@/config/areas.config';
+import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Office Removals Bristol | Zero-Downtime Business Moves | Painless Removals';
+const pageDescription = 'Professional office removals in Bristol. Phased moves, weekend scheduling, document tracking, and IT equipment protection. Nearly 50 years of experience. Get your free survey today.';
+
+// Data structures
+
+const steps = [
+  {
+    number: 1,
+    title: 'Survey & Scoping',
+    description: 'We assess your current space — in person or via video call. Volume, access, IT equipment, anything that needs specialist handling.',
+  },
+  {
+    number: 2,
+    title: 'The Disruption Question',
+    description: 'How much does a day of downtime cost you? Your answer shapes everything — timing, crew size, whether we work weekends, whether we phase the move.',
+  },
+  {
+    number: 3,
+    title: 'Confirm & Coordinate',
+    description: 'We coordinate with building management at both ends — loading bays, lift access, parking permits. You choose your service level and lock in the date.',
+  },
+  {
+    number: 4,
+    title: 'Packing & Labelling',
+    description: 'Colour-coded labels tied to your new floor plan. Every box numbered, logged, and destined for exactly the right spot.',
+  },
+  {
+    number: 5,
+    title: 'The Move',
+    description: 'Evening, weekend, or phased across multiple days — whatever your operation demands. Our crew follows the plan to the letter.',
+  },
+  {
+    number: 6,
+    title: 'Set Up & Sign Off',
+    description: 'Desks reassembled, furniture positioned, crates collected. We walk the space with you before we leave.',
+  },
+];
+
+const included = [
+  { text: 'Furniture protection — blankets, wrapping, and corner guards for desks, cabinets, and boardroom tables' },
+  { text: 'Disassembly and reassembly — workstations, shelving, and conference tables taken apart and rebuilt' },
+  { text: 'Floor and door frame protection at both your old and new premises' },
+  { text: 'Goods in Transit insurance — £15,000 per van as standard' },
+  { text: 'Flexible scheduling — evenings, weekends, and phased moves available' },
+  { text: 'Every box labelled and tracked — nothing moves anonymously' },
+];
+
+const officeSizes = [
+  {
+    imageName: 'office-removals/small-office',
+    title: 'Small Office',
+    desks: '1–5 desks',
+    price: 'From £490',
+    description: 'A focused, efficient move — usually completed in a single session. Ideal for agencies, consultancies, and professional practices.',
+    alt: 'Small office removal in Bristol - 1 to 5 desks',
+    specs: [
+      { label: 'Crew', value: '2 men' },
+      { label: 'Vans', value: '1 van' },
+      { label: 'Est. time', value: '~3 hours' },
+    ],
+    popular: false,
+  },
+  {
+    imageName: 'office-removals/medium-office',
+    title: 'Medium Office',
+    desks: '6–15 desks',
+    price: 'From £850',
+    description: 'This is where planning really earns its keep. We coordinate furniture, IT equipment, and filing systems across departments.',
+    alt: 'Medium office removal in Bristol - 6 to 15 desks',
+    specs: [
+      { label: 'Crew', value: '4 men' },
+      { label: 'Vans', value: '2 vans' },
+      { label: 'Est. time', value: '~5 hours' },
+    ],
+    popular: true,
+  },
+  {
+    imageName: 'office-removals/large-office',
+    title: 'Large Office',
+    desks: '16+ desks',
+    price: 'From £1,450',
+    description: 'For larger relocations, we recommend a phased approach — moving departments over consecutive evenings or a weekend.',
+    alt: 'Large office removal in Bristol - 16 plus desks',
+    specs: [
+      { label: 'Crew', value: '6 men' },
+      { label: 'Vans', value: '3 vans' },
+      { label: 'Est. time', value: '~7 hours' },
+    ],
+    popular: false,
+  },
+];
+
+const serviceTiers = [
+  {
+    label: 'Essentials',
+    name: 'You Pack, We Move',
+    description: 'You pack your own office. We load, transport, and unload at the new address. The basics, done properly.',
+    popular: false,
+  },
+  {
+    label: 'Assisted',
+    name: 'Move + Extras',
+    description: 'Everything in Essentials, plus we supply all boxes and packing materials. Furniture disassembly and reassembly included.',
+    popular: true,
+  },
+  {
+    label: 'Full Service',
+    name: 'We Do Everything',
+    description: 'Our crew packs, wraps, moves, and sets up your new office. You arrive ready to work from day one.',
+    popular: false,
+  },
+];
+
+const extras = [
+  { title: 'Packing Services', description: 'Our team packs everything from desk contents to kitchen cupboards, using a systematic labelling process.', href: '/home-packing-service' },
+  { title: 'Secure Storage', description: 'If there\'s a gap between leaving your old space and accessing the new one, we offer secure storage at our warehouse.', href: '/storage-service' },
+  { title: 'End-of-Tenancy Cleaning', description: 'We can arrange professional cleaning for the space you\'re leaving behind.', href: '/cleaning-service' },
+];
+
+const faqs = [
+  {
+    question: 'Can you move our office outside of working hours?',
+    answer: 'Yes — we work Saturdays and Sundays when the timeline requires it. If your team needs to be fully operational by Monday morning, we\'ll plan the move around that requirement. Most of our business clients prefer weekend or evening moves for exactly this reason.',
+  },
+  {
+    question: 'How do you handle sensitive documents and client files?',
+    answer: 'Every box is labelled and accounted for before it leaves your building. We don\'t move things anonymously — you know what\'s on the van and where it\'s going. For businesses handling regulated data or irreplaceable documents, we discuss specific handling requirements at survey stage.',
+  },
+  {
+    question: 'What\'s a phased office move and do you offer it?',
+    answer: 'A phased move means we relocate half your office first, get it set up and operational at the new address, then move the second half. Your team works at reduced capacity across two sites for a short period, but you\'re never fully offline. It takes more coordination on our end, but it\'s designed for businesses that cannot afford any total downtime.',
+  },
+  {
+    question: 'Do you disassemble and reassemble office furniture?',
+    answer: 'Yes. Workstations, shelving units, conference tables, and standing desks are taken apart and rebuilt at the new location. If you have specialist furniture or complex workstation setups, flag it at survey stage so we can plan the right tools and time.',
+  },
+  {
+    question: 'How is an office move priced?',
+    answer: 'Based on the number of desks, floor levels, lift access, and any specialist items like servers or safes. We use a desk-count framework to estimate volume, then factor in access at both ends. A small local office move (1–5 desks) typically starts from around £490. The quickest way to get an accurate figure is to request a free survey.',
+  },
+  {
+    question: 'What deposit is required?',
+    answer: '30% non-refundable deposit to confirm the booking. The balance is due on or before move day by bank transfer (BACS only). Your quote is valid for 30 days.',
+  },
+  {
+    question: 'Do you move IT equipment and servers?',
+    answer: 'We move the physical hardware — monitors are individually wrapped, PCs and hard drives are packed and handled separately from general furniture. For servers and network infrastructure, we recommend your IT provider handles disconnection and reconnection. We can coordinate timing with them so everything lines up.',
+  },
+  {
+    question: 'How far in advance should we book an office move?',
+    answer: 'For small offices, two to three weeks is usually enough. For medium and large offices, we recommend four to six weeks minimum. The more planning time we have, the smoother the move will be — particularly for phased moves or moves that need weekend scheduling. For office removals in Bristol, we can often accommodate shorter timelines thanks to our local knowledge.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  service({
+    name: "Office & Commercial Removals Bristol",
+    description: pageDescription,
+    serviceType: "Office Removals",
+    url: "/office-removals/",
+    areaServed: areas.bristol,
+    image: "/img/office-removals/office-removals-team-assembling-furniture-bristol-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Office Removals" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/office-removals/office-removals-team-assembling-furniture-bristol-1200w.webp" preloadImage="/img/office-removals/office-removals-team-assembling-furniture-bristol-750w.avif">
+
+  <!-- ============================================
+       HERO SECTION
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="office-removals/office-removals-team-assembling-furniture-bristol"
+        pattern="FULL"
+        alt="Painless Removals team assembling office furniture in Bristol with Clifton Suspension Bridge view"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover object-left"
+      />
+    </div>
+
+    <!-- Left: Content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Office & Commercial Removals in Bristol
+        </h1>
+
+        <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+          Your Office Move — <span class="text-secondary-500">Minimum Disruption</span> Guaranteed
+        </h2>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Everything we do is built around your business's needs — timing, crew size, weekend scheduling, phased moves. Your interests come first, every detail follows.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote?service=office" class="btn-cta-orange">
+            GET YOUR OFFICE MOVE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free survey, no obligation, response within 24 hours</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="office-removals/office-removals-team-assembling-furniture-bristol"
+        pattern="FULL"
+        alt="Painless Removals team assembling office furniture in Bristol with Clifton Suspension Bridge view"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover object-left"
+      />
+    </div>
+  </section>
+
+  <!-- Office-specific trust strip -->
+  <div class="bg-gray-50 border-y border-gray-200 py-5 lg:py-6">
+    <div class="container-wide flex flex-wrap justify-center gap-x-10 gap-y-3 text-base font-semibold text-gray-700">
+      <span class="flex items-center gap-1.5"><span class="text-green-500">&#10003;</span> Fully Insured — £15k per van</span>
+      <span class="flex items-center gap-1.5"><span class="text-green-500">&#10003;</span> Move Assured Accredited</span>
+      <span class="flex items-center gap-1.5"><span class="text-green-500">&#10003;</span> GDPR Compliant</span>
+      <span class="flex items-center gap-1.5"><span class="text-green-500">&#10003;</span> Weekend & Out-of-Hours</span>
+    </div>
+  </div>
+
+  <!-- ============================================
+       THE FIRST QUESTION WE ASK
+       (Jay's #1 differentiator — disruption cost framing)
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px]">
+        <OptimizedPicture
+          name="office-removals/office-mover-carrying-boxes-bristol"
+          pattern="HALF"
+          alt="Painless Removals mover carrying branded moving boxes from Bristol office building"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="mb-6">Office Removals Bristol — Your Business Comes First</h2>
+
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          An office move is a service where your business's interests shape every single decision we make.
+        </p>
+
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            Every hour your team can't work costs you money. Every misplaced box of client files creates a headache that lasts weeks. Every IT cable plugged into the wrong port means someone's standing around waiting. <strong class="text-primary-600">That's why we subordinate every detail of the move to what your operation actually needs.</strong>
+          </p>
+
+          <p>
+            Whether you need a weekend move so your team walks into a ready office on Monday morning, or a phased move that keeps you operational throughout — we build the plan around what works for your business.
+          </p>
+
+          <p>
+            We've been handling office removals in Bristol for nearly 50 years — from two-person startups shifting into their first proper office to established firms relocating entire floors. Whatever the size, the principle is the same: your business interests come first, and everything else follows.
+          </p>
+        </div>
+
+        <a href="#your-options" class="soft-cta mt-8 inline-flex">
+          See the three ways we handle it →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CLIENT LOGOS
+  ============================================ -->
+  <ClientLogos heading="Trusted by organisations across Bristol" />
+
+  <!-- ============================================
+       KNOW YOUR PRICE
+  ============================================ -->
+  <QuoteTeaser ctaHref="/instantquote?service=office" />
+
+  <!-- ============================================
+       SOCIAL PROOF — Richard Newman (standalone)
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-white">
+    <div class="container-wide max-w-3xl mx-auto">
+      <div class="office-review group relative bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+        <div class="office-review__shine"></div>
+        <div class="flex gap-1 text-orange-400 text-xl mb-3 transition-transform duration-300 group-hover:scale-105 origin-left">
+          <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+        </div>
+        <p class="text-gray-700 text-[15px] lg:text-base leading-relaxed">
+          We used Painless Removals for an <mark>office move</mark> and I can not recommend them enough. From the initial contact to moving day everything went smoothly. The whole team were <mark>a pleasure to deal with</mark> and I would definitely use them again.
+        </p>
+        <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+          <span class="font-semibold text-gray-900 text-[14px]">Richard Newman</span>
+          <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       THREE OPTIONS — The Core USP Section
+       (Relaxed / Weekend / Phased)
+  ============================================ -->
+  <section id="your-options" class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Three Ways to Move Your Office</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Your timeline and tolerance for disruption determine the approach. Our office removals Bristol service plans around your operation — not around a standard removal template.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Option 1: Relaxed -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col">
+          <div class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-primary-600 mb-3">You Can Take a Few Days</h3>
+          <p class="text-warm-gray text-[15px] leading-relaxed flex-grow">
+            If your business can absorb a short transition period, we plan a smooth, cost-effective move across two or three days. No rush, no premium rates. We move departments in the order that makes sense for your operation, and your team transitions at a pace that works.
+          </p>
+          <p class="text-primary-600 font-semibold text-sm mt-5">Best for: flexible startups, creative agencies, businesses between projects</p>
+        </div>
+
+        <!-- Option 2: Weekend -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border-2 border-secondary-500 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary-500 text-white text-xs font-bold uppercase py-1 px-4 rounded-full tracking-wide">
+            Most Popular
+          </div>
+          <div class="w-14 h-14 bg-secondary-100 rounded-full flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-secondary-600 mb-3">You Need to Be Back Monday</h3>
+          <p class="text-warm-gray text-[15px] leading-relaxed flex-grow">
+            For businesses that can't afford mid-week downtime, we work Saturdays and Sundays. If being back at your desk Monday morning is the requirement, we plan the entire move around it. Your team closes the door Friday evening and walks into a fully set-up office Monday morning.
+          </p>
+          <p class="text-secondary-600 font-semibold text-sm mt-5">Best for: professional services, solicitors, accountants, medical practices</p>
+        </div>
+
+        <!-- Option 3: Phased -->
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col">
+          <div class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center mb-5">
+            <svg class="w-7 h-7 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          <h3 class="text-xl font-bold text-primary-600 mb-3">You Can't Go Dark at All</h3>
+          <p class="text-warm-gray text-[15px] leading-relaxed flex-grow">
+            We move half your office to the new location and get it operational first. While your team works at 50% capacity across two sites, we complete the second half of the move. You're never fully offline. It takes more coordination on our end — but that's our problem, not yours.
+          </p>
+          <p class="text-primary-600 font-semibold text-sm mt-5">Best for: call centres, customer service teams, businesses with live client obligations</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/instantquote?service=office" class="btn-cta-orange">
+          TELL US YOUR TIMELINE
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       JAY PERSONAL QUOTE — trust builder
+  ============================================ -->
+  <section class="bg-gray-50 border-y border-gray-100">
+    <div class="container-wide max-w-4xl mx-auto py-8 lg:py-10">
+      <div class="flex items-center gap-5 lg:gap-6">
+        <div class="flex-shrink-0">
+          <OptimizedPicture
+            name="about/team/Jay-Newton"
+            pattern="QUARTER"
+            alt="Jay Newton, Director of Painless Removals"
+            sizes="72px"
+            class="w-16 h-16 lg:w-[72px] lg:h-[72px] rounded-full object-cover border-2 border-secondary-500"
+          />
+        </div>
+        <div>
+          <p class="text-primary-600 text-base lg:text-lg italic leading-relaxed">
+            &ldquo;We visit your building before we quote — we want to know the access, the lifts, the parking before we plan anything. That's how you avoid surprises on move day.&rdquo;
+          </p>
+          <p class="text-secondary-500 font-bold text-sm uppercase tracking-wide mt-2">Jay Newton, Director — Painless Removals</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SERVICE TIERS (Essentials / Assisted / Full Service)
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Choose Your Service Level</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Every business is different. Pick the level of support that fits your team — from a straightforward transport to a fully managed relocation.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {serviceTiers.map((tier) => (
+          <div class={`bg-white rounded-xl p-8 flex flex-col transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${tier.popular ? 'border-2 border-secondary-500 shadow-xl relative' : 'border border-gray-200 shadow-sm'}`}>
+            {tier.popular && (
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-secondary-500 text-white text-xs font-bold uppercase py-1 px-4 rounded-full tracking-wide">
+                Most Popular
+              </div>
+            )}
+            <p class={`text-xs font-bold uppercase tracking-widest mb-2 ${tier.popular ? 'text-secondary-500' : 'text-primary-600'}`}>{tier.label}</p>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">{tier.name}</h3>
+            <p class="text-warm-gray text-[15px] leading-relaxed flex-grow">{tier.description}</p>
+            <a
+              href={`/instantquote?service=office&level=${tier.label.toLowerCase()}`}
+              class={`mt-6 block text-center py-3 px-4 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 ${tier.popular ? 'bg-secondary-500 hover:bg-secondary-600 text-white hover:shadow-lg' : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'}`}
+            >
+              Get Quote
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SENSITIVE DOCUMENTS & DATA
+       (High-value client targeting: solicitors, accountants, medical)
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div>
+        <h2 class="text-center mb-4">What Happens to Your Sensitive Documents?</h2>
+        <p class="text-center text-warm-gray text-lg mb-10 max-w-2xl mx-auto">
+          If your business handles client files, sensitive documents, or regulated data, this is the section that matters.
+        </p>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <!-- Left: Detail -->
+          <div class="space-y-4 text-warm-gray">
+            <p>
+              For businesses handling client files, sensitive documents, or regulated data, every box is labelled and accounted for before it leaves your current building. We don't move things anonymously. You know what's on the van and where it's going.
+            </p>
+            <p>
+              This matters most for solicitors, accountants, estate agents, and medical practices — businesses where a missing file isn't just an inconvenience, it's a compliance issue.
+            </p>
+            <p>
+              Our labelling system is colour-coded to your new floor plan. Every box is numbered and logged. When it arrives at the new address, it goes directly to the right room, the right desk, the right position. Nothing wanders.
+            </p>
+          </div>
+
+          <!-- Right: Checklist -->
+          <div class="bg-cream rounded-xl p-8">
+            <h3 class="text-lg font-bold text-primary-600 mb-5">Our Document Handling Process</h3>
+            <ul class="space-y-4">
+              <li class="flex items-center gap-3">
+                <span class="text-green-500 flex-shrink-0 text-lg">&#10003;</span>
+                <p class="text-warm-gray text-[15px]">Every box labelled and numbered before it leaves the building</p>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-green-500 flex-shrink-0 text-lg">&#10003;</span>
+                <p class="text-warm-gray text-[15px]">Colour-coded system tied to your new floor plan</p>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-green-500 flex-shrink-0 text-lg">&#10003;</span>
+                <p class="text-warm-gray text-[15px]">Nothing moves anonymously — full accountability at every stage</p>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-green-500 flex-shrink-0 text-lg">&#10003;</span>
+                <p class="text-warm-gray text-[15px]">Filing cabinets sealed and handled as priority items</p>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="text-green-500 flex-shrink-0 text-lg">&#10003;</span>
+                <p class="text-warm-gray text-[15px]">Specific handling requirements discussed at survey stage</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       IT EQUIPMENT
+       (Specific items named — builds trust through detail)
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image (right on desktop) -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] order-2">
+        <OptimizedPicture
+          name="areas/office-removal-real2"
+          pattern="HALF"
+          alt="Painless Removals handling IT equipment during an office move"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+
+      <!-- Text (left on desktop) -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center order-1">
+        <h2 class="mb-6">What About Your IT Equipment?</h2>
+
+        <div class="space-y-4 text-warm-gray">
+          <p>
+            Monitors are individually wrapped. PCs, hard drives, and screens are packed and handled separately from general furniture. These aren't items that go in a box with desk accessories — they get their own protection and their own space on the van.
+          </p>
+
+          <p>
+            If your IT setup is more complex — servers, network switches, large multi-monitor workstations — tell us at survey stage and we'll plan accordingly. We move the physical hardware; we recommend your IT provider handles disconnection and reconnection of servers and network infrastructure. We can coordinate timing with them so everything lines up.
+          </p>
+
+          <p>
+            A large part of our office removals Bristol work is centred around the Temple Meads corridor — one of the city's main commercial districts. If you're based there, we know the access routes, the loading restrictions, and the parking situation. It makes a difference.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       WHAT'S INCLUDED
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What's Included in Every Office Move</h2>
+
+      <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <!-- Left: YouTube video facade -->
+        <div class="w-full">
+          <div
+            id="yt-facade"
+            class="relative w-full rounded-xl overflow-hidden shadow-lg cursor-pointer group"
+            style="aspect-ratio: 16/9;"
+            data-video-id="Vd2i6IDZyzQ"
+          >
+            <img
+              src="https://i.ytimg.com/vi/Vd2i6IDZyzQ/hqdefault.jpg"
+              alt="Watch: Painless Removals office move service"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+              width="480"
+              height="360"
+            />
+            <!-- Play button -->
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div class="w-16 h-16 lg:w-20 lg:h-20 bg-red-600 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 group-hover:scale-110 group-hover:bg-red-700">
+                <svg class="w-7 h-7 lg:w-8 lg:h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+              </div>
+            </div>
+            <!-- Gradient overlay -->
+            <div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent pointer-events-none"></div>
+          </div>
+          <p class="text-center text-sm text-warm-gray mt-3">See how we handle office moves</p>
+        </div>
+
+        <!-- Right: Included items -->
+        <div>
+          <ul class="space-y-4">
+            {included.map((item) => (
+              <li class="flex items-center gap-3">
+                <span class="text-green-500 flex-shrink-0 text-lg">&#10003;</span>
+                <p class="text-warm-gray text-[15px] leading-relaxed">{item.text}</p>
+              </li>
+            ))}
+          </ul>
+          <p class="text-sm text-warm-gray mt-6">
+            Items valued over £2,000 (monitors, AV equipment, artwork) must be declared in writing before the move for appropriate cover.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       HOW IT WORKS (5 steps) — horizontal scroll mobile, full-width desktop
+  ============================================ -->
+  <section id="how-it-works" class="office-steps section bg-cream">
+    <div class="office-steps__container">
+      <div class="container-wide">
+        <h2 class="text-center mb-4">Your Office Move, Step by Step</h2>
+        <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+          Every office move starts with the same question and ends with you walking into a ready-to-use workspace.
+        </p>
+      </div>
+
+      <!-- Horizontal scroll track -->
+      <div class="office-steps__scroll-track">
+        <div class="office-steps__grid">
+          {steps.map((step, i) => (
+            <>
+              {i > 0 && (
+                <div class="office-steps__connector" aria-hidden="true">
+                  <svg viewBox="0 0 40 24" fill="none"><path d="M0 12h28m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              )}
+              <div class="office-steps__card group">
+                <div class="office-steps__icon-wrap">
+                  <div class="office-steps__badge">{step.number}</div>
+                </div>
+                <h3 class="office-steps__title">{step.title}</h3>
+                <p class="office-steps__desc">{step.description}</p>
+              </div>
+            </>
+          ))}
+        </div>
+      </div>
+
+      <div class="container-wide text-center mt-12">
+        <a href="/instantquote?service=office" class="btn-cta-orange">
+          BOOK YOUR FREE OFFICE SURVEY
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       OFFICE SIZES (card grid with images)
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">How Do We Work Out the Cost?</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Every office is different — pricing depends on volume, floor levels, lift access, loading bay availability, and any specialist items. Here's a rough guide to what you can expect.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {officeSizes.map((size) => (
+          <div class="flex flex-col">
+            {/* Badge sits outside the card */}
+            {size.popular ? (
+              <div class="bg-secondary-500 text-white text-xs font-bold uppercase text-center py-1.5 tracking-wide rounded-t-xl">
+                Most Common
+              </div>
+            ) : (
+              <div class="h-[30px]"></div>
+            )}
+
+            <div class={`bg-white overflow-hidden flex flex-col flex-grow transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl group ${size.popular ? 'border-2 border-secondary-500 border-t-0 rounded-b-xl shadow-xl' : 'border border-gray-200 rounded-xl shadow-sm'}`}>
+              <div class="relative h-44 overflow-hidden">
+                <OptimizedPicture
+                  name={size.imageName}
+                  pattern="THIRD"
+                  alt={size.alt}
+                  loading="lazy"
+                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </div>
+
+              <div class="p-6 flex flex-col flex-grow">
+                <div class="text-center mb-4">
+                  <h3 class="text-xl font-bold text-primary-600 mb-1">{size.title}</h3>
+                  <div class="text-2xl lg:text-3xl font-bold text-gray-900 mt-2">{size.price}</div>
+                </div>
+
+                <div class="w-full h-px bg-gray-200 mb-4"></div>
+
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                  {size.specs.map((spec) => (
+                    <div class="text-center">
+                      <p class="text-primary-600 font-bold text-sm">{spec.value}</p>
+                      <p class="text-warm-gray text-xs">{spec.label}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <p class="text-warm-gray text-[14px] leading-relaxed mb-6 flex-grow">{size.description}</p>
+
+                <a
+                  href={`/instantquote?service=office&size=${size.title.toLowerCase().replace(' ', '-')}`}
+                  class={`mt-auto block text-center py-3 px-4 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 ${size.popular ? 'bg-secondary-500 hover:bg-secondary-600 text-white hover:shadow-lg' : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'}`}
+                >
+                  Get Quote
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="max-w-2xl mx-auto mt-8 space-y-3">
+        <p class="text-center text-sm text-warm-gray">
+          * Estimates only for local Bristol moves. Distance, access, and specific circumstances significantly influence the final price. Your exact quote is based on a free survey of your office.
+        </p>
+        <p class="text-center text-sm text-warm-gray">
+          Quote validity: 30 days. Deposit: 30% to confirm booking. Balance due on or before move day by bank transfer (BACS only).
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SOCIAL PROOF — NCIM (standalone)
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-cream">
+    <div class="container-wide max-w-3xl mx-auto">
+      <div class="office-review group relative bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+        <div class="office-review__shine"></div>
+        <div class="flex gap-1 text-orange-400 text-xl mb-3 transition-transform duration-300 group-hover:scale-105 origin-left">
+          <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+        </div>
+        <p class="text-gray-700 text-[15px] lg:text-base leading-relaxed">
+          A great, <mark>friendly, professional service</mark> — fitted us in last minute!
+        </p>
+        <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+          <div class="flex items-center gap-3">
+            <img src="/images/reviews/ncim.avif" alt="National Centre for Integrative Medicine" class="w-10 h-10 rounded-full object-cover" width="80" height="80" loading="lazy" />
+            <span class="font-semibold text-gray-900 text-[14px]">National Centre for Integrative Medicine</span>
+          </div>
+          <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+        </div>
+      </div>
+      <div class="text-center mt-6">
+        <a href="/reviews/" class="soft-cta">Read more verified customer reviews</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       QUOTE CTA (50/50 split with image)
+  ============================================ -->
+  <section class="bg-linear-to-br from-primary-600 to-primary-700 text-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Left: Content -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <div class="max-w-xl">
+          <h2 class="text-white mb-4">Get Your Free Office Move Quote</h2>
+          <p class="text-primary-100 mb-8 text-lg">
+            Tell us about your business, your current space, and where you're headed. We'll come back with a clear plan and transparent quote — usually within one working day.
+          </p>
+
+          <ul class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-8 text-primary-100">
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">&#10003;</span> No obligation
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">&#10003;</span> In-person or video survey
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="text-green-400">&#10003;</span> Response within 24 hours
+            </li>
+          </ul>
+
+          <a href="/instantquote?service=office" class="inline-block bg-white hover:bg-gray-100 text-primary-600 px-8 py-3 text-lg font-bold uppercase no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            GET MY OFFICE MOVE QUOTE
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Image -->
+      <div class="hidden lg:block relative min-h-[400px]">
+        <OptimizedPicture
+          name="office-removals/Office-removals-Bristol-2"
+          pattern="HALF"
+          alt="Painless Removals team handling office furniture during a business move"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ADD-ON SERVICES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">Add-On Services for a Smoother Transition</h2>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        {extras.map((extra) => (
+          <a href={extra.href} class="bg-white p-6 rounded-xl shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 no-underline group flex flex-col">
+            <h3 class="text-lg font-bold text-primary-600 mb-3 group-hover:text-primary-700 transition-colors">{extra.title}</h3>
+            <p class="text-warm-gray text-[15px] mb-4 flex-grow">{extra.description}</p>
+            <span class="soft-cta inline-flex mt-auto">Learn more</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       TRUST STATS (dark section)
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600">
+    <div class="container-wide">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        <div class="stat-card-blue text-center p-6 lg:p-8 rounded-xl">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">1978</p>
+          <p class="text-primary-100 text-sm">Established</p>
+        </div>
+        <div class="stat-card-blue text-center p-6 lg:p-8 rounded-xl">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">{siteConfig.company.rating.value}</p>
+          <p class="text-primary-100 text-sm">Google Rating</p>
+        </div>
+        <div class="stat-card-blue text-center p-6 lg:p-8 rounded-xl">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">£15k</p>
+          <p class="text-primary-100 text-sm">Insurance Per Van</p>
+        </div>
+        <div class="stat-card-blue text-center p-6 lg:p-8 rounded-xl">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">2,000+</p>
+          <p class="text-primary-100 text-sm">Moves Completed</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ABOUT / DIRECTOR — Jay's closing quote
+  ============================================ -->
+  <JayAuthorBlock
+    heading="Your Office Is How You Make Your Living"
+    quote="Your office is how you make your living. We treat it accordingly. We've been doing this since 1978 — long enough to know what can go wrong and how to prevent it. The crew we send to your office are the kind of people you'd trust around sensitive documents and client-facing spaces. That's not an accident — it's how we hire."
+    description="Jay is hands-on with every commercial move. For office removals in Bristol, you can discuss your relocation directly with him on 0117 287 0082."
+  />
+
+  <!-- ============================================
+       FAQ ACCORDION
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Office Removals — Common Questions" />
+
+  <!-- ============================================
+       NEIGHBOURHOOD CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Office Removals Across Bristol & Beyond</h2>
+      <p class="text-warm-gray text-center max-w-2xl mx-auto mb-10">We relocate offices of all sizes across Bristol's business districts and beyond.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {bristolNeighbourhoods.slice(0, 8).map(n => (
+          <a href={neighbourhoodUrl(n.slug)} class="bg-white rounded-lg px-4 py-3 text-center no-underline text-primary-600 font-medium text-sm shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+            {n.name} <span class="text-warm-gray font-normal">({n.postcode})</span>
+          </a>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/areas/" class="soft-cta">See all areas we cover</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Plan Your Office Move?"
+    description="Tell us about your space, your team, and your timeline. We'll build a plan around what downtime actually costs you — not around a standard removal template."
+    bullets={['Weekend & evening moves', 'Phased moves for zero downtime', '£15k insurance per van']}
+    primaryText="GET YOUR FREE OFFICE MOVE QUOTE"
+    primaryHref="/instantquote?service=office"
+    bottomNote="Your office is how you make your living. We treat it accordingly."
+  />
+
+</Layout>
+
+<!-- Office Steps Styles -->
+<style>
+  .office-steps__container {
+    width: 100%;
+  }
+
+  /* Horizontal scroll on mobile */
+  .office-steps__scroll-track {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 1rem;
+  }
+  .office-steps__scroll-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Flex layout — single row */
+  .office-steps__grid {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 0 1rem;
+  }
+
+  /* Connector arrow */
+  .office-steps__connector {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    color: #3b6587;
+    opacity: 0.35;
+    flex-shrink: 0;
+    width: 28px;
+  }
+  .office-steps__connector svg {
+    width: 24px;
+    height: auto;
+  }
+
+  /* Card */
+  .office-steps__card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem 1.25rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.05);
+    border: 1px solid rgb(0 0 0 / 0.04);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    width: 72vw;
+    max-width: 280px;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .office-steps__card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.1);
+  }
+
+  /* Icon / number badge */
+  .office-steps__icon-wrap {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, rgb(59 101 135 / 0.1), rgb(59 101 135 / 0.04));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.4s ease;
+  }
+  .group:hover .office-steps__icon-wrap {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, rgb(59 101 135 / 0.18), rgb(59 101 135 / 0.08));
+  }
+
+  .office-steps__badge {
+    width: 28px;
+    height: 28px;
+    background: #006eb7;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Typography */
+  .office-steps__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: #31536e;
+  }
+  .office-steps__desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #6B6B6B;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* Desktop: all 5 cards in one row, no scroll */
+  @media (min-width: 1350px) {
+    .office-steps__scroll-track {
+      overflow: visible;
+    }
+    .office-steps__grid {
+      justify-content: center;
+      padding: 0 2rem;
+    }
+    .office-steps__card {
+      width: auto;
+      max-width: none;
+      flex: 1;
+      min-width: 0;
+    }
+    .office-steps__connector {
+      width: 36px;
+    }
+    .office-steps__connector svg {
+      width: 28px;
+    }
+    .office-steps__icon-wrap {
+      width: 56px;
+      height: 56px;
+    }
+    .office-steps__badge {
+      width: 32px;
+      height: 32px;
+      font-size: 0.95rem;
+    }
+    .office-steps__title {
+      font-size: 1.15rem;
+    }
+    .office-steps__desc {
+      font-size: 0.9rem;
+    }
+    .office-steps__card {
+      padding: 1.75rem 1.5rem 1.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .office-steps__card { transition: none; }
+    .office-review { transition: none; }
+    .group:hover .office-review__shine { animation: none; }
+  }
+
+  /* ── Review card microinteraction ── */
+  .office-review {
+    overflow: hidden;
+  }
+  .office-review__shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.6) 50%, transparent 60%);
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 16px;
+  }
+  .group:hover .office-review__shine {
+    opacity: 1;
+    animation: review-shine 0.8s ease-out;
+  }
+  @keyframes review-shine {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+</style>
+
+<!-- YouTube Facade Script -->
+<script>
+  const facade = document.getElementById('yt-facade');
+  if (facade) {
+    facade.addEventListener('click', () => {
+      const videoId = facade.dataset.videoId;
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`;
+      iframe.title = 'Painless Removals office move service';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;';
+      facade.innerHTML = '';
+      facade.style.position = 'relative';
+      facade.appendChild(iframe);
+    });
+  }
+</script>

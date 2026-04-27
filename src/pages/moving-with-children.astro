@@ -1,0 +1,474 @@
+---
+/**
+ * /moving-with-children/ — Moving House With Children Guide
+ *
+ * 50/50 hero + UspBar + blog layout with sticky TOC sidebar.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { article, faqPage, breadcrumbs } from '@/utils/schema';
+
+const title = "Moving House With Children — A Parent's Complete Guide";
+const description = "Age-by-age advice for moving house with children. From babies to teenagers, practical tips for every stage — before, during, and after moving day. By Bristol's family-friendly removal team.";
+
+const tocItems = [
+  { id: 'preparing', label: 'Preparing Your Children' },
+  { id: 'age-guide', label: 'Age-by-Age Guide' },
+  { id: 'survival-box', label: "The Children's Survival Box" },
+  { id: 'moving-day', label: 'On Moving Day' },
+  { id: 'settling-in', label: 'Settling In' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+const faqs = [
+  { question: "When should I tell my children we're moving?", answer: "Give them 4–6 weeks' notice. Enough time to process the news but not so long that anxiety builds. For younger children, wait until plans are confirmed — they struggle with uncertainty more than the move itself." },
+  { question: 'Should children be in the house on moving day?', answer: "Ideally, no. Arrange childcare with grandparents, friends, or family. The house will be chaotic, doors will be propped open, and heavy items will be moving through hallways. If they must be there, designate one adult solely responsible for the children — not someone also directing the movers." },
+  { question: "How do I help a child who doesn't want to move?", answer: "Acknowledge their feelings rather than dismissing them. Let them say goodbye to the old house — write a message on the wall before painting, take photos of their room, visit favourite spots one last time. Focus on what they gain, not what they lose." },
+  { question: "What should go in a children's moving day survival box?", answer: "Favourite toy or comforter, snacks and drinks, a change of clothes, tablet or colouring books, any medication, and a familiar blanket. Label it clearly and keep it with you — not on the van." },
+  { question: 'How long does it take children to settle after a move?', answer: "Most children adjust within 3–6 months. Younger children often adapt faster than pre-teens and teenagers. Maintaining routines (bedtime, mealtimes, after-school activities) helps enormously. If a child is still struggling after 6 months, speak to their school or GP." },
+  { question: 'Can your removal team work around children?', answer: "Yes. Our crews are experienced with family moves. We're careful with doors, we communicate before carrying heavy items through, and we're happy for curious little ones to watch from a safe distance. That said, we always recommend arranging childcare if possible — it's safer and less stressful for everyone." },
+];
+
+const schema = [
+  article({
+    headline: title,
+    description: description,
+    url: "/moving-with-children/",
+    datePublished: "2026-02-26",
+    dateModified: "2026-02-26",
+    image: "/img/children/hero-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Moving With Children" },
+  ]),
+];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/children/hero-1200w.webp" preloadImage="/img/children/hero-750w.avif">
+
+  <!-- ============================================
+       HERO: 50/50 split
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: image top -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="children/hero"
+        pattern="FULL"
+        alt="Family with children preparing for a house move"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Moving With Children
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          A Parent's Complete Guide to <span class="text-secondary-500">Moving Day</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Age-by-age advice from babies to teenagers. Before, during, and after the move — everything you need to keep the kids happy and the day on track.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+            GET YOUR FREE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: full-bleed image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="children/hero"
+        pattern="FULL"
+        alt="Family with children preparing for a house move"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar />
+
+  <!-- ============================================
+       BLOG LAYOUT: article + sticky TOC sidebar
+  ============================================ -->
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <div class="blog-layout">
+
+      <!-- ARTICLE -->
+      <article class="min-w-0">
+
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Moving house is stressful enough for adults. Add children to the equation and the stakes change. Their bedroom is their world. Their school is their social life. The route they walk to their friend's house is burned into muscle memory. You're not just moving furniture — you're uprooting their entire sense of normal.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-10">The good news: children are more resilient than we give them credit for. With the right preparation, honest conversations, and a plan that puts their needs alongside the logistics, most families come through a move stronger than before. This guide covers every age group, every stage of the move, and every practical tip we've learned from helping thousands of Bristol families.</p>
+
+        <!-- ── S1: Before the Move ── -->
+        <section id="preparing">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Before the Move: Preparing Your Children</h2>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">When and How to Break the News</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Tell your children once the move is confirmed — not before. Uncertainty is harder for children to handle than change. Give them 4–6 weeks' notice. Be honest about why you're moving, what the new house looks like, and what stays the same (their school, their activities, their stuff).</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Let them ask questions and expect to answer the same ones repeatedly. "Will I still see my friends?" will come up more than once. The answer needs to be specific: "Yes — we'll arrange playdates and you can video call anytime."</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Exploring the New Home Together</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If possible, visit the new house with your children before moving day. Let them see their bedroom. Walk the route to the nearest park. Find the local shop. The unknown is what frightens children — turn it into something familiar before the van arrives.</p>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/exploring-new-home" pattern="HALF" alt="Children exploring their new home before moving day" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">If visiting isn't possible, use Google Street View, photos, or even draw a floor plan together. Let older children choose their bedroom if there's a choice. Giving them ownership over even small decisions reduces the feeling that everything is being done to them.</p>
+        </section>
+
+        <!-- ── S2: Age-by-Age Guide ── -->
+        <section id="age-guide" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Age-by-Age Guide</h2>
+
+          <!-- Babies -->
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Babies (0–12 Months)</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Babies won't understand the move, but they'll pick up on your stress. Disrupted routines — nap times, feeding schedules — will affect them more than the change of scenery. Keep their routine as close to normal as possible on moving day.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Pack their essentials last and unpack them first. The cot, the changing mat, the white noise machine — these need to be up and running in the new house before anything else.</p>
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/3.moving-with-babies" pattern="HALF" alt="Parent caring for baby during a house move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <!-- Toddlers -->
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3 mt-8">Toddlers (2–4 Years)</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Toddlers understand enough to be confused but not enough to process what's happening. Use simple, concrete language: "We're going to live in a new house. Your toys are coming too." Read picture books about moving. Let them pack a small box of their own toys.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">On moving day, toddlers and open front doors are a dangerous combination. Arrange childcare if at all possible. If they're in the house, one adult should be solely responsible for them — not someone also directing movers.</p>
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/4.moving-with-toddlers" pattern="HALF" alt="Toddler helping with packing during a family move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <!-- Pre-teens -->
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3 mt-8">Pre-teens (8–12 Years)</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This age group feels things deeply but doesn't always articulate it. They're old enough to understand they're leaving friends but too young to drive back and visit independently. Expect pushback, tears, and occasional fury. All normal.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Involve them in decisions: choosing paint colours, arranging furniture, picking which takeaway to order on the first night. Give them responsibility. Let them pack their own room (with supervision). Their need for control is really a need for security.</p>
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/5.moving-with-preteens" pattern="HALF" alt="Pre-teen helping with the family house move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <!-- Teenagers -->
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3 mt-8">Teenagers (13+)</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Teenagers have the hardest time. Their social world is everything, and you're asking them to leave it. If you're moving mid-school year, the impact is even greater. Be honest about why the move is happening and acknowledge that their feelings are valid — even when those feelings are expressed as door-slamming.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Give them maximum autonomy over their new space. Let them design their room. Ensure they have reliable Wi-Fi on day one — their connection to friends is digital now. Plan visits back to see old friends as soon as possible, so "goodbye" doesn't feel permanent.</p>
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/moving-with-teens" pattern="HALF" alt="Teenager in their room during a family move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+        </section>
+
+        <!-- MidCTA -->
+        <MidCTA heading="Moving With the Family?" description="Free quote in about two minutes. We know how to work around children — safely and calmly." buttonText="Get Your Free Quote →" buttonHref="/instantquote" />
+
+        <!-- ── S3: Survival Box ── -->
+        <section id="survival-box" class="bg-cream rounded-xl px-6 py-10 md:py-14 my-10">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Children's Survival Box</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Every child should have their own clearly labelled box or bag that travels with you — not on the van. This is the box that gets opened first at the new house, while the movers are still unloading.</p>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/7.survival-box-moving-day" pattern="HALF" alt="Children's moving day survival box with essentials" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <h3 class="font-heading text-lg font-semibold text-gray-900 mb-3">What to Pack</h3>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 children-checklist mb-6">
+            <li>Favourite toy, teddy, or comforter</li>
+            <li>Snacks and drinks (familiar favourites, not new things)</li>
+            <li>Change of clothes</li>
+            <li>Tablet or colouring books and pencils</li>
+            <li>Charger for devices</li>
+            <li>Familiar blanket for nap or bedtime</li>
+            <li>Any medication</li>
+            <li>A few favourite books</li>
+            <li>Nappies and wipes (if applicable)</li>
+          </ul>
+
+          <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+            "The survival box is the single best piece of advice I give parents. When you arrive at the new house exhausted and the kids are overwhelmed, pulling out their favourite toy and a familiar snack buys you the 20 minutes you need to get their bedroom set up."
+            <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+          </blockquote>
+        </section>
+
+        <!-- ── S4: On Moving Day ── -->
+        <section id="moving-day" class="pt-8">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">On Moving Day</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Moving day with children is a logistical challenge. The ideal scenario: children are looked after elsewhere while the house is packed and loaded. If that's not possible, one adult should be dedicated to childcare while the other manages the move.</p>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/8.on-moving-day" pattern="HALF" alt="Family on moving day with children" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Safety First</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Front doors propped open. Heavy furniture being carried through hallways. Stairways being used constantly. Tools left on surfaces. Moving day is not a safe environment for small children. Our crews are careful, but we can't watch your children and your furniture at the same time.</p>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/10.childproofing" pattern="HALF" alt="Childproofing during a house move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Their Room Goes Last, Arrives First</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Pack your children's bedrooms last so their space stays familiar as long as possible. At the new house, set up their room first. A made bed, familiar bedding, their favourite toys on the shelf — when the rest of the house is chaos, their room should feel like home already.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Packing With Children</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Let children help with packing — within reason. They can pack their own toys, books, and clothes. Give them labels and markers. Make it a project, not a punishment. Younger children can decorate boxes with stickers. Older children can create an inventory list.</p>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/11.packing-images-for-removal" pattern="HALF" alt="Children helping with packing boxes for moving day" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+        </section>
+
+        <!-- ── S5: Settling In ── -->
+        <section id="settling-in" class="pt-8 pb-10">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Settling In at the New Home</h2>
+
+          <figure class="my-6">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="children/9.settling-in" pattern="HALF" alt="Family settling into their new home after moving" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+          </figure>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The first night matters. Even if the rest of the house is a bomb site, make bedtime as normal as possible. Same routine, same story, same blanket. Children draw security from predictability.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">In the first week, explore the new neighbourhood together. Find the park, the shop, the library. Walk the school route. Let your children discover the positives at their own pace — don't force enthusiasm.</p>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Expect regression in younger children — bedwetting, clinginess, sleep disruption. This is normal and temporary. Maintain boundaries and routines, but be patient. Most children adjust within 3–6 months.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Signs to Watch For</h3>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 children-checklist">
+            <li><strong>Withdrawal</strong> — not wanting to talk about the move or the new house</li>
+            <li><strong>Sleep changes</strong> — difficulty falling asleep, nightmares, or early waking</li>
+            <li><strong>Behavioural changes</strong> — aggression, tantrums, or unusual quietness</li>
+            <li><strong>School refusal</strong> — particularly in the first few weeks</li>
+            <li><strong>Physical symptoms</strong> — stomach aches or headaches with no medical cause</li>
+          </ul>
+          <p class="text-[17px] leading-relaxed text-gray-800 mt-4">Most of these resolve on their own. If symptoms persist beyond 3 months or worsen significantly, speak to your child's school or GP.</p>
+        </section>
+
+        <!-- ── S6: FAQ ── -->
+        <section id="faq" class="pt-8 border-t border-gray-200">
+          <FAQAccordion faqs={faqs} heading="What Do Parents Ask About Moving With Children?" />
+        </section>
+
+      </article>
+
+      <!-- TOC SIDEBAR -->
+      <aside class="toc-sidebar">
+        <div class="mb-5">
+          <SidebarAuthorBox />
+        </div>
+
+        <div class="toc-sticky">
+          <nav aria-label="Table of contents" class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+            <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-400 mb-4">In This Guide</p>
+            <ul class="space-y-1">
+              {tocItems.map(item => (
+                <li>
+                  <a
+                    href={`#${item.id}`}
+                    class="toc-link"
+                    data-toc-id={item.id}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="border-t border-dashed border-gray-200 mt-5 pt-4">
+              <a
+                href="/instantquote/"
+                class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[13px] uppercase tracking-wide py-2.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+              >
+                Get Your Free Quote →
+              </a>
+              <p class="text-[11px] text-gray-400 text-center mt-1.5">Free, no obligation</p>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Services -->
+  <section class="section bg-cream">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div class="mb-10">
+        <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Family-Friendly Removal Services</h2>
+        <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+          Every family move is different. Whether you need us to handle everything or just the heavy lifting, we'll work around your children's routine and keep the day calm.
+        </p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager. We work around nap times and school runs.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Let us pack while you focus on the children. Full or fragile-only options.</p>
+        </a>
+        <a href="/storage-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Storage</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Secure units if your move dates don't align. No rush, no pressure.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <AreaFinalCTA heading="Ready to Plan Your Family Move?" description="Free quote in two minutes. We'll make sure the kids are looked after too." />
+
+</Layout>
+
+<style>
+  /* Blog two-column layout */
+  .blog-layout {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      column-gap: 40px;
+    }
+
+    .toc-sidebar {
+      display: block;
+      align-self: stretch;
+    }
+
+    .toc-sticky {
+      position: sticky;
+      top: 120px;
+    }
+
+  }
+
+  /* TOC links */
+  .toc-link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: all 150ms ease;
+  }
+
+  .toc-link:hover {
+    color: #1e4240;
+    background: #f9fafb;
+  }
+
+  .toc-link.active {
+    color: #1e4240;
+    font-weight: 600;
+    border-left-color: #ea580c;
+    background: #fff7ed;
+  }
+
+  /* Checklist */
+  .children-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .children-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  /* Scroll-margin for anchors beneath sticky header */
+  section[id] {
+    scroll-margin-top: 120px;
+  }
+</style>
+
+<script>
+  // IntersectionObserver — highlight active TOC link based on visible section
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+
+  if (sections.length && tocLinks.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(link => {
+              if (link.dataset.tocId === id) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        }
+      },
+      {
+        rootMargin: '-120px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
+</script>

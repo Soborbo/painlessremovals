@@ -1,0 +1,137 @@
+---
+/**
+ * CancellationChart — animated horizontal bar chart showing cancellation fee tiers.
+ */
+
+interface CancellationTier {
+  notice: string;
+  pct: number;
+  label: string;
+  color: string;
+  targetWidth: string;
+}
+
+interface Props {
+  tiers: CancellationTier[];
+}
+
+const { tiers } = Astro.props;
+---
+
+<div class="max-w-3xl mx-auto mb-16">
+  <h2 class="text-2xl font-bold mb-2 text-center">Cancellation Fees</h2>
+  <p class="text-warm-gray text-center mb-8">The earlier you tell us, the less you pay. Here's how it works:</p>
+
+  <div id="cancellation-chart" class="space-y-3" role="img" aria-label="Cancellation fee chart showing charges from 0% to 100% based on notice period given">
+    {tiers.map((tier, i) => (
+      <div class="chart-row" style={`--delay: ${i}`}>
+        <span class="chart-label">{tier.notice}</span>
+        <div class="chart-track">
+          <div class={`chart-bar chart-bar--${tier.color}`} style={`--target-width: ${tier.targetWidth}`}>
+            {tier.pct === 0 && <span class="text-white text-xs font-bold pl-1">&#10003;</span>}
+          </div>
+        </div>
+        <span class="chart-value">{tier.label}</span>
+      </div>
+    ))}
+  </div>
+
+  <div class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 text-sm text-green-800">
+    <strong>Good to know:</strong> Cancel more than 15 working days before your move and you get your full deposit back. If you booked remotely (phone, email, online), you also have a statutory 14-day cooling-off period — see <a href="#summary-cooling-off" class="text-green-700 underline">Cooling-Off Rights</a>.
+  </div>
+</div>
+
+<style>
+  .chart-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .chart-label {
+    width: 11rem;
+    text-align: right;
+    font-size: 0.8125rem;
+    color: #6B6B6B;
+    flex-shrink: 0;
+    line-height: 1.3;
+  }
+  .chart-track {
+    flex: 1;
+    background: #f3f4f6;
+    border-radius: 6px;
+    overflow: hidden;
+    height: 2.25rem;
+    position: relative;
+  }
+  .chart-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 0 6px 6px 0;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: calc(var(--delay) * 120ms);
+    display: flex;
+    align-items: center;
+    min-width: 6px;
+  }
+  .chart-animated .chart-bar {
+    width: var(--target-width);
+  }
+  .chart-bar--green      { background: #22c55e; }
+  .chart-bar--gold       { background: #D4A84B; }
+  .chart-bar--orange     { background: #ea580c; }
+  .chart-bar--terracotta { background: #C65D3B; }
+  .chart-bar--red        { background: #dc2626; }
+  .chart-value {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    margin-left: 0.75rem;
+    white-space: nowrap;
+    color: #2D2D2D;
+  }
+
+  @media (max-width: 639px) {
+    .chart-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.25rem;
+    }
+    .chart-label {
+      width: auto;
+      text-align: left;
+      font-size: 0.75rem;
+    }
+    .chart-value {
+      font-size: 0.75rem;
+      margin-left: 0;
+      margin-top: 0.25rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chart-bar {
+      transition: none !important;
+      width: var(--target-width) !important;
+    }
+  }
+</style>
+
+<script is:inline>
+(function () {
+  var chart = document.getElementById('cancellation-chart');
+  if (!chart) return;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    chart.classList.add('chart-animated');
+    return;
+  }
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        chart.classList.add('chart-animated');
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  observer.observe(chart);
+})();
+</script>

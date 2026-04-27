@@ -1,0 +1,312 @@
+---
+/**
+ * Partners: Solicitors & Conveyancers
+ *
+ * B2B page targeting solicitors and conveyancers who need
+ * a reliable removal company for completion-day chain moves.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+
+// Page metadata
+const pageTitle = 'For Solicitors & Conveyancers | Painless Removals — Chain Move Specialists';
+const pageDescription = 'A removal company that understands completion day pressure. Full-day allocation, no prior jobs, real-time updates. Recommend us to your clients with confidence. Since 1978.';
+
+// FAQs
+const faqs = [
+  {
+    question: 'Can your team coordinate with multiple parties in a chain?',
+    answer: 'Yes. Our Move Manager handles communication with all relevant parties &mdash; your office, the agent, and the client. We understand that chain timing is sequential and that our role is to eliminate, not create, variables.',
+  },
+  {
+    question: 'What happens if completion is postponed at the last minute?',
+    answer: 'Our cancellation terms are clear: 10+ working days\' notice is free. Under 10 days, a sliding scale applies. For chain-related delays where a new date is set within 14 days, we\'ll discuss reasonable options with your client.',
+  },
+  {
+    question: 'Do you provide storage if there\'s a gap between completion dates?',
+    answer: 'Yes. We offer secure <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Clifton warehouse, accessible by appointment. For referred clients, the first month\'s storage can be incorporated into the move quote for simplicity.',
+  },
+  {
+    question: 'What insurance do you carry?',
+    answer: '&pound;15,000 per Luton van for goods in transit. Items valued above &pound;2,000 must be declared in writing before the move. Self-packed items aren\'t covered by our insurance &mdash; we make this clear to every client.',
+  },
+  {
+    question: 'Are your quotes fixed?',
+    answer: 'The quoted price is the price paid. The only variable is overtime: if the move runs past 5pm due to circumstances outside the client\'s control, a rate of &pound;35 per 30 minutes per mover applies. The Key Wait Waiver removes this entirely for a one-off addition to the quote.',
+  },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removal Services for Solicitors — Painless Removals Bristol",
+  "description": pageDescription,
+  "provider": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+    "url": siteConfig.brand.domain,
+    "telephone": siteConfig.company.contact.phoneInternational,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Bristol",
+      "addressRegion": "Bristol",
+      "addressCountry": "GB",
+    },
+  },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "AdministrativeArea", "name": "South West England" },
+  ],
+  "serviceType": "Removal Services for Solicitors & Conveyancers",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, '').replace(/&ndash;/g, '–').replace(/&mdash;/g, '—').replace(/&pound;/g, '£'),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} noindex>
+
+  <!-- ============================================
+       HERO
+  ============================================ -->
+  <section class="gradient-hero py-12 lg:py-20">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+          For Solicitors & Conveyancers
+        </p>
+        <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold mb-5">
+          A Removal Company That Understands <span class="text-secondary-500">What Completion Day Actually Involves</span>
+        </h1>
+        <p class="text-lg lg:text-xl text-warm-gray leading-relaxed mb-6 max-w-2xl mx-auto">
+          Your clients don't just need a van. They need a team that shows up when the keys arrive &mdash; not four hours later.
+        </p>
+
+        <!-- Proof bar -->
+        <div class="grid sm:grid-cols-2 gap-3 max-w-xl mx-auto text-left text-sm text-warm-gray mb-8">
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Full day allocated &mdash; no prior job to finish</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Key Wait Waiver &mdash; no overtime charges if keys are late</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>Real-time move-day updates for your office</span>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-green-500 mt-0.5 shrink-0">&#10003;</span>
+            <span>47 years of chain move experience</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="/partners/#partner-form" class="btn-cta-orange">
+            Register as a Partner
+          </a>
+          <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-primary-600 font-semibold no-underline hover:text-secondary-500 transition-colors text-lg">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            {siteConfig.company.contact.phone}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 1: THE COMPLETION DAY PROBLEM
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-narrow">
+      <h2 class="text-center mb-6">The Phone Call No Solicitor Wants to Make</h2>
+      <div class="space-y-4 text-warm-gray text-lg leading-relaxed">
+        <p class="text-xl italic text-primary-600">
+          "I'm sorry &mdash; the removal company hasn't arrived yet."
+        </p>
+        <p>
+          In a property chain, one delay cascades. If your client's movers are late &mdash; or worse, don't show &mdash; the entire chain is affected. You're fielding calls from anxious clients, the other side's solicitors, and agents trying to salvage the day.
+        </p>
+        <p>
+          The uncomfortable truth is that most removal companies book two or three jobs on the same day. They estimate times, and when the first job runs long, your client's move starts late. On a standard Tuesday, this is inconvenient. On a chain completion, it can cost everyone in the chain thousands of pounds in delayed interest, emergency accommodation, and aborted transactions.
+        </p>
+        <p>
+          We've structured our business specifically around chain moves. Every chain booking gets a full working day. Our team arrives ready, with no prior commitment. When the keys are confirmed, they begin immediately. If the keys are delayed, they wait &mdash; and with our <strong class="text-primary-600">Key Wait Waiver</strong>, there are no overtime charges regardless of how late the keys arrive.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: WHAT CONVEYANCERS NEED
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">What Your Conveyancing Team Needs from a Removal Company</h2>
+      </div>
+
+      <div class="max-w-3xl mx-auto space-y-4">
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Reliability above everything.</strong> You need to know that when you tell your client "the movers will be ready," that statement is true. We don't make promises we can't keep, and we don't overbook.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Communication without chasing.</strong> On move day, your office can reach our team directly for a live update. No going through a call centre. No waiting for a callback. One phone call, one answer.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Professional conduct in the client's home.</strong> Your client is already stressed about the legal process, the financial commitment, and the logistics. They don't need movers who track mud through the house or argue about overtime at 4:30pm. Our team is trained to be calm, methodical, and respectful.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Transparent pricing that doesn't create disputes.</strong> We've seen it happen &mdash; a client receives a removal bill twice the quoted price because of vague "additional charges." They blame the removal company. Then they blame the solicitor who recommended them. Our quotes are clear: the price agreed is the price paid, with overtime provisions explained upfront and in writing.</span>
+        </div>
+        <div class="flex items-start gap-3 text-warm-gray">
+          <span class="text-green-500 mt-1 shrink-0">&#10003;</span>
+          <span><strong class="text-primary-600">Insurance that actually covers things.</strong> &pound;15,000 per van for goods in transit. Items over &pound;2,000 must be declared before the move. Self-packed boxes aren't covered (and we explain this to clients clearly). Claims are handled within 7 days.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: CASE STUDY
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-narrow">
+      <h2 class="text-center mb-6">A Chain Completion That Nearly Derailed &mdash; And How We Kept It On Track</h2>
+
+      <div class="bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-gray-100">
+        <div class="space-y-4 text-warm-gray leading-relaxed">
+          <p>
+            A 3-property chain scheduled for completion on a Friday. The solicitor had exchanged with a simultaneous completion clause. Funds from the top of the chain were confirmed at 11am. The bottom buyer's funds arrived at 2:45pm &mdash; nearly three hours late.
+          </p>
+          <p>
+            Our team was on-site from 9am. When the delay became clear, our Move Manager informed the solicitor's office directly: <em>"Team is ready. Key Wait Waiver is active. No additional charges. We'll begin the moment keys are available."</em>
+          </p>
+          <p>
+            Keys arrived at 3:10pm. The move was completed by 8pm. The chain closed. The solicitor's client later described the experience as <strong class="text-primary-600">"the only part of the process that wasn't stressful."</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: HOW THE PARTNERSHIP WORKS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">How Our Solicitor Partnership Works</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div class="text-center group cursor-default">
+          <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-3">1</div>
+          <h3 class="font-bold text-sm mb-1">Registration</h3>
+          <p class="text-warm-gray text-sm">A brief conversation about your practice, client profile, and what you need from a removal partner. We'll assign you a named account contact.</p>
+        </div>
+        <div class="text-center group cursor-default">
+          <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-3">2</div>
+          <h3 class="font-bold text-sm mb-1">Referral</h3>
+          <p class="text-warm-gray text-sm">When your client needs a removal company, share our details or send them our <a href="/instantquote/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">instant quote calculator</a> link. They'll receive a priority response and a dedicated Move Manager.</p>
+        </div>
+        <div class="text-center group cursor-default">
+          <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-3">3</div>
+          <h3 class="font-bold text-sm mb-1">Coordination</h3>
+          <p class="text-warm-gray text-sm">For chain completions, our Move Manager can liaise with your office on timing. We provide real-time updates on move day so you know the status without chasing.</p>
+        </div>
+        <div class="text-center group cursor-default">
+          <div class="w-12 h-12 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-3">4</div>
+          <h3 class="font-bold text-sm mb-1">Feedback</h3>
+          <p class="text-warm-gray text-sm">We check in quarterly to ensure the partnership is working. If something needs adjusting, we adjust it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: PROBATE & SENSITIVE MOVES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl mb-4">Handling Probate Clearances and Sensitive Moves</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          We understand that not every instruction you handle is a straightforward purchase.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg p-6 border border-gray-100">
+          <h3 class="font-bold text-primary-600 mb-2">Probate & Estate Clearances</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">We provide a complete <a href="/house-and-waste-clearance/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">house clearance</a> service. The property is cleared carefully, with items sorted, packed, and either delivered to beneficiaries, placed in storage, or responsibly disposed of.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 border border-gray-100">
+          <h3 class="font-bold text-primary-600 mb-2">Separation & Divorce Settlements</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">We handle the logistics discreetly. Two destinations, divided belongings, and a team that understands the situation requires sensitivity &mdash; not commentary.</p>
+        </div>
+        <div class="bg-white rounded-lg p-6 border border-gray-100">
+          <h3 class="font-bold text-primary-600 mb-2">Elderly Clients Downsizing</h3>
+          <p class="text-warm-gray text-sm leading-relaxed">Our full packing service removes the physical burden entirely. We pack, transport, unpack, and place furniture exactly where it's wanted. Many of these referrals come from <a href="/partners/care-homes/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">care homes we also partner with</a>.</p>
+        </div>
+      </div>
+
+      <p class="text-warm-gray text-center mt-8 max-w-2xl mx-auto">
+        In all these situations, our team is briefed on the circumstances. They arrive knowing that patience and discretion matter more than speed.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Questions Solicitors Ask Us" bgClass="bg-white" />
+
+  <!-- ============================================
+       FOOTER CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white text-center">
+    <div class="container-wide">
+      <h2 class="text-white mb-4">The Next Chain Completion You Oversee Could Be Seamless</h2>
+      <p class="text-primary-100 text-lg mb-8 max-w-xl mx-auto">
+        We'll make sure the removal side is.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a href="/partners/#partner-form" class="btn-cta-orange inline-block">
+          Register as a Partner
+        </a>
+        <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="flex items-center gap-2 text-white font-semibold no-underline hover:text-primary-200 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          {siteConfig.company.contact.phone}
+        </a>
+      </div>
+
+      <p class="text-sm text-primary-200 mt-8">
+        <a href="/partners/" class="text-primary-200 no-underline hover:text-white transition-colors">&larr; Back to all partnerships</a>
+      </p>
+    </div>
+  </section>
+
+</Layout>

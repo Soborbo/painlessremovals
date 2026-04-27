@@ -1,0 +1,198 @@
+---
+/**
+ * PostcodeLookup — Postcode-based downsizing estimate
+ *
+ * Uses HM Land Registry median sold prices (BS & BA postcodes).
+ * Semi-detached = typical current home, Flat = typical downsize target.
+ */
+import { siteConfig } from '@/config/site.config';
+---
+
+<div id="postcode-lookup" class="max-w-2xl mx-auto">
+  <!-- Input -->
+  <div class="flex gap-3 mb-8">
+    <label for="postcode-input" class="sr-only">Enter your postcode</label>
+    <input
+      type="text"
+      id="postcode-input"
+      placeholder="e.g. BS7 8AA"
+      autocomplete="postal-code"
+      class="flex-1 px-5 py-4 text-lg border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors uppercase"
+      maxlength="8"
+    />
+    <button
+      id="postcode-btn"
+      type="button"
+      class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-600/40 whitespace-nowrap"
+    >
+      Show Me
+    </button>
+  </div>
+
+  <!-- Results (hidden initially) -->
+  <div id="postcode-result" class="hidden">
+    <div class="bg-cream rounded-xl p-8 border border-gray-100">
+      <h4 class="text-primary-600 font-heading text-xl font-semibold mb-6">
+        Your area: <span id="postcode-area-name" class="text-secondary-500"></span>
+      </h4>
+
+      <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white rounded-lg p-5">
+          <p class="text-sm text-warm-gray mb-1">Average semi-detached sold price</p>
+          <p class="text-2xl font-bold text-primary-600" id="postcode-current-value"></p>
+        </div>
+        <div class="bg-white rounded-lg p-5">
+          <p class="text-sm text-warm-gray mb-1">Average flat sold price</p>
+          <p class="text-2xl font-bold text-primary-600" id="postcode-downsize-value"></p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg p-6 text-center mb-6 border-2 border-secondary-200">
+        <p class="text-sm text-warm-gray mb-1">Potential equity released</p>
+        <p class="text-3xl font-bold text-secondary-500" id="postcode-equity"></p>
+      </div>
+
+      <div id="postcode-extra" class="space-y-2 text-warm-gray text-sm mb-6"></div>
+
+      <p class="text-xs text-warm-gray">
+        Based on HM Land Registry sold prices over the last 5 years in your postcode district. For a personalised assessment, book a free discovery visit.
+      </p>
+
+      <div class="mt-6 text-center">
+        <a href="#callback" class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-600/40">
+          Get a Personalised Assessment &mdash; Free
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Not found message -->
+  <div id="postcode-not-found" class="hidden">
+    <div class="bg-cream rounded-xl p-8 text-center">
+      <p class="text-warm-gray text-lg mb-4">
+        We primarily serve the Bristol and South West area. We would still love to hear from you.
+      </p>
+      <p class="text-primary-600 font-bold text-xl mb-4">Call us on {siteConfig.company.contact.phone}</p>
+      <p class="text-warm-gray text-sm">We are happy to discuss your move, wherever you are.</p>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div id="postcode-error" class="hidden">
+    <p class="text-secondary-500 text-sm">Please enter a valid UK postcode (e.g. BS7 8AA).</p>
+  </div>
+</div>
+
+<script>
+  // HM Land Registry median sold prices — semi-detached (S) & flat (F) by postcode district
+  const BRISTOL_DATA: Record<string, { area: string; avgPrice: number; downsizeAvg: number; retirementDev?: string }> = {
+    'BS1': { area: 'City Centre, Bristol', avgPrice: 625000, downsizeAvg: 315000, retirementDev: 'McCarthy Stone, Temple Quarter (0.5 miles)' },
+    'BS2': { area: 'St Pauls & St Philips', avgPrice: 425000, downsizeAvg: 240000 },
+    'BS3': { area: 'Southville & Bedminster', avgPrice: 450000, downsizeAvg: 250000, retirementDev: 'Churchill Retirement, Bedminster (0.3 miles)' },
+    'BS4': { area: 'Brislington & Knowle', avgPrice: 325000, downsizeAvg: 215000 },
+    'BS5': { area: 'Easton & St George', avgPrice: 345000, downsizeAvg: 215000 },
+    'BS6': { area: 'Redland & Cotham', avgPrice: 900000, downsizeAvg: 340000, retirementDev: 'McCarthy Stone, Westbury Park (0.8 miles)' },
+    'BS7': { area: 'Bishopston & Horfield', avgPrice: 445000, downsizeAvg: 255000, retirementDev: 'Churchill Retirement, Stoke Bishop (1.2 miles) · McCarthy Stone, Westbury Park (0.8 miles)' },
+    'BS8': { area: 'Clifton & Hotwells', avgPrice: 1260000, downsizeAvg: 395000, retirementDev: 'Churchill Retirement, Stoke Bishop (1.0 miles)' },
+    'BS9': { area: 'Stoke Bishop & Sneyd Park', avgPrice: 650000, downsizeAvg: 320000, retirementDev: 'Churchill Retirement, Stoke Bishop (0.5 miles)' },
+    'BS10': { area: 'Southmead & Brentry', avgPrice: 365000, downsizeAvg: 215000 },
+    'BS11': { area: 'Avonmouth & Shirehampton', avgPrice: 300000, downsizeAvg: 180000 },
+    'BS13': { area: 'Hartcliffe & Withywood', avgPrice: 325000, downsizeAvg: 200000 },
+    'BS14': { area: 'Whitchurch & Stockwood', avgPrice: 330000, downsizeAvg: 165000 },
+    'BS15': { area: 'Kingswood & Hanham', avgPrice: 335000, downsizeAvg: 190000 },
+    'BS16': { area: 'Fishponds & Downend', avgPrice: 380000, downsizeAvg: 210000 },
+    'BS20': { area: 'Portishead & Pill', avgPrice: 395000, downsizeAvg: 230000 },
+    'BS21': { area: 'Clevedon', avgPrice: 370000, downsizeAvg: 255000 },
+    'BS22': { area: 'Weston-super-Mare (North)', avgPrice: 270000, downsizeAvg: 155000 },
+    'BS23': { area: 'Weston-super-Mare (Central)', avgPrice: 305000, downsizeAvg: 165000 },
+    'BS24': { area: 'Weston-super-Mare (South)', avgPrice: 280000, downsizeAvg: 180000 },
+    'BS25': { area: 'Winscombe & Sandford', avgPrice: 365000, downsizeAvg: 145000 },
+    'BS26': { area: 'Axbridge & Wedmore', avgPrice: 315000, downsizeAvg: 165000 },
+    'BS27': { area: 'Cheddar', avgPrice: 315000, downsizeAvg: 145000 },
+    'BS28': { area: 'Wedmore', avgPrice: 360000, downsizeAvg: 190000 },
+    'BS29': { area: 'Banwell', avgPrice: 295000, downsizeAvg: 200000 },
+    'BS30': { area: 'Warmley & Cadbury Heath', avgPrice: 350000, downsizeAvg: 175000 },
+    'BS31': { area: 'Keynsham & Saltford', avgPrice: 420000, downsizeAvg: 225000 },
+    'BS32': { area: 'Bradley Stoke', avgPrice: 350000, downsizeAvg: 205000 },
+    'BS34': { area: 'Patchway & Filton', avgPrice: 365000, downsizeAvg: 235000 },
+    'BS35': { area: 'Thornbury & Alveston', avgPrice: 330000, downsizeAvg: 195000 },
+    'BS36': { area: 'Winterbourne & Frampton', avgPrice: 385000, downsizeAvg: 220000 },
+    'BS37': { area: 'Yate & Chipping Sodbury', avgPrice: 325000, downsizeAvg: 210000 },
+    'BS39': { area: 'Clutton & Temple Cloud', avgPrice: 320000, downsizeAvg: 170000 },
+    'BS40': { area: 'Chew Valley', avgPrice: 390000, downsizeAvg: 115000 },
+    'BS41': { area: 'Long Ashton', avgPrice: 485000, downsizeAvg: 295000 },
+    'BS48': { area: 'Nailsea & Backwell', avgPrice: 345000, downsizeAvg: 190000 },
+    'BS49': { area: 'Yatton & Congresbury', avgPrice: 350000, downsizeAvg: 180000 },
+    'BA1': { area: 'Bath (Central)', avgPrice: 550000, downsizeAvg: 320000, retirementDev: 'McCarthy Stone, Bath Riverside (0.3 miles) · Churchill Retirement, Bathwick (0.5 miles)' },
+    'BA2': { area: 'Bath (South)', avgPrice: 420000, downsizeAvg: 315000 },
+  };
+
+  function formatCurrency(val: number): string {
+    return '£' + val.toLocaleString('en-GB');
+  }
+
+  function extractOutwardCode(postcode: string): string | null {
+    const cleaned = postcode.replace(/\s+/g, '').toUpperCase();
+    // Match outward code: 1-2 letters, 1 digit, optional digit-or-letter (covers A9, A99, AA9, AA99, A9A, AA9A)
+    const match = cleaned.match(/^([A-Z]{1,2}[0-9][0-9A-Z]?)/);
+    return match ? match[1] : null;
+  }
+
+  const input = document.getElementById('postcode-input') as HTMLInputElement;
+  const btn = document.getElementById('postcode-btn');
+  const resultDiv = document.getElementById('postcode-result');
+  const notFoundDiv = document.getElementById('postcode-not-found');
+  const errorDiv = document.getElementById('postcode-error');
+
+  function doLookup() {
+    const raw = input.value.trim();
+    resultDiv?.classList.add('hidden');
+    notFoundDiv?.classList.add('hidden');
+    errorDiv?.classList.add('hidden');
+
+    if (!raw || raw.length < 2) {
+      errorDiv?.classList.remove('hidden');
+      return;
+    }
+
+    const outward = extractOutwardCode(raw);
+    if (!outward) {
+      errorDiv?.classList.remove('hidden');
+      return;
+    }
+
+    const data = BRISTOL_DATA[outward];
+    if (!data) {
+      notFoundDiv?.classList.remove('hidden');
+      return;
+    }
+
+    // Populate results
+    const areaName = document.getElementById('postcode-area-name');
+    const currentVal = document.getElementById('postcode-current-value');
+    const downsizeVal = document.getElementById('postcode-downsize-value');
+    const equity = document.getElementById('postcode-equity');
+    const extra = document.getElementById('postcode-extra');
+
+    if (areaName) areaName.textContent = `${outward}, ${data.area}`;
+    if (currentVal) currentVal.textContent = formatCurrency(data.avgPrice);
+    if (downsizeVal) downsizeVal.textContent = formatCurrency(data.downsizeAvg);
+    if (equity) equity.textContent = formatCurrency(data.avgPrice - data.downsizeAvg);
+
+    if (extra) {
+      extra.textContent = '';
+      if (data.retirementDev) {
+        const p = document.createElement('p');
+        p.textContent = `Nearest retirement developments: ${data.retirementDev}`;
+        extra.appendChild(p);
+      }
+    }
+
+    resultDiv?.classList.remove('hidden');
+  }
+
+  btn?.addEventListener('click', doLookup);
+  input?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doLookup();
+  });
+</script>

@@ -1,0 +1,39 @@
+---
+/**
+ * AreaFinalCTA — dark teal final section for area/route pages
+ *
+ * Used on 31 area/route pages as the closing CTA.
+ */
+
+export interface Props {
+  /** Heading text */
+  heading: string;
+  /** Optional description (supports HTML for links) */
+  description?: string;
+  /** Button text */
+  buttonText?: string;
+  /** Button href */
+  buttonHref?: string;
+}
+
+const {
+  heading,
+  description,
+  buttonText = 'Get Your Instant Quote →',
+  buttonHref = '/instantquote',
+} = Astro.props;
+---
+
+<section class="py-14 bg-[#1E4240] text-white text-center">
+  <div class="container-narrow">
+    <h2 class="font-heading text-2xl md:text-3xl font-semibold mb-2">{heading}</h2>
+    {description && (
+      <p class="text-white/75 mb-6 max-w-md mx-auto">
+        <Fragment set:html={description} />
+      </p>
+    )}
+    <a href={buttonHref} class="inline-block bg-white text-[#1E4240] font-bold px-7 py-3.5 rounded-lg hover:shadow-lg hover:-translate-y-0.5 transition-all no-underline">
+      {buttonText}
+    </a>
+  </div>
+</section>

@@ -1,0 +1,28 @@
+---
+/**
+ * SidebarAuthorBox — Compact author card for area page sidebars & mobile.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+
+const director = siteConfig.company.director;
+---
+
+<div class="bg-white rounded-xl border border-gray-100 overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+  <div class="h-[3px] bg-linear-to-r from-primary-400 via-primary-600 to-primary-400"></div>
+  <div class="px-5 pt-5 pb-4 text-center">
+    <p class="text-[10px] uppercase tracking-[0.18em] font-semibold text-gray-400 mb-3">Written by</p>
+    <OptimizedPicture
+      name="about/team/Jay-Newton"
+      pattern="SIXTH"
+      alt={`${director.name}, ${director.title} at ${siteConfig.brand.name}`}
+      sizes="88px"
+      class="w-[88px] h-[88px] rounded-full object-cover mx-auto ring-2 ring-primary-100"
+    />
+    <a href="/about/jay-newton/" class="block font-heading font-semibold text-[15px] text-gray-900 no-underline hover:text-primary-700 transition-colors mt-3">{director.name}</a>
+    <p class="text-xs text-gray-500 mt-0.5">{director.title}</p>
+    <p class="text-[11px] text-gray-400 leading-relaxed mt-2.5 mx-auto max-w-[240px]">Personally overseen 2,000+ Bristol removals. Every area guide is based on real experience.</p>
+    <a href="/about/jay-newton/" class="inline-block text-[11px] text-primary-600 no-underline hover:text-primary-800 font-medium mt-2 transition-colors">About Jay &rarr;</a>
+  </div>
+</div>

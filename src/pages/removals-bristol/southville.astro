@@ -1,0 +1,262 @@
+---
+/**
+ * /removals-bristol/southville/ — Southville neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Southville Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~4 miles' },
+        { label: 'Drive time from depot', value: '~15 minutes' },
+        { label: 'Postcode area', value: 'BS3' },
+        { label: 'Nearest motorway', value: 'M5 J19 (4 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2–3 bed terrace' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: '4–6 hours' },
+        { label: 'Local move cost', value: '£450–£850' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£433,000' },
+        { label: 'Typical property', value: 'Victorian terrace' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Front gardens', value: 'Rare (door to pavement)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'RPS Mon–Sat 9–5' },
+        { label: 'Suspension needed', value: 'Yes (inc. Saturday)' },
+        { label: 'Main difficulty', value: 'Narrow streets + match days' },
+        { label: 'Conservation area', value: 'Partial (Acramans Rd)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Jay, Pete, Callum, Rich and Mike were brilliant. Great people, painless removals and were really fab to have around on a potentially stressful day. Would certainly recommend.",
+  name: 'Nina Sebastiane',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Southville, Bristol';
+const description = `Southville removal specialists since 1978. We handle the Mon–Sat RPZ, narrow Victorian terraces, and Ashton Gate match days — 4 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Southville Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Southville, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS3", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Do I need a parking suspension for moving in Southville?', answer: 'Almost certainly yes. The Southville RPS operates Monday to Saturday, 9am–5pm — note it includes Saturdays, unlike many Bristol zones. Apply to <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline underline-offset-2">Bristol City Council</a> 7–10 working days ahead. Your Move Manager handles the application when you book.' },
+  { question: 'Can you move from the narrow terraced streets in the Chessels?', answer: 'Yes — the Chessels is one of our most common Southville jobs. Streets like Chessel Street and Stackpool Road are extremely narrow with cars on both sides. We use smaller relay vehicles where needed and arrange parking suspensions to guarantee van access directly outside your door.' },
+  { question: 'How much does a Southville removal cost?', answer: 'A 2–3 bed Victorian terrace moving locally typically costs £450–£850 depending on access and packing. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Should I avoid Bristol City match days for my move?', answer: 'Yes. Ashton Gate match days make surrounding streets virtually impassable from mid-morning. We check the Bristol City and Bristol Bears fixture lists before confirming your date and will flag any clashes immediately. Our <a href="/home-packing-service/" class="text-secondary-500 underline underline-offset-2">packing service</a> can run on a non-match day even if the move itself is the following morning.' },
+  { question: 'Is there rear lane access on Southville terraces?', answer: 'Some Southville terraces have rear access lanes, but most are too narrow for vehicles. We assess this during the <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a>. In most cases, front-door loading with a parking suspension is the most efficient option.' },
+  { question: 'How does Southville compare to Totterdown or Montpelier for access?', answer: 'Southville\'s streets are tight but not as extreme as <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline underline-offset-2">Totterdown</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline underline-offset-2">Montpelier</a>. We don\'t treat Southville as a high-alert area for access the way we do those neighbourhoods. A parking suspension and an early start are usually all it takes.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Southville" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Southville"
+  slug="southville"
+  schema={schema}
+  ogImage="/img/areas/southville-victorian-terrace-removal-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/southville-victorian-terrace-removal"
+  heroAlt="Painless Removals team loading a van outside a Victorian terrace in Southville, Bristol"
+  heroSubtitle="Moving Bristol homes since 1978. Home removals in Southville from a local team with the experience to get it right first time."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Southville goes by a few names depending on who you ask. Estate agents have taken to calling it "Lower Clifton," which tells you something about how the neighbourhood sees itself these days — and about the prices it now commands. Most people who've lived in Bristol for a while still call it Southville. Either way, it's one of the more characterful parts of inner south Bristol, sitting alongside <a href="/removals-bristol/bedminster/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster</a> and sharing much of its housing stock while developing a distinct identity of its own.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">We handle a good number of moves in Southville — BS3 is one of our busiest postcodes. The neighbourhood has a strong community feel, independent businesses along North Street, and the kind of Victorian terraced streets where local knowledge makes the difference between a smooth moving day and an expensive one. Here's the honest guide to what that means for your move.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Streets -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Southville Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Streets: Terraces, Mostly</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Southville is predominantly Victorian terraced housing. The streets between North Street and the Harbourside — roads like Stackpool Road, Greville Road, and the residential runs off Coronation Road — are classic Bristol terrace: two and three-storey houses with front doors that open directly onto the pavement, small back gardens, and the kind of solid proportions that make Victorian housing enduringly popular.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">From a removal perspective, these properties are manageable. The rooms are honest — not enormous, but not cramped. The staircases are steeper than modern building regulations would allow but wide enough to work with. Hallways are narrower than <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> or Redland, so larger items of furniture — big sofas, American fridge-freezers, king-sized bed frames — need thinking about in advance. Not a crisis, but worth flagging when you book so we can plan accordingly.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Converted flats are present in Southville as they are across all of inner Bristol. The usual rules apply: a well-done conversion is fine; a poorly done one can turn a routine move into a puzzle. We always want to know if you're moving into or out of a converted flat, and ideally we'll take a look at the access during your <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a>.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) — before Parking section -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking: Tighter Than It Looks</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Southville's streets are busy. Residents, visitors to North Street, people parking to access the harbourside — the kerbside pressure here is genuine, and it's something to take seriously before moving day. Unlike Redland or <a href="/removals-bristol/bedminster/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bedminster</a>, Southville's RPS runs Monday to Saturday, 9am–5pm. This catches out many people who assume a Saturday move avoids permit issues. Sunday is the only unrestricted day.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The streets directly off Coronation Road and those closest to the harbourside fill up earlier in the day and stay fuller for longer than roads further into the residential interior. If your property is on one of these streets, reserving space in advance is not optional — it's essential. Apply for a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking bay suspension</a> through Bristol City Council at least 7–10 working days before your move. Your Move Manager handles the application when you book.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The streets further from the water — deeper into the residential blocks around Greville Road and towards the Bedminster border — are somewhat easier, but still worth planning around. Southville is not <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>, and we don't approach it with the same level of alarm, but parking here requires a plan.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Southville?"
+      description="Get a personalised quote — we check the match-day calendar and arrange your parking suspension."
+      buttonText="Get Your Southville Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Coronation Road & Ashton Gate -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Coronation Road: Know It Before Moving Day</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Coronation Road runs along the southern edge of the harbourside, connecting Southville to the city centre on one side and to Ashton on the other. It carries a steady volume of traffic throughout the day and becomes notably busier during rush hour and on weekends when people head to the harbourside. For a removal van needing to park up and work, Coronation Road itself is not where you want to be stationed. The side streets off it are your friend — quieter, more manageable, and usually with a decent chance of a parking space if you've planned ahead.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For properties that require the van to approach via Coronation Road, we time the arrival to avoid peak traffic. The crew approaches from the west where possible — the wide, flat route that avoids the bottleneck of North Street and its bus route.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Ashton Gate Factor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Southville sits close enough to Ashton Gate Stadium that the same match-day warning applies here as it does for Bedminster. Bristol City FC and Bristol Bears both play here, and when there's a match on — particularly an evening kick-off — the surrounding area transforms. Roads fill up, residents give over their streets to supporter parking, and the whole neighbourhood shifts into a kind of controlled chaos.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The scenario to avoid is finishing a removal job at five in the afternoon when there's a six o'clock game. Check the fixture list before you confirm your date. Midweek evening games are the ones to watch most carefully — they catch people out because they're less visible in the calendar than Saturday afternoon fixtures. If your moving date clashes, tell us when you book and we'll plan our timing to be clear of the area before it gets difficult. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a> can run the day before to make the moving-day turnaround faster.</p>
+  </div>
+
+  <!-- S4: What Makes Southville Worth Moving To -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Southville Worth Moving To</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">People move to Southville because it offers something increasingly rare in Bristol: an inner-city neighbourhood with real community feel, good independent businesses, and access to the harbourside and Ashton Court, at prices that — while high by most standards — are still below <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> or the top end of Redland.</p>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/southville-harbourside"
+          pattern="HALF"
+          alt="View towards Bristol Harbourside from the Southville side — the waterfront access that draws people to the neighbourhood"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">The harbourside from Southville — waterfront access on your doorstep.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Southville moves tend to go well when the parking is sorted. The community is accommodating, the terraces are honest properties to work in, and the crew can usually complete a 2–3 bed local move within half a day. It's a neighbourhood where planning the parking suspension makes the difference between a smooth job and a difficult one."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The proximity to the SS Great Britain and the waterfront on one side, and to Ashton Court's open space on the other, gives Southville a quality of life that its location south of the river used to underplay. That has changed. The buyers and renters who moved in over the last fifteen years worked it out, and the prices have followed.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The cycle culture here is worth knowing about too. Southville is one of the more cycle-forward parts of Bristol — the routes to the harbourside and into the city centre are well-used and well-regarded. This contributes to the general neighbourhood character: people here tend to be patient, community-minded, and unbothered by a working van doing what working vans need to do. Over the course of a full moving day, that adds up.</p>
+  </div>
+
+
+  <!-- S5: Is Southville a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Southville a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. Southville's streets are tight but not as extreme as <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>. The Victorian terraces have honest proportions — reasonable hallways and manageable staircases. And the community consistently makes the day easier rather than harder.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The two variables to manage are the parking and the stadium. Sort the <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking suspension</a> (remembering that Saturdays are restricted here), check the Ashton Gate fixture list, and the move goes well. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers both — we'll visit your property, assess the access, and confirm your date against the fixture calendar.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For most Southville moves — a two or three-bed terrace moving locally — you're looking at a team of two to three, one Luton van, and a half-day to full-day job depending on volume and distance.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Southville Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Parking first.</strong> Work out how you're going to hold space outside your property. Neighbours, cones, or a formal <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">suspension</a> — but don't leave it to chance. Remember: Saturdays are restricted here.</li>
+      <li><strong>Check the Ashton Gate fixture list.</strong> Evening games especially. Avoid a clash with match day if at all possible.</li>
+      <li><strong>Whole house or converted flat?</strong> If it's a flat, let us know which floor and what the stairwell access looks like.</li>
+      <li><strong>Any large items?</strong> Victorian terrace hallways are narrower than they look. Flag big sofas, American fridge-freezers, and oversized wardrobes when you book.</li>
+      <li><strong>Coronation Road approach?</strong> If your property requires the van to come in via Coronation Road, tell us and we'll time the arrival to avoid peak traffic.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

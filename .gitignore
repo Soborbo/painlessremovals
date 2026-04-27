@@ -1,0 +1,36 @@
+# Build & deps
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Image pipeline cache
+scripts/.image-cache.json
+
+# Reference materials (not part of website)
+references/
+whatsapp-photo share/
+src/assets/images/
+website/
+wireframe-area-page.html
+claudeskills-main/
+leadgen-monorepo-master/
+partners-pages-copy.md
+painless-removals-about-page-FINAL.md
+check_png_chunks.ps1

@@ -1,0 +1,43 @@
+---
+/**
+ * MidCTA — coloured mid-page CTA band
+ *
+ * Used on 31 area/route pages as a conversion break between content sections.
+ */
+
+export interface Props {
+  /** Heading text */
+  heading: string;
+  /** Optional description text */
+  description?: string;
+  /** Button text */
+  buttonText: string;
+  /** Button href */
+  buttonHref: string;
+  /** Background colour (default: "#C4704B") */
+  bgColor?: string;
+  /** Button text colour (default: matches bgColor for contrast) */
+  buttonTextColor?: string;
+}
+
+const {
+  heading,
+  description,
+  buttonText,
+  buttonHref,
+  bgColor = '#A0522D',
+  buttonTextColor = '#8B4226',
+} = Astro.props;
+---
+
+<section class="py-12 text-white text-center" style={`background-color: ${bgColor};`}>
+  <div class="container-narrow">
+    <h2 class="font-heading text-xl md:text-2xl font-semibold mb-2">{heading}</h2>
+    {description && (
+      <p class="text-white/80 text-[15px] mb-5 max-w-md mx-auto">{description}</p>
+    )}
+    <a href={buttonHref} class="inline-block bg-white font-bold px-7 py-3.5 rounded-lg hover:shadow-lg hover:-translate-y-0.5 transition-all no-underline" style={`color: ${buttonTextColor};`}>
+      {buttonText}
+    </a>
+  </div>
+</section>

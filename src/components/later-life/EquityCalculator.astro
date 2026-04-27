@@ -1,0 +1,727 @@
+---
+/**
+ * EquityCalculator — 4-step interactive downsizing calculator
+ *
+ * Step 1: Current home type + value
+ * Step 2: New home type + value
+ * Step 3: Service selection
+ * Step 4: Summary with equity, fees, service costs, and "money in pocket"
+ *
+ * All calculations are client-side. No API required.
+ */
+import { siteConfig } from '@/config/site.config';
+---
+
+<div id="equity-calc" class="max-w-3xl mx-auto">
+  <!-- Progress bar -->
+  <div class="flex items-center justify-between mb-10" role="group" aria-label="Calculator progress: step 1 of 4">
+    <div class="flex items-center gap-2" id="step-indicator-1">
+      <span class="calc-step-dot active">1</span>
+      <span class="text-sm font-medium text-primary-600 hidden sm:inline">Your Home</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div class="calc-progress-fill h-full bg-primary-500 transition-all duration-500" style="width: 0%;" id="progress-1-2"></div></div>
+    <div class="flex items-center gap-2" id="step-indicator-2">
+      <span class="calc-step-dot">2</span>
+      <span class="text-sm font-medium text-warm-gray hidden sm:inline">New Home</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div class="calc-progress-fill h-full bg-primary-500 transition-all duration-500" style="width: 0%;" id="progress-2-3"></div></div>
+    <div class="flex items-center gap-2" id="step-indicator-3">
+      <span class="calc-step-dot">3</span>
+      <span class="text-sm font-medium text-warm-gray hidden sm:inline">Services</span>
+    </div>
+    <div class="flex-1 h-0.5 bg-gray-200 mx-2"><div class="calc-progress-fill h-full bg-primary-500 transition-all duration-500" style="width: 0%;" id="progress-3-4"></div></div>
+    <div class="flex items-center gap-2" id="step-indicator-4">
+      <span class="calc-step-dot">4</span>
+      <span class="text-sm font-medium text-warm-gray hidden sm:inline">Estimate</span>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 1: Current Home ==================== -->
+  <div id="calc-step-1" class="calc-step">
+    <h3 class="text-xl font-heading font-semibold text-primary-600 mb-2">What type of property do you currently live in?</h3>
+    <p class="text-warm-gray text-sm mb-6">Select the closest match, then adjust the value if you know it.</p>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <button type="button" class="calc-type-card" data-current-type="detached" data-default-value="550000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span class="text-sm font-semibold">Detached house</span>
+        <span class="text-xs text-warm-gray">(4+ bedrooms)</span>
+      </button>
+      <button type="button" class="calc-type-card" data-current-type="semi" data-default-value="380000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span class="text-sm font-semibold">Semi-detached</span>
+        <span class="text-xs text-warm-gray">(3 bedrooms)</span>
+      </button>
+      <button type="button" class="calc-type-card" data-current-type="terraced" data-default-value="310000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        <span class="text-sm font-semibold">Terraced house</span>
+        <span class="text-xs text-warm-gray">(2&ndash;3 bedrooms)</span>
+      </button>
+      <button type="button" class="calc-type-card" data-current-type="flat" data-default-value="265000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+        <span class="text-sm font-semibold">Large flat / maisonette</span>
+        <span class="text-xs text-warm-gray">&nbsp;</span>
+      </button>
+    </div>
+
+    <div id="current-value-section" class="hidden">
+      <label for="current-value-slider" class="block text-sm font-medium text-primary-600 mb-2">
+        Estimated value: <strong id="current-value-display">&pound;380,000</strong>
+      </label>
+      <input type="range" id="current-value-slider" min="150000" max="1200000" step="5000" value="380000" class="w-full calc-slider" />
+      <div class="flex justify-between text-xs text-warm-gray mt-1">
+        <span>&pound;150k</span>
+        <span class="text-warm-gray/50">Adjust if you know the approximate value</span>
+        <span>&pound;1.2m</span>
+      </div>
+      <div class="mt-6 text-right">
+        <button type="button" class="calc-next-btn" data-next="2">
+          Next &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 2: New Home ==================== -->
+  <div id="calc-step-2" class="calc-step hidden">
+    <h3 class="text-xl font-heading font-semibold text-primary-600 mb-2">What kind of home are you considering?</h3>
+    <p class="text-warm-gray text-sm mb-6">Select the type of property you might move to.</p>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+      <button type="button" class="calc-type-card" data-new-type="retirement-flat" data-default-value="220000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+        <span class="text-sm font-semibold">Retirement flat</span>
+        <span class="text-xs text-warm-gray">(1&ndash;2 bed)</span>
+      </button>
+      <button type="button" class="calc-type-card" data-new-type="smaller-house" data-default-value="285000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span class="text-sm font-semibold">Smaller house</span>
+        <span class="text-xs text-warm-gray">(2 bed)</span>
+      </button>
+      <button type="button" class="calc-type-card" data-new-type="sheltered" data-default-value="195000">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        <span class="text-sm font-semibold">Sheltered / assisted</span>
+        <span class="text-xs text-warm-gray">living</span>
+      </button>
+      <button type="button" class="calc-type-card" data-new-type="care-home" data-default-value="0">
+        <svg class="w-8 h-8 text-primary-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+        <span class="text-sm font-semibold">Care home</span>
+        <span class="text-xs text-warm-gray">(rental / fees model)</span>
+      </button>
+    </div>
+
+    <div id="new-value-section" class="hidden">
+      <label for="new-value-slider" class="block text-sm font-medium text-primary-600 mb-2">
+        Estimated cost: <strong id="new-value-display">&pound;220,000</strong>
+      </label>
+      <input type="range" id="new-value-slider" min="0" max="600000" step="5000" value="220000" class="w-full calc-slider" />
+      <div class="flex justify-between text-xs text-warm-gray mt-1">
+        <span>&pound;0</span>
+        <span>&pound;600k</span>
+      </div>
+
+      <!-- Instant equity preview -->
+      <div class="mt-6 bg-cream rounded-lg p-5 text-center">
+        <p class="text-sm text-warm-gray mb-1">Estimated equity released</p>
+        <p class="text-2xl font-bold text-secondary-500" id="equity-preview">&pound;160,000</p>
+        <p class="text-xs text-warm-gray mt-1">Before fees and service costs</p>
+      </div>
+
+      <div class="mt-6 flex justify-between">
+        <button type="button" class="calc-back-btn" data-back="1">&larr; Back</button>
+        <button type="button" class="calc-next-btn" data-next="3">Next &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 3: Services ==================== -->
+  <div id="calc-step-3" class="calc-step hidden">
+    <h3 class="text-xl font-heading font-semibold text-primary-600 mb-2">Which services do you need?</h3>
+    <p class="text-warm-gray text-sm mb-6">Tick everything you would like help with. You can change your mind later.</p>
+
+    <div class="space-y-3" id="service-list">
+      <!-- Pre-ticked services -->
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="coordinator" data-low="1500" data-high="3500" checked class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Transition Coordinator</span>
+          <span class="text-xs text-warm-gray block">Your dedicated guide throughout the entire process</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;1,500&ndash;&pound;3,500</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="financial" data-low="0" data-high="0" checked class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Financial introductions</span>
+          <span class="text-xs text-warm-gray block">Vetted IFA / equity release specialist introduction</span>
+        </div>
+        <span class="text-sm font-medium text-green-600 whitespace-nowrap">Included</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="property" data-low="0" data-high="0" checked class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Property &amp; legal coordination</span>
+          <span class="text-xs text-warm-gray block">Estate agent / solicitor partner introductions</span>
+        </div>
+        <span class="text-sm font-medium text-green-600 whitespace-nowrap">Included</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="move" data-low="800" data-high="2500" checked class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">The physical move</span>
+          <span class="text-xs text-warm-gray block">Our own crew, 2&ndash;3 day gentle move, new home setup</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;800&ndash;&pound;2,500</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="aftercare" data-low="0" data-high="0" checked class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">30-day aftercare &amp; welcome pack</span>
+          <span class="text-xs text-warm-gray block">Follow-up calls, local community connections</span>
+        </div>
+        <span class="text-sm font-medium text-green-600 whitespace-nowrap">Included</span>
+      </label>
+
+      <!-- Optional services -->
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="heritage" data-low="300" data-high="600" class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Heritage cataloguing &amp; memory book</span>
+          <span class="text-xs text-warm-gray block">Photography, story recording, digital keepsake</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;300&ndash;&pound;600</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="rehoming" data-low="200" data-high="400" class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Cherished items rehoming</span>
+          <span class="text-xs text-warm-gray block">Finding good homes for things that cannot come with you</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;200&ndash;&pound;400</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="declutter" data-low="400" data-high="800" class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Decluttering &amp; sorting support</span>
+          <span class="text-xs text-warm-gray block">Hands-on help deciding what stays, goes, or gets stored</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;400&ndash;&pound;800</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="admin" data-low="250" data-high="500" class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Admin &amp; settlement service</span>
+          <span class="text-xs text-warm-gray block">GP, council tax, utilities, Royal Mail, ID updates</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;250&ndash;&pound;500</span>
+      </label>
+
+      <label class="calc-service-item">
+        <input type="checkbox" name="service" value="tech" data-low="150" data-high="300" class="calc-checkbox" />
+        <div class="flex-1">
+          <span class="font-semibold text-primary-600">Technology setup</span>
+          <span class="text-xs text-warm-gray block">Wi-Fi, tablet, video calling, personal alarm, smart speaker</span>
+        </div>
+        <span class="text-sm font-medium text-secondary-500 whitespace-nowrap">&pound;150&ndash;&pound;300</span>
+      </label>
+    </div>
+
+    <div class="mt-6 bg-cream rounded-lg p-4 text-center">
+      <p class="text-sm text-warm-gray">Estimated service cost: <strong class="text-secondary-500" id="service-cost-preview">&pound;2,300 &ndash; &pound;6,000</strong></p>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <button type="button" class="calc-back-btn" data-back="2">&larr; Back</button>
+      <button type="button" class="calc-next-btn" data-next="4">See My Estimate &rarr;</button>
+    </div>
+  </div>
+
+  <!-- ==================== STEP 4: Summary ==================== -->
+  <div id="calc-step-4" class="calc-step hidden">
+    <div class="bg-cream rounded-xl p-6 md:p-10 border border-gray-100">
+      <h3 class="text-xl font-heading font-semibold text-primary-600 mb-6 text-center">Your Downsizing Estimate</h3>
+
+      <!-- Property values -->
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between items-center">
+          <span class="text-warm-gray">Current home value</span>
+          <span class="font-semibold text-primary-600" id="summary-current"></span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-warm-gray">New home cost</span>
+          <span class="font-semibold text-primary-600" id="summary-new"></span>
+        </div>
+        <hr class="border-gray-200" />
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-primary-600">Gross equity released</span>
+          <span class="font-bold text-primary-600 text-lg" id="summary-gross"></span>
+        </div>
+      </div>
+
+      <!-- Estimated fees -->
+      <div class="space-y-3 mb-6">
+        <p class="text-sm font-semibold text-warm-gray uppercase tracking-wide">Estimated fees &amp; costs</p>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-warm-gray">Estate agent (~1.5%)</span>
+          <span class="text-warm-gray" id="summary-agent"></span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-warm-gray">Solicitor (&times;2)</span>
+          <span class="text-warm-gray">&minus;&pound;3,000</span>
+        </div>
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-warm-gray">Stamp duty (new property, England rates)</span>
+          <span class="text-warm-gray" id="summary-stamp"></span>
+        </div>
+        <hr class="border-gray-200" />
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-primary-600">Net equity released</span>
+          <span class="font-bold text-primary-600" id="summary-net"></span>
+        </div>
+      </div>
+
+      <!-- Selected services -->
+      <div class="space-y-3 mb-6">
+        <p class="text-sm font-semibold text-warm-gray uppercase tracking-wide">Your Selected Services</p>
+        <div id="summary-services" class="space-y-2"></div>
+        <hr class="border-gray-200" />
+        <div class="flex justify-between items-center">
+          <span class="font-medium text-primary-600">Estimated service cost</span>
+          <span class="font-bold text-secondary-500" id="summary-service-total"></span>
+        </div>
+      </div>
+
+      <!-- Money in pocket -->
+      <div class="bg-white rounded-lg p-6 text-center border-2 border-secondary-200">
+        <p class="text-sm text-warm-gray mb-2">Money in your pocket after everything</p>
+        <p class="text-3xl md:text-4xl font-bold text-secondary-500" id="summary-pocket"></p>
+        <p class="text-sm text-warm-gray mt-3">
+          That is enough for years of comfortable retirement, home improvements, family gifts, or simply peace of mind.
+        </p>
+      </div>
+
+      <p class="text-xs text-warm-gray mt-6 leading-relaxed">
+        This is an illustration based on regional averages and the selections you have made. Actual values depend on market conditions, specific property valuations, and your individual circumstances. We are not financial advisors. All financial introductions are to FCA-regulated professionals.
+      </p>
+    </div>
+
+    <!-- CTA below result -->
+    <div class="mt-8 bg-white rounded-xl p-8 border border-gray-100 text-center">
+      <h4 class="font-heading text-xl font-semibold text-primary-600 mb-3">Like what you see? Let us make it real.</h4>
+      <p class="text-warm-gray mb-6">Leave your name and number. We will call you within 24 hours for a free, no-pressure conversation.</p>
+
+      <form id="calc-callback-form" class="max-w-md mx-auto space-y-4 text-left">
+        <div>
+          <label for="calc-name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your name</label>
+          <input type="text" id="calc-name" name="name" required autocomplete="name" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+        </div>
+        <div>
+          <label for="calc-phone" class="block text-sm font-semibold text-primary-600 mb-1.5">Phone number</label>
+          <input type="tel" id="calc-phone" name="phone" required autocomplete="tel" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+        </div>
+        <div>
+          <label for="calc-email" class="block text-sm font-semibold text-primary-600 mb-1.5">Email address</label>
+          <input type="email" id="calc-email" name="email" required autocomplete="email" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+        </div>
+        <div>
+          <label for="calc-time" class="block text-sm font-semibold text-primary-600 mb-1.5">Best time to call</label>
+          <select id="calc-time" name="bestTime" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="evening">Evening</option>
+          </select>
+        </div>
+        <div>
+          <label for="calc-note" class="block text-sm font-semibold text-primary-600 mb-1.5">Anything we should know? <span class="text-warm-gray font-normal">(optional)</span></label>
+          <textarea id="calc-note" name="note" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"></textarea>
+        </div>
+        <!-- Honeypot -->
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+        <p class="calc-form-error hidden text-red-600 text-sm">Something went wrong. Please check your details and try again, or call us on <strong>{siteConfig.company.contact.phone}</strong>.</p>
+        <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 text-lg font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-600/40">
+          Request a Free Callback
+        </button>
+      </form>
+      <div id="calc-callback-success" class="hidden text-center py-8">
+        <svg class="w-12 h-12 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p class="text-primary-600 font-heading text-xl font-semibold mb-2" id="calc-callback-msg">Thank you. We will call you soon.</p>
+        <p class="text-warm-gray">If it is urgent, call us now on <strong>{siteConfig.company.contact.phone}</strong>.</p>
+      </div>
+    </div>
+
+    <div class="mt-6 text-center">
+      <button type="button" class="calc-back-btn" data-back="3">&larr; Adjust my estimate</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  @reference "../../styles/global.css";
+
+  .calc-step-dot {
+    @apply w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold border-2 border-gray-200 text-warm-gray bg-white transition-all duration-300;
+  }
+  .calc-step-dot.active {
+    @apply border-primary-500 bg-primary-500 text-white;
+  }
+  .calc-step-dot.done {
+    @apply border-primary-500 bg-primary-100 text-primary-600;
+  }
+
+  .calc-type-card {
+    @apply flex flex-col items-center justify-center p-5 border-2 border-gray-200 rounded-xl bg-white transition-all duration-200 cursor-pointer text-center;
+  }
+  .calc-type-card:hover {
+    @apply border-primary-300 bg-primary-50;
+  }
+  .calc-type-card.selected {
+    @apply border-primary-500 bg-primary-50 ring-2 ring-primary-200;
+  }
+
+  .calc-next-btn {
+    @apply inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm;
+  }
+  .calc-back-btn {
+    @apply text-primary-600 font-medium hover:text-secondary-500 transition-colors text-sm;
+  }
+
+  .calc-service-item {
+    @apply flex items-start gap-3 p-4 bg-white border border-gray-100 rounded-lg cursor-pointer hover:bg-primary-50 transition-colors;
+  }
+
+  .calc-checkbox {
+    @apply mt-1 rounded border-gray-300 text-primary-600 focus:ring-primary-500;
+  }
+
+  /* Slider styling (matches global.css storage-slider pattern) */
+  .calc-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(
+      to right,
+      var(--color-primary-500) 0%,
+      var(--color-primary-500) var(--slider-progress, 50%),
+      var(--color-gray-200) var(--slider-progress, 50%),
+      var(--color-gray-200) 100%
+    );
+    outline: none;
+  }
+  .calc-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--color-primary-500);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+  }
+  .calc-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--color-primary-500);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    cursor: pointer;
+  }
+  .calc-slider::-moz-range-track {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-gray-200);
+  }
+  .calc-slider::-moz-range-progress {
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-primary-500);
+  }
+</style>
+
+<script>
+  // ===== Calculator State =====
+  const state = {
+    currentValue: 380000,
+    newValue: 220000,
+    services: [] as { name: string; low: number; high: number }[],
+  };
+
+  function fmt(val: number): string {
+    return '£' + val.toLocaleString('en-GB');
+  }
+
+  function calculateStampDuty(price: number): number {
+    if (price <= 250000) return 0;
+    let duty = 0;
+    if (price > 250000) duty += Math.min(price - 250000, 675000) * 0.05;
+    if (price > 925000) duty += Math.min(price - 925000, 575000) * 0.10;
+    if (price > 1500000) duty += (price - 1500000) * 0.12;
+    return Math.round(duty);
+  }
+
+  function updateSliderProgress(slider: HTMLInputElement) {
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    const val = parseFloat(slider.value);
+    const pct = ((val - min) / (max - min)) * 100;
+    slider.style.setProperty('--slider-progress', pct + '%');
+  }
+
+  // ===== Step Navigation =====
+  function showStep(n: number) {
+    document.querySelectorAll('.calc-step').forEach(el => el.classList.add('hidden'));
+    document.getElementById(`calc-step-${n}`)?.classList.remove('hidden');
+
+    // Update progress indicators
+    for (let i = 1; i <= 4; i++) {
+      const dot = document.querySelector(`#step-indicator-${i} .calc-step-dot`);
+      const label = document.querySelector(`#step-indicator-${i} span:last-child`);
+      if (!dot) continue;
+      dot.classList.remove('active', 'done');
+      if (i < n) {
+        dot.classList.add('done');
+        dot.textContent = '✓';
+      } else if (i === n) {
+        dot.classList.add('active');
+        dot.textContent = String(i);
+      } else {
+        dot.textContent = String(i);
+      }
+      if (label) {
+        label.classList.toggle('text-primary-600', i <= n);
+        label.classList.toggle('text-warm-gray', i > n);
+      }
+    }
+
+    // Update progress bars
+    for (let i = 1; i <= 3; i++) {
+      const bar = document.getElementById(`progress-${i}-${i+1}`);
+      if (bar) bar.style.width = (n > i ? '100%' : '0%');
+    }
+
+    // If step 4, compute summary
+    if (n === 4) computeSummary();
+
+    // Scroll to calculator top
+    document.getElementById('equity-calc')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Next / Back buttons
+  document.querySelectorAll('.calc-next-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const next = parseInt((btn as HTMLElement).dataset.next || '1');
+      showStep(next);
+    });
+  });
+  document.querySelectorAll('.calc-back-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const back = parseInt((btn as HTMLElement).dataset.back || '1');
+      showStep(back);
+    });
+  });
+
+  // ===== Step 1: Current Home =====
+  const currentCards = document.querySelectorAll('[data-current-type]');
+  const currentSlider = document.getElementById('current-value-slider') as HTMLInputElement;
+  const currentDisplay = document.getElementById('current-value-display');
+  const currentSection = document.getElementById('current-value-section');
+
+  currentCards.forEach(card => {
+    card.addEventListener('click', () => {
+      currentCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      const val = parseInt((card as HTMLElement).dataset.defaultValue || '380000');
+      state.currentValue = val;
+      if (currentSlider) {
+        currentSlider.value = String(val);
+        updateSliderProgress(currentSlider);
+      }
+      if (currentDisplay) currentDisplay.textContent = fmt(val);
+      currentSection?.classList.remove('hidden');
+    });
+  });
+
+  currentSlider?.addEventListener('input', () => {
+    state.currentValue = parseInt(currentSlider.value);
+    if (currentDisplay) currentDisplay.textContent = fmt(state.currentValue);
+    updateSliderProgress(currentSlider);
+  });
+
+  // ===== Step 2: New Home =====
+  const newCards = document.querySelectorAll('[data-new-type]');
+  const newSlider = document.getElementById('new-value-slider') as HTMLInputElement;
+  const newDisplay = document.getElementById('new-value-display');
+  const newSection = document.getElementById('new-value-section');
+  const equityPreview = document.getElementById('equity-preview');
+
+  function updateEquityPreview() {
+    const eq = state.currentValue - state.newValue;
+    if (equityPreview) equityPreview.textContent = fmt(Math.max(0, eq));
+  }
+
+  newCards.forEach(card => {
+    card.addEventListener('click', () => {
+      newCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      const val = parseInt((card as HTMLElement).dataset.defaultValue || '220000');
+      state.newValue = val;
+      if (newSlider) {
+        newSlider.value = String(val);
+        updateSliderProgress(newSlider);
+      }
+      if (newDisplay) newDisplay.textContent = fmt(val);
+      newSection?.classList.remove('hidden');
+      updateEquityPreview();
+    });
+  });
+
+  newSlider?.addEventListener('input', () => {
+    state.newValue = parseInt(newSlider.value);
+    if (newDisplay) newDisplay.textContent = fmt(state.newValue);
+    updateSliderProgress(newSlider);
+    updateEquityPreview();
+  });
+
+  // ===== Step 3: Services =====
+  const serviceCheckboxes = document.querySelectorAll<HTMLInputElement>('.calc-checkbox');
+  const serviceCostPreview = document.getElementById('service-cost-preview');
+
+  function updateServiceCost() {
+    let low = 0;
+    let high = 0;
+    serviceCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        low += parseInt(cb.dataset.low || '0');
+        high += parseInt(cb.dataset.high || '0');
+      }
+    });
+    if (serviceCostPreview) {
+      serviceCostPreview.textContent = low === high
+        ? fmt(low)
+        : `${fmt(low)} – ${fmt(high)}`;
+    }
+  }
+
+  serviceCheckboxes.forEach(cb => cb.addEventListener('change', updateServiceCost));
+  updateServiceCost(); // Initial
+
+  // ===== Step 4: Summary Computation =====
+  function computeSummary() {
+    const gross = state.currentValue - state.newValue;
+    const agentFee = Math.round(state.currentValue * 0.015);
+    const solicitor = 3000;
+    const stamp = calculateStampDuty(state.newValue);
+    const net = gross - agentFee - solicitor - stamp;
+
+    // Gather selected services
+    let svcLow = 0;
+    let svcHigh = 0;
+    const svcHtml: string[] = [];
+
+    serviceCheckboxes.forEach(cb => {
+      if (cb.checked) {
+        const low = parseInt(cb.dataset.low || '0');
+        const high = parseInt(cb.dataset.high || '0');
+        svcLow += low;
+        svcHigh += high;
+
+        const label = cb.closest('.calc-service-item')?.querySelector('.font-semibold')?.textContent || '';
+        const price = low === 0 ? 'Included' : (low === high ? fmt(low) : `${fmt(low)} – ${fmt(high)}`);
+        svcHtml.push(`<div class="flex justify-between items-center text-sm"><span class="text-warm-gray">${label}</span><span class="text-warm-gray">${price}</span></div>`);
+      }
+    });
+
+    const pocketLow = net - svcHigh;
+    const pocketHigh = net - svcLow;
+
+    // Populate DOM
+    const el = (id: string) => document.getElementById(id);
+    const set = (id: string, txt: string) => { const e = el(id); if (e) e.textContent = txt; };
+    const setHtml = (id: string, html: string) => { const e = el(id); if (e) e.innerHTML = html; };
+
+    set('summary-current', fmt(state.currentValue));
+    set('summary-new', '−' + fmt(state.newValue));
+    set('summary-gross', fmt(Math.max(0, gross)));
+    set('summary-agent', '−' + fmt(agentFee));
+    set('summary-stamp', stamp > 0 ? '−' + fmt(stamp) : '£0');
+    set('summary-net', fmt(Math.max(0, net)));
+    setHtml('summary-services', svcHtml.join(''));
+    set('summary-service-total', svcLow === svcHigh ? fmt(svcLow) : `${fmt(svcLow)} – ${fmt(svcHigh)}`);
+    set('summary-pocket', pocketLow === pocketHigh ? fmt(Math.max(0, pocketLow)) : `${fmt(Math.max(0, pocketLow))} – ${fmt(Math.max(0, pocketHigh))}`);
+  }
+
+  // ===== Callback Form =====
+  const callbackForm = document.getElementById('calc-callback-form') as HTMLFormElement;
+  const callbackSuccess = document.getElementById('calc-callback-success');
+  const callbackMsg = document.getElementById('calc-callback-msg');
+
+  callbackForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(callbackForm);
+    const name = (formData.get('name') as string || '').trim();
+    const phone = (formData.get('phone') as string || '').trim();
+    const email = (formData.get('email') as string || '').trim();
+    const bestTime = formData.get('bestTime') as string;
+    const note = formData.get('note') as string;
+    const honeypot = formData.get('website') as string;
+
+    if (honeypot) return; // Bot detected
+
+    // Client-side validation
+    if (!name || !phone || !email) {
+      callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
+      return;
+    }
+
+    const submitBtn = callbackForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+
+    try {
+      const res = await fetch('/api/contact/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          message: `[Later Life Moves Calculator Callback]\nBest time: ${bestTime}\nCurrent home: ${fmt(state.currentValue)}\nNew home: ${fmt(state.newValue)}\nNote: ${note || 'None'}`,
+          honeypot: '',
+          source: 'later-life-calculator',
+        }),
+      });
+      if (!res.ok) {
+        console.error('Calculator callback failed:', res.status);
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Request a Free Callback'; }
+        callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
+        return;
+      }
+      callbackForm.classList.add('hidden');
+      callbackSuccess?.classList.remove('hidden');
+      if (callbackMsg) {
+        callbackMsg.textContent = `Thank you, ${name}. We will call you ${bestTime === 'morning' ? 'in the morning' : bestTime === 'afternoon' ? 'this afternoon' : 'this evening'}.`;
+      }
+    } catch (err) {
+      console.error('Calculator callback error:', err);
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Request a Free Callback'; }
+      callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
+    }
+  });
+
+  // Init slider progress
+  if (currentSlider) updateSliderProgress(currentSlider);
+  if (newSlider) updateSliderProgress(newSlider);
+</script>

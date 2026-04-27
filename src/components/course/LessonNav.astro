@@ -1,0 +1,46 @@
+---
+/**
+ * LessonNav — Sidebar lesson list
+ *
+ * Static Astro component — no JS framework needed.
+ * baseUrl prop makes it reusable for future /moving-guide.
+ */
+
+export interface LessonItem {
+  slug: string;
+  title: string;
+  durationMinutes: number;
+  order: number;
+}
+
+export interface Props {
+  lessons: LessonItem[];
+  currentSlug?: string;
+  baseUrl?: string;
+}
+
+const { lessons, currentSlug, baseUrl = '/packing-guide' } = Astro.props;
+
+const sorted = [...lessons].sort((a, b) => a.order - b.order);
+---
+
+<nav class="lesson-sidebar" aria-label="Lesson navigation">
+  <div class="lesson-sidebar-header">Lessons</div>
+  <ol class="lesson-list">
+    {sorted.map((lesson) => {
+      const isActive = lesson.slug === currentSlug;
+      return (
+        <li class:list={['lesson-list-item', { 'is-active': isActive }]}>
+          <a
+            href={`${baseUrl}/${lesson.slug}`}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            <span class="lesson-number">{lesson.order}</span>
+            <span class="lesson-title">{lesson.title}</span>
+            <span class="lesson-duration">{lesson.durationMinutes}m</span>
+          </a>
+        </li>
+      );
+    })}
+  </ol>
+</nav>

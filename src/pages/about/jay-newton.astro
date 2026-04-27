@@ -1,0 +1,307 @@
+---
+/**
+ * Jay Newton - Author Entity Page
+ *
+ * ProfilePage for E-E-A-T signals. Establishes Jay Newton as
+ * a credible authority on home removals and moving services.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import { ENTITY, ref, breadcrumbs } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Jay Newton – Director of Painless Removals Bristol';
+const pageDescription = 'Meet Jay Newton, Director of Painless Removals. With 2,000+ moves personally overseen and 20 years in the removals industry, Jay leads Bristol\'s trusted removal company.';
+
+// Schema markup – ProfilePage with canonical Person entity
+// This is THE definitive Person entity. All articles reference it via @id.
+const profilePageSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "dateCreated": "2026-01-15",
+    "dateModified": "2026-03-10",
+    "mainEntity": {
+      "@type": "Person",
+      "@id": ENTITY.person,
+      "name": siteConfig.company.director.name,
+      "jobTitle": siteConfig.company.director.title,
+      "description": siteConfig.company.director.description,
+      "image": {
+        "@type": "ImageObject",
+        "url": `${siteConfig.brand.domain}/img/about/team/Jay-Newton-800w.jpg`,
+        "width": "800",
+        "height": "800",
+        "caption": "Jay Newton — Director of Painless Removals",
+      },
+      "worksFor": ref.business(),
+      "hasOccupation": {
+        "@type": "Occupation",
+        "name": "Removal Company Director",
+        "occupationalCategory": "4942",
+        "occupationLocation": {
+          "@type": "City",
+          "name": "Bristol",
+        },
+      },
+      "knowsAbout": [
+        "Home Removals",
+        "Long Distance Removals",
+        "Packing Services",
+        "Chain Move Coordination",
+        "Property Chain Coordination",
+        "Office Relocations",
+        "Furniture Protection",
+        "Storage Solutions",
+      ],
+      "knowsLanguage": ["en", "es"],
+      "sameAs": [
+        siteConfig.company.director.linkedin,
+        "https://find-and-update.company-information.service.gov.uk/officers/7nCfr7caE-VT3cv9dRXO0iEfbZs/appointments",
+      ],
+    },
+  },
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "About", path: "/about/" },
+    { name: "Jay Newton" },
+  ]),
+];
+
+const phone = siteConfig.company.contact.phone;
+const phoneHref = `tel:${phone.replace(/\s/g, '')}`;
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={profilePageSchema} ogImage="/img/about/team/Jay-Newton-750w.webp" preloadImage="/img/about/team/Jay-Newton-256w.avif">
+
+  <!-- ═══════════════════════════════════════════════
+       HERO — Photo, identity, credentials
+  ═══════════════════════════════════════════════ -->
+  <section class="pt-12 pb-16 md:pt-16 md:pb-20 bg-white">
+    <div class="max-w-[880px] mx-auto px-4 sm:px-6">
+
+      <div class="grid md:grid-cols-[280px_1fr] gap-10 lg:gap-14 items-start">
+
+        <!-- Photo card -->
+        <div class="mx-auto md:mx-0 w-[280px]">
+          <div class="bg-white rounded-2xl overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.06);">
+            <div class="h-[3px] bg-linear-to-r from-primary-400 via-primary-600 to-primary-400"></div>
+            <div class="p-4 pb-5">
+              <OptimizedPicture
+                name="about/team/Jay-Newton"
+                pattern="SIXTH"
+                alt="Jay Newton, Director of Painless Removals"
+                loading="eager"
+                fetchpriority="high"
+                class="w-full rounded-xl"
+              />
+              <div class="mt-4 text-center">
+                <a href={siteConfig.company.director.linkedin} target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-[12px] text-warm-gray-400 no-underline hover:text-primary-600 transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="opacity-50"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                  LinkedIn
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Identity -->
+        <div class="pt-1">
+          <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-accent-600 mb-3">Director</p>
+
+          <h1 class="font-heading text-3xl md:text-[40px] font-semibold text-gray-900 leading-tight mb-1.5">Jay Newton</h1>
+          <p class="text-[17px] text-warm-gray-500 mb-6">{siteConfig.company.director.title}, {siteConfig.brand.name}</p>
+
+          <p class="text-[16px] leading-relaxed text-gray-700">
+            Jay runs {siteConfig.brand.name} the way he'd want his own move handled — methodically, honestly, and with nothing left to chance. He still personally surveys complex jobs and checks in with every crew on move day.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       CREDENTIALS STRIP — Three stats, understated
+  ═══════════════════════════════════════════════ -->
+  <section class="border-y border-warm-gray-100 bg-cream">
+    <div class="max-w-[880px] mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-3 divide-x divide-warm-gray-200">
+
+        <div class="py-8 md:py-10 text-center">
+          <div class="font-heading text-2xl md:text-3xl font-bold text-primary-600 leading-none">2,000+</div>
+          <div class="text-[11px] md:text-xs text-warm-gray-400 mt-1.5 uppercase tracking-wide">Moves Overseen</div>
+        </div>
+
+        <div class="py-8 md:py-10 text-center">
+          <div class="font-heading text-2xl md:text-3xl font-bold text-primary-600 leading-none">{siteConfig.company.foundingDate}</div>
+          <div class="text-[11px] md:text-xs text-warm-gray-400 mt-1.5 uppercase tracking-wide">Company Est.</div>
+        </div>
+
+        <div class="py-8 md:py-10 text-center">
+          <div class="font-heading text-2xl md:text-3xl font-bold text-primary-600 leading-none">{siteConfig.company.rating.value}&#9733;</div>
+          <div class="text-[11px] md:text-xs text-warm-gray-400 mt-1.5 uppercase tracking-wide">{siteConfig.company.rating.count} Reviews</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       BIO — Professional background with pull-quote
+  ═══════════════════════════════════════════════ -->
+  <section class="py-16 md:py-20 bg-white">
+    <div class="max-w-[680px] mx-auto px-4 sm:px-6">
+
+      <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-300 mb-5">Background</p>
+
+      <div class="space-y-5 text-[16px] leading-[1.75] text-gray-700">
+        <p>
+          Jay's career in the removals industry spans more than twenty years. He began working in the trade long before joining Painless Removals, developing a thorough understanding of every stage of the moving process — from the initial survey through to the final box being placed in a new home. That depth of experience informs the way he runs the company today: with precision, and genuine care for the people trusting him with their possessions.
+        </p>
+
+        <p>
+          When the company's founder, Steve Fanger, passed away in 2023, Jay had already been leading the business for four years. The transition was guided by a straightforward principle: preserve the culture of honest, attentive service that Steve had built over four decades, while modernising the business to meet the expectations of today's customers. That has meant investing in fleet upgrades, refining the quoting process, and building a team of professionals who are paid fairly and stay long enough to become genuinely skilled at what they do.
+        </p>
+
+        <!-- Pull-quote -->
+        <blockquote class="my-8 py-6 border-y border-warm-gray-100">
+          <p class="font-heading text-[20px] md:text-[22px] leading-snug text-primary-600 italic">
+            "Steve built something special here. My job is to make sure we keep that same care and attention as we grow. Every customer should feel like we're helping a friend move, not just doing a job."
+          </p>
+        </blockquote>
+
+        <p>
+          Bristol's position on the M4 and M5 corridors makes it a natural hub for nationwide moves, and Jay has turned that geography into one of the company's core strengths. Whether a family is relocating from Clifton to Edinburgh or from Southville to the next street over, the same standard of planning and care applies. Jay still personally surveys complex or high-value moves, and he checks in with the team on move days to ensure nothing is left to chance.
+        </p>
+
+        <p>
+          Outside of the day-to-day running of the business, Jay is committed to giving back to the Bristol community. The Painless Removals team volunteers annually with St. Peter's Hospice, and the company operates as an accredited Living Wage employer — paying above the industry average because Jay believes that people who feel valued do better work.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       EXPERTISE — What Jay knows
+  ═══════════════════════════════════════════════ -->
+  <section class="py-16 md:py-20 bg-cream">
+    <div class="max-w-[880px] mx-auto px-4 sm:px-6">
+
+      <div class="text-center mb-10 md:mb-12">
+        <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-300 mb-3">Expertise</p>
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug">Areas of Specialism</h2>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <div class="bg-white rounded-xl border border-gray-100 p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.03);">
+          <h3 class="font-heading text-[15px] font-semibold text-gray-900 mb-2">Home Removals</h3>
+          <p class="text-[14px] leading-relaxed text-warm-gray-400">
+            Full-service domestic moves for families of all sizes, from studio flats to five-bedroom houses. Every move includes blanket wrapping, floor protection, and a dedicated team.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.03);">
+          <h3 class="font-heading text-[15px] font-semibold text-gray-900 mb-2">Packing Services</h3>
+          <p class="text-[14px] leading-relaxed text-warm-gray-400">
+            Professional packing using industry-grade materials. Fragile items, artwork, and high-value goods receive specialist handling and custom protection.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.03);">
+          <h3 class="font-heading text-[15px] font-semibold text-gray-900 mb-2">Long Distance Moving</h3>
+          <p class="text-[14px] leading-relaxed text-warm-gray-400">
+            Nationwide relocations with full-day vehicle allocation. Bristol's motorway connections make Painless Removals ideally placed for 100+ mile moves across the UK.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.03);">
+          <h3 class="font-heading text-[15px] font-semibold text-gray-900 mb-2">Chain Move Management</h3>
+          <p class="text-[14px] leading-relaxed text-warm-gray-400">
+            Coordinated moves within property chains, with full-day scheduling and no double-bookings. Jay personally plans the logistics for chain completions.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       PUBLISHED GUIDES — Jay's written resources
+  ═══════════════════════════════════════════════ -->
+  <section class="py-16 md:py-20 bg-white">
+    <div class="max-w-[680px] mx-auto px-4 sm:px-6">
+
+      <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-300 mb-3">Published Work</p>
+      <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-3">Free Guides</h2>
+      <p class="text-[16px] text-gray-600 leading-relaxed mb-8">
+        Jay and the team share practical moving knowledge through free resources, drawn from thousands of real moves.
+      </p>
+
+      <!-- Packing Guide card -->
+      <a href="/packing-guide/" class="block bg-white rounded-xl border border-gray-100 overflow-hidden no-underline hover:-translate-y-0.5 transition-all duration-300 group" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+        <div class="h-[3px] bg-linear-to-r from-accent-400 via-accent-500 to-accent-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div class="p-6 md:p-7 flex items-start gap-5">
+          <div class="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-secondary-500 transition-colors duration-300">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-heading text-[17px] font-semibold text-gray-900 group-hover:text-secondary-500 transition-colors mb-1.5">Learn How to Pack Like a Pro</h3>
+            <p class="text-[14px] text-gray-500 leading-relaxed mb-3">
+              A comprehensive, room-by-room guide covering materials, techniques, and common mistakes to avoid. Based on the methods used by the Painless Removals packing team.
+            </p>
+            <span class="text-[13px] text-primary-600 font-medium group-hover:text-secondary-500 transition-colors">Read the packing guide &rarr;</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       CTA — Contact
+  ═══════════════════════════════════════════════ -->
+  <section class="py-16 md:py-20 bg-primary-600">
+    <div class="max-w-[560px] mx-auto px-4 sm:px-6 text-center">
+
+      <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-primary-200 mb-3">Get in Touch</p>
+      <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-white leading-snug mb-3">Planning a Move?</h2>
+      <p class="text-[15px] text-primary-200 leading-relaxed mb-8">
+        Whether you need a detailed quote, have questions about a long-distance relocation, or want to talk through your options — the team is ready to help.
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+        <a
+          href="/contact/"
+          class="inline-block bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[14px] uppercase tracking-wide px-8 py-3.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+          style="box-shadow: 0 1px 3px rgba(0,0,0,0.12);"
+        >
+          Get in Touch &rarr;
+        </a>
+        <a href={phoneHref} class="inline-flex items-center gap-2 text-white font-semibold no-underline hover:text-primary-200 transition-colors text-[15px]">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          {phone}
+        </a>
+      </div>
+
+      <div class="flex items-center justify-center gap-3 text-[12px] text-primary-300">
+        <a href="/about/" class="no-underline hover:text-white transition-colors">About Us</a>
+        <span class="text-primary-400">&middot;</span>
+        <a href="/reviews/" class="no-underline hover:text-white transition-colors">Reviews</a>
+        <span class="text-primary-400">&middot;</span>
+        <a href="/instantquote/" class="no-underline hover:text-white transition-colors">Instant Quote</a>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>

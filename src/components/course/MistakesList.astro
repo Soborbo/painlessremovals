@@ -1,0 +1,33 @@
+---
+/**
+ * MistakesList — "Common Mistakes" block
+ *
+ * Numbered list with bold titles + explanations.
+ * Visually distinct from transcript prose.
+ */
+
+export interface Mistake {
+  title: string;
+  description: string;
+}
+
+export interface Props {
+  mistakes: Mistake[];
+  heading?: string;
+}
+
+const { mistakes, heading = 'Common Mistakes to Avoid' } = Astro.props;
+---
+
+<div class="mistakes-list">
+  <h3 class="mistakes-list-title">{heading}</h3>
+  <ol>
+    {mistakes.map((mistake) => (
+      <li>
+        <div>
+          <strong>{mistake.title}</strong> &mdash; {mistake.description}
+        </div>
+      </li>
+    ))}
+  </ol>
+</div>

@@ -1,0 +1,248 @@
+---
+/**
+ * /removals-bristol/bishopston/ — Bishopston neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Bishopston Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~2 miles' },
+        { label: 'Drive time from depot', value: '~10 minutes' },
+        { label: 'Postcode area', value: 'BS7' },
+        { label: 'Nearest motorway', value: 'M32 J2 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed Victorian terrace' },
+        { label: 'Typical crew', value: '3 movers, 1 van' },
+        { label: 'Usual duration', value: '5–7 hours' },
+        { label: 'Local move cost', value: '£500–£900' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£559,000' },
+        { label: 'Typical property', value: 'Victorian terrace' },
+        { label: 'Typical floors', value: '2–3 storeys' },
+        { label: 'Off-street parking', value: 'Almost none' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None (proposed)' },
+        { label: 'Suspension needed', value: 'Strongly recommended' },
+        { label: 'Off-street parking', value: 'Zero' },
+        { label: 'Conservation area', value: 'Partial (Gloucester Rd)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "This company is amazing — extremely professional and showed great attention to detail from the start. The guys were absolutely brilliant, very friendly, professional, and very fast!",
+  name: 'Melissa Burke',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Bishopston, Bristol';
+const description = `Bishopston removal specialists since 1978. We handle BS7 Victorian terraces, zero off-street parking, and school-run timing — 2 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Bishopston Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Bishopston, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS7", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Bishopston?', answer: 'Not yet. A residents\' parking zone has been proposed but not implemented. Most streets have unrestricted on-street parking — but almost no properties have driveways. We strongly recommend reserving space with cones or neighbours the evening before, or applying for a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline underline-offset-2">parking suspension</a> on particularly tight streets.' },
+  { question: 'How do you handle the narrow side streets off Gloucester Road?', answer: 'We know these streets well — they\'re where most of our Bishopston work happens. Roads like Sommerville Road and Bishop Road are typical inner-Bristol terrace streets: parked cars both sides, enough room for a Luton but not always comfortably. We arrive early to secure a good position and plan the approach based on which end of the street gives the best access.' },
+  { question: 'How much does a Bishopston removal cost?', answer: 'A 3-bed Victorian terrace moving locally typically costs £500–£900 depending on floors, access, and packing. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific estimate.' },
+  { question: 'Should I avoid match days at the Memorial Stadium?', answer: 'If you\'re in northern Bishopston near Horfield, yes. The Mem hosts both Bristol Rovers (football — can be any day of the week) and Bristol Bears (rugby — typically Saturdays). It creates parking pressure and traffic on the nearest streets. The effect is more peripheral than Ashton Gate\'s impact on Bedminster, but it\'s worth checking the fixture list before confirming your date.' },
+  { question: 'What about properties with rear-only access?', answer: 'Some Bishopston terraces have rear access via lanes or shared paths. If your property requires rear loading, let us know at booking so we can assess the route width and surface during your <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">free home survey</a>. It affects how we position the van and how many crew we need.' },
+  { question: 'Are Bishopston\'s Victorian houses difficult to move from?', answer: 'Not inherently — but they can surprise you. The street frontages are beautiful and suggest generous proportions inside, but hallways and staircase landings can be tighter than expected. Large sofas and wardrobes need careful assessment. A <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey visit</a> before the move catches these issues before they become moving-day problems.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Bishopston" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Bishopston"
+  slug="bishopston"
+  schema={schema}
+  ogImage="/img/areas/bishopston-magnolia-terrace-750w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/bishopston-magnolia-terrace"
+  heroAlt="Victorian terrace with magnolia tree on a residential street in Bishopston, Bristol"
+  heroSubtitle="Nearly 50 years of Bristol removals behind us — and that experience counts for every home removal in Bishopston."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you asked us to name the Bristol neighbourhood we work in most frequently, Bishopston would be near the top of the list. It sits close to where we're based, it has a consistently high volume of moves, and it's an area we know street by street. Bishopston occupies a sweet spot: close enough to the city centre for convenience, far enough out for proper houses with gardens and a neighbourhood feel. The school catchments — particularly for Bishop Road Primary — drive steady demand, and Gloucester Road running through the heart of it remains one of the best independent high streets in the country.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The result is a neighbourhood with regular turnover. Families arrive when school places materialise. Young professionals get their first foothold and move up. The housing ladder in Bishopston moves steadily, and we move with it. Here's the honest guide to what that means for your removal.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: Beautiful Houses, Variable Access -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Bishopston Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Beautiful Houses, Variable Access</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Here's the thing about Bishopston that shapes every removal job we do here: the houses are beautiful, but the internal access is not always as generous as the exteriors suggest. Unlike <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> — where grand Victorian proportions extend through the front door and up the staircase — Bishopston's Victorian and Edwardian terraces can surprise you inside.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Hallways that look adequate from the street can prove narrower than expected once you're trying to get a large sofa around the first bend. Staircases that serve a three-storey house can have landings at angles that demand careful planning with bigger items of furniture. This is not unique to Bishopston — it's a Victorian terrace problem across inner Bristol — but it's worth knowing that those beautiful street frontages don't guarantee easy internal access.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey visit</a> before the move is especially useful here, particularly if you have large or awkward pieces of furniture. The streets themselves — roads like Sommerville Road, Bishop Road, and the residential runs off Cheltenham Road — are typical inner-Bristol terrace streets. Parked cars on both sides, enough room for a Luton to work but not always enough for comfort. Manageable, with planning.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) — before Parking section -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Parking: The Main Challenge -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking: The Main Challenge</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Very few properties in Bishopston have off-street parking. This is the single most consistent challenge we encounter when working here. The absence of driveways means that every removal starts and ends with a kerbside parking situation. On quieter side streets, this is usually manageable — arrive early enough and there's typically space to position the van close to the property. On busier streets, it requires more active management.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bishopston does not currently have a residents' parking zone, though one has been proposed. That means no formal permit requirement — but also no mechanism to reserve a space. We always recommend speaking to neighbours in advance, putting cones out the evening before, or applying for a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking suspension</a> on particularly tight streets.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Getting the van directly outside your property on moving day is the single most effective thing you can do to keep costs down and the schedule on track.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Bishopston?"
+      description="Get a personalised quote — we factor in your street access and parking situation automatically."
+      buttonText="Get Your Bishopston Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Cheltenham Road & Bishop Road -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Cheltenham Road and the Southern Edge</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The southern part of Bishopston, where it bleeds into <a href="/removals-bristol/cotham/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Cotham</a> and down towards Stokes Croft, has a different character. Cheltenham Road carries heavy traffic and has the dense, urban feel of a major city corridor. Properties on or immediately adjacent to Cheltenham Road are busier and more complex from a parking perspective than those a few streets back.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you're moving to or from an address on or near Cheltenham Road, we plan the approach carefully — timing the arrival to avoid the worst of the bus traffic and identifying the best side-street position for the van. A couple of streets back from Cheltenham Road and you're in a different world: quieter, more manageable, the proper Bishopston residential experience.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Bishop Road and the School Factor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bishop Road deserves a specific mention. It's home to Bishop Road Primary School — one of the most sought-after primaries in Bristol. Families move to Bishopston specifically to be in the catchment, and the streets around Bishop Road carry that competitive energy.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">From a removal perspective, Bishop Road and the surrounding streets are fine to work in — decent width, manageable parking. But during school drop-off and pick-up times, the road becomes noticeably congested. If your property is near Bishop Road Primary, plan your loading or unloading phase to be clear of 8.15–9.00am and 3.00–3.30pm. A simple adjustment that saves avoidable frustration.</p>
+  </div>
+
+  <!-- S4: The Bristol Rovers Consideration -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Bristol Rovers Consideration</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "We check the Rovers fixture list before confirming every Bishopston date in the northern part of the area. Memorial Stadium creates enough parking pressure on the nearest streets that an evening kick-off and a late removal finish is a combination worth avoiding. It's not at the same level as Ashton Gate's impact on Bedminster, but it's worth the two minutes it takes to check."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bristol Rovers' Memorial Stadium on Filton Avenue sits at the northern edge of the Bishopston and <a href="/removals-bristol/horfield/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Horfield</a> boundary. Home match days — particularly the streets nearest to Gloucester Road and towards Muller Road — see increased parking pressure and traffic.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The effect is more peripheral than Ashton Gate's impact on Bedminster. Rovers draws smaller crowds. But if you're moving to or from a property in northern Bishopston, it's worth checking the fixture list before confirming your date. Midweek evening games are the ones that catch people out — less visible in the calendar than Saturday afternoon fixtures. If your moving date clashes, we can plan timing to be clear of the area before it gets difficult.</p>
+  </div>
+
+
+  <!-- S5: Is Bishopston a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Bishopston a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. Bishopston is one of our favourite areas to work in — familiar, well-maintained, with residents who tend to make the day easier rather than harder. The houses are genuinely lovely. The streets are manageable with proper planning. And Gloucester Road, which you'll be walking to regularly once you've moved in, is one of the best reasons to live in north Bristol.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The parking is the thing to plan for, and the Victorian terrace quirks are worth assessing in advance for larger items. Beyond that, Bishopston moves tend to go smoothly, and we do enough of them to make that a statement based on experience rather than optimism.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For most Bishopston moves — a three-bed Victorian terrace moving locally — you're looking at a team of three, one Luton van, and a five to seven-hour day. Book a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> and we'll confirm the specifics for your property.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bishopston Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Parking is the priority.</strong> No driveways means every Bishopston job starts with a kerbside plan. Sort this before moving day.</li>
+      <li><strong>Which part of Bishopston?</strong> Near Gloucester Road, near Cheltenham Road, or in the quieter residential interior? Each has different access and traffic characteristics.</li>
+      <li><strong>Near Bishop Road Primary?</strong> Plan your loading phase to avoid the school-run windows at 8.15–9.00am and 3.00–3.30pm.</li>
+      <li><strong>Any large or awkward items?</strong> Victorian terrace hallways can catch you out. Flag anything oversized at booking so we can assess internal access during your <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a>.</li>
+      <li><strong>Check the Rovers fixture list</strong> if you're in northern Bishopston near Horfield. Evening games especially.</li>
+      <li><strong>Converted flat or whole house?</strong> Let us know so we assess stairwell access and plan the right crew.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

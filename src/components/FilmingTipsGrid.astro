@@ -1,0 +1,165 @@
+---
+/**
+ * FilmingTipsGrid — 9-card visual grid of filming tips for video self-survey.
+ *
+ * Reused on: /free-home-survey, /send-survey-video, /video-self-assessment-guide
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+
+export interface Props {
+  /** Section subtitle (above heading) */
+  subtitle?: string;
+  /** Section heading */
+  heading?: string;
+  /** Section description */
+  description?: string;
+  /** Background class (default: "bg-white") */
+  bgClass?: string;
+  /** Show the "full guide" callout box at the bottom (default: true) */
+  showGuideLink?: boolean;
+  /** HTML id for the section */
+  id?: string;
+}
+
+const {
+  subtitle = 'Your Filming Guide',
+  heading = '9 Areas to Cover',
+  description = 'Work through each area in order &mdash; open everything, show everything, narrate as you go. The more detail you give us, the more accurate your quote.',
+  bgClass = 'bg-white',
+  showGuideLink = true,
+  id,
+} = Astro.props;
+
+const filmingAreas = [
+  {
+    number: '01',
+    title: 'Film Every Room Slowly',
+    tip: 'Walk at half your normal pace, pausing on each piece of furniture so we can write it down.',
+    image: 'assessment/checklist-01-film-rooms',
+    alt: 'Person slowly filming a living room with phone held horizontally for removal survey',
+  },
+  {
+    number: '02',
+    title: 'Open Every Cupboard',
+    tip: 'Wardrobes, kitchen cabinets, bathroom shelves — open them and hold the camera steady inside.',
+    image: 'assessment/checklist-02-open-cupboards',
+    alt: 'Hands opening a wardrobe showing shelves and storage boxes inside',
+  },
+  {
+    number: '03',
+    title: 'Show Under Beds & Hidden Spaces',
+    tip: 'Under beds, under the stairs, and in alcoves are the most commonly missed areas.',
+    image: 'assessment/checklist-03-under-beds',
+    alt: 'Person filming under a bed with phone, showing boxes and items stored there',
+  },
+  {
+    number: '04',
+    title: 'Cover Garden & Shed',
+    tip: 'Slow pan around the entire garden. Open shed doors and show everything inside.',
+    image: 'assessment/checklist-04-garden-shed',
+    alt: 'Person filming an open garden shed with tools and equipment inside',
+  },
+  {
+    number: '05',
+    title: "State What's Staying",
+    tip: 'Point the camera at anything not coming and say it clearly: "This shelving unit is staying."',
+    image: 'assessment/checklist-05-items-staying',
+    alt: 'Person pointing at a bookshelf saying STAYS while filming with phone',
+  },
+  {
+    number: '06',
+    title: 'Highlight Specialist Items',
+    tip: 'Pianos, grandfather clocks, large artwork, gym equipment — show edges and corners so we can plan.',
+    image: 'assessment/checklist-06-specialist-items',
+    alt: 'Phone held horizontally filming a grandfather clock and large framed artwork',
+  },
+  {
+    number: '07',
+    title: 'Confirm Appliances',
+    tip: 'Fridge, oven, washing machine, dishwasher — say clearly for each one: coming or staying?',
+    image: 'assessment/checklist-07-appliances',
+    alt: 'Person filming kitchen appliances with question marks — fridge, washing machine, oven',
+  },
+  {
+    number: '08',
+    title: 'Lift Covers & Identify',
+    tip: "If items are covered with sheets or tarps, lift them on camera — or describe what's underneath.",
+    image: 'assessment/checklist-08-under-covers',
+    alt: 'Hands lifting a cover to reveal bikes underneath while filming with phone',
+  },
+  {
+    number: '09',
+    title: 'Show Access Points',
+    tip: 'Film the front door, path width, driveway, and any steps — this reveals chokepoints and tricky access before moving day.',
+    image: 'assessment/checklist-09-access-points',
+    alt: 'Hands filming front door and pathway showing access for removal van',
+  },
+];
+---
+
+<section class={`section ${bgClass}`} id={id}>
+  <div class="container-wide">
+
+    <!-- Section header -->
+    <div class="text-center mb-12 max-w-2xl mx-auto">
+      <p class="text-secondary-500 text-sm font-semibold uppercase tracking-widest mb-3">{subtitle}</p>
+      <h2 class="text-3xl lg:text-4xl mb-4">{heading}</h2>
+      <p class="text-warm-gray text-lg leading-relaxed" set:html={description} />
+    </div>
+
+    <!-- 3×3 card grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6 mb-12">
+      {filmingAreas.map((area) => (
+        <div class="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+
+          <!-- Image area -->
+          <div class="relative aspect-[4/3] overflow-hidden">
+            <OptimizedPicture
+              name={area.image}
+              pattern="THIRD"
+              alt={area.alt}
+              loading="lazy"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            />
+            <!-- Number badge -->
+            <div class="absolute top-3 left-3">
+              <div class="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center">
+                <span class="text-primary-700 font-black text-xs tracking-wide">{area.number}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Text body -->
+          <div class="px-5 py-4 border-t border-gray-100">
+            <h3 class="font-bold text-primary-800 text-base mb-1.5">{area.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">{area.tip}</p>
+          </div>
+
+        </div>
+      ))}
+    </div>
+
+    {showGuideLink && (
+      <div class="max-w-2xl mx-auto">
+        <div class="bg-primary-50 border border-primary-200 rounded-2xl p-6 flex items-start gap-4">
+          <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center shrink-0 mt-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <div>
+            <h4 class="font-bold text-primary-700 mb-1">Want the full room-by-room breakdown?</h4>
+            <p class="text-primary-700/80 text-sm leading-relaxed mb-2">
+              Our detailed Video Self-Assessment Guide covers exactly what to show in each room, what to say on camera, and expert tips for items that trip people up.
+            </p>
+            <a href="/video-self-assessment-guide/" class="text-primary-600 font-bold text-sm hover:text-primary-800 transition-colors no-underline">
+              Read the full guide &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    )}
+
+  </div>
+</section>

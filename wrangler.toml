@@ -1,0 +1,10 @@
+# Cloudflare Pages configuration
+# Static site + Pages Functions for form handling
+
+name = "painlessremovals2026"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAACs7GfndiZsA_2c4"

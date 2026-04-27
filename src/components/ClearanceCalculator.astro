@@ -1,0 +1,557 @@
+---
+/**
+ * ClearanceCalculator — Interactive clearance price estimator
+ *
+ * Desktop: 2-column layout (items left, sticky result right)
+ * Mobile: stacked layout with sticky bottom bar
+ */
+import { siteConfig } from '@/config/site.config';
+const phone = siteConfig.company.contact.phone;
+---
+
+<div class="clearance-calc bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8 max-w-5xl mx-auto" id="clearance-calculator" data-phone={phone}>
+  <h3 class="text-xl sm:text-2xl font-bold text-center mb-2">Quick Price Estimator</h3>
+  <p class="text-warm-gray text-center text-sm mb-8">Select what you need cleared for an instant guide price.</p>
+
+  <!-- Desktop: 2-col layout | Mobile: stacked -->
+  <div class="lg:grid lg:grid-cols-[1fr_320px] lg:gap-8 lg:items-start">
+
+    <!-- LEFT COLUMN: Item selectors + options -->
+    <div>
+      <!-- Item selectors -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="garden" data-price="40">
+          <div>
+            <span class="font-semibold text-sm">Garden Waste</span>
+            <span class="text-xs text-warm-gray block">£40 / ton bag</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="general" data-price="60">
+          <div>
+            <span class="font-semibold text-sm">Mixed Non-Recyclables</span>
+            <span class="text-xs text-warm-gray block">£60 / ton bag</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="sofa" data-price="80">
+          <div>
+            <span class="font-semibold text-sm">Sofa</span>
+            <span class="text-xs text-warm-gray block">£80 / set</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="mattress" data-price="40">
+          <div>
+            <span class="font-semibold text-sm">Mattress</span>
+            <span class="text-xs text-warm-gray block">£40 / each</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="bed" data-price="80">
+          <div>
+            <span class="font-semibold text-sm">Bed + Mattress</span>
+            <span class="text-xs text-warm-gray block">£80 / set</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="fridge" data-price="110">
+          <div>
+            <span class="font-semibold text-sm">Fridge / Large Appliance</span>
+            <span class="text-xs text-warm-gray block">£110 / each</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="washer" data-price="40">
+          <div>
+            <span class="font-semibold text-sm">Washing Machine</span>
+            <span class="text-xs text-warm-gray block">£40 / each</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+
+        <div class="calc-item flex items-center justify-between bg-gray-50 rounded-lg px-4 py-3" data-field="room" data-price="400">
+          <div>
+            <span class="font-semibold text-sm">Full Room Clearance</span>
+            <span class="text-xs text-warm-gray block">£400 / room</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="calc-minus w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 text-lg font-bold leading-none transition-colors" aria-label="Remove one">−</button>
+            <span class="calc-qty w-6 text-center font-bold tabular-nums">0</span>
+            <button type="button" class="calc-plus w-8 h-8 rounded-full bg-primary-600 hover:bg-primary-700 text-white text-lg font-bold leading-none transition-colors" aria-label="Add one">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Access difficulty -->
+      <div class="mb-8">
+        <p class="font-semibold text-sm mb-3">Any access difficulties?</p>
+        <div class="flex flex-wrap gap-2">
+          <label class="calc-access inline-flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 cursor-pointer border-2 border-transparent transition-colors hover:border-primary-200" data-surcharge="20">
+            <input type="checkbox" class="sr-only" value="restricted-parking" />
+            <span class="text-xs sm:text-sm">Restricted parking</span>
+          </label>
+          <label class="calc-access inline-flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 cursor-pointer border-2 border-transparent transition-colors hover:border-primary-200" data-surcharge="30">
+            <input type="checkbox" class="sr-only" value="no-lift" />
+            <span class="text-xs sm:text-sm">Upper floor, no lift</span>
+          </label>
+          <label class="calc-access inline-flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 cursor-pointer border-2 border-transparent transition-colors hover:border-primary-200" data-surcharge="10">
+            <input type="checkbox" class="sr-only" value="narrow-doors" />
+            <span class="text-xs sm:text-sm">Narrow doors</span>
+          </label>
+          <label class="calc-access inline-flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 cursor-pointer border-2 border-transparent transition-colors hover:border-primary-200" data-surcharge="30">
+            <input type="checkbox" class="sr-only" value="attic-basement" />
+            <span class="text-xs sm:text-sm">Attic or basement</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Postcode / collection location -->
+      <div class="mb-8 lg:mb-0">
+        <p class="font-semibold text-sm mb-3">Where do we need to come?</p>
+        <div class="flex gap-2 max-w-xs">
+          <input type="text" class="calc-postcode w-full px-4 py-3 rounded-lg text-sm border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-400 uppercase" placeholder="Your postcode" maxlength="8" autocomplete="postal-code" />
+          <button type="button" class="calc-postcode-btn px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap">Check</button>
+        </div>
+        <p class="calc-postcode-result text-xs mt-2" style="display:none"></p>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Result panel (sticky on desktop) -->
+    <div class="lg:sticky lg:top-28">
+      <!-- Result -->
+      <div class="calc-result bg-primary-600 text-white rounded-xl p-6 text-center transition-all duration-300" style="display:none">
+        <p class="text-sm opacity-80 mb-1">Estimated clearance cost</p>
+        <p class="text-4xl sm:text-5xl lg:text-4xl font-bold mb-1">
+          <span class="calc-total">£0</span>
+        </p>
+        <p class="text-xs opacity-60 mb-4 calc-surcharge-note" style="display:none"></p>
+        <div class="calc-breakdown text-left text-sm opacity-90 mx-auto mb-6"></div>
+
+        <!-- CTA: toggles to callback form -->
+        <div class="calc-cta-wrap">
+          <button type="button" class="calc-show-form inline-block bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-sm cursor-pointer w-full">
+            Get Your Exact Quote
+          </button>
+        </div>
+
+        <!-- Inline callback form (hidden until CTA click) -->
+        <div class="calc-form-wrap mt-6" style="display:none">
+          <p class="text-sm opacity-90 mb-4">Leave your details and we'll call you back with an exact price.</p>
+          <form class="calc-callback-form flex flex-col gap-3 mx-auto text-left" novalidate>
+            <!-- Honeypot -->
+            <input type="text" name="company" class="sr-only" tabindex="-1" autocomplete="off" />
+
+            <div>
+              <input type="text" name="name" required placeholder="Your name" autocomplete="name"
+                class="w-full px-4 py-3 rounded-lg text-gray-900 text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            </div>
+            <div>
+              <input type="tel" name="phone" required placeholder="Phone number" autocomplete="tel"
+                class="w-full px-4 py-3 rounded-lg text-gray-900 text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            </div>
+            <div>
+              <input type="email" name="email" required placeholder="Email address" autocomplete="email"
+                class="w-full px-4 py-3 rounded-lg text-gray-900 text-sm border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+            </div>
+
+            <button type="submit" class="calc-submit-btn bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 font-bold uppercase tracking-wide rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl text-sm cursor-pointer disabled:opacity-60 disabled:cursor-wait w-full">
+              Request Callback
+            </button>
+            <p class="calc-form-error text-red-200 text-xs text-center" style="display:none"></p>
+          </form>
+        </div>
+      </div>
+
+      <!-- Empty state for desktop: shown when no items selected -->
+      <div class="calc-empty-state hidden lg:block rounded-xl border-2 border-dashed border-gray-200 p-6 text-center text-warm-gray">
+        <p class="text-sm">Select items on the left to see your estimated cost.</p>
+      </div>
+
+      <p class="text-center text-xs text-warm-gray mt-4">
+        Guide prices only. Final cost confirmed after assessment.
+      </p>
+    </div>
+
+  </div><!-- /grid -->
+</div>
+
+<!-- Sticky bottom bar: mobile only, visible when items selected & result out of view -->
+<div class="calc-sticky-bar fixed bottom-14 left-0 right-0 z-40 translate-y-full transition-transform duration-300 pointer-events-none lg:hidden" id="calc-sticky-bar">
+  <div class="bg-primary-600/95 backdrop-blur-sm text-white px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] pointer-events-auto">
+    <div class="max-w-3xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="text-xs opacity-80 whitespace-nowrap">Estimated cost</span>
+        <span class="calc-sticky-total text-2xl font-bold whitespace-nowrap">£0</span>
+        <span class="calc-sticky-items text-xs opacity-70 truncate hidden sm:inline"></span>
+      </div>
+      <button type="button" class="calc-sticky-cta bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-xs font-bold uppercase tracking-wide rounded-sm transition-all duration-200 whitespace-nowrap cursor-pointer flex-shrink-0">
+        Get Quote
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const calc = document.getElementById('clearance-calculator');
+  if (calc) {
+    const PHONE = calc.dataset.phone || '0117 287 0082';
+    const items = calc.querySelectorAll('.calc-item');
+    const accessLabels = calc.querySelectorAll('.calc-access');
+    const resultEl = calc.querySelector('.calc-result') as HTMLElement;
+    const totalEl = calc.querySelector('.calc-total')!;
+    const breakdownEl = calc.querySelector('.calc-breakdown')!;
+    const surchargeNote = calc.querySelector('.calc-surcharge-note') as HTMLElement;
+    const showFormBtn = calc.querySelector('.calc-show-form') as HTMLElement;
+    const ctaWrap = calc.querySelector('.calc-cta-wrap') as HTMLElement;
+    const formWrap = calc.querySelector('.calc-form-wrap') as HTMLElement;
+    const callbackForm = calc.querySelector('.calc-callback-form') as HTMLFormElement;
+    const submitBtn = calc.querySelector('.calc-submit-btn') as HTMLButtonElement;
+    const formError = calc.querySelector('.calc-form-error') as HTMLElement;
+    const postcodeInput = calc.querySelector('.calc-postcode') as HTMLInputElement;
+    const postcodeBtn = calc.querySelector('.calc-postcode-btn') as HTMLButtonElement;
+    const postcodeResult = calc.querySelector('.calc-postcode-result') as HTMLElement;
+    const emptyState = calc.querySelector('.calc-empty-state') as HTMLElement;
+    const stickyBar = document.getElementById('calc-sticky-bar') as HTMLElement;
+    const stickyTotal = stickyBar.querySelector('.calc-sticky-total')!;
+    const stickyItems = stickyBar.querySelector('.calc-sticky-items')!;
+    const stickyCta = stickyBar.querySelector('.calc-sticky-cta') as HTMLButtonElement;
+
+    // Track whether the inline result section is visible in the viewport (mobile only)
+    let resultInView = false;
+    let hasItems = false;
+    const observer = new IntersectionObserver(
+      ([entry]) => { resultInView = entry.isIntersecting; updateStickyBar(); },
+      { threshold: 0.3 },
+    );
+    observer.observe(resultEl);
+
+    function updateStickyBar() {
+      // Mobile sticky bar: show when items selected AND result NOT visible
+      const shouldShow = hasItems && !resultInView;
+      stickyBar.classList.toggle('translate-y-full', !shouldShow);
+      stickyBar.classList.toggle('translate-y-0', shouldShow);
+    }
+
+    // Bristol city centre coordinates
+    const BRISTOL_LAT = 51.4545;
+    const BRISTOL_LNG = -2.5879;
+    const COST_PER_KM = 0.5;
+    const MAX_KM = 50;
+
+    // Mileage state
+    let mileageCost = 0;
+    let postcodeValue = '';
+
+    /** Haversine distance in km */
+    function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    /** Lookup postcode and calculate mileage */
+    async function lookupPostcode() {
+      const raw = postcodeInput.value.trim().toUpperCase().replace(/\s+/g, '');
+      if (!raw) return;
+
+      postcodeBtn.textContent = '...';
+      postcodeResult.style.display = 'none';
+
+      // Bristol postcodes (BS prefix) = flat £15
+      if (/^BS\d/.test(raw)) {
+        mileageCost = 15;
+        postcodeValue = raw;
+        postcodeResult.textContent = 'Bristol area \u2014 \u00a315 collection fee included.';
+        postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-green-700';
+        postcodeResult.style.display = 'block';
+        postcodeBtn.textContent = 'Check';
+        update();
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
+        const data = await res.json();
+
+        if (data.status !== 200 || !data.result) {
+          postcodeResult.textContent = 'Postcode not found. Please check and try again.';
+          postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-red-600';
+          postcodeResult.style.display = 'block';
+          mileageCost = 0;
+          postcodeValue = '';
+          postcodeBtn.textContent = 'Check';
+          update();
+          return;
+        }
+
+        const { latitude, longitude } = data.result;
+        const distKm = haversineKm(BRISTOL_LAT, BRISTOL_LNG, latitude, longitude);
+        const distRound = Math.round(distKm);
+
+        if (distKm > MAX_KM) {
+          postcodeResult.textContent = `That\u2019s about ${distRound} km from Bristol \u2014 outside our standard service area. Contact us for a custom quote.`;
+          postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-amber-700';
+          postcodeResult.style.display = 'block';
+          mileageCost = 0;
+          postcodeValue = raw;
+          postcodeBtn.textContent = 'Check';
+          update();
+          return;
+        }
+
+        // Outside Bristol but within 50km: £0.50 per km (min £15)
+        mileageCost = Math.max(15, Math.round(distKm * COST_PER_KM));
+        postcodeValue = raw;
+        postcodeResult.textContent = `${distRound} km from Bristol \u2014 \u00a3${mileageCost} collection fee included.`;
+        postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-green-700';
+        postcodeResult.style.display = 'block';
+      } catch {
+        postcodeResult.textContent = 'Could not look up postcode. Please try again.';
+        postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-red-600';
+        postcodeResult.style.display = 'block';
+        mileageCost = 0;
+        postcodeValue = '';
+      }
+
+      postcodeBtn.textContent = 'Check';
+      update();
+    }
+
+    /** Build a summary of the current estimate for email */
+    function getSummary(): string {
+      const lines: string[] = [];
+      items.forEach(item => {
+        const qty = parseInt(item.querySelector('.calc-qty')!.textContent || '0');
+        if (qty > 0) {
+          const label = item.querySelector('.font-semibold')!.textContent;
+          const price = parseInt(item.getAttribute('data-price') || '0');
+          lines.push(`${label} x${qty} = \u00a3${qty * price}`);
+        }
+      });
+      accessLabels.forEach(label => {
+        const cb = label.querySelector('input') as HTMLInputElement;
+        if (cb.checked) {
+          const pct = label.getAttribute('data-surcharge') || '0';
+          const name = cb.value.replace(/-/g, ' ');
+          lines.push(`Access: ${name} (+${pct}%)`);
+        }
+      });
+      if (mileageCost > 0) lines.push(`Collection fee (${postcodeValue}): \u00a3${mileageCost}`);
+      lines.push(`Estimated total: ${totalEl.textContent}`);
+      return lines.join('\n');
+    }
+
+    function update() {
+      let subtotal = 0;
+      const lines: string[] = [];
+
+      items.forEach(item => {
+        const qty = parseInt(item.querySelector('.calc-qty')!.textContent || '0');
+        const price = parseInt(item.getAttribute('data-price') || '0');
+        if (qty > 0) {
+          const lineTotal = qty * price;
+          subtotal += lineTotal;
+          const label = item.querySelector('.font-semibold')!.textContent;
+          lines.push(`${label} x${qty} = \u00a3${lineTotal}`);
+        }
+      });
+
+      let totalSurchargePct = 0;
+      accessLabels.forEach(label => {
+        const cb = label.querySelector('input') as HTMLInputElement;
+        if (cb.checked) {
+          totalSurchargePct += parseInt(label.getAttribute('data-surcharge') || '0');
+        }
+      });
+
+      let total = subtotal;
+      const hasAccess = totalSurchargePct > 0;
+      if (hasAccess) {
+        const surcharge = Math.round(subtotal * totalSurchargePct / 100);
+        total += surcharge;
+        if (surcharge > 0) lines.push(`Access surcharge (${totalSurchargePct}%) = \u00a3${surcharge}`);
+      }
+
+      if (mileageCost > 0) {
+        total += mileageCost;
+        lines.push(`Collection fee = \u00a3${mileageCost}`);
+      }
+
+      if (subtotal > 0) {
+        hasItems = true;
+        resultEl.style.display = 'block';
+        if (emptyState) emptyState.style.display = 'none';
+        totalEl.textContent = `\u00a3${total}`;
+        breakdownEl.innerHTML = lines.map(l => `<div class="py-0.5">${l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`).join('');
+        surchargeNote.style.display = (hasAccess || mileageCost > 0) ? 'block' : 'none';
+        const notes: string[] = [];
+        if (hasAccess) notes.push(`${totalSurchargePct}% access surcharge`);
+        if (mileageCost > 0) notes.push(`\u00a3${mileageCost} collection fee`);
+        surchargeNote.textContent = `Includes ${notes.join(' + ')}`;
+
+        // Sync sticky bar (mobile)
+        stickyTotal.textContent = `\u00a3${total}`;
+        const itemCount = Array.from(items).reduce((sum, item) => {
+          return sum + parseInt(item.querySelector('.calc-qty')!.textContent || '0');
+        }, 0);
+        stickyItems.textContent = `${itemCount} item${itemCount !== 1 ? 's' : ''}`;
+      } else {
+        hasItems = false;
+        resultEl.style.display = 'none';
+        if (emptyState) emptyState.style.display = '';
+      }
+      updateStickyBar();
+    }
+
+    items.forEach(item => {
+      const qtyEl = item.querySelector('.calc-qty')!;
+      item.querySelector('.calc-plus')!.addEventListener('click', () => {
+        const current = parseInt(qtyEl.textContent || '0');
+        if (current < 20) { qtyEl.textContent = String(current + 1); update(); }
+      });
+      item.querySelector('.calc-minus')!.addEventListener('click', () => {
+        const current = parseInt(qtyEl.textContent || '0');
+        if (current > 0) { qtyEl.textContent = String(current - 1); update(); }
+      });
+    });
+
+    accessLabels.forEach(label => {
+      const cb = label.querySelector('input') as HTMLInputElement;
+      cb.addEventListener('change', () => {
+        label.classList.toggle('border-primary-600', cb.checked);
+        label.classList.toggle('bg-primary-50', cb.checked);
+        label.classList.toggle('border-transparent', !cb.checked);
+        label.classList.toggle('bg-gray-50', !cb.checked);
+        update();
+      });
+    });
+
+    // Postcode lookup
+    postcodeBtn.addEventListener('click', lookupPostcode);
+    postcodeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); lookupPostcode(); }
+    });
+
+    // Sticky bar CTA (mobile): scroll to result section
+    stickyCta.addEventListener('click', () => {
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+
+    // Show inline form on CTA click
+    showFormBtn.addEventListener('click', () => {
+      ctaWrap.style.display = 'none';
+      formWrap.style.display = 'block';
+      (callbackForm.querySelector('[name="name"]') as HTMLInputElement).focus();
+    });
+
+    // Form submission
+    callbackForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      formError.style.display = 'none';
+      const fd = new FormData(callbackForm);
+      const name = (fd.get('name') as string || '').trim();
+      const phone = (fd.get('phone') as string || '').trim();
+      const email = (fd.get('email') as string || '').trim();
+      const honeypot = (fd.get('company') as string || '').trim();
+
+      if (!name) {
+        window.showToast('Please enter your name so we know who to call.', 'error');
+        (callbackForm.querySelector('[name="name"]') as HTMLInputElement).focus();
+        return;
+      }
+      if (!phone) {
+        window.showToast('Please enter your phone number for the callback.', 'error');
+        (callbackForm.querySelector('[name="phone"]') as HTMLInputElement).focus();
+        return;
+      }
+      if (phone.replace(/\D/g, '').length < 10) {
+        window.showToast('That phone number doesn\'t look right — please enter a full UK number.', 'error');
+        (callbackForm.querySelector('[name="phone"]') as HTMLInputElement).focus();
+        return;
+      }
+      if (!email) {
+        window.showToast('Please enter your email address.', 'error');
+        (callbackForm.querySelector('[name="email"]') as HTMLInputElement).focus();
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        window.showToast('That email address doesn\'t look right — please check it and try again.', 'error');
+        (callbackForm.querySelector('[name="email"]') as HTMLInputElement).focus();
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending\u2026';
+
+      try {
+        const res = await fetch('/api/clearance-callback/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name, phone, email, honeypot,
+            postcode: postcodeValue,
+            estimate: totalEl.textContent,
+            summary: getSummary(),
+            source: 'clearance-calculator',
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.error) {
+          window.showToast(data.error || `Something went wrong sending your request. Please try again or call us on ${PHONE}.`, 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Request Callback';
+          return;
+        }
+
+        var tracking = JSON.parse(sessionStorage.getItem('pr_tracking') || '{}');
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).dataLayer.push({ event: 'form_submission', form_name: 'clearance_callback', utm_source: tracking.utm_source || '', utm_medium: tracking.utm_medium || '', utm_campaign: tracking.utm_campaign || '', gclid: tracking.gclid || '', fbclid: tracking.fbclid || '' });
+        window.location.href = '/house-and-waste-clearance/thank-you';
+      } catch {
+        window.showToast(`Network error — please check your connection and try again, or call us on ${PHONE}.`, 'error');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Request Callback';
+      }
+    });
+  }
+</script>

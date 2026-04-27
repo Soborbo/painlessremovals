@@ -1,0 +1,233 @@
+---
+/**
+ * OvertimeChart — animated column chart with crew-size selector
+ * showing late key & overtime cost escalation.
+ */
+
+interface OvertimeSlot {
+  time: string;
+  blocks: number;
+}
+
+interface Props {
+  slots: OvertimeSlot[];
+}
+
+const { slots } = Astro.props;
+---
+
+<div class="max-w-3xl mx-auto mb-16">
+  <h2 class="text-2xl font-bold mb-2 text-center">Late Key & Overtime Costs</h2>
+  <p class="text-warm-gray text-center mb-6">If keys are late or the move runs past 5 pm, overtime charges apply at <strong>£35 per 30 minutes per crew member</strong>. Here's how they stack up:</p>
+
+  <!-- Crew size selector -->
+  <div class="flex justify-center gap-2 mb-6" role="radiogroup" aria-label="Select crew size">
+    <button class="crew-btn active" data-crew="2" role="radio" aria-checked="true" tabindex="0">2 crew</button>
+    <button class="crew-btn" data-crew="3" role="radio" aria-checked="false" tabindex="-1">3 crew</button>
+    <button class="crew-btn" data-crew="4" role="radio" aria-checked="false" tabindex="-1">4 crew</button>
+  </div>
+
+  <!-- Overtime chart -->
+  <div id="overtime-chart" class="overtime-chart-container" aria-live="polite">
+    <div class="overtime-chart-inner">
+      {slots.map((slot, i) => (
+        <div class="overtime-column" style={`--delay: ${i}`}>
+          <div class="overtime-cost-label" data-blocks={slot.blocks}>—</div>
+          <div class="overtime-bar-wrap">
+            <div class={`overtime-bar overtime-bar--step${i + 1}`} style={`--target-height: ${(slot.blocks / 4) * 100}%`}></div>
+          </div>
+          <div class="overtime-time-label">{slot.time}</div>
+        </div>
+      ))}
+    </div>
+    <!-- Y-axis label -->
+    <div class="overtime-y-label">Cumulative cost</div>
+  </div>
+
+  <div class="mt-6 bg-primary-50 border border-primary-200 rounded-lg p-4 text-sm text-primary-700">
+    <strong>Tip:</strong> Purchase the <strong>Key Wait Waiver</strong> at booking to remove these charges entirely. Ask us about it when you get your quote.
+  </div>
+</div>
+
+<style>
+  .overtime-chart-container {
+    position: relative;
+    padding-left: 2.5rem;
+  }
+  .overtime-chart-inner {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+    height: 14rem;
+    border-bottom: 2px solid #e5e7eb;
+    border-left: 2px solid #e5e7eb;
+    padding: 0 0.5rem;
+  }
+  .overtime-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    position: relative;
+  }
+  .overtime-cost-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #2D2D2D;
+    margin-bottom: 0.375rem;
+    transition: opacity 0.3s ease;
+  }
+  .overtime-bar-wrap {
+    width: 100%;
+    max-width: 5rem;
+    height: 80%;
+    display: flex;
+    align-items: flex-end;
+  }
+  .overtime-bar {
+    width: 100%;
+    height: 0%;
+    border-radius: 6px 6px 0 0;
+    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: calc(var(--delay) * 150ms);
+  }
+  .overtime-animated .overtime-bar {
+    height: var(--target-height);
+  }
+  .overtime-bar--step1 { background: #D4A84B; }
+  .overtime-bar--step2 { background: #ea580c; }
+  .overtime-bar--step3 { background: #C65D3B; }
+  .overtime-bar--step4 { background: #dc2626; }
+  .overtime-time-label {
+    font-size: 0.6875rem;
+    color: #6B6B6B;
+    margin-top: 0.5rem;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .overtime-y-label {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(-90deg);
+    font-size: 0.6875rem;
+    color: #6B6B6B;
+    white-space: nowrap;
+    transform-origin: center center;
+  }
+
+  /* Crew selector buttons */
+  .crew-btn {
+    padding: 0.5rem 1.25rem;
+    border: 2px solid #3b6587;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3b6587;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+  .crew-btn:hover {
+    background: #f0f5fa;
+  }
+  .crew-btn.active {
+    background: #3b6587;
+    color: white;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .overtime-bar {
+      transition: none !important;
+      height: var(--target-height) !important;
+    }
+  }
+</style>
+
+<script is:inline>
+(function () {
+  var RATE = 35; // £ per 30 min per crew member
+  var container = document.getElementById('overtime-chart');
+  if (!container) return;
+
+  var buttons = document.querySelectorAll('.crew-btn');
+  var bars = container.querySelectorAll('.overtime-bar');
+  var labels = container.querySelectorAll('.overtime-cost-label');
+  var currentCrew = 2;
+
+  function formatGBP(amount) {
+    return '\u00A3' + amount.toLocaleString('en-GB');
+  }
+
+  function updateChart(crew) {
+    currentCrew = crew;
+    bars.forEach(function (bar, i) {
+      var blocks = i + 1;
+      var cumulative = RATE * crew * blocks;
+      labels[i].textContent = formatGBP(cumulative);
+      bar.style.setProperty('--target-height', ((blocks / 4) * 100) + '%');
+    });
+  }
+
+  // Crew selector
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var crew = parseInt(btn.getAttribute('data-crew'), 10);
+      buttons.forEach(function (b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-checked', 'false');
+        b.setAttribute('tabindex', '-1');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-checked', 'true');
+      btn.setAttribute('tabindex', '0');
+
+      // Re-animate
+      container.classList.remove('overtime-animated');
+      void container.offsetWidth; // force reflow
+      updateChart(crew);
+      container.classList.add('overtime-animated');
+    });
+  });
+
+  // Keyboard navigation for radiogroup
+  var btnArray = Array.from(buttons);
+  btnArray.forEach(function (btn, idx) {
+    btn.addEventListener('keydown', function (e) {
+      var next = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        next = (idx + 1) % btnArray.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        next = (idx - 1 + btnArray.length) % btnArray.length;
+      }
+      if (next >= 0) {
+        e.preventDefault();
+        btnArray[next].click();
+        btnArray[next].focus();
+      }
+    });
+  });
+
+  // Initialize with default crew
+  updateChart(currentCrew);
+
+  // Animate on scroll
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedMotion) {
+    container.classList.add('overtime-animated');
+    return;
+  }
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        container.classList.add('overtime-animated');
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.2 });
+  observer.observe(container);
+})();
+</script>

@@ -1,0 +1,250 @@
+---
+/**
+ * /removals-bristol/hotwells/ — Hotwells neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ * Covers Hotwells, Clifton Wood Road, Spike Island, and Wapping Wharf.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Hotwells Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~1.5 miles' },
+        { label: 'Drive time from depot', value: '8 minutes' },
+        { label: 'Postcode area', value: 'BS8' },
+        { label: 'Nearest motorway', value: 'M5 J19 (3 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '1–3 bed (varied)' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: '4–8 hours' },
+        { label: 'Local move cost', value: '£450–£950' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£420,000' },
+        { label: 'Typical property', value: 'Mixed (houses + flats)' },
+        { label: 'Typical floors', value: '2–5 storeys' },
+        { label: 'Lifts available', value: 'Modern blocks only' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'CE / Hotwells RPZ' },
+        { label: 'Suspension needed', value: 'Hillside: yes / Harbour: n/a' },
+        { label: 'Main difficulty', value: 'Access (hills or corridors)' },
+        { label: 'Conservation area', value: 'Yes (Clifton & Hotwells)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The removal guys, Pete and Mike, were just great — nothing was too much trouble. They sorted out our stuff carefully and quickly, making the move genuinely painless. Very competitively priced too.",
+  name: 'Nicky Hodge',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Hotwells, Bristol';
+const description = `Hotwells removal specialists covering Clifton Wood Road, Spike Island, and Wapping Wharf. Steep hillside streets and harbourside apartments — handled by a local team since 1978. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Hotwells Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Hotwells, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS8", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Can a removal van get up Clifton Wood Road and the hillside streets?', answer: 'Yes, but not every vehicle is suitable. Clifton Wood Road and the surrounding streets are narrow and steep — large lorries simply cannot get down some of them. Our Luton vans are the right size for these roads. We assess every hillside address individually before the move.' },
+  { question: 'How do you handle removals in Wapping Wharf and Spike Island apartments?', answer: 'These buildings have complex access: you park on the road, walk into the building through a courtyard, then use lifts and internal corridors to reach the apartment. Which floor you\'re on matters less than where you are relative to the lift. We ask for a <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">video walkthrough</a> before quoting any harbourside apartment.' },
+  { question: 'Is there removal van parking near the harbourside apartments?', answer: 'Designated removal parking is generally absent. We typically park on double yellow lines outside the building and work efficiently to minimise disruption. The distance from van to front door is often significant — through courtyards and corridors — which we factor into quotes and crew size.' },
+  { question: 'How much does a Hotwells removal cost?', answer: 'It varies significantly by property type. A 2-bed hillside terrace moving locally costs roughly £450–£800. A harbourside apartment depends heavily on access — which floor, how far from the lift, how far the van parks from the entrance. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Do I need a parking suspension in Hotwells?', answer: 'On the hillside streets around Clifton Wood Road, a parking suspension is strongly recommended — evening parking fills every corner. For harbourside apartments, designated parking is typically absent and double yellow lines are the default, so the priority is speed rather than suspensions.' },
+  { question: 'How does Hotwells compare to Clifton for access?', answer: 'Hotwells hillside streets are steeper and narrower than most of <a href="/removals-bristol/clifton/" class="text-secondary-500 underline underline-offset-2">Clifton</a>, more comparable to <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline underline-offset-2">Totterdown</a>. The harbourside apartments are a completely different type of job — modern buildings with complex internal routes rather than period houses with difficult streets.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Hotwells" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Hotwells"
+  slug="hotwells"
+  schema={schema}
+  ogImage="/img/about/Painless-Removals-van-Bristol-harbour-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="about/Painless-Removals-van-Bristol-harbour"
+  heroAlt="Painless Removals van at Bristol harbourside near Hotwells"
+  heroSubtitle="Since 1978, we've been Bristol's trusted removal team. Home removals in Hotwells with the experience to match the challenge."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Hotwells is a neighbourhood with a dual personality. On one side, the steep hillside streets around Clifton Wood Road climb sharply towards <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> — narrow, winding roads lined with Georgian and Victorian houses that offer some of Bristol's best views of the Suspension Bridge from below. On the other side, the modern harbourside apartments at Wapping Wharf and Spike Island sit along the waterfront, contemporary developments with courtyards, lifts, and internal corridors that present an entirely different kind of removal challenge. Both are within a few hundred metres of each other, and both require planning that goes well beyond a standard move.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">We've been working in Hotwells since 1978. Our depot on Southmead Road is less than a mile and a half away — eight minutes in the van. We know which hillside streets the Luton fits down, which apartment buildings have two lifts, and where the double yellow lines are wide enough to park while we unload. The views are some of the best in the city. The logistics require a local team that understands both types of property intimately.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Hillside -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Hotwells Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Hillside: Narrow, Steep, Period</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Clifton Wood Road and the surrounding streets climbing up toward Clifton are among the narrowest and steepest residential roads in Bristol. Large lorries simply cannot get down some of them — this is a direct, unambiguous operational constraint. For these streets, the Luton van is the only appropriate vehicle; anything larger creates problems that no amount of skill can solve.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A heavily laden van on a steep gradient also needs careful positioning. Reversing up or down a hill requires real skill, and where the van ends up relative to the property directly affects how items are carried. The gradient means everything takes slightly longer — carrying heavy furniture downhill requires controlled movement, and uphill requires more effort per trip. We assess every hillside address individually before the move, because the difference between two houses fifty metres apart on the same road can be significant.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The houses themselves are Georgian and Victorian — narrow hallways, steep staircases, rooms that are honest in size. Period properties that we know well and move regularly, but that need the crew to plan the internal route as carefully as the external one.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Harbourside -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Harbourside: Modern but Complex</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wapping Wharf and Spike Island offer some of Bristol's most distinctive addresses — and some of its more challenging removal logistics. These are modern apartment buildings with no designated removal parking. We typically park on double yellow lines outside the building and work quickly. Getting into the apartment involves a courtyard, then a lift, then a stretch of internal corridor — sometimes with multiple fire doors before reaching your front door.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Which floor you're on matters less than where you are relative to the lift. Being on the third floor next to the elevator is an entirely different job to being on the third floor at the far end of the building. We ask for a video walkthrough before quoting any harbourside apartment — walk from where the van would park, through the entrance, show us the lift, the corridors, and the apartment door. That five-minute video tells us the crew size, the equipment we need, and the time to budget.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The distance from van to front door is the key pricing variable for both property types. On the hill, it depends on where the van can safely park relative to the house. In the apartments, it's the walk from the kerb through the courtyard, up the lift, and along the corridor. We price these jobs accordingly — the access adds time, and time means cost.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Hotwells?"
+      description="Get a personalised quote — we check hill access and apartment logistics before confirming your plan."
+      buttonText="Get Your Hotwells Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Specific Street Knowledge -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Clifton Wood and Granby Hill</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Clifton Wood Road, Granby Hill, Ambrose Road — these are the streets that define the hillside character of Hotwells. The roads share the same access challenges as <a href="/removals-bristol/totterdown/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Totterdown</a>: too narrow and too steep for anything larger than a Luton van. Evening parking fills every corner — residents return from work and claim their spots, meaning a van that arrived easily at 8am can be effectively trapped by 6pm. We always think about the exit as well as the arrival.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The approach direction matters on these streets. Coming up from Hotwell Road gives you a different turning geometry to coming down from <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> Village. Our crews know which direction works for which street, and which junctions to avoid when the van is loaded. It's specific, local knowledge that doesn't appear on any map.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Van-to-Door Distance</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This is the single most important variable in pricing a Hotwells move, regardless of property type. On the hillside, a house where the van parks directly outside has a fundamentally different cost to one where the nearest safe parking is fifty metres down a steep slope. In the harbourside apartments, a ground-floor flat facing the road is a different job entirely to a fourth-floor flat at the far end of a building with one slow lift.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> — either in person or by video call — lets us measure this distance accurately and quote accordingly. It's the difference between an accurate price and an unpleasant surprise on moving day.</p>
+  </div>
+
+  <!-- S4: What the Properties Are Like -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Hotwells gives you two completely different types of move within the same postcode. The hillside period houses have narrow hallways, steep staircases, and the kind of internal proportions that require careful furniture routing. The harbourside apartments have wide corridors and modern layouts — but the journey from the van to the front door involves courtyards, lifts, fire doors, and sometimes hundreds of metres of internal walking. Both are complex. Neither is straightforward. They just challenge you in entirely different ways."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The hillside properties — Georgian and Victorian houses on Clifton Wood Road, Granby Hill, and the surrounding streets — have the characteristic proportions of their era. Hallways narrower than they look from the street, staircases with the steepness that pre-war building practice accepted as normal, rooms that are honest in size without being enormous. These are perfectly good properties to move. We know their rhythms — the corner that catches you with a large sofa, the landing that needs a specific angle of approach to get a wardrobe through.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The harbourside apartments are the architectural opposite — open-plan layouts, wide internal doors, modern proportions. The difficulty is never inside the flat. It's everything between the flat and the van: the lift capacity, the corridor width, the courtyard access, and ultimately the parking situation on the street outside. For the harbourside developments near the SS Great Britain and along Wapping Wharf, this journey is the entire job.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about the access before the van arrives rather than discovering it on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal route, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+
+  <!-- S5: Is Hotwells a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Hotwells a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Yes — but it's a manageable kind of difficulty when you plan for it. Hotwells isn't difficult in an unpredictable way. The challenges are known, specific, and consistent: steep hillside streets with limited parking, or modern apartments with complex internal access routes. Both require experience rather than improvisation. We've been doing these moves for decades, and the variables are familiar.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Hotwells RPZ (Residents' Parking Zone) covers the area, and the Clifton & Hotwells Conservation Area adds restrictions that affect some properties. For hillside moves, a parking suspension is strongly recommended. For harbourside apartments, speed and crew efficiency matter more than parking strategy. Either way, the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">pre-move survey</a> covers all of this — we visit your property, assess the access, and confirm the right crew size and timing for your specific situation.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before. For Hotwells moves — where every minute on the street or in the loading bay counts — having everything boxed and labelled before the crew arrives makes the day significantly faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Hotwells Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Hillside or harbourside?</strong> The two property types require completely different planning — confirm which applies to your move.</li>
+      <li><strong>Parking suspension.</strong> Essential for hillside streets around Clifton Wood Road. Apply through Bristol City Council in advance.</li>
+      <li><strong>Van-to-door distance.</strong> The key pricing variable. A video walkthrough or in-person survey lets us measure this accurately.</li>
+      <li><strong>Early start for the hillside.</strong> Arrive before commuter parking fills the corners. Morning starts are strongly recommended.</li>
+      <li><strong>Apartment access details.</strong> Which floor, which lift, how far from the entrance? Flag this at booking so we crew the job correctly.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

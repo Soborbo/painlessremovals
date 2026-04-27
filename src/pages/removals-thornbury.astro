@@ -1,0 +1,316 @@
+---
+/**
+ * /removals-thornbury/ — Thornbury town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Thornbury Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~14 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'BS35' },
+        { label: 'Nearest motorway', value: 'M5 J14 (6 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3–4 bed detached' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£450–£850' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£350–500k' },
+        { label: 'Typical property', value: 'Detached / semi (mix of periods)' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'None' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Castle area / High St' },
+        { label: 'Suspension needed', value: 'Occasionally' },
+        { label: 'Main difficulty', value: 'Country lanes + period homes' },
+        { label: 'Conservation area', value: 'Castle & St Mary\'s area' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Such a great company! The guys came in, dismantled and packed — no fuss, absolutely stress free! Will definitely be using again.",
+  name: 'Phoebe Cox',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Thornbury';
+const description = `Thornbury removal specialists — 14 miles north of our Bristol depot. Tudor castle town with period homes and modern estates. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Thornbury Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Thornbury",
+    "address": { "@type": "PostalAddress", "postalCode": "BS35", "addressLocality": "Thornbury", "addressRegion": "South Gloucestershire" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Does it cost more because you\'re 14 miles from Thornbury?', answer: 'No. At 14 miles and 25 minutes from our depot, the mileage component is minimal. Thornbury sits at our standard Bristol-area rates.' },
+  { question: 'How quickly can you reach Thornbury?', answer: 'About 25 minutes from our depot via the A38 through Alveston. On moving day, our crew arrives at your agreed start time — typically 8am.' },
+  { question: 'Do you know the conservation area restrictions?', answer: 'Yes. The area around Thornbury Castle, the High Street, and St Mary\'s Church has its own character and access considerations. We plan routes and vehicle positioning to work within these constraints.' },
+  { question: 'What about the older period properties near the High Street?', answer: 'We move from these regularly. Some have narrow doorways, tight staircases, and limited access — all flagged and planned for at <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey stage</a>.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 25 minutes from Thornbury.' },
+  { question: 'Do countryside properties near Thornbury have access problems?', answer: 'Some do. Properties down narrow lanes need a route check first. Our Lutons handle most country lanes well, but we always verify before moving day rather than discovering issues on arrival.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/thornbury-house-move-team-1200w.webp" preloadImage="/img/areas/thornbury-house-move-team-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/thornbury-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Thornbury"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Thornbury</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=thornbury`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/thornbury-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Thornbury"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Thornbury' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Thornbury is one of those towns that people outside South Gloucestershire often overlook, and the people who live there are quietly fine with that. It sits about 14 miles north of Bristol, with the Severn Estuary to the west and open countryside in most other directions. It's not flashy. It doesn't need to be. If you want a proper market town feel, a good high street, and enough space to breathe, Thornbury delivers consistently.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We've done a fair number of moves in and around Thornbury. Most have been into the surrounding countryside rather than the town centre itself — detached houses, larger properties, the kind of moves where someone has decided they want a bit of land and distance from the city. We know the area well.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/thornbury-house-move-team" pattern="FULL" alt="Painless Removals team working on a house move in Thornbury" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Thornbury Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Town Centre: A Working High Street</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Thornbury has a castle — Thornbury Castle, a Tudor fortification once visited by Henry VIII and Anne Boleyn, now a hotel — and the kind of independent shops and cafés that suggest a community doing well for itself. The older parts of town around the High Street and Castle Street have some attractive period properties. Move outward and you get into the more standard modern residential developments — three and four-bed houses, good-sized gardens, the kind of thing that attracts young families leaving Bristol.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The town centre is fine for Lutons but you'd want to think twice before routing a large wagon through on a busy Saturday. It's a working high street, not a bypass, and parking space outside a specific property can occasionally need coordination. Nothing we haven't dealt with before, but worth flagging with your removal company in advance.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Countryside Moves</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The properties we've moved into the surrounding countryside are where it gets more interesting. Some have been into houses down lanes — proper country lanes, not quiet roads — and this is where the choice of van matters. Our Lutons handle this comfortably. Larger vehicles need a route check first.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">One job we did out toward the Severn Vale involved a lane with a phone line that had sagged so low over the years that the van would have taken it clean off if we hadn't been warned. The owner told us in advance, we turned up with a plan, someone stood there with a broom to lift the line as the van went under, and the job went without a hitch. These things are only problems if you don't know about them.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The A38 and Getting In and Out</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The A38 is your main artery between Thornbury and Bristol, and it's a road with a split personality. Off-peak hours it moves well and the drive takes around 25 to 30 minutes. During rush hour — particularly the evening commute southbound — it backs up noticeably, and the fact that there's no real alternative route compounds this.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">For removal purposes this mostly means timing. If we're doing a move that ends with us loading up in Thornbury and heading back to Bristol, we'd rather leave at 3pm than 5pm. If you're moving into Thornbury from Bristol and want us there first thing, the commute works in our favour — we're heading north while the traffic heads south.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving to or from Thornbury?" description="Get a personalised quote — we know the A38 timing and the countryside lanes." buttonText="Get Your Thornbury Removal Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Why People Move to Thornbury</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We see patterns after years of doing this, and the pattern with Thornbury is consistent: people moving here have done their homework. They know what they're getting — a proper town with a real community, countryside on the doorstep, and a commute to Bristol that's liveable rather than punishing. The Severn bridges give you Wales as a realistic option for days out. The Forest of Dean is not far. The Cotswolds are accessible.</p>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Thornbury gets people who know what they want. A proper market town, countryside around them, and a commute that works. The moves here tend to be well-organised because the people have planned ahead. In terms of property for money, you're getting a solid deal compared to anything closer to Bristol."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">In terms of property for money, you're getting a solid deal compared to anything closer to Bristol of equivalent quality. Because Thornbury sits north of Bristol, it also works well on routes from the Midlands and the north — the M5 gets you to within a few miles.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Thornbury a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The newer estates: no. Good road widths, plenty of space for a van, efficient work. The town centre and period properties near the castle need more thought. The countryside lanes need a route check. None of it is insurmountable — it needs planning, not improvisation.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Let Painless Removals come for a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a>. We'll check the access, the volume, both properties — everything we need to make sure the day goes smoothly.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Thornbury Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 thornbury-checklist">
+          <li><strong>Town centre or estate?</strong> Period properties near the castle and High Street have different access needs from the modern developments.</li>
+          <li><strong>Countryside lane?</strong> If the property is down a lane, send us photos or drive the route first. Low wires, narrow passing points, and gradient all matter.</li>
+          <li><strong>A38 timing?</strong> We plan around the evening southbound build-up on the A38.</li>
+          <li><strong>Large property?</strong> Thornbury has some sizeable detached homes that may need a bigger crew. Flag this at survey stage.</li>
+          <li><strong>Conservation area?</strong> Properties near the castle may have access restrictions — we plan vehicle positioning accordingly.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Thornbury Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Thornbury Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Thornbury is north of Bristol — well positioned for Midlands and northern routes via M5.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Thornbury" to="London" meta="~125 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Thornbury" to="Birmingham" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Thornbury" to="Cardiff" meta="~40 miles via M48" days="1 day" href="/removals-bristol-to-cardiff/" />
+      <RouteCard from="Thornbury" to="Edinburgh" meta="~375 miles" days="2–3 days" href="/removals-bristol-to-edinburgh/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Thornbury?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across South Gloucestershire. If you're moving from or to
+        <a href="/removals-yate/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Yate</a>,
+        <a href="/removals-chepstow/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Chepstow</a>, or
+        <a href="/removals-portishead/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Portishead</a>,
+        we know these towns well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3><p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p></a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3><p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p></a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3><p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move to or from Thornbury?" description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed { margin-left: -1rem; margin-right: -1rem; }
+  @media (min-width: 640px) { .midcta-bleed { margin-left: -1.5rem; margin-right: -1.5rem; } }
+  @media (min-width: 800px) { .midcta-bleed { margin-left: 0; margin-right: 0; } }
+  .thornbury-checklist { list-style: none; padding-left: 0; }
+  .thornbury-checklist li { position: relative; padding-left: 2rem; }
+  .thornbury-checklist li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.15rem; height: 1.15rem; border: 2px solid #3b6587; border-radius: 0.25rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 0.8rem; background-position: center; background-repeat: no-repeat; }
+</style>

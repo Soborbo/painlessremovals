@@ -1,0 +1,326 @@
+---
+/**
+ * /areas/ — Top-level "Areas We Serve" hub page
+ *
+ * Type A: Hub Page — city-level SEO anchor + navigation to all child pages.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import UspBar from '@/components/UspBar.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import AreasHeroMap from '@/components/areas/AreasHeroMap.astro';
+import { siteConfig } from '@/config/site.config';
+import { bristolNeighbourhoods, surroundingTowns, hubCities, longDistanceRoutes, neighbourhoodUrl } from '@/config/areas.config';
+import { breadcrumbs } from '@/utils/schema';
+
+const title = 'Areas We Serve';
+const description = 'Painless Removals covers every Bristol postcode, surrounding towns from Bath to Chepstow, and long-distance routes across the UK. Based in Bristol since 1978.';
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Bath" },
+    { "@type": "City", "name": "Weston-super-Mare" },
+    { "@type": "AdministrativeArea", "name": "North Somerset" },
+    { "@type": "AdministrativeArea", "name": "South Gloucestershire" },
+  ],
+  "description": description,
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does a house removal in Bristol typically cost?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A 2–3 bed local Bristol move typically runs £500–£1,200. Long-distance moves start higher. Use our instant calculator for a figure based on your specific move." },
+    },
+    {
+      "@type": "Question",
+      "name": "Do you cover all of Bristol?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. We're based in Bristol and cover every Bristol postcode from BS1 through BS16 and beyond — plus Bath, Weston-super-Mare, and surrounding towns." },
+    },
+    {
+      "@type": "Question",
+      "name": "Will I need a parking suspension for moving day?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If you're in a Residents' Parking Scheme zone — Clifton, Cotham, Redland, Southville, Montpelier and more — yes. Your Move Manager guides you through the process." },
+    },
+    {
+      "@type": "Question",
+      "name": "What if I'm in a property chain?",
+      "acceptedAnswer": { "@type": "Answer", "text": "We allocate the full day exclusively to chain moves. No prior job to rush from. Add a Key Wait Waiver to remove overtime charges if keys are delayed." },
+    },
+  ],
+};
+
+const schema = [serviceSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/wales-removal2-1200w.webp">
+
+  <!-- Breadcrumbs -->
+  <div class="container-wide">
+    <AreaBreadcrumbs items={[
+      { label: 'Home', href: '/' },
+      { label: 'Areas We Serve' },
+    ]} />
+  </div>
+
+  <!-- S1: Hero (50/50 split) -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Animated map at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <AreasHeroMap />
+    </div>
+
+    <!-- Left: Content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Areas We Serve
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          Based in Bristol Since 1978. Moving You <span class="text-secondary-500">Anywhere.</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Every Bristol postcode, surrounding towns from Bath to Chepstow, and long-distance routes across the whole of the UK.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+            GET YOUR FREE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center" style="gap: 3px;">
+          <div class="flex items-center justify-center gap-2">
+            <span class="text-primary-600 italic text-lg">Exceptional</span>
+            <span class="text-yellow-400 text-2xl tracking-tight" aria-label="5 out of 5 stars">★★★★★</span>
+            <span class="text-warm-gray text-lg">ratings on</span>
+          </div>
+          <div class="flex justify-center w-full">
+            <img
+              src="/images/trustpilot-logo.svg"
+              alt="Trustpilot"
+              class="h-8 w-auto mx-auto"
+              width="150"
+              height="32"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Animated map (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <div class="absolute inset-0">
+        <AreasHeroMap />
+      </div>
+    </div>
+  </section>
+
+  <!-- USPs -->
+  <UspBar />
+
+  <!-- S2: Bristol Overview -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="grid md:grid-cols-[1.2fr_0.8fr] gap-10 lg:gap-16 items-start">
+        <div>
+          <h2 class="mb-6">We Know Bristol Inside Out</h2>
+          <p class="text-warm-gray leading-relaxed mb-4">
+            Bristol is a city that punishes lazy removal companies. Steep hills in Totterdown that turn a wardrobe into a two-person job. Residents' Parking Zones across Clifton, Cotham, Redland, Southville, and Montpelier that mean you can't just pull up outside. Victorian terraces in Bedminster where the front door opens straight onto the pavement and there's nowhere to stage furniture.
+          </p>
+          <p class="text-warm-gray leading-relaxed mb-4">
+            We've been here for nearly 50 years. Our base is on Southmead Road. Our team lives across the city — in Horfield, in Fishponds, in Knowle. When we quote your move, we already know whether your street has double yellows, whether the council will need a <a href="https://www.bristol.gov.uk/residents/parking/parking-permits/residents-parking-permits" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">parking bay suspension</a>, and whether your period conversion has a staircase that won't fit a king-size mattress without dismantling it first.
+          </p>
+          <p class="text-warm-gray leading-relaxed">
+            If you're in a property chain — and about 60% of our Bristol customers are — we block out the full day for your move. No prior job to rush from. No risk of being late for your keys.
+          </p>
+        </div>
+        <FactBox
+          title="Bristol at a Glance"
+          sections={[
+            {
+              icon: '',
+              heading: 'Coverage',
+              rows: [
+                { label: 'Our base', value: 'Southmead Rd, BS10' },
+                { label: 'Bristol postcodes', value: 'BS1–BS16+' },
+                { label: 'Active parking zones', value: '15+ RPS areas' },
+              ],
+            },
+            {
+              icon: '',
+              heading: 'Typical Moves',
+              rows: [
+                { label: 'Most common', value: '3-bed terrace' },
+                { label: 'Top route out', value: 'Bristol → London' },
+              ],
+            },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- S3: Bristol Neighbourhoods -->
+  <section class="py-16 md:py-20 bg-[#1E4240] text-white">
+    <div class="container-wide">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold mb-2 text-white">Which Bristol Neighbourhood Are You Moving From?</h2>
+      <p class="text-white/70 max-w-xl mb-8">Each neighbourhood has its own parking rules, access challenges, and property mix. Find yours below.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        {bristolNeighbourhoods.map((n) => (
+          <a href={neighbourhoodUrl(n.slug)} class="block px-4 py-3.5 bg-white/[0.07] border border-white/[0.12] rounded-lg text-white text-sm font-medium no-underline hover:bg-white/[0.14] transition-colors">
+            {n.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- S4: Hub Cities + Surrounding Towns -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-gray-900 mb-2">Moving From a Town Outside Bristol?</h2>
+      <p class="text-gray-500 max-w-xl mb-8">We cover Bath, Weston-super-Mare, and every town in between.</p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {hubCities.map((city) => (
+          <a href={city.path} class="block px-4 py-3.5 bg-white border border-gray-200 rounded-lg text-gray-900 text-sm font-semibold no-underline hover:border-primary-300 hover:shadow-sm transition-all">
+            {city.name}
+          </a>
+        ))}
+        {surroundingTowns.map((town) => (
+          <a href={town.path} class="block px-4 py-3.5 bg-white border border-gray-200 rounded-lg text-gray-800 text-sm font-medium no-underline hover:border-primary-300 hover:shadow-sm transition-all">
+            {town.name}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- S5: Long-Distance Routes -->
+  <section class="section">
+    <div class="container-wide">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-gray-900 mb-2">How Long Does a Long-Distance Move Take?</h2>
+      <p class="text-gray-500 max-w-xl mb-8">Bristol sits on the M4/M5 junction — we're often already on your route at no extra cost. Day estimates are based on a typical 3-bed move.</p>
+      <div class="grid md:grid-cols-2 gap-4">
+        {longDistanceRoutes.map((route) => (
+          <RouteCard
+            from={route.from}
+            to={route.to}
+            meta={`~${route.miles} miles · ${route.via}`}
+            days={route.days}
+            href={route.href}
+          />
+        ))}
+      </div>
+      <p class="text-xs text-gray-400 mt-4 max-w-xl">
+        * Edinburgh and Glasgow are typically 2–3 day moves. Two days for delivery, plus a third day if you'd like us to professionally pack for you at the Bristol end.
+      </p>
+      <div class="grid md:grid-cols-2 gap-4 mt-8">
+        <OptimizedPicture
+          name="areas/wales-removal2"
+          pattern="HALF"
+          alt="Painless Removals completing a house move in Wales"
+          class="w-full rounded-xl object-cover max-h-[260px]"
+          loading="lazy"
+        />
+        <OptimizedPicture
+          name="areas/wales-removal4"
+          pattern="HALF"
+          alt="Painless Removals van at a property in Wales after a long-distance removal from Bristol"
+          class="w-full rounded-xl object-cover max-h-[260px]"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- S6: Services -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-gray-900 mb-8">What Services Are Included?</h2>
+      <div class="grid md:grid-cols-3 gap-5">
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">Home Removals</h3>
+          <p class="text-sm text-gray-500 leading-relaxed mb-3">Full house moves with dedicated Move Manager and protective wrapping.</p>
+          <a href="/home-removals-bristol/" class="text-secondary-500 font-semibold text-sm no-underline hover:text-secondary-700">Learn more →</a>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">Packing Services</h3>
+          <p class="text-sm text-gray-500 leading-relaxed mb-3">Full or fragile-only packing. We bring materials and handle everything.</p>
+          <a href="/home-packing-service/" class="text-secondary-500 font-semibold text-sm no-underline hover:text-secondary-700">Learn more →</a>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-xl p-6">
+          <h3 class="font-semibold text-gray-900 mb-2">Storage</h3>
+          <p class="text-sm text-gray-500 leading-relaxed mb-3">Secure units at our warehouse, from small wardrobe to garage size.</p>
+          <a href="/storage-service/" class="text-secondary-500 font-semibold text-sm no-underline hover:text-secondary-700">Learn more →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S7: CTA Band -->
+  <section class="py-14 bg-[#A0522D] text-white text-center">
+    <div class="container-narrow">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold mb-2 text-white">Planning a Move?</h2>
+      <p class="text-white/80 mb-6 max-w-md mx-auto">Free quote in about two minutes. We show you the price before asking for your details.</p>
+      <a href="/instantquote/" class="inline-block bg-white text-[#8B4226] font-bold px-7 py-3.5 rounded-lg hover:shadow-lg hover:-translate-y-0.5 transition-all">
+        Get Your Instant Quote →
+      </a>
+    </div>
+  </section>
+
+  <!-- S8: FAQ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="font-heading text-2xl md:text-3xl font-semibold text-gray-900 mb-8">What Do People Ask About Moving in Bristol?</h2>
+      <div class="max-w-2xl space-y-0 divide-y divide-gray-200">
+        <details class="group py-4">
+          <summary class="flex justify-between items-center cursor-pointer font-semibold text-gray-900 text-[15px] list-none [&::-webkit-details-marker]:hidden">
+            How much does a house removal in Bristol typically cost?
+            <span class="text-secondary-500 text-xl font-light group-open:rotate-45 transition-transform">+</span>
+          </summary>
+          <p class="text-sm text-gray-500 leading-relaxed pt-3">A 2–3 bed local Bristol move typically runs £500–£1,200. Long-distance moves start higher. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a figure based on your specific move.</p>
+        </details>
+        <details class="group py-4">
+          <summary class="flex justify-between items-center cursor-pointer font-semibold text-gray-900 text-[15px] list-none [&::-webkit-details-marker]:hidden">
+            Do you cover all of Bristol?
+            <span class="text-secondary-500 text-xl font-light group-open:rotate-45 transition-transform">+</span>
+          </summary>
+          <p class="text-sm text-gray-500 leading-relaxed pt-3">Yes. We're based in Bristol and cover every Bristol postcode from BS1 through BS16 and beyond — plus Bath, Weston-super-Mare, and surrounding towns.</p>
+        </details>
+        <details class="group py-4">
+          <summary class="flex justify-between items-center cursor-pointer font-semibold text-gray-900 text-[15px] list-none [&::-webkit-details-marker]:hidden">
+            Will I need a parking suspension for moving day?
+            <span class="text-secondary-500 text-xl font-light group-open:rotate-45 transition-transform">+</span>
+          </summary>
+          <p class="text-sm text-gray-500 leading-relaxed pt-3">If you're in a Residents' Parking Scheme zone — Clifton, Cotham, Redland, Southville, Montpelier and more — yes. Your Move Manager guides you through the process.</p>
+        </details>
+        <details class="group py-4">
+          <summary class="flex justify-between items-center cursor-pointer font-semibold text-gray-900 text-[15px] list-none [&::-webkit-details-marker]:hidden">
+            What if I'm in a property chain?
+            <span class="text-secondary-500 text-xl font-light group-open:rotate-45 transition-transform">+</span>
+          </summary>
+          <p class="text-sm text-gray-500 leading-relaxed pt-3">We allocate the full day exclusively to chain moves. No prior job to rush from. Add a Key Wait Waiver to remove overtime charges if keys are delayed.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+</Layout>

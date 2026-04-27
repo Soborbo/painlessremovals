@@ -1,0 +1,246 @@
+---
+/**
+ * /removals-bristol/filton/ — Filton neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Filton Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~2 miles' },
+        { label: 'Drive time from depot', value: '6–8 minutes' },
+        { label: 'Postcode area', value: 'BS34' },
+        { label: 'Nearest motorway', value: 'M5 J16 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi or new-build' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day to full day' },
+        { label: 'Local move cost', value: '£350–£700' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£280–380k' },
+        { label: 'Typical property', value: '1930s semi / Brabazon new-build' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'N/A (houses)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'A38 traffic + construction' },
+        { label: 'Conservation area', value: 'No' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "They're not kidding with the name — our move was absolutely painless! Such an efficient, friendly and professional crew. Not a single item damaged and they were done by 2pm!",
+  name: 'Tom Horn',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Filton, Bristol';
+const description = `Filton removal specialists — Brabazon new-builds, aerospace relocations, no RPZ. Easy-access BS34 moves from our Southmead Road depot. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Filton Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Filton, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS34", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Do you cover the Brabazon development in Filton?', answer: 'Yes. We move families into and out of Brabazon regularly. The new streets are designed for modern access — wide roads, driveways, straight staircases. Confirm which phase you\'re in, as active construction zones can affect routing on moving day.' },
+  { question: 'Is there a parking zone in Filton?', answer: 'No. Filton has no Residents\' Parking Zone. The established estates have driveways or garages, and the new-build developments have allocated parking. Street parking is freely available on most residential roads.' },
+  { question: 'How much does a Filton removal cost?', answer: 'A 3-bed property moving locally runs roughly £350–£700 depending on the property type. New-builds with easy access tend to be at the lower end. Larger Filton Park houses or long-distance moves cost more. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Do you handle corporate relocations for Airbus and MOD employees?', answer: 'Yes. Filton\'s aerospace and defence employers generate relocation moves year-round. We handle full-service moves including packing and can coordinate with corporate relocation timelines. Many of our Filton customers are joining Airbus, Rolls-Royce, or MOD Abbey Wood.' },
+  { question: 'Are there any restricted roads near the Airbus or MOD sites?', answer: 'Some roads near MOD Abbey Wood and the Airbus facility have restricted access or security checkpoints. This doesn\'t affect residential moves, but our drivers know which routes to use and which to avoid when planning the approach to properties in those areas.' },
+  { question: 'How does Filton compare to inner Bristol for removals?', answer: 'Filton is significantly easier than inner Bristol. No parking zone, wider roads, more driveways, and flat terrain. You won\'t encounter the tight Victorian terrace streets, steep hills, or permit zone complications common in areas like <a href="/removals-bristol/clifton/" class="text-secondary-500 underline underline-offset-2">Clifton</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline underline-offset-2">Montpelier</a>. It\'s one of the easiest parts of Bristol we cover.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Filton" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Filton"
+  slug="filton"
+  schema={schema}
+  ogImage="/img/areas/filton-development-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/filton-development"
+  heroAlt="New-build housing development in Filton with a removal van on a wide residential street"
+  heroSubtitle="Close to five decades of home removals across Bristol. We bring that same care and local knowledge to every move in Filton."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Filton is the aerospace capital of the West of England, and it is in the middle of the biggest transformation in its history. The former airfield where Concorde was built is now becoming <a href="https://brabazon.co.uk" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Brabazon</a> — a 380-acre development bringing 6,500 new homes alongside Airbus, Rolls-Royce, and MOD Abbey Wood. Painless Removals moves people into and out of Filton every week from our Southmead Road depot, about two miles south on the A38 — from established 1930s semis in Filton Park to brand-new four-beds on the Brabazon streets named after aviation pioneers.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">Logistically, Filton sits in Bristol's northern corridor alongside <a href="/removals-bristol/patchway/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Patchway</a> — an area of modern and interwar housing where the infrastructure works in our favour. No Residents' Parking Zone. The A38 dual carriageway connects directly to our depot and the M5 motorway. The terrain is flat, the roads are wide, and most properties are two-storey with standard staircase widths. The only complications are A38 rush-hour congestion and the ongoing construction traffic around the Brabazon development. We know which phases of Brabazon are complete, which approach roads are clear, and which shortcuts avoid the A38 bottleneck at Filton roundabout.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Brabazon Development -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Filton Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Brabazon Development</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Thousands of homes are being built on the former Filton Airfield, and the development will continue through the late 2020s. If you're moving into a Brabazon property, the streets are modern — wide roads, driveways, straight staircases, and doorways designed for contemporary furniture. Access is excellent. The complication is construction traffic: heavy vehicles using the same approach roads, temporary diversions, and phases that aren't yet connected. We check the current state of the site before every Brabazon move and plan the route accordingly.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Brabazon project is one of the biggest housing developments in the region. When it's complete, it will add thousands of new homes, a new arena, and significant commercial space. What that means for anyone moving into the area in the next few years is that the neighbourhood is changing — new roads, new junctions, new building sites that will become new streets with new access considerations. We keep pace with the development so our crews aren't guessing on the day.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">New-build moves need extra care in different places than older properties — it's the floors and freshly painted walls rather than the banisters and doorframes. Our crew arrives with protective materials for new flooring and brings the same discipline to protecting a £30,000 kitchen as they would to wrapping antique furniture.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Filton Park and the Established Streets -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Filton Park and the Established Streets</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The 1930s semis around Shield Road and Northville Road are the desirable family streets — wider than Victorian terraces, with front gardens and driveways. Some of the pre-WWI houses have larger footprints and generous gardens but tighter side access that can limit where we position the van. A standard 3-bed semi in Filton Park is a half-day move with a two or three-person crew.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The typical Filton Park move involves a property with sensible hallways, stairs that don't require a geometry degree to navigate with a sofa, and enough room that you can get a wardrobe upstairs without dismantling it. These are settled, predictable streets — the kind of property where what you see is broadly what you get, and that makes for a cleaner quote and fewer surprises on the day.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Filton connects directly to <a href="/removals-bristol/horfield/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Horfield</a> to the south — it's suburban, the road access is good, and it's part of that northern A38 corridor where we rarely have access problems. UWE's campus and South Gloucestershire &amp; Stroud College add a younger population to the mix, though student properties are concentrated in specific streets.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Filton?"
+      description="Get a personalised quote — whether it's a Brabazon new-build or a Filton Park semi, we know the area."
+      buttonText="Get Your Filton Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Aerospace Relocations & the A38 Corridor -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Aerospace Relocations and the A38 Corridor</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Relocation moves are a significant part of our Filton work. Airbus designs and manufactures aircraft wings here. Rolls-Royce runs aero-engine production over the boundary in Patchway. MOD Abbey Wood — the Ministry of Defence's procurement headquarters — employs thousands. BAE Systems and GKN are also present. All of these employers bring professionals relocating from elsewhere in the UK, often on fixed corporate timelines. We handle the full logistics: <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a> the day before, loading and driving on the agreed day, and unpacking at the new Filton home. If your employer has a relocation coordinator, we work directly with them.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">The area grew up in the orbit of the Filton Airfield and the aerospace facilities nearby. For decades, this was where engineers, technicians, and aerospace workers settled their families. That industrial base has shifted — the airfield closed in 2012, and much of the site is now the Brabazon development — but the employers remain, and the relocation pipeline continues year-round.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Motorway Access: A Practical Advantage</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">One of the things that makes Filton work well for long-distance moves is the motorway access. You're close to Junction 16 of the M5 and the M4/M5 interchange at Almondsbury. For a removal team, that means you're on a major road within minutes of loading up, without crawling through the city centre.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">If you're moving to Filton from London, the Midlands, or Wales, the drop-off is clean — come off the M5, and you're in Filton. For moves heading out, the same logic applies: load up in the morning, hit the motorway, and you're making time before the traffic builds. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the access at both ends so there are no surprises.</p>
+  </div>
+
+  <!-- S4: What the Properties Are Like -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Properties Are Like</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Filton connects straight through to Horfield — it's suburban, it's practical, and the road access is good. It's part of that northern Bristol corridor where we rarely have access problems. The Brabazon development changes month to month, so we check the current state of the site before every move."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Filton has two distinct housing types: the established 1930s and post-war estates and the brand-new Brabazon development. They're meaningfully different jobs. The older homes have front gardens, some driveways, and enough road width for a Luton to sit comfortably while the crew works. The Brabazon new-builds have wider roads, allocated parking, and modern proportions designed with contemporary furniture in mind — but active construction zones can change the approach route at short notice.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Filton Park semis are well-built family homes with slightly more generous hallways than the Victorian terraces you find in inner Bristol, staircases that accommodate standard furniture without tight manoeuvring, and overall proportions that make furniture handling easier. These are the kind of properties where the removal team isn't standing in the garden wondering how to explain that a corner unit won't fit through the door.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about any access challenges before the van arrives rather than discovering them on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+  <!-- S5: Is Filton a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Filton a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">No. Filton is one of the easiest parts of Bristol for removals. No Residents' Parking Zone. No conservation area. Flat terrain, wide roads, and more driveways than you'll find anywhere in the inner city. You won't encounter the tight Victorian terrace streets, steep hills, or permit zone complications common in areas like <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a> or <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>. The only variable is whether you're in an established property or a new-build — and we plan for both.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For most Filton moves — a two or three-bed semi or new-build moving locally — you're looking at a team of two to three, one van, and a half-day to full-day job. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the access, the parking, and the right crew size. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Filton Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Established or new-build?</strong> Filton Park semis and Brabazon new-builds are meaningfully different jobs — flag which you have at booking so we bring the right protective materials.</li>
+      <li><strong>Brabazon phase?</strong> If you're moving into the development, confirm which phase and plot number. Construction zones shift regularly and we check the current routing before every move.</li>
+      <li><strong>Corporate relocation timeline?</strong> If your move is employer-coordinated, share the relocation coordinator's details early — we align our schedule with theirs.</li>
+      <li><strong>A38 timing?</strong> Rush-hour congestion on the A38 and around Filton roundabout can add time. We schedule arrivals to avoid the worst of it.</li>
+      <li><strong>Large items in older properties?</strong> The pre-war houses occasionally have tighter side access. Flag oversized furniture at booking so we assess the approach.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

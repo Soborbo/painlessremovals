@@ -1,0 +1,644 @@
+---
+/**
+ * Home Removals Guide — Bristol & Bath
+ *
+ * Comprehensive informational guide targeting long-tail educational queries:
+ * "home removals guide", "how to move house", "moving tips", "furniture
+ * disassembly moving", "moving with pets", etc.
+ *
+ * SEO role: support/pillar content that builds topical authority and passes
+ * contextual link equity to service pages (home-removals-bristol,
+ * home-packing-service, man-with-a-van, storage-service, etc.).
+ *
+ * 25 old WordPress blog posts redirect here — content must cover the full
+ * range of topics those posts addressed.
+ *
+ * Layout: 50/50 hero + blog layout with sticky TOC sidebar
+ * (same pattern as moving-with-children, key-wait-waiver, etc.)
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import UspBar from '@/components/UspBar.astro';
+import { siteConfig } from '@/config/site.config';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { article, faqPage, breadcrumbs } from '@/utils/schema';
+
+const pageTitle = 'Home Removals Guide for Bristol & Bath | Painless Removals';
+const pageDescription = 'Everything you need to know about moving house in Bristol and Bath. Practical advice on planning, packing, choosing a removal company, furniture disassembly, moving with pets, and more — from a team with nearly 50 years\' experience.';
+
+const director = siteConfig.company.director;
+
+const tocItems = [
+  { id: 'start-planning', label: 'Start Planning Early' },
+  { id: 'best-time', label: 'Best Time to Move' },
+  { id: 'diy-or-hire', label: 'DIY, Van, or Removal Company?' },
+  { id: 'choosing-a-company', label: 'Choosing a Company' },
+  { id: 'long-distance-tip', label: 'Long-Distance Tip' },
+  { id: 'packing', label: 'Packing Essentials' },
+  { id: 'furniture', label: 'Furniture Disassembly' },
+  { id: 'heavy-lifting', label: 'Lifting Heavy Items' },
+  { id: 'pets', label: 'Moving with Pets' },
+  { id: 'bristol-bath', label: 'Bristol & Bath Challenges' },
+  { id: 'new-home', label: 'Your New Home Checklist' },
+  { id: 'faq', label: 'FAQ' },
+];
+
+// FAQ data — informational intent, not service-selling
+const faqs = [
+  {
+    question: 'What is the best day of the week to move house?',
+    answer: 'Friday is by far the most popular day for completions, which means removal companies charge more, roads are busier, and availability is tighter. If your schedule allows, a midweek move (Tuesday to Thursday) is usually cheaper, calmer, and easier to book. Some companies, including us, offer a small discount for midweek bookings.',
+  },
+  {
+    question: 'How far in advance should I start planning a home removal?',
+    answer: 'We recommend starting at least 6–8 weeks before your target date. This gives you time to declutter, get quotes from multiple removal companies, arrange parking permits, and pack without rushing. During peak season (June–September), booking even earlier is wise — good companies fill up fast.',
+  },
+  {
+    question: 'Should I pack myself or hire professional packers?',
+    answer: 'Both are valid options. Packing yourself saves money but takes significant time — most people underestimate how long it takes by at least 50%. Professional packers can do an entire 3-bed house in a day, and their packing is covered by insurance. A good middle ground is to pack most rooms yourself and leave the kitchen and fragile items to the professionals. Our <a href="/packing-guide/">free packing guide</a> covers everything if you want to do it yourself.',
+  },
+  {
+    question: 'Do I really need a home survey before getting a quote?',
+    answer: 'Yes — and be wary of any company that skips this step. Without seeing your belongings, a quote is just a guess. The most common problem we see is underestimating volume: people book a van that is too small, and on the day they are left with items that will not fit. A proper survey (video or in-person) takes about 15 minutes and produces an accurate, fixed price. Our <a href="/free-home-survey/">free home assessment</a> has no obligation attached.',
+  },
+  {
+    question: 'What should I do with items I do not want to take to my new home?',
+    answer: 'Start sorting early and be ruthless. Sell valuable items on eBay or Facebook Marketplace, donate usable items to charity shops or the Bristol Freecycle network, and arrange a council bulky waste collection for anything else. The less you move, the cheaper and easier the whole process becomes. If you are unsure about sentimental items, short-term <a href="/storage-service/">storage</a> gives you time to decide without pressure.',
+  },
+  {
+    question: 'Is it cheaper to hire a removal company from the destination city?',
+    answer: 'It can be. If you are moving from London to Bristol, for example, a Bristol-based company drives to London, loads up, and drives home — the same total distance as a London company driving to Bristol and back. But because operating costs outside London are generally lower, the Bristol company can often offer a better price. Always get quotes from companies at both ends of the route.',
+  },
+  {
+    question: 'How do I move house with a dog or cat?',
+    answer: 'Keep pets away from the chaos on moving day — ideally with a friend, neighbour, or in a quiet room with their bed and water bowl. Transport them yourself in a secure carrier, never in the removal van. At the new home, set up a familiar space with their belongings before letting them explore. Cats in particular should be kept indoors for at least two weeks. Update your pet\'s microchip with the new address and find a local vet before you need one.',
+  },
+  {
+    question: 'What are the biggest mistakes people make when moving house?',
+    answer: 'The five we see most often: (1) not decluttering before packing — you end up paying to move things you do not want, (2) leaving packing to the last minute and doing a poor job under pressure, (3) choosing the cheapest quote without checking insurance or reviews, (4) not arranging parking for the van — this alone can add hours to a move, and (5) forgetting to take meter readings at both properties.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  article({
+    headline: "Home Removals Guide for Bristol & Bath",
+    description: pageDescription,
+    url: "/home-removals-guide-bristol-bath/",
+    datePublished: "2023-01-15",
+    dateModified: "2026-03-12",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Home Removals Guide — Bristol & Bath" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} preloadImage="/img/home-removals/Bristol-home-removals-service-main-750w.avif">
+
+  <!-- ============================================
+       HERO: 50/50 split (same as moving-with-children)
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: image top -->
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture
+        name="home-removals/Bristol-home-removals-service-main"
+        pattern="FULL"
+        alt="Painless Removals team during a home removal in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-auto"
+      />
+    </div>
+
+    <!-- Left: content -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Home Removals Guide
+        </h1>
+
+        <p class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          Everything You Need to Know About Moving in <span class="text-secondary-500">Bristol &amp; Bath</span>
+        </p>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Practical advice on planning, packing, choosing a removal company, and avoiding the most common pitfalls &mdash; from a team with nearly 50 years&rsquo; experience.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+            GET YOUR FREE QUOTE
+          </a>
+          <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: full-bleed image (desktop) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="home-removals/Bristol-home-removals-service-main"
+        pattern="FULL"
+        alt="Painless Removals team during a home removal in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar />
+
+  <!-- ============================================
+       BLOG LAYOUT: article + sticky TOC sidebar
+  ============================================ -->
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6 py-12 md:py-16">
+    <div class="blog-layout">
+
+      <!-- ARTICLE -->
+      <article class="min-w-0">
+
+        <AuthorByline lastUpdated="March 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Moving home is something most people dread: it&rsquo;s exhausting, uncertain, and immensely stressful. Research by Just Move In found that around 52% of people rank <strong>moving home among life&rsquo;s most stressful events</strong> &mdash; outranking even having a baby, getting married, or facing a job interview.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-10">But it doesn&rsquo;t have to be this way. In this guide, we&rsquo;ve gathered everything <strong>we&rsquo;ve learned over nearly five decades in the removal business</strong> to help you avoid the most common pitfalls. This is what sets Painless Removals apart: we don&rsquo;t just carry your furniture from A to B &mdash; we do everything in our power to make your move <em>truly painless</em>.</p>
+
+        <!-- ── S1: START PLANNING EARLY ── -->
+        <section id="start-planning">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Start Planning Your Home Removal Early</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Time can become your worst enemy when you rush. We recommend you begin planning as early as possible. Start sorting your belongings and decluttering <strong>at least 6&ndash;8 weeks before moving day</strong>. Moving is easier (and cheaper) when you have less stuff, and this gives you time to decide what to keep and to find new homes for items you no longer need &mdash; whether by selling, gifting to friends, or donating to charity.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Be ruthless: <strong>the more you purge now, the less you have to move, unpack, and organise later</strong>. This is especially important if you&rsquo;re moving into a smaller space or doing an expensive long-distance move.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">But also be careful: sorting through your things <strong>can be unexpectedly emotional</strong>. It&rsquo;s far better to allow yourself moments to reflect on memories than to pack mechanically.</p>
+
+          <!-- Advice box → contextual link to storage service -->
+          <div class="my-6 bg-orange-50 border-l-4 border-secondary-500 rounded-r-lg p-5">
+            <p class="text-secondary-600 font-bold text-sm mb-1">Painless Removals&rsquo; Advice</p>
+            <p class="text-[15px] leading-relaxed text-gray-700">If you&rsquo;re unsure about certain sentimental items, consider <a href="/storage-service/" class="text-primary-600 underline hover:text-primary-700">short-term storage</a>. Once you&rsquo;re settled in your new home, you&rsquo;ll have a clearer idea of what you truly need. If you haven&rsquo;t missed an item after a month or two, you can donate it without regret; if you do, you&rsquo;ll be glad you saved it.</p>
+          </div>
+
+          <figure class="my-8">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="areas/bedminster-victorian-terrace-removal" pattern="LARGE" alt="A home removal on the narrow streets of Bedminster, Bristol" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="text-center text-[13px] text-gray-500 mt-2 italic">A home removal on the narrow streets of Bedminster, Bristol</figcaption>
+          </figure>
+        </section>
+
+        <!-- ── S2: BEST TIME TO MOVE ── -->
+        <section id="best-time" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Is the Best Time for a Home Removal?</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you&rsquo;re looking to save money on your <a href="/home-removals-bristol/" class="text-primary-600 underline hover:text-primary-700">home removal in Bristol</a>, choosing your moving date wisely is just as important as planning ahead. Our advice is simple: <strong>try to move when others aren&rsquo;t</strong>.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">According to the HomeOwners Alliance, <strong>Friday is by far the most popular day for moving homes</strong>. This seems obvious &mdash; people want the full weekend to settle in. However, Fridays also bring <strong>significant traffic jams</strong>, many <strong>public services close earlier</strong>, and due to high demand, <strong>it&rsquo;s often the most expensive day</strong>.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The busiest month for home removals in Bristol and the wider South West is typically <strong>August</strong>. While April through October offer pleasant weather, you don&rsquo;t want to be tackling heavy lifting during a 30&deg;C heatwave.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">And don&rsquo;t forget <strong>holiday seasons</strong> &mdash; you&rsquo;ll want your solicitor, estate agent, and banker readily available when finalising your move.</p>
+
+          <div class="my-6 bg-orange-50 border-l-4 border-secondary-500 rounded-r-lg p-5">
+            <p class="text-secondary-600 font-bold text-sm mb-1">Painless Removals&rsquo; Advice</p>
+            <p class="text-[15px] leading-relaxed text-gray-700"><strong>Avoid Fridays and August if possible.</strong> Simply shifting your moving date by a few days within the same week could potentially <strong>save you 10&ndash;15% on your removal cost</strong>. Check our <a href="/home-removals-bristol/" class="text-primary-600 underline hover:text-primary-700">home removals service</a> for current availability.</p>
+          </div>
+
+          <figure class="my-8">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="home-removals/Bristol-home-removals-company" pattern="LARGE" alt="Our van during a home removal at Harbourside, Bristol" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="text-center text-[13px] text-gray-500 mt-2 italic">Our van during a home removal at Harbourside, Bristol</figcaption>
+          </figure>
+        </section>
+
+        <!-- ── S3: DIY, MAN WITH A VAN, OR REMOVAL COMPANY? ── -->
+        <section id="diy-or-hire" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Should You Do It Yourself, or Hire a Removal Company?</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There isn&rsquo;t a single &ldquo;right&rdquo; answer &mdash; it truly depends on your circumstances.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Hire a van and do it yourself?</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you&rsquo;ve got a few friends willing to help, plenty of time for multiple trips, and someone with the appropriate licence to drive a larger van, then handling the move yourself can be viable. It&rsquo;s <strong>the cheapest option</strong>, but also <strong>the most hassle</strong>, and inexperienced handling increases the chance of damage.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">What about a &ldquo;man with a van&rdquo;?</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A <a href="/man-with-a-van-near-bristol/" class="text-primary-600 underline hover:text-primary-700">man with a van in Bristol</a> can solve half the problem. The driver should have a proper licence and some experience. However, <strong>vet the service thoroughly</strong>. Because virtually anyone can buy a van and start a removals business, there are many unprofessional operators out there.</p>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We often hear of teams agreeing to a price, only to <strong>demand an extra 30&ndash;50% on the spot</strong>. Other common issues include failing to arrive on time and damaging goods without proper insurance.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">When to hire a professional removal company</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A professional <a href="/home-removals-bristol/" class="text-primary-600 underline hover:text-primary-700">home removals company</a> gives you trained staff, proper insurance, specialist equipment, and someone to coordinate the entire process. For larger homes, valuable belongings, or stressful chain moves, the peace of mind is usually worth it.</p>
+
+          <div class="my-6 bg-orange-50 border-l-4 border-secondary-500 rounded-r-lg p-5">
+            <p class="text-secondary-600 font-bold text-sm mb-1">Painless Removals&rsquo; Advice</p>
+            <p class="text-[15px] leading-relaxed text-gray-700">You don&rsquo;t always need a full removal service. If you have fit friends and you&rsquo;re comfortable driving a van, doing it yourself can work. But if you want everything handled smoothly &mdash; especially for larger or complex moves &mdash; <a href="/home-removals-bristol/" class="text-primary-600 underline hover:text-primary-700">professional home removals</a> take the risk off your shoulders.</p>
+          </div>
+        </section>
+
+        <!-- ── S4: CHOOSING A REMOVAL COMPANY ── -->
+        <section id="choosing-a-company" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">How to Choose a Reliable Removal Company</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Removal firms in Bristol <strong>book up weeks or months ahead</strong>. Contact at least three companies 6&ndash;8 weeks before your move.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">What to look for</h3>
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li>Read customer reviews &mdash; note both praise and complaints</li>
+            <li>Check they have <strong>comprehensive insurance</strong>. Our <a href="/insurance-and-liability/" class="text-primary-600 underline hover:text-primary-700">insurance page</a> explains what proper coverage looks like.</li>
+            <li>Ask about <strong>specialist equipment</strong>: padded bags, glassware boxes, sturdy crates</li>
+            <li>Inquire about <strong>hidden fees</strong>: weekend rates, stair charges, fuel surcharges</li>
+            <li>Avoid companies that won&rsquo;t do a proper assessment</li>
+          </ul>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Never skip the home assessment</h3>
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Never accept a quote without a thorough assessment. <strong>Most people underestimate the volume of their belongings</strong>. A <strong>15-minute assessment</strong> prevents the dreadful surprise of items that won&rsquo;t fit. Our <a href="/free-home-survey/" class="text-primary-600 underline hover:text-primary-700">free home survey</a> is available as a video walkthrough or in-person visit.</p>
+
+          <figure class="my-8">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="assessment/video-survey-hero" pattern="LARGE" alt="A home removals assessment — the best way to ensure all your belongings fit" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="text-center text-[13px] text-gray-500 mt-2 italic">A home removals assessment can be done in person or online &mdash; it&rsquo;s the best way to ensure all your belongings fit into the quoted vehicles</figcaption>
+          </figure>
+        </section>
+
+        <!-- ── S5: LONG-DISTANCE TIP ── -->
+        <section id="long-distance-tip" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">A Tip to Save Money on Long-Distance Moves</h2>
+
+          <div class="my-6 bg-primary-50 border-l-4 border-primary-600 rounded-r-lg p-5">
+            <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Many people aren&rsquo;t aware of this: <strong>you&rsquo;re not limited to choosing a removal company from your current city</strong>. You can also consider companies based in your destination, or somewhere along the route.</p>
+
+            <p class="text-[17px] leading-relaxed text-gray-800 mb-3">A company from your destination city drives to you, loads up, then drives home &mdash; <strong>same total distance as a local company doing the round trip</strong>. But because operating costs outside major cities are generally lower, they can often offer a better price.</p>
+
+            <p class="text-[17px] leading-relaxed text-gray-800">For example, if you&rsquo;re <a href="/removals-bristol-to-london/" class="text-primary-600 underline hover:text-primary-700">moving from London to Bristol</a>, get quotes from companies in Bristol, Reading, and Swindon as well as London-based firms.</p>
+          </div>
+        </section>
+
+        <!-- ── S6: PACKING ESSENTIALS ── -->
+        <section id="packing" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Packing Essentials for Your Home Removal</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We&rsquo;ve put together a comprehensive <a href="/packing-guide/" class="text-primary-600 underline hover:text-primary-700">free packing guide with 8 video lessons</a> that covers every room. Here are the essentials:</p>
+
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li><strong>Use sturdy boxes &amp; pack smartly:</strong> Don&rsquo;t overfill. Place heavier items at the bottom and distribute weight evenly.</li>
+            <li><strong>Label everything clearly:</strong> Mark every box with the room it belongs to. Saves hours when unpacking.</li>
+            <li><strong>Prepare an essentials box:</strong> Toiletries, change of clothes, phone charger, prescriptions. Last box loaded, first one off.</li>
+            <li><strong>Keep a toolbox &amp; cleaning box accessible:</strong> Screwdrivers, hammer, tape in one; detergents, cloths, bin bags in the other.</li>
+            <li><strong>Protect electronics:</strong> Original packaging or padded bags. Pack cables separately and label them. <strong>Back up your data first.</strong></li>
+            <li><strong>Handle plants with care:</strong> Cut back watering, cover soil, transport in open-top boxes. They can&rsquo;t be stacked.</li>
+          </ul>
+
+          <figure class="my-8">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="packing/Bristol-packing-homes" pattern="LARGE" alt="Professional packing for a home removal in Bristol" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="text-center text-[13px] text-gray-500 mt-2 italic">Professional packing for a home removal in Bristol</figcaption>
+          </figure>
+
+          <div class="my-6 bg-orange-50 border-l-4 border-secondary-500 rounded-r-lg p-5">
+            <p class="text-secondary-600 font-bold text-sm mb-1">Painless Removals&rsquo; Advice</p>
+            <p class="text-[15px] leading-relaxed text-gray-700">Most people don&rsquo;t consider hiring packers. In reality, <a href="/home-packing-service/" class="text-primary-600 underline hover:text-primary-700">professional packing</a> can be surprisingly affordable &mdash; especially if you only delegate the kitchen. It reduces stress, lets you maintain your routine, and ensures fewer breakages.</p>
+          </div>
+        </section>
+
+        <!-- ── S7: FURNITURE DISASSEMBLY ── -->
+        <section id="furniture" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Furniture Disassembly</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Start by <strong>measuring doors and corridors</strong> in both homes. Even if an item could fit, if there isn&rsquo;t room to manoeuvre safely, disassemble it. We always recommend dismantling LCD TV legs, non-standard furniture with protruding parts, and very heavy items like gym equipment.</p>
+
+          <figure class="my-8">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="furniture-disassembly/furniture-disassembly-removal" pattern="LARGE" alt="Disassembling a table for a home removal in Bath" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="text-center text-[13px] text-gray-500 mt-2 italic">Disassembling a table near Oldfield Park station in Bath</figcaption>
+          </figure>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">How to disassemble your furniture</h3>
+          <ol class="list-decimal pl-6 space-y-3 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li><strong>Find the manual:</strong> Furniture can have hidden screws and bolts. Without the manual, you could break panels.</li>
+            <li><strong>Keep bolts and screws safe:</strong> Put all fixings into a sealed plastic bag, label it, and tape it to the furniture.</li>
+            <li><strong>Know when to ask for help:</strong> Don&rsquo;t disassemble high-value or antique items without insurance. The potential loss far outweighs any saving.</li>
+          </ol>
+
+          <div class="my-6 bg-orange-50 border-l-4 border-secondary-500 rounded-r-lg p-5">
+            <p class="text-secondary-600 font-bold text-sm mb-1">Painless Removals&rsquo; Advice</p>
+            <p class="text-[15px] leading-relaxed text-gray-700">Professional furniture disassembly and reassembly is included in our <a href="/home-removals-bristol/" class="text-primary-600 underline hover:text-primary-700">home removals service</a>. Our fully insured cover means any unexpected mishaps are taken care of.</p>
+          </div>
+        </section>
+
+        <!-- ── S8: LIFTING HEAVY ITEMS ── -->
+        <section id="heavy-lifting" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Tips for Lifting Heavy Items Safely</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">You might still need to shift things around once the team has left. Back injuries and muscle strains are very common without proper technique.</p>
+
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li><strong>Always warm up first:</strong> Stretch your back, shoulders, knees, legs, and arms before any heavy lifting.</li>
+            <li><strong>Lift with your knees, not your back:</strong> Keep your back straight and upright. This single technique prevents most injuries.</li>
+            <li><strong>Use proper equipment:</strong> Furniture sliders, moving straps, and a sack truck make a huge difference.</li>
+            <li><strong>Clear the path first:</strong> Make sure doorways, hallways, and stairs are completely clear before carrying anything.</li>
+            <li><strong>Know your limits:</strong> A pulled muscle or slipped disc will cost you far more than hiring help for a few hours.</li>
+          </ul>
+
+          <figure class="my-8">
+            <div class="overflow-hidden rounded-xl">
+              <OptimizedPicture name="areas/clifton-sofa-removal" pattern="LARGE" alt="Our team moving a sofa in Clifton, Bristol" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="text-center text-[13px] text-gray-500 mt-2 italic">Our team moving a sofa in Clifton, Bristol</figcaption>
+          </figure>
+        </section>
+
+        <!-- ── S9: MOVING WITH PETS ── -->
+        <section id="pets" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Moving with a Dog, a Cat, or Any Pet</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Pets can sense the disruption of a move long before the boxes come out. Keeping them calm and safe takes extra planning.</p>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">On moving day</h3>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li>Keep your pet <strong>away from the chaos</strong> &mdash; ideally with a friend or in a quiet room with their bed and water</li>
+            <li><strong>Never transport pets in the removal van</strong> &mdash; take them in your own car in a secure carrier</li>
+            <li>Keep food, bowls, lead, litter tray, and medication easily accessible</li>
+          </ul>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">At the new home</h3>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li>Set up a <strong>familiar space</strong> with their bed and toys before letting them explore</li>
+            <li><strong>Cats should be kept indoors for at least two weeks</strong> to prevent them trying to return to the old address</li>
+            <li>Dogs may need extra walks while adjusting to new sounds and smells</li>
+            <li>Check your garden is <strong>secure and escape-proof</strong> before letting pets outside</li>
+          </ul>
+
+          <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Admin</h3>
+          <ul class="space-y-2 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li><strong>Update your pet&rsquo;s microchip</strong> with the new address (a legal requirement)</li>
+            <li>Find and register with a <strong>new vet</strong> before you need one</li>
+            <li>If your pet has anxiety, speak to your vet about calming aids before moving day</li>
+          </ul>
+        </section>
+
+        <!-- ── S10: BRISTOL & BATH CHALLENGES ── -->
+        <section id="bristol-bath" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Bristol &amp; Bath &mdash; Local Challenges</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every neighbourhood has its quirks. Here is what our team deals with daily across both cities.</p>
+
+          <div class="grid sm:grid-cols-2 gap-4 mb-6">
+            <div class="bg-gray-50 rounded-lg p-5">
+              <h3 class="font-semibold text-primary-600 mb-2">Parking &amp; RPZ Zones</h3>
+              <p class="text-[15px] text-gray-700">Clifton, Cotham, Redland, Montpelier, Southville, and most of central Bath are RPZ. You&rsquo;ll need a council parking suspension (about &pound;45, two weeks&rsquo; notice).</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-5">
+              <h3 class="font-semibold text-primary-600 mb-2">Hills &amp; Tight Streets</h3>
+              <p class="text-[15px] text-gray-700">Totterdown, Windmill Hill, Kingsdown, Lansdown, Bear Flat &mdash; steep inclines that affect loading. Narrow lanes often need a shuttle van.</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-5">
+              <h3 class="font-semibold text-primary-600 mb-2">Victorian &amp; Georgian Properties</h3>
+              <p class="text-[15px] text-gray-700">Narrow hallways, tight stair turns, Bath stone that must be protected. Furniture regularly needs partial disassembly in both cities.</p>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-5">
+              <h3 class="font-semibold text-primary-600 mb-2">Flats &amp; New Builds</h3>
+              <p class="text-[15px] text-gray-700">Harbourside, Temple Quay, and Redcliffe flats need lift access and loading bay bookings. New builds in Filton and Lyde Green have narrow rooms and shared parking.</p>
+            </div>
+          </div>
+
+          <p class="text-[17px] leading-relaxed text-gray-800">Browse our <a href="/areas/" class="text-primary-600 underline hover:text-primary-700">area pages</a> for specific neighbourhood advice and your specific area.</p>
+        </section>
+
+        <!-- ── S11: NEW HOME CHECKLIST ── -->
+        <section id="new-home" class="pt-8 border-t border-gray-200">
+          <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What to Check in Your New Home</h2>
+
+          <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Once the removal team has left, check these straight away. For the full week-by-week breakdown, see our <a href="/moving-house-checklist/" class="text-primary-600 underline hover:text-primary-700">moving house checklist</a>.</p>
+
+          <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 mb-4">
+            <li><strong>Meter readings:</strong> Take readings for gas, electric, and water immediately. Photograph each meter.</li>
+            <li><strong>Stopcock and fuse box:</strong> Locate both before you need them.</li>
+            <li><strong>Locks:</strong> Consider changing them &mdash; you don&rsquo;t know how many key copies exist.</li>
+            <li><strong>Smoke and CO alarms:</strong> Test every one. Replace if older than 10 years.</li>
+            <li><strong>Boiler service:</strong> Book one within the first few weeks if you don&rsquo;t have a recent gas safety certificate.</li>
+            <li><strong>Register with local services:</strong> GP, dentist, optician, electoral roll &mdash; do this in your first week.</li>
+          </ul>
+        </section>
+
+        <!-- ── S12: FAQ ── -->
+        <section id="faq" class="pt-8 border-t border-gray-200">
+          <FAQAccordion faqs={faqs} heading="Common Questions About Moving House" />
+        </section>
+
+      </article>
+
+      <!-- TOC SIDEBAR -->
+      <aside class="toc-sidebar">
+        <div class="mb-5">
+          <SidebarAuthorBox />
+        </div>
+
+        <div class="toc-sticky">
+          <nav aria-label="Table of contents" class="bg-white rounded-xl border border-gray-100 p-5" style="box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);">
+            <p class="text-[10px] uppercase tracking-[0.2em] font-semibold text-warm-gray-400 mb-4">In This Guide</p>
+            <ul class="space-y-1">
+              {tocItems.map(item => (
+                <li>
+                  <a
+                    href={`#${item.id}`}
+                    class="toc-link"
+                    data-toc-id={item.id}
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <div class="border-t border-dashed border-gray-200 mt-5 pt-4">
+              <a
+                href="/instantquote/"
+                class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[13px] uppercase tracking-wide py-2.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
+              >
+                Get Your Free Quote &rarr;
+              </a>
+              <p class="text-[11px] text-gray-400 text-center mt-1.5">Free, no obligation</p>
+            </div>
+          </nav>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- ============================================
+       CROSS-LINKS — support content linking to service pages
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+      <div class="mb-10">
+        <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Helpful Resources for Your Move</h2>
+        <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+          We&rsquo;ve put together everything you need to plan, pack, and complete your move.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <a href="/moving-house-checklist/" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 no-underline group">
+          <h3 class="text-lg font-bold text-primary-600 mb-2 group-hover:text-primary-700">Moving Checklist</h3>
+          <p class="text-gray-600 text-sm mb-3">Week-by-week timeline covering solicitors, utilities, packing, and moving day.</p>
+          <span class="text-primary-600 text-sm font-bold">View checklist &rarr;</span>
+        </a>
+
+        <a href="/packing-guide/" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 no-underline group">
+          <h3 class="text-lg font-bold text-primary-600 mb-2 group-hover:text-primary-700">Free Packing Guide</h3>
+          <p class="text-gray-600 text-sm mb-3">8 video lessons on packing every room, from kitchen to electronics.</p>
+          <span class="text-primary-600 text-sm font-bold">Start the guide &rarr;</span>
+        </a>
+
+        <a href="/home-removals-bristol/" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 no-underline group">
+          <h3 class="text-lg font-bold text-primary-600 mb-2 group-hover:text-primary-700">Home Removals Service</h3>
+          <p class="text-gray-600 text-sm mb-3">Full details of our professional home removals service in Bristol &amp; Bath.</p>
+          <span class="text-primary-600 text-sm font-bold">View service &rarr;</span>
+        </a>
+
+        <a href="/areas/" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 no-underline group">
+          <h3 class="text-lg font-bold text-primary-600 mb-2 group-hover:text-primary-700">Areas We Cover</h3>
+          <p class="text-gray-600 text-sm mb-3">Neighbourhood guides for Bristol, Bath, and surrounding areas.</p>
+          <span class="text-primary-600 text-sm font-bold">Explore areas &rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FINAL CTA — soft, guide-appropriate
+  ============================================ -->
+  <FinalCTA
+    heading="Need Help With Your Move?"
+    description="If you'd like professional support for any part of your move — from packing to the full removal — we're happy to help."
+    bullets={['Nearly 50 years\' experience in Bristol & Bath', 'Free home assessment with no obligation', 'Honest, fixed pricing']}
+    primaryText="GET A FREE QUOTE"
+    primaryHref="/free-home-survey/"
+    bottomNote="Or explore our <a href='/home-removals-bristol/' class='underline hover:text-primary-700'>home removals service</a> to see what's included."
+  />
+
+</Layout>
+
+<style>
+  /* Blog two-column layout */
+  .blog-layout {
+    display: block;
+  }
+
+  .toc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      column-gap: 40px;
+    }
+
+    .toc-sidebar {
+      display: block;
+      align-self: stretch;
+    }
+
+    .toc-sticky {
+      position: sticky;
+      top: calc(var(--header-h, 104px) + 15px);
+    }
+
+    .toc-sticky nav {
+      max-height: calc(100dvh - var(--header-h, 104px) - 30px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toc-sticky nav ul {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      overflow: hidden;
+    }
+  }
+
+  /* TOC links */
+  .toc-link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    border-radius: 0 6px 6px 0;
+    transition: all 150ms ease;
+  }
+
+  .toc-link:hover {
+    color: #1e4240;
+    background: #f9fafb;
+  }
+
+  .toc-link.active {
+    color: #1e4240;
+    font-weight: 600;
+    border-left-color: #ea580c;
+    background: #fff7ed;
+  }
+
+  /* Scroll-margin for anchors beneath sticky header */
+  section[id] {
+    scroll-margin-top: 100px;
+  }
+</style>
+
+<script>
+  // IntersectionObserver — highlight active TOC link based on visible section
+  const sections = document.querySelectorAll<HTMLElement>('section[id]');
+  const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+
+  if (sections.length && tocLinks.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(link => {
+              if (link.dataset.tocId === id) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        }
+      },
+      {
+        rootMargin: '-100px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
+</script>

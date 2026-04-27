@@ -1,0 +1,31 @@
+---
+/**
+ * KeyTermsGlance — stat cards showing key T&C numbers at a glance.
+ */
+
+interface KeyStat {
+  number: string;
+  label: string;
+  detail: string;
+}
+
+interface Props {
+  stats: KeyStat[];
+}
+
+const { stats } = Astro.props;
+---
+
+<div class="text-center mb-14">
+  <h2 class="text-2xl font-bold mb-2">Key Terms at a Glance</h2>
+  <a href="#full-terms" class="text-primary-600 text-sm font-medium hover:text-secondary-500 no-underline transition-colors">Jump to full terms &darr;</a>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mt-8">
+    {stats.map((stat) => (
+      <div class="stat-card">
+        <div class="stat-card__number">{stat.number}</div>
+        <div class="stat-card__label">{stat.label}</div>
+        <div class="text-xs text-warm-gray/60 mt-1">{stat.detail}</div>
+      </div>
+    ))}
+  </div>
+</div>

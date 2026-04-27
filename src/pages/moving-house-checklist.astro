@@ -1,0 +1,653 @@
+---
+/**
+ * Moving House Checklist — Week-by-Week Timeline
+ *
+ * Comprehensive checklist for UK home movers, structured as a
+ * week-by-week countdown from 8 weeks before to the first week after.
+ * Uses native <details>/<summary> for SEO-friendly expandable timeline.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { article, faqPage, breadcrumbs } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'Moving House Checklist — Week-by-Week Timeline | Painless Removals';
+const pageDescription = 'The complete moving house checklist for UK home movers. Our week-by-week timeline covers everything from instructing your solicitor to settling into your new home.';
+
+// Timeline data
+const timeline = [
+  {
+    period: '8 Weeks Before Moving Day',
+    colour: 'bg-primary-600',
+    items: [
+      'Instruct your solicitor or conveyancer and confirm their availability for your target completion date',
+      'Confirm your mortgage offer and agree an exchange timeline with your solicitor',
+      'Research and book your removal company — our <a href="/free-home-survey/" class="text-primary-600 underline hover:text-secondary-500">free home survey</a> gives you an accurate quote based on your actual belongings, not guesswork',
+      'Start decluttering room by room — sell, donate, or bin anything you no longer need, use, or want to pay to move',
+      'Notify your landlord if you are renting and check the notice period in your tenancy agreement',
+      'Begin collecting packing materials — boxes, tape, paper — or ask your removal company to supply them as part of the quote',
+    ],
+  },
+  {
+    period: '6 Weeks Before',
+    colour: 'bg-primary-500',
+    items: [
+      'Notify your children\'s school and arrange transfers to the new school — some have waiting lists, so the earlier the better',
+      'Start packing rooms you use least: the loft, spare bedroom, garage, and bookshelves',
+      'Arrange parking permits if your new street requires them — some councils need two weeks\' notice',
+      'Get quotes for any cleaning, decorating, or repair work needed at the new property before you move furniture in',
+      'Notify your workplace of your upcoming address change and update payroll records',
+      'Cancel or redirect any regular deliveries — milk, newspapers, subscription boxes, meal kits',
+    ],
+  },
+  {
+    period: '4 Weeks Before',
+    colour: 'bg-secondary-500',
+    items: [
+      'Set up a Royal Mail redirect — it costs about £35 for three months and catches anything you forget to update (do it online at royalmail.com)',
+      'Notify your utility providers: gas, electric, water, broadband, and TV licence',
+      'Update your address with council tax at both your current and new councils',
+      'Start our <a href="/packing-guide/" class="text-primary-600 underline hover:text-secondary-500">free packing guide</a> if you are packing yourself — it covers every room with video walkthroughs',
+      'Confirm your removal date and any special requirements — piano, narrow access, parking — with your removal company',
+      'Book time off work for moving day and ideally the day after, so you can unpack without rushing',
+      'Arrange pet care or childcare for moving day if needed — it is much easier without little ones underfoot',
+    ],
+  },
+  {
+    period: '2 Weeks Before',
+    colour: 'bg-secondary-600',
+    items: [
+      'Run down your freezer contents — eating through what you have avoids the hassle of transporting frozen food',
+      'Disassemble flat-pack furniture that needs to come apart — take photos of the assembly and bag all screws and fixings with labels',
+      'Arrange to return keys to your landlord or estate agent if you are renting',
+      'Confirm parking arrangements at both properties for the removal van — a 7.5-tonne vehicle needs a clear, close space',
+      'Pack a "first night" box: kettle, mugs, tea bags, toilet roll, phone charger, basic bedding, hand soap, and a few basic tools',
+      'Measure doorways and stairways at the new property for large furniture — sofas, beds, and wardrobes are the usual culprits',
+    ],
+  },
+  {
+    period: '1 Week Before',
+    colour: 'bg-orange-600',
+    items: [
+      'Finish packing all non-essential items and label every box on at least two sides with the room name and contents',
+      'Deep clean the property you are leaving — or book end-of-tenancy cleaners if your deposit depends on it',
+      'Take final meter readings for gas, electric, and water at your current property and photograph each meter',
+      'Charge all your devices fully — you will need your phone accessible all day and a dead battery is the last thing you need',
+      'Confirm the time of key collection or handover with your solicitor or estate agent',
+      'Back up important files from your computer to an external drive or cloud storage, just in case',
+    ],
+  },
+  {
+    period: 'Moving Day',
+    colour: 'bg-red-600',
+    items: [
+      'Take final meter readings at your old property first thing in the morning and share them with your energy and water suppliers',
+      'Do a thorough final walkthrough — check every room, every cupboard, the loft, the shed, and the garden',
+      'Hand over your keys to the estate agent or new owners, or leave them in the agreed location',
+      'At the new property: check the meter readings match what the seller declared, test that utilities are working, and locate the stopcock and fuse box',
+      'Supervise the unloading and tell the team exactly where each item and box should go — it saves hours of rearranging later',
+      'Do one final check of every room at the old property before you leave — the loft and garage are the two areas people most commonly forget',
+    ],
+  },
+  {
+    period: 'First Week After Moving In',
+    colour: 'bg-primary-700',
+    items: [
+      'Register with a new GP, dentist, and optician — waiting lists can be long, so do this immediately',
+      'Update your address with the DVLA (driving licence and vehicle registration), your bank, insurance providers, employer, HMRC, and the electoral roll',
+      'Introduce yourself to your neighbours — a brief hello and a smile goes a long way and makes the street feel like home faster',
+      'Unpack room by room rather than box by box — start with the kitchen and bedrooms so you can eat and sleep comfortably on night one',
+      'Check that everything arrived safely and report any issues to your removal company within seven days',
+      'If anything was lost or damaged during the move, contact your removal company\'s insurance team promptly with photographs and a description',
+    ],
+  },
+];
+
+// FAQ data
+const faqs = [
+  {
+    question: 'When should I start organising my move?',
+    answer: 'Ideally eight weeks before your moving date. That gives you enough time to instruct a solicitor, book a removal company, declutter properly, and pack without rushing. If you have less time, you can still manage — but starting earlier means fewer evenings spent frantically wrapping plates at midnight. The checklist above is designed to work backwards from moving day, so even if you are starting late, pick up wherever you are and work through the remaining steps.',
+  },
+  {
+    question: 'What is an essentials box and what goes in it?',
+    answer: 'An essentials box — sometimes called a first-night box — contains everything you need for your first evening and morning in the new home without having to unpack dozens of boxes. At a minimum, pack a kettle, mugs, tea and coffee, milk (buy fresh on the day), toilet roll, hand soap, phone chargers, a change of clothes, basic toiletries, medication, bedding for everyone, a couple of bin bags, a torch, and basic tools like a screwdriver and adjustable spanner. Keep this box in the car, not on the removal van, so it is the first thing through the door.',
+  },
+  {
+    question: 'Do I really need to redirect my Royal Mail?',
+    answer: 'Yes, and it is one of the most important things on this entire checklist. No matter how thorough you are at updating your address, something will slip through — an old subscription, a pension statement, a parcel from a relative who has your old address. Royal Mail redirection catches all of it. It costs around £35 for three months or £58 for six months, and you can set it up online in five minutes. Think of it as cheap insurance against missing important post.',
+  },
+  {
+    question: 'How many boxes do I need for a 3-bedroom house?',
+    answer: 'A typical three-bedroom house needs between 40 and 60 boxes. A rough breakdown would be 10 to 15 small boxes for heavy items like books and tools, 15 to 20 medium boxes for general household items, 8 to 12 large boxes for bedding, cushions, and lighter bulky items, and 3 to 5 wardrobe boxes for hanging clothes. Always over-order rather than under-order — most box suppliers accept returns on unused packs, and running out of boxes halfway through packing is far more disruptive than having a few left over.',
+  },
+  {
+    question: 'What is the best way to handle change of address?',
+    answer: 'Start with the most important organisations first: your bank, the DVLA, your employer, HMRC, and the electoral roll. Then work through utilities, insurance providers, subscriptions, and loyalty programmes. Keep a running list on your phone and tick each one off as you update it. Do not rely on memory — there are typically 15 to 20 organisations to notify, and forgetting even one can cause problems weeks later. Setting up Royal Mail redirection gives you a safety net while you work through the list.',
+  },
+  {
+    question: 'What if my moving date changes at the last minute?',
+    answer: 'This happens more often than you would think, especially in property chains. The first thing to do is call your removal company immediately — a good company will try to accommodate the new date or offer priority rebooking. At Painless Removals, we offer a first refusal policy: if your date is not confirmed and someone else requests the same day, we contact you first before releasing the slot. If the delay is short — a day or two — it is usually straightforward to adjust. For longer delays, your removal company should be able to hold your booking and reschedule without penalty, though this varies, so check when you book.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  article({
+    headline: "Moving House Checklist — Week-by-Week Timeline",
+    description: pageDescription,
+    url: "/moving-house-checklist/",
+    datePublished: "2026-02-14",
+    dateModified: "2026-03-12",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Moving House Checklist" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- Breadcrumbs -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="container-wide py-3">
+      <nav class="text-sm text-warm-gray" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li><a href="/moving-advice/" class="text-primary-600 hover:text-primary-700 no-underline">Moving Advice</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Moving House Checklist</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-primary-100">
+      <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+        <div class="text-center p-6">
+          <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <p class="text-sm font-medium">Hero image: Family preparing for moving day</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Moving House Checklist
+          </h1>
+
+          <h2 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+            The Complete <span class="text-secondary-500">Moving House</span> Checklist
+          </h2>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            A week-by-week timeline so nothing gets missed.
+          </p>
+
+          <p class="text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            Moving house involves dozens of tasks that all need to happen in roughly the right order. Miss one &mdash; redirecting your post, reading the meters, booking parking permits &mdash; and it creates a headache that lands at exactly the wrong moment. This checklist breaks everything down into manageable weekly blocks so you can work through them steadily, without the chaos of last-minute scrambling.
+          </p>
+
+          <div class="flex flex-col gap-2 mb-5 items-center">
+            <a href="/free-home-survey/" class="btn-cta-orange">
+              GET YOUR FREE HOME SURVEY
+            </a>
+            <p class="text-warm-gray text-sm">No obligation. Accurate quote based on your actual belongings.</p>
+          </div>
+
+          <TrustpilotStrip />
+        </div>
+      </div>
+
+      <!-- Right: Full-bleed image (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden bg-primary-100">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+          <div class="text-center p-6">
+            <svg class="w-20 h-20 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            <p class="text-sm font-medium">Hero image: Family preparing for moving day</p>
+            <p class="text-xs mt-1 opacity-70">Recommended: 1280x720 or larger</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: INTRO — WHY A CHECKLIST MATTERS
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] bg-primary-50">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <p class="text-sm font-medium">Image: Organised home ready for a move</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">More Than Just Packing Boxes</h2>
+
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          Most people underestimate how many separate tasks are involved in moving house. It is not just about filling boxes and hiring a van.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-6">
+          There are solicitors to instruct, schools to notify, mail to redirect, meter readings to take, parking to arrange, utilities to switch, council tax to update, and a GP to register with &mdash; alongside the actual packing. Forget one task and it snowballs into stress on the day itself, when you are already juggling keys, chains, and a removal team waiting on the doorstep.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-6">
+          This checklist comes from nearly fifty years of helping Bristol families move. We have seen what happens when people leave everything to the final weekend, and we have seen how smoothly things go when they follow a structured timeline. The families who work through a checklist week by week are calmer, better prepared, and far more likely to enjoy the experience rather than simply survive it.
+        </p>
+
+        <p class="text-warm-gray text-lg">
+          Whether you are a first-time buyer or you have moved a dozen times before, use this timeline as your single source of truth. Print it, bookmark it, and tick things off as you go. Your future self will thank you on moving day.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: WEEK-BY-WEEK TIMELINE
+  ============================================ -->
+  <section class="section bg-cream" id="timeline">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Your Week-by-Week Moving Timeline</h2>
+      <p class="text-center text-warm-gray text-lg mb-8 max-w-2xl mx-auto">
+        Work through each section in order. By moving day, you will have covered every detail &mdash; from solicitors and utilities to meter readings and your first-night essentials box.
+      </p>
+
+      <!-- Toolbar: Reset + Print -->
+      <div class="flex justify-center gap-3 mb-10">
+        <button id="reset-checklist" class="px-4 py-2 text-sm font-semibold text-warm-gray bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+          Reset All
+        </button>
+        <button id="print-checklist" class="px-4 py-2 text-sm font-semibold text-primary-600 bg-white border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors cursor-pointer">
+          Print Checklist
+        </button>
+      </div>
+
+      <!-- Timeline container -->
+      <div class="max-w-3xl mx-auto relative">
+        <!-- Vertical line -->
+        <div class="absolute left-5 top-0 bottom-0 w-0.5 bg-primary-200 hidden md:block" aria-hidden="true"></div>
+
+        <div class="space-y-6">
+          {timeline.map((phase, phaseIndex) => (
+            <details class="group relative md:pl-14 checklist-phase" data-phase={phaseIndex} open={phaseIndex === 0}>
+              <!-- Timeline circle -->
+              <div class={`hidden md:flex absolute left-0 top-4 w-10 h-10 ${phase.colour} text-white rounded-full items-center justify-center text-sm font-bold z-10 shadow-md`}>
+                {phaseIndex + 1}
+              </div>
+
+              <summary class="cursor-pointer list-none bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-5 flex items-center justify-between gap-4 [&::-webkit-details-marker]:hidden">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                  <span class={`md:hidden w-8 h-8 ${phase.colour} text-white rounded-full flex items-center justify-center text-xs font-bold shrink-0`}>
+                    {phaseIndex + 1}
+                  </span>
+                  <h3 class="text-lg lg:text-xl font-bold text-primary-600 m-0">{phase.period}</h3>
+                  <span class="phase-progress text-xs font-semibold text-warm-gray bg-gray-100 px-2 py-0.5 rounded-full shrink-0" data-phase={phaseIndex}>
+                    0/{phase.items.length}
+                  </span>
+                </div>
+                <span class="text-primary-400 text-sm shrink-0 group-open:rotate-180 transition-transform duration-300">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </span>
+              </summary>
+
+              <div class="bg-white rounded-b-lg shadow-sm px-5 pb-5 -mt-2 pt-4">
+                <!-- Progress bar -->
+                <div class="mb-4">
+                  <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div class="phase-bar h-full bg-green-500 rounded-full transition-all duration-300" data-phase={phaseIndex} style="width: 0%"></div>
+                  </div>
+                </div>
+                <ul class="space-y-3">
+                  {phase.items.map((item, itemIndex) => (
+                    <li class="flex items-start gap-3 text-warm-gray checklist-item">
+                      <input
+                        type="checkbox"
+                        class="checklist-checkbox mt-1 shrink-0 w-5 h-5 rounded border-gray-300 text-green-500 focus:ring-green-500 cursor-pointer"
+                        data-phase={phaseIndex}
+                        data-item={itemIndex}
+                        aria-label={`Mark complete: phase ${phaseIndex + 1}, item ${itemIndex + 1}`}
+                      />
+                      <span class="checklist-label" set:html={item} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </details>
+          ))}
+        </div>
+
+        <!-- Timeline end marker -->
+        <div class="hidden md:flex absolute left-0 -bottom-4 w-10 h-4 items-center justify-center">
+          <div class="w-3 h-3 bg-primary-600 rounded-full"></div>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <p class="text-warm-gray mb-6">Need a hand with the move itself? We have been doing this since 1978.</p>
+        <a href="/free-home-survey/" class="btn-cta-orange">
+          BOOK YOUR FREE HOME SURVEY
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: STATS
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-center text-white mb-4">Why Bristol Families Trust Painless Removals</h2>
+      <p class="text-center text-white/80 text-lg mb-12 max-w-2xl mx-auto">
+        We don't just hand you a checklist and wish you luck. When you are ready to book your move, here is what you are getting.
+      </p>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 text-center backdrop-blur-sm">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">47+</p>
+          <p class="text-white/80 text-sm">years moving Bristol families</p>
+        </div>
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 text-center backdrop-blur-sm">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">{siteConfig.company.rating.value}/5</p>
+          <p class="text-white/80 text-sm">Trustpilot rating</p>
+        </div>
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 text-center backdrop-blur-sm">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">10,000+</p>
+          <p class="text-white/80 text-sm">moves completed</p>
+        </div>
+        <div class="stat-card-blue bg-white/10 rounded-lg p-6 text-center backdrop-blur-sm">
+          <p class="text-3xl lg:text-4xl font-bold text-white mb-2">&pound;15,000</p>
+          <p class="text-white/80 text-sm">goods in transit insurance per van</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: REVIEW QUOTE
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Our Customers Say</h2>
+
+      <div class="max-w-2xl mx-auto">
+        <div class="review-quote">
+          <p class="text-warm-gray mb-4">
+            "Painless Removals have been brilliant, <mark>couldn't recommend them more</mark>. They helped us move in Bristol and then helped us organise a cross-country move. Both were done on a <mark>tight timeline and at a good price</mark>. The guys who moved us were very kind and efficient &ndash; Thanks again!"
+          </p>
+          <p class="font-bold text-primary-600">Laura Carnegie-Brown</p>
+          <p class="text-sm text-warm-gray">Verified Google Review</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">More Resources to Help Your Move</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        A good checklist gets you organised. These resources help with the practical side.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Card 1: Packing Service -->
+        <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="relative h-44 bg-primary-50">
+            <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+              <div class="text-center p-4">
+                <svg class="w-12 h-12 mx-auto mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <p class="text-xs font-medium">Packing service</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-lg font-bold text-primary-600 mb-2">Need Help Packing?</h3>
+            <p class="text-warm-gray text-sm mb-4">Our professional team packs your entire home the day before. All materials included, everything insured, and you do not lift a finger.</p>
+            <a href="/home-packing-service/" class="text-primary-600 font-bold text-sm hover:text-secondary-500 transition-colors">
+              View packing service &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2: Packing Guide -->
+        <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="relative h-44 bg-secondary-50">
+            <div class="absolute inset-0 flex items-center justify-center bg-secondary-50 text-secondary-300">
+              <div class="text-center p-4">
+                <svg class="w-12 h-12 mx-auto mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <p class="text-xs font-medium">Packing guide</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-lg font-bold text-primary-600 mb-2">Learn to Pack Like a Pro</h3>
+            <p class="text-warm-gray text-sm mb-4">Our free video guide covers every room in the house, step by step. Proven techniques from movers with nearly 50 years of experience.</p>
+            <a href="/packing-guide/" class="text-primary-600 font-bold text-sm hover:text-secondary-500 transition-colors">
+              Start the free packing guide &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3: Free Home Survey -->
+        <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+          <div class="relative h-44 bg-primary-50">
+            <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+              <div class="text-center p-4">
+                <svg class="w-12 h-12 mx-auto mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <p class="text-xs font-medium">Home survey</p>
+              </div>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-lg font-bold text-primary-600 mb-2">Get an Accurate Quote</h3>
+            <p class="text-warm-gray text-sm mb-4">Our free home survey gives you an honest price based on your actual belongings. Video or in-person &mdash; your choice, no obligation.</p>
+            <a href="/free-home-survey/" class="text-primary-600 font-bold text-sm hover:text-secondary-500 transition-colors">
+              Book your free survey &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Frequently Asked Questions" />
+
+  <!-- ============================================
+       SECTION 8: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Don't Leave Your Move to Chance"
+    description="A checklist keeps you organised. A great removal team keeps you sane. Nearly 50 years of experience means we have seen every scenario and solved every problem — so you do not have to."
+    bullets={['Free home survey', 'Dedicated move manager', '\u00A315k insurance per van']}
+    primaryText="BOOK YOUR FREE SURVEY"
+    primaryHref="/free-home-survey"
+    bottomNote="Every item moved by our team is fully covered by \u00A315,000 Goods in Transit insurance."
+  />
+
+</Layout>
+
+<!-- Interactive Checklist Script -->
+<script>
+  const STORAGE_KEY = 'painless-checklist-v1';
+
+  function loadState(): Record<string, boolean> {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveState(state: Record<string, boolean>) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      // Storage full or unavailable — silently fail
+    }
+  }
+
+  function itemKey(phase: number, item: number): string {
+    return `${phase}-${item}`;
+  }
+
+  function updateProgress() {
+    const phases = document.querySelectorAll('.checklist-phase');
+    phases.forEach((phaseEl) => {
+      const phaseIdx = phaseEl.getAttribute('data-phase');
+      const checkboxes = phaseEl.querySelectorAll<HTMLInputElement>('.checklist-checkbox');
+      const total = checkboxes.length;
+      const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+      // Update counter badge
+      const badge = document.querySelector(`.phase-progress[data-phase="${phaseIdx}"]`);
+      if (badge) {
+        badge.textContent = `${checked}/${total}`;
+        if (checked === total && total > 0) {
+          badge.classList.remove('bg-gray-100', 'text-warm-gray');
+          badge.classList.add('bg-green-100', 'text-green-700');
+        } else {
+          badge.classList.remove('bg-green-100', 'text-green-700');
+          badge.classList.add('bg-gray-100', 'text-warm-gray');
+        }
+      }
+
+      // Update progress bar
+      const bar = document.querySelector(`.phase-bar[data-phase="${phaseIdx}"]`) as HTMLElement;
+      if (bar) {
+        const pct = total > 0 ? (checked / total) * 100 : 0;
+        bar.style.width = `${pct}%`;
+      }
+    });
+  }
+
+  function applyStrikethrough(checkbox: HTMLInputElement) {
+    const label = checkbox.closest('.checklist-item')?.querySelector('.checklist-label');
+    if (label) {
+      if (checkbox.checked) {
+        label.classList.add('line-through', 'opacity-50');
+      } else {
+        label.classList.remove('line-through', 'opacity-50');
+      }
+    }
+  }
+
+  // Initialise from localStorage
+  const state = loadState();
+  const allCheckboxes = document.querySelectorAll<HTMLInputElement>('.checklist-checkbox');
+
+  allCheckboxes.forEach((cb) => {
+    const phase = Number(cb.getAttribute('data-phase'));
+    const item = Number(cb.getAttribute('data-item'));
+    const key = itemKey(phase, item);
+
+    if (state[key]) {
+      cb.checked = true;
+      applyStrikethrough(cb);
+    }
+
+    cb.addEventListener('change', () => {
+      const currentState = loadState();
+      if (cb.checked) {
+        currentState[key] = true;
+      } else {
+        delete currentState[key];
+      }
+      saveState(currentState);
+      applyStrikethrough(cb);
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+
+  // Reset All button
+  document.getElementById('reset-checklist')?.addEventListener('click', () => {
+    if (confirm('Reset all checked items? This cannot be undone.')) {
+      localStorage.removeItem(STORAGE_KEY);
+      allCheckboxes.forEach((cb) => {
+        cb.checked = false;
+        applyStrikethrough(cb);
+      });
+      updateProgress();
+    }
+  });
+
+  // Print button
+  document.getElementById('print-checklist')?.addEventListener('click', () => {
+    // Open all details before printing
+    const allDetails = document.querySelectorAll<HTMLDetailsElement>('.checklist-phase');
+    const originalStates = Array.from(allDetails).map(d => d.open);
+    allDetails.forEach(d => d.open = true);
+
+    window.print();
+
+    // Restore original states after print dialog closes
+    setTimeout(() => {
+      allDetails.forEach((d, i) => d.open = originalStates[i]);
+    }, 500);
+  });
+</script>
+
+<!-- Print Styles -->
+<style is:global>
+  @media print {
+    /* Show all phases expanded */
+    .checklist-phase { display: block !important; }
+    .checklist-phase[open] > div { display: block !important; }
+
+    /* Hide non-essential elements */
+    header,
+    .gradient-hero,
+    footer,
+    nav[aria-label="Breadcrumb"],
+    #reset-checklist,
+    #print-checklist,
+    .phase-bar { display: none !important; }
+
+    /* Clean checkbox styling for print */
+    .checklist-checkbox {
+      -webkit-appearance: auto;
+      appearance: auto;
+      width: 14px !important;
+      height: 14px !important;
+    }
+
+    /* Remove strikethrough for print — show full text */
+    .checklist-label {
+      text-decoration: none !important;
+      opacity: 1 !important;
+    }
+  }
+</style>
+

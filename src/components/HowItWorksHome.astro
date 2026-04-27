@@ -1,0 +1,495 @@
+---
+import { siteConfig } from '@/config/site.config';
+/**
+ * HowItWorksHome — premium 5-step process section
+ *
+ * Reusable: pass heading, headingAccent, subtitle, steps[], ctaText, ctaLink
+ * to customise per page. Defaults to the homepage content.
+ *
+ * Single horizontal row with connectors. On mobile: horizontal scroll
+ * with the last card peeking half-visible to hint at scrollability.
+ * Micro-interactions: hover lift, shine sweep, icon pulse, scroll-reveal.
+ */
+
+interface Step {
+  /** SVG icon markup (the inner content of an <svg> tag) */
+  icon: string;
+  title: string;
+  description: string;
+  link?: string;
+  linkText?: string;
+}
+
+interface Props {
+  /** Text before the accent span, e.g. "Your Move in" */
+  heading?: string;
+  /** Accent text inside the coloured span, e.g. "Five Simple Steps" */
+  headingAccent?: string;
+  subtitle?: string;
+  steps?: Step[];
+  ctaText?: string;
+  ctaLink?: string;
+  /** Unique id prefix if used multiple times on same page */
+  id?: string;
+}
+
+const defaultSteps: Step[] = [
+  {
+    icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 8h4l1.5 2L15 7h2"/>',
+    title: 'Instant Quote',
+    description: 'Fill out our 47-second calculator and get a ballpark price instantly — so you know straight away if we\'re in your budget.',
+    link: '/instantquote',
+    linkText: 'Get your estimate',
+  },
+  {
+    icon: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    title: 'Call\u00a0Us\u00a0/ Callback',
+    description: 'Request a callback or ring us directly. Because you\'ve already used the calculator, our team knows your situation before the phone even rings.',
+    link: `tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`,
+    linkText: 'Speak to our team',
+  },
+  {
+    icon: '<path d="m15.2 3.9 2.9 2.9"/><path d="M21 12a9 9 0 1 1-9-9"/><path d="M12 12v4l3 1.5"/><circle cx="17" cy="5" r="1"/>',
+    title: 'Survey & Full Quote',
+    description: 'We survey your home — online, via a video you record, or face-to-face — and send you a detailed, personalised quote. No surprises, no hidden fees.',
+    link: '/free-home-survey',
+    linkText: 'Book your survey',
+  },
+  {
+    icon: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+    title: 'Accept Your Quote',
+    description: 'Happy with the quote? Accept it online — no payment needed at this stage. There\'s no pressure and no commitment to a date yet.',
+  },
+  {
+    icon: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
+    title: 'Confirm Your Date',
+    description: 'We\'ll be in touch to agree a move date that works for you. Once confirmed, pay a 30\u00a0% deposit to secure it and your dedicated Move Manager takes over.',
+  },
+  {
+    icon: '<rect x="1" y="3" width="15" height="13" rx="2"/><path d="m16 8 5 2.5V16l-5-2.5V8z"/><circle cx="6" cy="20" r="2"/><circle cx="18" cy="20" r="2"/><path d="M2 16h14"/>',
+    title: 'Moving Day',
+    description: 'We arrive on time, handle everything with care — packing the day before if needed, disassembling furniture, moving it all, and reassembling at your new home.',
+  },
+];
+
+const {
+  heading = 'Your Move in',
+  headingAccent = 'Six Simple Steps',
+  subtitle = 'From your first ballpark figure to settling into your new home — here\'s exactly how we make it painless.',
+  steps = defaultSteps,
+  ctaText = 'Start With Your Instant Quote →',
+  ctaLink = '/instantquote',
+  id = 'hiw-home',
+} = Astro.props;
+
+const connectorSvg = '<svg viewBox="0 0 40 24" fill="none"><path d="M0 12h28m0 0-6-6m6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const arrowSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+---
+
+<section id={id} class="hiw-home section bg-primary-50" aria-labelledby={`${id}-heading`}>
+  <div class="hiw-home__container">
+
+    <!-- Heading -->
+    <div class="container-wide">
+      <h2 id={`${id}-heading`} class="text-center mb-3">{heading} <span class="hiw-home__accent">{headingAccent}</span></h2>
+      <p class="hiw-home__subtitle">{subtitle}</p>
+    </div>
+
+    <!-- Horizontal scroll track -->
+    <div class="hiw-home__scroll-track">
+      <div class="hiw-home__grid">
+
+        {steps.map((step, i) => (
+          <>
+            {/* Connector before each step (except the first) */}
+            {i > 0 && (
+              <div class="hiw-home__connector" style={`--i:${i - 0.5}`} aria-hidden="true">
+                <Fragment set:html={connectorSvg} />
+              </div>
+            )}
+
+            {/* Step card */}
+            <div class="hiw-home__card group" style={`--i:${i}`}>
+              <div class="hiw-home__icon-wrap">
+                <svg class="hiw-home__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <Fragment set:html={step.icon} />
+                </svg>
+                <span class="hiw-home__badge">{i + 1}</span>
+              </div>
+              <h3 class="hiw-home__title">{step.title}</h3>
+              <p class="hiw-home__desc">{step.description}</p>
+              {step.link && step.linkText && (
+                <a href={step.link} class="hiw-home__link">
+                  {step.linkText}
+                  <Fragment set:html={arrowSvg} />
+                </a>
+              )}
+              <div class="hiw-home__shine"></div>
+            </div>
+          </>
+        ))}
+
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="container-wide text-center mt-12">
+      <a
+        href={ctaLink}
+        class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-8 py-3.5 text-lg font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-orange-600/40"
+      >
+        {ctaText}
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<style is:inline>
+  /* ── outer container — full width, no overflow clip ── */
+  .hiw-home__container {
+    width: 100%;
+  }
+
+  /* ── accent colour in heading ── */
+  .hiw-home__accent {
+    position: relative;
+    color: #C65D3B;
+  }
+  .hiw-home__accent::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #C65D3B;
+    border-radius: 999px;
+    animation: accent-pulse 3s ease-in-out infinite;
+  }
+  @keyframes accent-pulse {
+    0%, 100% { opacity: 0.4; transform: scaleX(0.6); }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
+
+  /* ── subtitle ── */
+  .hiw-home__subtitle {
+    text-align: center;
+    max-width: 38rem;
+    margin: 0 auto 3rem;
+    color: #6B6B6B;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  /* ── scroll track — horizontal scroll ── */
+  .hiw-home__scroll-track {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    padding-bottom: 1rem; /* space for card hover lift */
+    cursor: grab;
+  }
+  .hiw-home__scroll-track.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+  }
+  .hiw-home__scroll-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ── grid layout — single horizontal row ── */
+  .hiw-home__grid {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    /* On mobile: cards are fixed width, track scrolls */
+    padding: 0 1rem;
+  }
+
+  /* ── connector ── */
+  .hiw-home__connector {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    justify-content: center;
+    color: #3b6587;
+    opacity: 0.35;
+    flex-shrink: 0;
+    width: 28px;
+    animation: hiw-fade-in 0.6s ease-out both;
+    animation-delay: calc(var(--i, 0) * 0.12s + 0.3s);
+  }
+  .hiw-home__connector svg {
+    width: 24px;
+    height: auto;
+  }
+
+  @keyframes hiw-fade-in {
+    from { opacity: 0; }
+    to { opacity: 0.35; }
+  }
+
+  /* ── card ── */
+  .hiw-home__card {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem 1.25rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.05);
+    border: 1px solid rgb(0 0 0 / 0.04);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    /* Mobile: card width = ~75vw so the next one peeks */
+    width: 72vw;
+    max-width: 280px;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: hiw-card-enter 0.6s ease-out both;
+    animation-delay: calc(var(--i, 0) * 0.12s);
+  }
+
+  @keyframes hiw-card-enter {
+    from {
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .hiw-home__card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.1);
+  }
+
+  /* ── shine sweep on hover ── */
+  .hiw-home__shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgb(255 255 255 / 0.7) 50%, transparent 60%);
+    opacity: 0;
+    pointer-events: none;
+    border-radius: 16px;
+  }
+  .group:hover .hiw-home__shine {
+    opacity: 1;
+    animation: hiw-shine 0.7s ease-out;
+  }
+  @keyframes hiw-shine {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(100%); }
+  }
+
+  /* ── icon container ── */
+  .hiw-home__icon-wrap {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+  }
+
+  .hiw-home__icon {
+    width: 48px;
+    height: 48px;
+    padding: 10px;
+    background: linear-gradient(135deg, rgb(59 101 135 / 0.1), rgb(59 101 135 / 0.04));
+    color: #3b6587;
+    border-radius: 12px;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+                background 0.4s ease;
+  }
+  .group:hover .hiw-home__icon {
+    transform: scale(1.1) rotate(-3deg);
+    background: linear-gradient(135deg, rgb(59 101 135 / 0.18), rgb(59 101 135 / 0.08));
+  }
+
+  /* ── step badge ── */
+  .hiw-home__badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    background: #C65D3B;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgb(198 93 59 / 0.35);
+    transition: transform 0.3s ease;
+  }
+  .group:hover .hiw-home__badge {
+    transform: scale(1.15);
+  }
+
+  /* ── typography ── */
+  .hiw-home__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: #31536e;
+  }
+  .hiw-home__desc {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #6B6B6B;
+    margin: 0;
+    flex: 1;
+  }
+
+  /* ── inline link ── */
+  .hiw-home__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #C65D3B;
+    text-decoration: none;
+    transition: gap 0.3s ease, color 0.3s ease;
+  }
+  .hiw-home__link:hover {
+    gap: 10px;
+  }
+
+  /* ── Desktop: horizontal scroll, last card peeks ── */
+  @media (min-width: 1350px) {
+    .hiw-home__scroll-track {
+      overflow-x: auto;
+      overflow-y: visible;
+    }
+    .hiw-home__grid {
+      justify-content: center;
+      padding: 0 2rem;
+    }
+    .hiw-home__card {
+      max-width: none;
+      flex: 0 0 220px;
+      min-width: 200px;
+    }
+    .hiw-home__connector {
+      width: 36px;
+    }
+    .hiw-home__connector svg {
+      width: 28px;
+    }
+    .hiw-home__icon-wrap {
+      width: 56px;
+      height: 56px;
+    }
+    .hiw-home__icon {
+      width: 56px;
+      height: 56px;
+      padding: 12px;
+      border-radius: 14px;
+    }
+    .hiw-home__badge {
+      width: 22px;
+      height: 22px;
+      font-size: 0.7rem;
+      top: -6px;
+      right: -6px;
+    }
+    .hiw-home__title {
+      font-size: 1.15rem;
+    }
+    .hiw-home__desc {
+      font-size: 0.9rem;
+    }
+    .hiw-home__card {
+      padding: 1.75rem 1.5rem 1.5rem;
+    }
+  }
+
+  /* ── scroll hint nudge on mobile ── */
+  @media (max-width: 1349px) {
+    .hiw-home__scroll-track {
+      animation: hiw-scroll-hint 1.8s ease-in-out 1.5s 2;
+    }
+  }
+  @keyframes hiw-scroll-hint {
+    0%, 100% { scroll-margin-inline-start: 0; }
+    30% { transform: translateX(-18px); }
+    60% { transform: translateX(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hiw-home__card { animation: none; }
+    .hiw-home__connector { animation: none; }
+    .hiw-home__accent::after { animation: none; }
+    .group:hover .hiw-home__shine { animation: none; }
+    .hiw-home__scroll-track { animation: none; }
+  }
+</style>
+
+<script>
+  // Scroll-triggered reveal with IntersectionObserver
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.hiw-home__card, .hiw-home__connector');
+    if (!cards.length || !('IntersectionObserver' in window)) return;
+
+    cards.forEach(el => {
+      (el as HTMLElement).style.animationPlayState = 'paused';
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLElement).style.animationPlayState = 'running';
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    cards.forEach(el => observer.observe(el));
+  });
+
+  // Drag-to-scroll for the scroll track
+  document.addEventListener('DOMContentLoaded', () => {
+    const track = document.querySelector('.hiw-home__scroll-track') as HTMLElement;
+    if (!track) return;
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      track.classList.add('is-dragging');
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+    });
+
+    track.addEventListener('mouseleave', () => {
+      isDown = false;
+      track.classList.remove('is-dragging');
+    });
+
+    track.addEventListener('mouseup', () => {
+      isDown = false;
+      track.classList.remove('is-dragging');
+    });
+
+    track.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      track.scrollLeft = scrollLeft - walk;
+    });
+  });
+</script>

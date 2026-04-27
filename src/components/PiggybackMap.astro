@@ -1,0 +1,187 @@
+---
+/**
+ * PiggybackMap — Interactive SVG map of England/Wales
+ * Shows Bristol's central position on major UK removal routes.
+ * Animated route lines draw on scroll via IntersectionObserver.
+ */
+---
+
+<div class="piggyback-map-wrapper relative w-full max-w-[17rem] mx-auto" id="piggyback-map">
+  <svg
+    viewBox="0 0 400 600"
+    class="w-full h-auto"
+    role="img"
+    aria-label="Map showing Bristol at the centre of major UK removal routes between London, Cornwall, Cardiff, Birmingham and Edinburgh"
+  >
+    <!-- England/Wales simplified outline -->
+    <path
+      d="M200 25 L215 30 230 28 245 40 255 55 265 50 275 60 280 80 290 95
+         295 110 300 130 310 145 320 140 330 155 335 170 340 190 345 210
+         350 230 348 250 340 265 335 280 345 295 350 310 348 325 340 340
+         330 355 320 370 325 385 330 400 325 415 315 430 305 445 295 455
+         285 465 275 475 265 480 258 490 250 500 240 510 228 515 218 520
+         210 530 200 540 190 545 180 540 170 530 160 520 150 515 140 510
+         130 500 120 490 110 480 105 470 100 455 95 440 90 425 85 410
+         82 395 80 380 78 365 80 350 85 335 82 320 78 305 80 290
+         85 275 80 260 75 245 78 230 82 215 85 200 90 185 95 170
+         100 155 105 140 112 125 120 110 128 95 135 85 145 70 155 58
+         165 48 175 38 185 30 195 27 Z"
+      fill="rgba(255,255,255,0.06)"
+      stroke="rgba(255,255,255,0.25)"
+      stroke-width="1.5"
+      stroke-linejoin="round"
+    />
+
+    <!-- Route: London to Cornwall (via Bristol) -->
+    <path
+      class="route-line route-london-cornwall"
+      d="M310 310 C280 320, 240 340, 195 370 C160 395, 130 430, 105 470"
+      fill="none"
+      stroke="#C65D3B"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-dasharray="400"
+      stroke-dashoffset="400"
+      opacity="0.9"
+    />
+
+    <!-- Route: London to Cardiff (via Bristol) -->
+    <path
+      class="route-line route-london-cardiff"
+      d="M310 310 C275 325, 240 345, 195 370 C165 385, 130 375, 95 355"
+      fill="none"
+      stroke="#D4A84B"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-dasharray="350"
+      stroke-dashoffset="350"
+      opacity="0.9"
+    />
+
+    <!-- Route: Bristol to Edinburgh (northbound) -->
+    <path
+      class="route-line route-bristol-edinburgh"
+      d="M195 370 C200 330, 210 280, 215 240 C220 200, 218 150, 210 100 C205 70, 200 50, 195 35"
+      fill="none"
+      stroke="#6ba89e"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-dasharray="450"
+      stroke-dashoffset="450"
+      opacity="0.9"
+    />
+
+    <!-- Route: Bristol to Birmingham -->
+    <path
+      class="route-line route-bristol-birmingham"
+      d="M195 370 C210 340, 225 310, 245 270"
+      fill="none"
+      stroke="#9b7dd4"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-dasharray="200"
+      stroke-dashoffset="200"
+      opacity="0.9"
+    />
+
+    <!-- Bristol marker (main, pulsing) -->
+    <circle cx="195" cy="370" r="10" fill="#C65D3B" class="bristol-marker" />
+    <circle cx="195" cy="370" r="10" fill="none" stroke="#C65D3B" stroke-width="2" class="bristol-pulse" opacity="0.6" />
+    <text x="195" y="395" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="'DM Sans', sans-serif">Bristol</text>
+
+    <!-- London marker -->
+    <circle cx="310" cy="310" r="6" fill="white" opacity="0.9" class="city-marker" />
+    <text x="325" y="315" fill="white" font-size="12" font-weight="500" font-family="'DM Sans', sans-serif" class="city-label cl-1" opacity="0">London</text>
+
+    <!-- Cornwall marker -->
+    <circle cx="105" cy="470" r="6" fill="white" opacity="0.9" class="city-marker" />
+    <text x="80" y="492" fill="white" font-size="12" font-weight="500" font-family="'DM Sans', sans-serif" text-anchor="middle" class="city-label cl-2" opacity="0">Cornwall</text>
+
+    <!-- Cardiff marker -->
+    <circle cx="95" cy="355" r="6" fill="white" opacity="0.9" class="city-marker" />
+    <text x="65" y="350" fill="white" font-size="12" font-weight="500" font-family="'DM Sans', sans-serif" text-anchor="middle" class="city-label cl-3" opacity="0">Cardiff</text>
+
+    <!-- Edinburgh marker -->
+    <circle cx="195" cy="35" r="6" fill="white" opacity="0.9" class="city-marker" />
+    <text x="195" y="22" text-anchor="middle" fill="white" font-size="12" font-weight="500" font-family="'DM Sans', sans-serif" class="city-label cl-4" opacity="0">Edinburgh</text>
+
+    <!-- Birmingham marker -->
+    <circle cx="245" cy="270" r="6" fill="white" opacity="0.9" class="city-marker" />
+    <text x="265" y="274" fill="white" font-size="12" font-weight="500" font-family="'DM Sans', sans-serif" class="city-label cl-5" opacity="0">Birmingham</text>
+
+    <!-- M4 / M5 motorway labels -->
+    <text x="250" y="350" fill="rgba(255,255,255,0.35)" font-size="10" font-family="'DM Sans', sans-serif" transform="rotate(-15, 250, 350)">M4</text>
+    <text x="215" y="300" fill="rgba(255,255,255,0.35)" font-size="10" font-family="'DM Sans', sans-serif" transform="rotate(-80, 215, 300)">M5</text>
+  </svg>
+
+</div>
+
+<style>
+  /* Route drawing animation */
+  .route-animated .route-line {
+    animation: drawRoute 3.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .route-animated .route-london-cardiff {
+    animation-delay: 0.8s;
+  }
+  .route-animated .route-bristol-edinburgh {
+    animation-delay: 1.6s;
+  }
+  .route-animated .route-bristol-birmingham {
+    animation-delay: 2.4s;
+  }
+
+  @keyframes drawRoute {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* Bristol pulsing glow */
+  .route-animated .bristol-pulse {
+    animation: pulse 2s ease-in-out infinite 4.5s;
+  }
+  @keyframes pulse {
+    0%, 100% { r: 10; opacity: 0.6; }
+    50% { r: 20; opacity: 0; }
+  }
+
+  /* City labels fade in — use unique classes since :nth-of-type counts all <text> elements */
+  .route-animated .city-label {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  .route-animated .city-label.cl-1 { animation-delay: 3.0s; }
+  .route-animated .city-label.cl-2 { animation-delay: 3.3s; }
+  .route-animated .city-label.cl-3 { animation-delay: 3.6s; }
+  .route-animated .city-label.cl-4 { animation-delay: 3.9s; }
+  .route-animated .city-label.cl-5 { animation-delay: 4.2s; }
+
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+
+  /* Respect reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .route-animated .route-line { animation: none; stroke-dashoffset: 0; }
+    .route-animated .bristol-pulse { animation: none; }
+    .route-animated .city-label { animation: none; opacity: 1; }
+  }
+</style>
+
+<script>
+  (function () {
+    const map = document.getElementById('piggyback-map');
+    if (!map) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            map.classList.add('route-animated');
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(map);
+  })();
+</script>

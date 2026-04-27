@@ -1,0 +1,139 @@
+---
+/**
+ * PackingChecklist — Interactive checkbox-style checklist
+ *
+ * Unique per lesson. "Print this checklist" button triggers window.print()
+ * with print-friendly CSS. Checkboxes are functional and persist visually
+ * during the session.
+ */
+
+export interface Props {
+  items: string[];
+  roomName: string;
+}
+
+const { items, roomName } = Astro.props;
+const checklistId = roomName.toLowerCase().replace(/\s+/g, '-');
+---
+
+<div class="packing-checklist" data-checklist-id={checklistId}>
+  <div class="packing-checklist-header">
+    <h3 class="packing-checklist-title">{roomName} Packing Checklist</h3>
+    <button
+      class="packing-checklist-print"
+      type="button"
+      aria-label={`Print ${roomName} packing checklist`}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:-2px;margin-right:4px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print checklist
+    </button>
+  </div>
+  <ul>
+    {items.map((item) => (
+      <li>
+        <label class="checklist-label">
+          <input
+            type="checkbox"
+            class="checklist-input sr-only"
+          />
+          <span class="checklist-box" aria-hidden="true"></span>
+          <span class="checklist-text">{item}</span>
+        </label>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<script>
+  const EXPIRY_DAYS = 60;
+
+  function getStorageKey(id: string) {
+    return `checklist:${id}`;
+  }
+
+  function loadChecked(checklistId: string): Set<number> {
+    try {
+      const raw = localStorage.getItem(getStorageKey(checklistId));
+      if (!raw) return new Set();
+      const data = JSON.parse(raw);
+      if (data.expires && Date.now() > data.expires) {
+        localStorage.removeItem(getStorageKey(checklistId));
+        return new Set();
+      }
+      return new Set(data.checked || []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function saveChecked(checklistId: string, checked: Set<number>) {
+    const expires = Date.now() + EXPIRY_DAYS * 24 * 60 * 60 * 1000;
+    localStorage.setItem(
+      getStorageKey(checklistId),
+      JSON.stringify({ checked: [...checked], expires })
+    );
+  }
+
+  function initChecklists() {
+    // Group all checklist instances by their data-checklist-id
+    const checklists = document.querySelectorAll<HTMLElement>('.packing-checklist[data-checklist-id]');
+    const groups = new Map<string, HTMLElement[]>();
+
+    checklists.forEach((el) => {
+      const id = el.dataset.checklistId!;
+      if (!groups.has(id)) groups.set(id, []);
+      groups.get(id)!.push(el);
+    });
+
+    groups.forEach((elements, checklistId) => {
+      const checked = loadChecked(checklistId);
+
+      // Restore state + attach listeners for each instance
+      elements.forEach((container) => {
+        const inputs = container.querySelectorAll<HTMLInputElement>('.checklist-input');
+
+        // Restore
+        inputs.forEach((input, i) => {
+          if (checked.has(i)) input.checked = true;
+        });
+
+        // Listen for changes
+        inputs.forEach((input, i) => {
+          input.addEventListener('change', () => {
+            if (input.checked) {
+              checked.add(i);
+            } else {
+              checked.delete(i);
+            }
+            saveChecked(checklistId, checked);
+
+            // Sync all sibling instances (mobile ↔ desktop)
+            elements.forEach((other) => {
+              if (other === container) return;
+              const otherInput = other.querySelectorAll<HTMLInputElement>('.checklist-input')[i];
+              if (otherInput) otherInput.checked = input.checked;
+            });
+          });
+        });
+
+        // Print button — clone checklist into an isolated wrapper so only it prints
+        const printBtn = container.querySelector('.packing-checklist-print');
+        printBtn?.addEventListener('click', () => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'print-checklist-wrapper';
+          const clone = container.cloneNode(true) as HTMLElement;
+          wrapper.appendChild(clone);
+          document.body.appendChild(wrapper);
+          document.body.classList.add('printing-checklist');
+
+          window.print();
+
+          document.body.classList.remove('printing-checklist');
+          wrapper.remove();
+        });
+      });
+    });
+  }
+
+  initChecklists();
+</script>

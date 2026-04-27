@@ -1,0 +1,244 @@
+---
+/**
+ * /removals-bristol/stoke-bishop/ — Stoke Bishop neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Stoke Bishop Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~1.5 miles' },
+        { label: 'Drive time from depot', value: '6 minutes' },
+        { label: 'Postcode area', value: 'BS9' },
+        { label: 'Nearest motorway', value: 'M5 J17 (4 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '4–5 bed detached' },
+        { label: 'Typical crew', value: '4 movers, 2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£700–£1,200' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£654,000' },
+        { label: 'Typical property', value: '1930s detached / Stride' },
+        { label: 'Typical floors', value: '2 storeys + loft' },
+        { label: 'Driveways', value: 'Standard (often double)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'None' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'High-value contents' },
+        { label: 'Conservation area', value: 'Sneyd Park (since 1981)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Jay was quick to visit and send us a quote. The team arrived on time, were swift, professional, very careful with our belongings, and friendly. They literally made the move painless.",
+  name: 'Sarah Belsten',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Stoke Bishop, Bristol';
+const description = `Stoke Bishop removal specialists for BS9 detached homes and Sneyd Park estates. High-value contents, wide roads, no RPZ. ${siteConfig.company.rating.value}★ rated since 1978.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Stoke Bishop Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Stoke Bishop, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS9", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'How do you handle high-value items in Stoke Bishop homes?', answer: `Every van carries ${siteConfig.company.insurance} Goods in Transit insurance. Declare items over £2,000 in advance so we can wrap and track them individually. We use purpose-built blankets, picture carriers, and custom crating. Stoke Bishop homes frequently contain antique furniture, artwork, and bespoke Stride brothers fittings — this is routine for us.` },
+  { question: 'Can you access properties in Sneyd Park\'s narrow lanes?', answer: 'Yes. Sneyd Park has winding lanes with mature trees and conservation area protections. We survey the approach before your move and may use a smaller vehicle for the final stretch. Tree preservation orders mean overhanging branches can\'t be trimmed — we plan around them.' },
+  { question: 'How much does a Stoke Bishop removal cost?', answer: 'A 4-bed detached moving locally typically costs £700–£1,200. Larger Sneyd Park properties with high-value contents may need additional wrapping time and a second van. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific quote.' },
+  { question: 'Is there a parking zone in Stoke Bishop?', answer: 'No. Stoke Bishop has no RPZ and none is currently proposed. Most properties have driveways and garages, so parking for removal vans is rarely an issue — one of the advantages of this area.' },
+  { question: 'Should I avoid university move-in week?', answer: 'If possible, yes. The University of Bristol\'s Stoke Bishop halls complex causes significant traffic in September. Streets near Wills Hall and Hiatt Baker Hall fill with parked cars and parent vehicles. We recommend avoiding the first two weeks of September if you have flexibility.' },
+  { question: 'How do Stoke Bishop properties compare to Clifton for removals?', answer: 'Stoke Bishop homes are predominantly semi-detached and detached — well-proportioned family houses rather than <a href="/removals-bristol/clifton/" class="text-secondary-500 underline underline-offset-2">Clifton\'s</a> towering Victorian terraces. The scale is more manageable, roads are wider, and most properties have driveways. Logistics are significantly easier, though the volume of contents in larger Stoke Bishop homes can match or exceed a Clifton move.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Stoke Bishop" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Stoke Bishop"
+  slug="stoke-bishop"
+  schema={schema}
+  ogImage="/img/areas/stoke-bishop-residential-street-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/stoke-bishop-residential-street"
+  heroAlt="Tree-lined residential street in Stoke Bishop with detached houses and wide driveways"
+  heroSubtitle="A Bristol removal team since 1978. For home removals in Stoke Bishop, nearly 50 years of local experience makes the difference."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">There are Bristol neighbourhoods we work in because they're busy. There are others we work in because the jobs are interesting. And then there's Stoke Bishop — the area that, if you asked members of our team where they'd live given a free choice and an unrestricted budget, would come up more than anywhere else.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">That's not a marketing line. It's the honest answer you get from people who spend their working days driving through Bristol's neighbourhoods and walking through its houses. Stoke Bishop occupies the northwestern corner of the city, bordered by the Downs to the east, the Avon Gorge to the south, and Westbury-on-Trym to the north — a neighbourhood defined by its green borders. The Clifton Suspension Bridge is visible from parts of the area. Leigh Woods sits across the gorge. Sea Mills and the river are a short cycle away. For families, for cyclists, for anyone who values outdoor space within walking distance of home, Stoke Bishop delivers in a way that few urban neighbourhoods manage.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Houses -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Stoke Bishop Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Houses: Generous, Well-Proportioned</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Stoke Bishop's housing is predominantly detached and semi-detached — a significant departure from the Victorian terrace stock that dominates so much of inner Bristol. These are largely interwar and postwar houses with driveways, gardens front and back, and the kind of internal proportions that make a removal crew's day notably pleasant.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Wide hallways. Sensible staircases. Rooms that fit furniture without requiring creative problem-solving. Front doors that open onto paths rather than directly onto the pavement. And crucially — driveways. Off-street parking on a significant proportion of properties changes the nature of every removal job. The van goes on the drive, the crew works without managing road access, and the job focuses entirely on the move itself rather than vehicle logistics.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">We don't say this lightly: Stoke Bishop is among the most satisfying areas in Bristol for a removal. Not because the houses are small — many are substantial three and four-bedroom properties — but because they were designed and built with spatial generosity that the Victorian terrace tradition, for all its charm, doesn't always offer.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: The Roads -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Roads: Wide, Calm, and Manageable</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The roads in Stoke Bishop match the houses. These are not the narrow Victorian terrace streets of <a href="/removals-bristol/bishopston/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bishopston</a> or the tight urban grid of <a href="/removals-bristol/montpelier/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Montpelier</a>. They're wider, quieter, with more space between properties and between vehicles. A Luton van navigating Stoke Bishop feels entirely different from one navigating Totterdown or Clifton Wood — there's room to position the vehicle properly, room to work.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Streets like Saville Road and Ladies Mile — which runs along the edge of the Downs — have the kind of generous proportions that remind you these houses were built when space was not considered a luxury. The roads that branch off Stoke Bishop Road and connect through towards Sea Mills are quieter still. We rarely encounter the access anxiety here that some of Bristol's more densely packed neighbourhoods produce almost automatically.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Parking is rarely an issue. Wide roads and driveways mean we don't face the constraints common in areas like Bishopston or Montpelier. Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers the approach route — and for properties in Sneyd Park's narrower, winding lanes, our drivers check the specific route before the day.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Stoke Bishop?"
+      description="Get a personalised quote — we'll survey every room, the garage, and the garden outbuildings."
+      buttonText="Get Your Stoke Bishop Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S4: The Downs & Sea Mills — styled content box -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">The Downs: Stoke Bishop's Defining Asset</h2>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Durdham Down and Clifton Down together form one of the largest areas of open grassland in any British city — over 400 acres of common land on Stoke Bishop's doorstep. Walking there from most properties is a matter of minutes."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Downs shape not only the quality of life in Stoke Bishop but the character of the streets around them. The roads adjacent — along Ladies Mile and the approaches to the Clifton Suspension Bridge — are beautiful to drive along. They're also, because of weekend footfall on the Downs, busier with parked cars on Saturdays and Sundays than you might expect from an otherwise quiet neighbourhood.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">For weekday moves — when the majority of our work happens — this isn't an issue. The Downs roads are calm and accessible on a Tuesday morning in a way they aren't on a sunny Sunday afternoon. If you're planning a weekend move, particularly in the warmer months, factor in additional parking pressure along the Downs-facing roads.</p>
+
+    <OptimizedPicture
+      name="areas/stoke-bishop-antiques"
+      pattern="HALF"
+      alt="Careful wrapping of antique furniture during a Stoke Bishop removal"
+      class="w-full rounded-xl object-cover max-h-[340px] my-6"
+      loading="lazy"
+    />
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Sea Mills and the River Edge</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The lower part of Stoke Bishop, where the neighbourhood slopes down towards Sea Mills and the River Avon, has a different character from the Downs-adjacent streets higher up. The houses tend to be smaller, the roads a little tighter, the feel more modest. Sea Mills itself is a self-contained neighbourhood with its own station on the Severn Beach line — a useful connection that the rest of Stoke Bishop doesn't have.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Moves at the Sea Mills end are still manageable by Bristol standards — we're not talking about Montpelier-level access challenges. But the generous road widths and driveway prevalence of upper Stoke Bishop don't extend uniformly down to the river. It's worth knowing which part of the neighbourhood your property sits in when we're planning the job. Let Painless Removals come and take a look with a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> — we'll assess the access, the street, and anything that needs special handling.</p>
+  </div>
+
+  <!-- S5: The Bottom Line + Checklist -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Stoke Bishop a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Stoke Bishop is, by some margin, one of the most enjoyable areas in Bristol for a removal. The houses are well-built and generous. The roads are calm and accessible. The driveways solve the problem that causes the most stress in most other Bristol neighbourhoods. And the neighbourhood itself — backed by the Downs, bordered by the gorge — is as good as Bristol gets.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If you're moving to Stoke Bishop, you've made a choice that people who know Bristol will understand immediately. Need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>? We can send a team the day before — sometimes two days before for the largest properties — so the crew arrives on moving day to a house that's ready to load.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Stoke Bishop Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">The checklist for Stoke Bishop is shorter than for most Bristol neighbourhoods, which tells you something:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Driveway or street?</strong> If you have a driveway, tell us — it simplifies the parking plan entirely.</li>
+      <li><strong>Upper Stoke Bishop or Sea Mills end?</strong> The character and road widths differ. Let us know your specific street so we bring the right vehicle.</li>
+      <li><strong>Weekend move near the Downs?</strong> Factor in recreational parking pressure along Ladies Mile and the Downs-facing roads, especially in warmer months.</li>
+      <li><strong>Large property?</strong> Stoke Bishop houses can be substantial. Tell us the volume so we bring the right number of vans and crew.</li>
+      <li><strong>High-value contents?</strong> Antique furniture, artwork, pianos — declare items over £2,000 so we wrap and track them individually.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

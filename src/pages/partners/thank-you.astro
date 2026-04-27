@@ -1,0 +1,38 @@
+---
+/**
+ * Partner Registration — Thank You Page
+ *
+ * Shown after a successful partner registration submission.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+
+const pageTitle = 'Registration Received — Trade Partners';
+const pageDescription = 'Thank you for your interest in partnering with Painless Removals.';
+---
+
+<Layout title={pageTitle} description={pageDescription} noindex={true}>
+
+  <section class="section bg-cream">
+    <div class="container-narrow">
+
+      <div class="bg-green-50 border border-green-200 rounded-xl p-8 text-center max-w-lg mx-auto">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-primary-600 mb-3">Registration Received</h1>
+        <p class="text-warm-gray leading-relaxed mb-6">
+          Thank you for your interest in partnering with us. We'll respond within one working day to arrange an introductory call.
+        </p>
+        <a href="/partners/"
+          class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40">
+          Back to Partners
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>

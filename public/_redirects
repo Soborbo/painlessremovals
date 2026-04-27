@@ -1,0 +1,29 @@
+# ============================================
+# PAINLESS REMOVALS — CLOUDFLARE PAGES REDIRECTS
+# Updated: 2026-03-20
+#
+# IMPORTANT: CF Pages silently drops rules beyond ~60 static.
+# Only wildcard/splat rules belong here (edge-level).
+# All static 1:1 redirects live in src/data/redirects.ts
+# and are built into HTML redirect pages by Astro.
+# ============================================
+
+# ── Date archive splats → packing guide ─────────────────────
+/2021/*  /packing-guide/  301
+/2022/*  /packing-guide/  301
+/2023/*  /packing-guide/  301
+/2024/*  /packing-guide/  301
+/2025/*  /packing-guide/  301
+/2026/*  /packing-guide/  301
+
+# ── Author pages → about ────────────────────────────────────
+/author/*  /about/  301
+
+# ── Review sub-pages → reviews hub ──────────────────────────
+/reviews/:slug  /reviews/  301
+
+# ── WWW → non-www canonical redirect ─────────────────────────
+https://www.painlessremovals.com/*  https://painlessremovals.com/:splat  301
+
+# ── WordPress feed patterns → homepage ──────────────────────
+/*/feed  /  301

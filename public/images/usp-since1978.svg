@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Left laurel branch -->
+  <path d="M14 38c-2-4-4-9-4-14" stroke-width="1.6"/>
+  <ellipse cx="9" cy="30" rx="3" ry="5" transform="rotate(20 9 30)" fill="white" stroke="none" opacity="0.9"/>
+  <ellipse cx="8" cy="23" rx="2.8" ry="4.5" transform="rotate(10 8 23)" fill="white" stroke="none" opacity="0.9"/>
+  <ellipse cx="9" cy="16" rx="2.5" ry="4" transform="rotate(-5 9 16)" fill="white" stroke="none" opacity="0.9"/>
+  <ellipse cx="12" cy="10" rx="2.2" ry="3.5" transform="rotate(-20 12 10)" fill="white" stroke="none" opacity="0.9"/>
+  <!-- Right laurel branch -->
+  <path d="M34 38c2-4 4-9 4-14" stroke-width="1.6"/>
+  <ellipse cx="39" cy="30" rx="3" ry="5" transform="rotate(-20 39 30)" fill="white" stroke="none" opacity="0.9"/>
+  <ellipse cx="40" cy="23" rx="2.8" ry="4.5" transform="rotate(-10 40 23)" fill="white" stroke="none" opacity="0.9"/>
+  <ellipse cx="39" cy="16" rx="2.5" ry="4" transform="rotate(5 39 16)" fill="white" stroke="none" opacity="0.9"/>
+  <ellipse cx="36" cy="10" rx="2.2" ry="3.5" transform="rotate(20 36 10)" fill="white" stroke="none" opacity="0.9"/>
+  <!-- Star at top -->
+  <circle cx="24" cy="6" r="2" fill="white" stroke="none"/>
+</svg>

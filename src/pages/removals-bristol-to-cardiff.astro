@@ -1,0 +1,382 @@
+---
+/**
+ * /removals-bristol-to-cardiff/ — Bristol to Cardiff route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '45 miles' },
+        { label: 'Drive time', value: '~50 min' },
+        { label: 'Route', value: 'M4 / M48' },
+        { label: 'Duration', value: '1 day' },
+        { label: 'Crew', value: '2–3 movers, 1 van' },
+        { label: 'Cost', value: '£600–£1,400' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Efficient, friendly, helpful, reasonable in price. They moved all my possessions and lots of furniture from Bristol to Haverfordwest with the minimum of fuss. I rate them extremely highly.",
+  name: 'Geoff Barnes',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Cardiff — 45 Miles, Same Day';
+const description = `House removals from Bristol to Cardiff, 45 miles via M4. Cross-border moves handled daily. Rated ${siteConfig.company.rating.value}★, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Cardiff",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Cardiff" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'Is there still a toll on the Severn Bridge?',
+    answer: 'No. The Severn crossing tolls were abolished in December 2018. Both the M48 (old bridge) and the M4 (second crossing) are free in both directions. This removed what used to be a &pound;20+ charge per crossing for larger vehicles.',
+  },
+  {
+    question: 'How long does a Bristol to Cardiff move take?',
+    answer: 'The drive itself is under an hour via the M4. A full house move — loading, driving, and unloading — is comfortably completed in a single day for most 2–4 bedroom properties. We typically arrive at 8am and have you fully unloaded by mid-afternoon.',
+  },
+  {
+    question: 'Do you move people from Cardiff to Bristol too?',
+    answer: 'Yes, equally often. We run this route in both directions and the pricing is the same. Many young professionals move from Cardiff to Bristol, while families often head the other way for more affordable housing.',
+  },
+  {
+    question: 'What about parking in Cardiff city centre?',
+    answer: 'Cardiff city centre has extensive parking restrictions. Where needed, we arrange parking suspensions through Cardiff Council in advance so our vehicles have guaranteed kerb-side access on moving day. We handle the paperwork for you.',
+  },
+  {
+    question: 'Can you help with packing?',
+    answer: 'Yes. We offer a full <a href="/home-packing-service/" class="text-secondary-500 underline underline-offset-2">professional packing service</a> — we pack the day before your move and transport everything the next day. Popular for cross-border moves where you want minimal disruption across two days.',
+  },
+  {
+    question: 'Can you move me from London to Cardiff?',
+    answer: 'Yes. Bristol sits on the route between London and Cardiff. We drive to London, load up, and return toward Bristol the same day. The following morning, it\'s a one-hour drive to Cardiff to unload. This clean two-day structure with no overnight stays keeps costs competitive — typically from around &pound;1,500–&pound;2,000 depending on volume.',
+  },
+  {
+    question: 'What about Cardiff\'s Clean Air Zone?',
+    answer: 'Cardiff City Council has been developing a Clean Air Zone for the city centre. Requirements have evolved over time and we stay current on compliance. Our fleet meets the latest emissions standards.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Cardiff" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/wales-removal2-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Cardiff' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Cardiff
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Bristol to Cardiff is one of our most competitive routes — about 40 to 50 minutes from our Bristol base, which puts it closer than some parts of south Bristol at rush hour. Since the Severn Bridge toll was abolished in December 2018 the crossing costs nothing in either direction, and we can price a Cardiff move comparably to many Bristol-area jobs. We've built repeat business in the city — customers who moved to Cardiff with us and then asked us to come back for a further move within Cardiff.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">Cardiff's housing stock throws up its own challenges. Bay area apartments need lift bookings and loading-bay reservations. The Victorian terraces in Pontcanna and Canton have narrow hallways and on-street parking. Student areas in Cathays mean tight turnarounds and shared access. We know these neighbourhoods because we work in them week after week.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="areas/wales-removal2" pattern="FULL" alt="Removal van crossing the Severn Bridge on a Bristol to Cardiff house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes a Bristol to Cardiff Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Cardiff Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Severn Crossing</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The M4 corridor between Bristol and Cardiff is motorway nearly the entire way. No single-carriageway bottlenecks, no mountain passes. We load at your Bristol address in the morning and you're unpacking in Cardiff by the afternoon. For larger properties we bring a second van and stagger the loads.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The crossing can back up during holiday periods — the Friday before August bank holiday, when half of Bristol appears to be driving into Wales for the weekend, is a notable example. It's not chronic in the way some routes are, and midweek moves outside school holidays are a non-issue. But it's worth factoring into your date choice.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Cardiff's Neighbourhoods</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Pontcanna and Canton on the west side are popular, leafy, and lined with Victorian terrace stock — similar character to Bishopston or Redland in Bristol. Roath and Penylan to the east have similar Victorian and Edwardian housing with good access on most streets. Whitchurch and Rhiwbina to the north have more detached housing, quieter roads, and fewer access complications.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Cardiff Bay is the one that needs planning. The redeveloped docklands area has impressive modern apartments, but they come with the same access considerations you'd find in Bristol's harbour developments: goods lift bookings, restricted move-in hours, and loading bay coordination. Penarth — technically Vale of Glamorgan but functionally Cardiff's commuter belt — is coastal and pleasant, with some access considerations on the steeper residential streets.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Cross-Border Differences</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">One thing that catches people out is the cross-border difference in council services. Welsh council tax bands are calculated differently. Waste collection rules vary between Cardiff Council and Bristol City Council. Road signage switches to bilingual Welsh-English once you cross the bridge. None of this affects your move day, but it's worth knowing as you settle in.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Cardiff City Council has been developing a Clean Air Zone for the city centre — requirements have evolved over time and we stay current on compliance. Our fleet meets the latest emissions standards, so this is handled for you.</p>
+      </div>
+
+      <!-- Mobile: Review (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Cardiff, UK" />
+      </div>
+
+      <!-- Mid CTA — bleed full-width on mobile -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Cardiff?"
+          description="Free quote in about two minutes. Cross-border moves are our speciality — no tolls, no fuss."
+          buttonText="Get Your Cardiff Removal Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Cardiff is one of the routes where the numbers work in your favour. The proximity, the toll-free crossing, and the motorway run mean we can offer pricing that competes with local Cardiff removal companies — while bringing 47 years of experience from Bristol. We've had repeat customers on this route specifically: people who moved to Cardiff, settled in, and then called us back a year or two later for another move within the city.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/wales-removal4" pattern="HALF" alt="Removal crew loading furniture for a Wales-bound move" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Cardiff is closer to us than some parts of south Bristol — it's about 40 to 50 minutes, straight down the motorway. We can price it competitively because of that. We've had customers who moved to Cardiff with us, settled in, and then called us back a couple of years later for another move within the city. That's the kind of repeat business you only get when the first job goes well."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Painless Removals has been running cross-border moves since 1978. Beyond Cardiff, we also cover the route to <a href="/removals-bristol-to-exeter/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Exeter</a> and wider Devon along the M5 corridor.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Cardiff Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A single-van move — smaller flat, 1–2 van loads — typically falls between £600 and £800. A family-sized move with 2–3 van loads runs £900 to £1,400 depending on volume, access difficulty, and whether you add our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">professional packing service</a>. Cardiff city centre and Bay properties with access complexity sit at the higher end.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every move includes {siteConfig.company.insurance} goods-in-transit insurance, professional blanket wrapping, and a dedicated crew for the full day. No hidden fuel surcharges, no bridge fees. The cost is driven almost entirely by volume and access rather than by the distance.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Cardiff Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 cardiff-checklist">
+          <li><strong>Which neighbourhood?</strong> Pontcanna terraces and Cardiff Bay apartments are different jobs — crew size, equipment, and timing all change.</li>
+          <li><strong>Cardiff Bay access?</strong> If you're moving to or from a Bay apartment, check lift booking requirements and loading bay availability with the management company before your move date.</li>
+          <li><strong>Avoid bank holiday weekends.</strong> The Severn crossing backs up on Friday afternoons before bank holidays. Midweek is reliably calmer.</li>
+          <li><strong>Packing service?</strong> We pack the day before and move the next day. Popular for cross-border moves where you want minimal disruption across two days.</li>
+          <li><strong>London to Cardiff?</strong> We also handle London-to-Cardiff moves using Bristol as the staging point — a clean two-day structure with no overnight stays.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+
+        <!-- Route Overview -->
+        <FactBox {...factBoxProps} />
+
+        <!-- Review -->
+        <ReviewInline {...reviewProps} />
+
+        <!-- Route Map -->
+        <RouteMap destination="Cardiff, UK" />
+
+        <!-- Author box -->
+        <SidebarAuthorBox />
+
+        <!-- Sticky CTA -->
+        <SidebarCTA />
+
+      </div>
+    </aside>
+
+  </div>
+  <!-- ═══ End two-column layout ═══ -->
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Cardiff: Common Questions" />
+  </div>
+
+</div>
+<!-- ═══ Full-width sections (break out of container) ═══ -->
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Bristol sits at the junction of the M4, M5 and M32, giving direct motorway access across England and Wales.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Exeter" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Bristol" to="Birmingham" meta="~90 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Bristol" to="Oxford" meta="~75 miles via M4/A34" days="1 day" href="/removals-bristol-to-oxford/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes comfortably completed in a single day.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready for Your Bristol to Cardiff Move?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  /* ── Mid CTA: full-width bleed on mobile ── */
+  .midcta-bleed {
+    margin-left: -1rem;   /* cancels px-4 */
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem; /* cancels sm:px-6 */
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  /* ── Checklist: checkmark icons ── */
+  .cardiff-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .cardiff-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .cardiff-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

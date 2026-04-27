@@ -1,0 +1,630 @@
+---
+/**
+ * Video Self-Assessment Guide
+ *
+ * How to film your home so we can give you an accurate removal quote.
+ * Room-by-room checklist with pro tips for filming.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+import FinalCTA from '@/components/FinalCTA.astro';
+
+// Page metadata
+const pageTitle = 'Video Self-Assessment Guide — How to Film Your Home for an Accurate Quote';
+const pageDescription = 'Learn how to film your home so we can give you an accurate removal quote. Room-by-room checklist, filming tips, and what to say on camera from Painless Removals Bristol.';
+
+// Room checklist data
+const rooms = [
+  {
+    name: 'Bedrooms',
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>`,
+    items: [
+      'Walk slowly around the room, pausing on each piece of furniture',
+      'Show the bed and mention how it dismantles (divan, frame, slats, etc.)',
+      'Check under the bed \u2014 show any storage boxes or items',
+      'Open wardrobes and show the contents so we can estimate packing',
+      'Show items on shelves, dressers, and windowsills',
+      'Show hidden furniture (behind doors, in alcoves)',
+      'If boxes are stacked, mention what\u2019s inside: \u201CThese are soft items\u201D or \u201CThese are books\u201D',
+    ],
+  },
+  {
+    name: 'Living Room / Front Room',
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+    items: [
+      'Show all furniture: sofas, armchairs, coffee tables, TV units',
+      'Spend time on bookshelves \u2014 books are heavy and need small boxes',
+      'Open all cupboard doors (TV cabinets, sideboards, display units)',
+      'Show fragile items: ornaments, glassware, lamps, picture frames',
+      'Look behind doors \u2014 instruments, coats, bags often hide there',
+      'Check down the sides of sofas for cushions, blankets, remotes',
+      'Show plants on windowsills and shelves',
+      'If a coffee table has storage inside, open it and show us',
+    ],
+  },
+  {
+    name: 'Kitchen',
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>`,
+    items: [
+      'Show items on countertops, shelves, and above cupboards',
+      'Open every cupboard and hold the camera steady so we can see inside',
+      'Show glassware and bottles clearly \u2014 these need special packing in small boxes',
+      'Show pots, pans, and baking equipment',
+      'Show under the sink (cleaning products, bins)',
+      'Mention items on top of the fridge, baskets, or high shelves',
+      'Show what\u2019s under the counter (stools, bins, step ladders)',
+    ],
+    proTip: 'You don\u2019t need to show every cutlery drawer. But if you have deep drawers with pots, pans, or heavy items, give us a quick look.',
+  },
+  {
+    name: 'Bathroom',
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 6v14a2 2 0 002 2h12a2 2 0 002-2V6M4 6l1-4h14l1 4M10 11v6m4-6v6"/></svg>`,
+    items: [
+      'Open cabinets and show shelving contents',
+      'If shelves have baskets you can\u2019t see behind, describe what\u2019s there',
+      'Show behind the door',
+      'Mention towels \u2014 tell us how many layers are stacked',
+    ],
+    example: '\u201CTwo baskets on each shelf with bathroom items, spare shampoos and toothpastes\u201D',
+  },
+  {
+    name: 'Hallways, Stairs & Hidden Spaces',
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>`,
+    items: [
+      'Under the stairs \u2014 this is the most commonly missed area! Open it up and show everything inside',
+      'Even if visibility is poor, describe what you see on camera',
+      'Show hallway furniture: shoe racks, coat stands, mirrors',
+      'Pictures and shelving units on walls \u2014 are they coming?',
+    ],
+    example: '\u201COne large case of cosmetics, one basket on top of the gas meter with scarves, and a smaller box on top\u201D',
+  },
+  {
+    name: 'Garden & Outdoor Spaces',
+    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>`,
+    items: [
+      'Start by showing the access point (door, gate, path width)',
+      'Do a slow pan around the entire garden',
+      'Show inside sheds and outbuildings (or film them separately in detail)',
+      'For items under covers, lift or describe what\u2019s underneath',
+      'Garden furniture: tables, chairs, benches, sofas',
+      'Bikes, scooters, kids\u2019 play equipment',
+      'BBQs, garden tools, hoses, outdoor sinks',
+      'Plant pots \u2014 show their size. Note any growing into walls/fences (staying)',
+      'Specialist items: wormeries, water features \u2014 will you prep them for transport?',
+      'Rubbish or tip runs: if there are boxes going to the tip, say so \u2014 \u201CThese are not coming\u201D',
+      'Firewood, logs \u2014 coming or not?',
+      'Wall-mounted items: foot racks, mirrors, hooks \u2014 coming or staying?',
+    ],
+    important: 'Clearly state for each item: is it coming or staying?',
+  },
+];
+
+// What to say on camera examples
+const cameraExamples = [
+  'The mirror on the wall is staying',
+  'We\u2019ll be bringing the bench but not the shelves',
+  'Under this cover is two bikes',
+  'Inside this cupboard is mostly cat food and craft supplies',
+  'The kids\u2019 play frame is going \u2014 they\u2019ve grown out of it',
+  'The oven is coming with us',
+  'These boxes are going to the tip, not coming',
+];
+
+// 9 most important rules — with images
+const finalChecklist = [
+  {
+    number: '01',
+    rule: 'Film Every Room Slowly',
+    detail: 'Walk at half your normal pace, pausing on each piece of furniture so we can write it down.',
+    image: 'assessment/checklist-01-film-rooms',
+    alt: 'Person slowly filming a living room with phone held horizontally',
+  },
+  {
+    number: '02',
+    rule: 'Open Every Cupboard',
+    detail: 'Wardrobes, kitchen cabinets, bathroom shelves — open them and hold the camera steady inside.',
+    image: 'assessment/checklist-02-open-cupboards',
+    alt: 'Hands opening a wardrobe showing shelves and storage boxes inside',
+  },
+  {
+    number: '03',
+    rule: 'Show Under Beds & Hidden Spaces',
+    detail: 'Under beds, under the stairs, and in alcoves are the most commonly missed areas.',
+    image: 'assessment/checklist-03-under-beds',
+    alt: 'Person filming under a bed with phone, showing boxes and items stored there',
+  },
+  {
+    number: '04',
+    rule: 'Cover Garden & Shed',
+    detail: 'Slow pan around the entire garden. Open shed doors and show everything inside.',
+    image: 'assessment/checklist-04-garden-shed',
+    alt: 'Person filming an open garden shed with tools and equipment inside',
+  },
+  {
+    number: '05',
+    rule: 'State What\'s Staying',
+    detail: 'Point at anything not coming and say it clearly: "This shelving unit is staying."',
+    image: 'assessment/checklist-05-items-staying',
+    alt: 'Person pointing at a bookshelf saying STAYS while filming with phone',
+  },
+  {
+    number: '06',
+    rule: 'Highlight Specialist Items',
+    detail: 'Pianos, grandfather clocks, large artwork, gym equipment — show edges and corners.',
+    image: 'assessment/checklist-06-specialist-items',
+    alt: 'Phone filming a grandfather clock and large framed artwork',
+  },
+  {
+    number: '07',
+    rule: 'Confirm Every Appliance',
+    detail: 'Fridge, oven, washing machine, dishwasher — say clearly for each: coming or staying?',
+    image: 'assessment/checklist-07-appliances',
+    alt: 'Person filming kitchen appliances with question marks — fridge, washing machine, oven',
+  },
+  {
+    number: '08',
+    rule: 'Lift Covers & Identify',
+    detail: 'If items are under sheets or tarps, lift them on camera — or describe what\'s underneath.',
+    image: 'assessment/checklist-08-under-covers',
+    alt: 'Hands lifting a cover to reveal bikes underneath while filming with phone',
+  },
+  {
+    number: '09',
+    rule: 'Show All Access Points',
+    detail: 'Film the front door, path width, driveway, and any steps — this reveals chokepoints and tricky access before moving day.',
+    image: 'assessment/checklist-09-access-points',
+    alt: 'Hands filming front door and pathway showing access for removal van',
+  },
+];
+
+// Schema: Article
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": pageTitle,
+  "description": pageDescription,
+  "url": `${siteConfig.brand.domain}/video-self-assessment-guide`,
+  "datePublished": "2026-03-11",
+  "dateModified": "2026-03-11",
+  "author": {
+    "@type": "Person",
+    "@id": `${siteConfig.brand.domain}/about/jay-newton#person`,
+    "name": siteConfig.company.director.name,
+    "jobTitle": siteConfig.company.director.title,
+  },
+  "publisher": {
+    "@type": "MovingCompany",
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "name": siteConfig.company.name,
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": `${siteConfig.brand.domain}/video-self-assessment-guide`,
+  },
+  "image": `${siteConfig.brand.domain}/images/og-default.png`,
+};
+
+// Schema: BreadcrumbList
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": siteConfig.brand.domain,
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Video Self-Assessment Guide",
+      "item": `${siteConfig.brand.domain}/video-self-assessment-guide`,
+    },
+  ],
+};
+
+const pageSchema = [articleSchema, breadcrumbSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/assessment/video-assessment-1200w.webp" preloadImage="/img/assessment/video-assessment-750w.avif">
+
+  <!-- Breadcrumbs -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="container-wide py-3">
+      <nav class="text-sm text-warm-gray" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Video Self-Assessment Guide</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="assessment/video-assessment"
+        pattern="FULL"
+        alt="Person filming their home with a phone for a video self-assessment removal quote"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+            Video Self-Assessment Guide
+          </p>
+
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-4 font-bold">
+            How to Film Your Home So We Can Give You an <span class="text-secondary-500">Accurate Quote</span>
+          </h1>
+
+          <p class="text-lg text-warm-gray mb-6 leading-relaxed">
+            Your video is the single most important factor in getting an accurate removal quote. A good video means we send the right size van with enough crew and packing materials. A poor video means we either bring too much (and you overpay) or too little (and the job can&rsquo;t be completed on the day).
+          </p>
+
+          <div class="inline-flex items-center gap-2 bg-primary-50 border border-primary-200 rounded-lg px-5 py-3 text-primary-700 font-medium">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Take 15&ndash;20 minutes to do this properly &mdash; it will save you time, money, and stress on moving day.
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Full-bleed image (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden">
+        <OptimizedPicture
+          name="assessment/video-assessment"
+          pattern="HALF"
+          alt="Person filming their home with a phone for a video self-assessment removal quote"
+          loading="eager"
+          fetchpriority="high"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: THE GOLDEN RULE
+  ============================================ -->
+  <section class="bg-secondary-500">
+    <div class="container-wide py-8 md:py-10">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-white text-2xl lg:text-3xl mb-3">The Golden Rule</h2>
+        <p class="text-white/90 text-lg lg:text-xl leading-relaxed">
+          If you don&rsquo;t mention it, we&rsquo;ll assume it&rsquo;s coming. If something is <strong class="text-white">staying behind</strong>, say so clearly on camera.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: GENERAL FILMING RULES — DO / DON'T
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">General Filming Rules</h2>
+      <p class="text-center text-warm-gray text-lg mb-10 max-w-2xl mx-auto">
+        Follow these simple rules and your video will give us everything we need to quote accurately.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <!-- DO -->
+        <div class="bg-green-50 border border-green-200 rounded-xl p-6 lg:p-8">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-green-800">Do This</h3>
+          </div>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Walk slowly and steadily through each room</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Pause on items so we can write them down</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Talk us through what you see</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Say clearly what&rsquo;s STAYING and what&rsquo;s GOING</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Open cupboards, wardrobes, and storage areas</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Show behind doors and under beds</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-green-900">
+              <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+              <span>Film each floor or room as a separate clip if easier</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- DON'T -->
+        <div class="bg-red-50 border border-red-200 rounded-xl p-6 lg:p-8">
+          <div class="flex items-center gap-2 mb-5">
+            <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-red-800">Don&rsquo;t Do This</h3>
+          </div>
+          <ul class="space-y-3">
+            <li class="flex items-start gap-2.5 text-red-900">
+              <span class="text-red-500 mt-0.5 shrink-0 font-bold">&#10007;</span>
+              <span>Rush through rooms</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-red-900">
+              <span class="text-red-500 mt-0.5 shrink-0 font-bold">&#10007;</span>
+              <span>Whip the camera around quickly</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-red-900">
+              <span class="text-red-500 mt-0.5 shrink-0 font-bold">&#10007;</span>
+              <span>Assume we&rsquo;ll just know what&rsquo;s there</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-red-900">
+              <span class="text-red-500 mt-0.5 shrink-0 font-bold">&#10007;</span>
+              <span>Skip cupboards or storage spaces</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-red-900">
+              <span class="text-red-500 mt-0.5 shrink-0 font-bold">&#10007;</span>
+              <span>Forget areas like under the stairs</span>
+            </li>
+            <li class="flex items-start gap-2.5 text-red-900">
+              <span class="text-red-500 mt-0.5 shrink-0 font-bold">&#10007;</span>
+              <span>Leave items covered without explaining what&rsquo;s underneath</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: ROOM-BY-ROOM CHECKLIST
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Room-by-Room Checklist</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Work through each room methodically. Open everything, show everything, and narrate as you go. We&rsquo;ll be watching these videos and writing down everything we see.
+      </p>
+
+      <div class="space-y-6 max-w-4xl mx-auto">
+        {rooms.map((room, i) => (
+          <details class="bg-white rounded-xl shadow-sm border border-gray-100 group" open={i === 0}>
+            <summary class="flex items-center gap-4 cursor-pointer p-6 lg:p-8 select-none list-none [&::-webkit-details-marker]:hidden">
+              <div class="w-12 h-12 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center shrink-0" set:html={room.icon} />
+              <h3 class="text-xl lg:text-2xl font-bold text-primary-700 flex-1">{room.name}</h3>
+              <svg class="w-5 h-5 text-primary-400 transition-transform duration-200 group-open:rotate-180 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </summary>
+
+            <div class="px-6 pb-6 lg:px-8 lg:pb-8 pt-0">
+              <div class="border-t border-gray-100 pt-5">
+                <ul class="space-y-3 mb-4">
+                  {room.items.map((item) => (
+                    <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+                      <span class="text-green-500 mt-0.5 shrink-0 font-bold">&#10003;</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {room.proTip && (
+                  <div class="bg-primary-50 border-l-4 border-primary-400 rounded-r-lg p-4 mt-4">
+                    <p class="text-primary-800 text-sm leading-relaxed">
+                      <strong>Pro Tip:</strong> {room.proTip}
+                    </p>
+                  </div>
+                )}
+
+                {room.example && (
+                  <div class="bg-gray-50 border-l-4 border-gray-300 rounded-r-lg p-4 mt-4">
+                    <p class="text-warm-gray text-sm leading-relaxed">
+                      <strong>Example of what to say:</strong> {room.example}
+                    </p>
+                  </div>
+                )}
+
+                {room.important && (
+                  <div class="bg-secondary-50 border-l-4 border-secondary-500 rounded-r-lg p-4 mt-4">
+                    <p class="text-secondary-800 text-sm leading-relaxed font-semibold">
+                      {room.important}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: ITEMS THAT NEED DISMANTLING
+  ============================================ -->
+  <section class="bg-white">
+    <div class="container-wide py-10 md:py-14">
+      <div class="max-w-3xl mx-auto">
+        <div class="flex items-start gap-4 bg-primary-50 rounded-xl p-6 lg:p-8">
+          <div class="w-12 h-12 rounded-lg bg-primary-600 text-white flex items-center justify-center shrink-0">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </div>
+          <div>
+            <h2 class="text-xl lg:text-2xl font-bold text-primary-700 mb-2">Items That Need Dismantling</h2>
+            <p class="text-warm-gray leading-relaxed mb-3">
+              If you have large furniture that needs taking apart (beds, wardrobes, desks), show the edges and corners on camera. This helps us work out how it&rsquo;s constructed and what care is needed.
+            </p>
+            <p class="text-primary-700 font-medium text-sm">
+              Pro Tip: You can also send separate photos of these items if that&rsquo;s easier.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: CHEST OF DRAWERS TIP
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="container-wide py-10 md:py-14">
+      <div class="max-w-3xl mx-auto">
+        <div class="flex items-start gap-4 bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-gray-100">
+          <div class="w-12 h-12 rounded-lg bg-secondary-100 text-secondary-600 flex items-center justify-center shrink-0">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-primary-700 mb-2">Chest of Drawers Tip</h3>
+            <p class="text-warm-gray leading-relaxed">
+              You <strong>don&rsquo;t</strong> need to show inside drawers if they only contain soft items (clothes, linen). We can slide the drawers out to reduce weight and slide them back in. <strong>But</strong> if drawers contain fragile or breakable items, or the drawers can&rsquo;t be removed &mdash; show us what&rsquo;s inside so we can plan packing materials.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: APPLIANCES
+  ============================================ -->
+  <section class="bg-primary-600">
+    <div class="container-wide py-10 md:py-14">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/10 text-white mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <h2 class="text-white text-2xl lg:text-3xl mb-3">Important: Appliances</h2>
+        <p class="text-primary-100 text-lg leading-relaxed max-w-2xl mx-auto mb-4">
+          Most people <strong class="text-white">leave their oven behind</strong> but <strong class="text-white">bring their fridge freezer</strong>. If you&rsquo;re doing the opposite, say so on camera.
+        </p>
+        <p class="text-primary-200 leading-relaxed max-w-2xl mx-auto">
+          Mention any integrated appliances (dishwasher, washing machine) &mdash; are they coming or staying?
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: WHAT TO SAY ON CAMERA
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">What to Say on Camera</h2>
+      <p class="text-center text-warm-gray text-lg mb-10 max-w-2xl mx-auto">
+        You don&rsquo;t need a script. Just talk naturally as if you&rsquo;re giving someone a tour. Here are examples of helpful commentary:
+      </p>
+
+      <div class="max-w-2xl mx-auto space-y-3">
+        {cameraExamples.map((example) => (
+          <div class="flex items-start gap-3 bg-gray-50 rounded-lg p-4">
+            <svg class="w-5 h-5 text-primary-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <p class="text-warm-gray leading-relaxed italic">&ldquo;{example}&rdquo;</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: PRO TIP — MULTIPLE CLIPS
+  ============================================ -->
+  <section class="bg-cream">
+    <div class="container-wide py-10 md:py-14">
+      <div class="max-w-3xl mx-auto">
+        <div class="flex items-start gap-4 bg-white rounded-xl p-6 lg:p-8 shadow-sm border-l-4 border-primary-600">
+          <div class="w-12 h-12 rounded-lg bg-primary-600 text-white flex items-center justify-center shrink-0">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold text-primary-700 mb-2">Pro Tip: Multiple Clips Are Fine</h3>
+            <p class="text-warm-gray leading-relaxed">
+              You can break your video into separate clips per room or per floor &mdash; that&rsquo;s absolutely fine. Just make sure every space is covered. Remember: we&rsquo;ll be watching these videos and writing down everything we see. <strong class="text-primary-700">The more detail you give us, the more accurate your quote will be.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: 9 MOST IMPORTANT RULES — VISUAL GRID
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+
+      <div class="text-center mb-12 max-w-2xl mx-auto">
+        <p class="text-secondary-500 text-sm font-semibold uppercase tracking-widest mb-3">Before You Hit Send</p>
+        <h2 class="text-3xl lg:text-4xl mb-4">The 9 Most Important Rules</h2>
+        <p class="text-warm-gray text-lg leading-relaxed">
+          Get these right and your video will give us everything we need for an accurate quote.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
+        {finalChecklist.map((item) => (
+          <div class="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+
+            <div class="relative aspect-[4/3] overflow-hidden">
+              <OptimizedPicture
+                name={item.image}
+                pattern="THIRD"
+                alt={item.alt}
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+              />
+              <div class="absolute top-3 left-3">
+                <div class="w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm shadow-md flex items-center justify-center">
+                  <span class="text-primary-700 font-black text-xs tracking-wide">{item.number}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-5 py-4 border-t border-gray-100">
+              <h3 class="font-bold text-primary-800 text-base mb-1.5">{item.rule}</h3>
+              <p class="text-warm-gray text-sm leading-relaxed">{item.detail}</p>
+            </div>
+
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 11: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Send Your Video?"
+    description="Once you've filmed your home, send the clips to us and we'll review everything in detail. We'll come back to you with an accurate, no-obligation quote based on exactly what we've seen. No surprises on moving day."
+    primaryText="GET YOUR FREE QUOTE"
+    primaryHref="/instantquote"
+    bottomNote="Painless Removals Ltd &middot; Bristol's trusted removal company since 1978 &middot; Mon&ndash;Fri 9am&ndash;5pm"
+    bgClass="bg-primary-600"
+  />
+
+</Layout>

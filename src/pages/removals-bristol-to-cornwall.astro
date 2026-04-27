@@ -1,0 +1,356 @@
+---
+/**
+ * /removals-bristol-to-cornwall/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '200–300 miles' },
+        { label: 'Drive time', value: '3–5 hours' },
+        { label: 'Primary route', value: 'M5 / A30' },
+        { label: 'Move duration', value: '2 days (usually)' },
+        { label: 'Crew size', value: '3–4 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£1,000–£2,500' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "The team from Painless helped us move from Bristol to Cornwall. They worked tirelessly for two days. Their calm and friendly manner really helped us to relax and made the process much easier.",
+  name: 'Chris Pugh',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Cornwall — Two-Day Moves';
+const description = `House removals from Bristol to Cornwall, 200–300 miles via M5/A30. Two-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Cornwall",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "AdministrativeArea", "name": "Cornwall" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'Why does a Bristol to Cornwall move take two days?',
+    answer: 'South Cornwall is three and a half hours from Bristol on a good day — and that\'s before you account for traffic, narrow lanes, and unloading at the other end. We load your Bristol home in the morning, drive down in the afternoon, overnight, then unload the following day. Trying to squeeze everything into a single day means rushing, and rushing leads to damage.',
+  },
+  {
+    question: 'Does holiday traffic affect the move?',
+    answer: 'Significantly. The M5 and A30 carry heavy tourist traffic during school holidays and bank holidays. A Friday in August can turn a three-and-a-half-hour drive into five or six hours. We apply a Friday surcharge to Cornwall moves as standard because the return journey can also get caught in outbound holiday traffic. Our advice: move midweek, outside school holidays, and you\'ll save money and stress.',
+  },
+  {
+    question: 'Can your vans handle narrow Cornish lanes?',
+    answer: 'Our Luton vans are better suited to Cornish lanes than larger rigid vehicles. The A30 narrows beyond Truro, and B-roads with stone walls leave very little clearance on each side. For high-volume moves, we discuss whether a 7.5-tonne vehicle can reach your property during the survey. If not, we use multiple Luton loads — it takes a little longer but avoids getting stuck on the final approach.',
+  },
+  {
+    question: 'How much does a Bristol to Cornwall move cost?',
+    answer: 'From around £1,000 for a smaller property with a single van. A family home requiring two or three vans typically costs £1,500 or more. Cornwall\'s distance, two-day schedule, and potential access challenges at the destination all factor into the price. Every quote includes full insurance, fuel, crew, and equipment — no hidden charges.',
+  },
+  {
+    question: 'Can you move us from London to Cornwall?',
+    answer: 'Yes. Bristol sits directly on the route. We load in London on day one, return to our Bristol depot overnight, then drive to Cornwall and unload on day two. This avoids hotel costs for the crew and keeps everything on our home turf. London-to-Cornwall moves typically cost £2,000–£4,000 depending on volume.',
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Cornwall" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/about/Painless-Removals-van-Bristol-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Cornwall' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Cornwall — Two&#8209;Day&nbsp;Moves
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Cornwall is one of our favourite destinations. It's also one of the routes that separates the removal companies who know what they're doing from those who don't. Bristol to Cornwall is 200–300 miles depending on where in the county you're heading — about three and a half hours to Penzance on a good day, closer to five if you're unlucky with the A30 or hit holiday traffic. For all but the smallest moves, this is a two-day job.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We've done the drive to Cornwall in three and a half hours. We've also done it in six. The difference comes down to the day of the week, the time of year, and how far past Truro your new home sits. Once you leave the A30 and drop onto the B-roads — stone walls close enough to brush the wing mirrors of a Luton van, single-track lanes with passing places — the last few miles can take as long as the first hundred. We've made a 15-point turn on a slope to get a van within 100 metres of a front door. That's Cornwall.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="about/Painless-Removals-van-Bristol" pattern="FULL" alt="Removal van loaded and prepared for a Bristol to Cornwall house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Cornwall Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Timing Factor</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Holiday traffic is the single biggest factor on this route. The M5 south of Bristol and the A30 beyond Exeter carry enormous volumes of tourist traffic during school holidays and bank holidays. An August bank holiday Friday can turn a three-and-a-half-hour drive into five or six hours. The Tamar Bridge crossing into Cornwall is a well-known bottleneck — two lanes of traffic funnelling across the river, and once it backs up there's no alternative.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">We apply a Friday surcharge to Cornwall moves as standard — not just for the drive down, but because the return journey can get caught in outbound holiday traffic even if we leave at midday. Midweek moves outside school holidays are consistently faster, cheaper, and calmer. The day you choose affects the entire experience.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Cornwall's Lanes</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The A30 narrows beyond Truro. B-roads with stone walls leave very little clearance on each side of a Luton van. Single-track lanes with passing places are common, and if you meet a tractor or another large vehicle, someone's reversing. Our Luton fleet handles Cornish lanes well — they're the right balance of capacity and manoeuvrability. For high-volume moves, we discuss the 7.5-tonne option at survey, but only if the main road network reaches your property. If not, we run multiple Luton loads.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">We cover the full county: Saltash, Truro, Penzance, St Ives, Falmouth, Newquay, and Bodmin. Each location has its own access quirks — narrow harbour-side streets in Falmouth, steep hills into St Ives, limited turning space in rural hamlets near Bodmin Moor. We assess all of this during your pre-move survey.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">London to Cornwall via Bristol</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Bristol sits on the route from London to Cornwall, and we use this to your advantage. Day one: we load in London and return to our Bristol depot overnight. Day two: we drive to Cornwall and unload. This avoids hotel costs for the crew, keeps the vehicles at our base between legs, and means everything is managed from our home turf. It's a reliable two-day structure that works well for families relocating from the south-east.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Cornwall, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Cornwall?"
+          description="Free quote in about two minutes. Two-day moves, full insurance, no hidden charges."
+          buttonText="Get Your Cornwall Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals has run the Cornwall route enough times to know what catches people out. The drive itself is the easy part — it's the combination of timing, access, and lane width that makes or breaks the day. We plan every Cornwall move around the calendar, the specific destination, and the vehicle configuration that will actually fit down your lane.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="home-removals/Bristol-home-removals-service-main" pattern="HALF" alt="Removal crew loading furniture for a long-distance move to Cornwall" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "We apply a Friday surcharge to Cornwall moves as standard — not just for the drive down, but because the return journey can get caught in outbound holiday traffic even if we leave at midday. If you're moving to a town centre like St Ives during a busy period, it's not just inconvenient — it can make the job significantly harder. Our strong advice: move the week before or the week after the holiday starts. You'll save money, save time, and have a much calmer day."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This route runs in both directions. Cornwall residents relocating to Bristol for work or family, and Bristol families making the move to the coast. If your completion dates don't align, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot until your new place is ready.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Cornwall Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A smaller property with a single van typically costs from £1,000. A standard family home with two to three van loads runs £1,500–£2,500. Moves to remote locations with difficult access — narrow lanes, long carries from the nearest parking spot — sit at the higher end. Our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> adds to the cost but splits the work across two days and protects your belongings for the longer journey.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew, and equipment. No hidden charges for mileage or Friday surcharges beyond what's quoted. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Cornwall Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 cornwall-checklist">
+          <li><strong>Avoid school holidays.</strong> The M5 and A30 carry heavy tourist traffic from late July through August. A midweek move outside these periods is faster and cheaper.</li>
+          <li><strong>Check your lane width.</strong> If you're moving to a rural property, measure the access route. Send us photos or a dropped pin — we'll confirm which vehicle fits.</li>
+          <li><strong>Book 4–6 weeks ahead.</strong> Cornwall's two-day schedule means limited slots, especially in summer. Earlier booking gives you better date options.</li>
+          <li><strong>Professional packing?</strong> We pack the day before at your Bristol address, then load and drive the following morning. For Cornwall, this is especially worthwhile — items are better protected for the longer journey.</li>
+          <li><strong>London to Cornwall?</strong> Bristol is on the route. We load London day one, drive Cornwall day two. No hotel costs, no detours.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Cornwall, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Cornwall Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="Exeter" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Bristol" to="Cardiff" meta="~45 miles via M4" days="1 day" href="/removals-bristol-to-cardiff/" />
+      <RouteCard from="Bristol" to="London" meta="~120 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Bristol" to="Edinburgh" meta="~380 miles via M5/M6" days="2–3 days" href="/removals-bristol-to-edinburgh/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready for Your Bristol to Cornwall Move?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .cornwall-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .cornwall-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .cornwall-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

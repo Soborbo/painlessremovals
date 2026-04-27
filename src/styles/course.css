@@ -1,0 +1,1137 @@
+/* ==========================================================================
+   Course / Packing Guide
+   Scoped via [data-theme="course"] so header/footer stay unchanged.
+   White content areas for readability; dark cinema video area + sidebar.
+   ========================================================================== */
+
+/* ---------- Theme variables (used by dark cinema areas) ---------- */
+[data-theme="course"] {
+  --course-bg:          #0F1419;
+  --course-bg-surface:  #151C23;
+  --course-bg-elevated: #1C252E;
+  --course-bg-hover:    #243040;
+  --course-text:        #E8ECF1;
+  --course-text-muted:  #8899AA;
+  --course-text-dim:    #556677;
+  --course-accent:      #3b6587;   /* primary-600 */
+  --course-accent-light:#4777a3;   /* primary-500 */
+  --course-cta:         #ea580c;   /* orange-600 */
+  --course-cta-hover:   #c2410c;   /* orange-700 */
+  --course-border:      rgba(255, 255, 255, 0.08);
+  --course-border-active: rgba(59, 101, 135, 0.5);
+  --course-transition:  400ms;
+}
+
+/* ---------- Base overrides — white background for readable content ---------- */
+[data-theme="course"] {
+  background-color: #ffffff;
+  color: #374151;
+}
+
+[data-theme="course"] h1:not(.course-content-sidebar *),
+[data-theme="course"] h2:not(.course-content-sidebar *),
+[data-theme="course"] h3:not(.course-content-sidebar *),
+[data-theme="course"] h4:not(.course-content-sidebar *) {
+  color: #111827;
+}
+
+[data-theme="course"] :where(a:not(.course-content-sidebar *)) {
+  color: var(--course-accent);
+}
+
+[data-theme="course"] :where(a:not(.course-content-sidebar *):hover) {
+  color: #1e3a5f;
+}
+
+/* ---------- Cinema layout (lesson page) ---------- */
+.lesson-cinema {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 0;
+  min-height: calc(100vh - 104px);
+  transition: grid-template-columns var(--course-transition) ease;
+}
+
+/* Focus mode — sidebar collapses */
+.lesson-cinema[data-focus="true"] {
+  grid-template-columns: 1fr 0px;
+}
+
+.lesson-cinema[data-focus="true"] .lesson-sidebar {
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.lesson-cinema[data-focus="true"] .course-breadcrumbs {
+  display: none;
+}
+
+/* ---------- Video area (dark) ---------- */
+.cinema-video {
+  display: flex;
+  flex-direction: column;
+  background: var(--course-bg);
+  color: var(--course-text);
+  padding: 1rem 1.5rem 0;
+}
+
+.cinema-video-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+}
+
+/* ---------- Sidebar (dark) ---------- */
+.lesson-sidebar {
+  background: var(--course-bg-surface);
+  border-left: 1px solid var(--course-border);
+  overflow-y: auto;
+  transition: opacity var(--course-transition) ease;
+}
+
+.lesson-sidebar-header {
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--course-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--course-border);
+}
+
+/* ---------- Lesson list (sidebar) ---------- */
+.lesson-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lesson-list-item {
+  border-bottom: 1px solid var(--course-border);
+}
+
+.lesson-list-item a {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  text-decoration: none;
+  color: var(--course-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.lesson-list-item a:hover {
+  background: var(--course-bg-hover);
+  color: var(--course-text);
+}
+
+.lesson-list-item.is-active a {
+  background: var(--course-bg-elevated);
+  color: var(--course-text);
+  border-left: 3px solid var(--course-accent);
+  padding-left: calc(1.25rem - 3px);
+}
+
+.lesson-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--course-bg-elevated);
+  color: var(--course-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.lesson-list-item.is-active .lesson-number {
+  background: var(--course-accent);
+  color: #fff;
+}
+
+.lesson-title {
+  flex: 1;
+}
+
+.lesson-duration {
+  font-size: 0.75rem;
+  color: var(--course-text-dim);
+  white-space: nowrap;
+}
+
+/* Now playing pulse */
+.lesson-list-item.is-active .lesson-number::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--course-accent);
+  animation: course-pulse 2s ease-in-out infinite;
+}
+
+.lesson-list-item.is-active .lesson-number {
+  position: relative;
+}
+
+@keyframes course-pulse {
+  0%, 100% { opacity: 0; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.15); }
+}
+
+/* ---------- Two-column content layout (below cinema) ---------- */
+.course-content-layout {
+  display: block;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.course-content-sidebar {
+  display: none;
+}
+
+.course-mobile-only {
+  display: block;
+  padding: 0 1rem;
+  margin-top: -1rem;
+}
+
+@media (min-width: 800px) {
+  .course-content-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    column-gap: 30px;
+    padding: 0 1.5rem;
+  }
+
+  .course-content-sidebar {
+    display: block;
+  }
+
+  .course-mobile-only {
+    display: none;
+  }
+}
+
+/* ---------- Transcript area (white background) ---------- */
+.course-transcript {
+  padding: 2rem 0.5rem 3rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Inside two-column layout, let the grid column constrain width */
+.course-content-layout .course-transcript {
+  max-width: none;
+  padding: 2rem 0 3rem;
+}
+
+.course-content-layout .author-box,
+.course-content-layout .related-lessons,
+.course-content-layout .lesson-prev-next,
+.course-content-layout .trust-micro {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Sidebar checklist + mistakes: tighter spacing */
+.course-content-sidebar .packing-checklist,
+.course-content-sidebar .mistakes-list {
+  margin: 0;
+}
+
+/* Prose colours for white background */
+.course-transcript.prose {
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #111827;
+  --tw-prose-lead: #4b5563;
+  --tw-prose-links: var(--course-accent);
+  --tw-prose-bold: #111827;
+  --tw-prose-counters: #6b7280;
+  --tw-prose-bullets: #6b7280;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #111827;
+  --tw-prose-quote-borders: var(--course-accent);
+  --tw-prose-captions: #6b7280;
+  --tw-prose-code: #111827;
+  --tw-prose-th-borders: #d1d5db;
+  --tw-prose-td-borders: #e5e7eb;
+}
+
+/* ---------- Pro Tip callout ---------- */
+.pro-tip {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: #f9fafb;
+  border-left: 4px solid var(--course-cta);
+  border-radius: 0 8px 8px 0;
+  margin: 2rem 0;
+}
+
+.pro-tip-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.pro-tip-body {
+  flex: 1;
+}
+
+.pro-tip-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--course-cta);
+  margin-bottom: 0.5rem;
+}
+
+.pro-tip-quote {
+  font-style: italic;
+  color: #374151;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.pro-tip-attribution {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* ---------- Mistakes list ---------- */
+.mistakes-list {
+  padding: 1.5rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.mistakes-list-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+
+.mistakes-list ol {
+  counter-reset: mistake;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mistakes-list li {
+  counter-increment: mistake;
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.mistakes-list li:last-child {
+  border-bottom: none;
+}
+
+.mistakes-list li::before {
+  content: counter(mistake);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ---------- Packing checklist ---------- */
+.packing-checklist {
+  padding: 1.5rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.packing-checklist-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.packing-checklist-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.packing-checklist-print {
+  font-size: 0.8rem;
+  color: var(--course-accent);
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: background 200ms, border-color 200ms;
+}
+
+.packing-checklist-print:hover {
+  background: #e5e7eb;
+  border-color: var(--course-accent);
+}
+
+.packing-checklist ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.packing-checklist li {
+  padding: 0.25rem 0;
+  color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.packing-checklist .checklist-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
+
+.packing-checklist .checklist-box {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #9ca3af;
+  border-radius: 3px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.packing-checklist .checklist-input:checked + .checklist-box {
+  background-color: var(--course-accent, #3b6587);
+  border-color: var(--course-accent, #3b6587);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 12px;
+}
+
+.packing-checklist .checklist-input:checked ~ .checklist-text {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+/* ---------- Breadcrumbs ---------- */
+/* Default (white bg) */
+.course-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+  padding: 0.75rem 0;
+}
+
+.course-breadcrumbs a {
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 200ms;
+}
+
+.course-breadcrumbs a:hover {
+  color: #111827;
+}
+
+.course-breadcrumbs .separator {
+  color: #9ca3af;
+}
+
+/* Breadcrumbs inside dark cinema area */
+.cinema-video .course-breadcrumbs {
+  color: var(--course-text-muted);
+}
+
+.cinema-video .course-breadcrumbs a {
+  color: var(--course-text-muted);
+}
+
+.cinema-video .course-breadcrumbs a:hover {
+  color: var(--course-text);
+}
+
+.cinema-video .course-breadcrumbs .separator {
+  color: var(--course-text-dim);
+}
+
+/* ---------- Focus mode button ---------- */
+.focus-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--course-bg-elevated);
+  border: 1px solid var(--course-border);
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  color: var(--course-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 200ms, color 200ms, border-color 200ms;
+}
+
+.focus-mode-btn:hover {
+  background: var(--course-bg-hover);
+  color: var(--course-text);
+  border-color: var(--course-accent);
+}
+
+.focus-mode-btn:focus-visible {
+  outline: 2px solid var(--course-accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Author box (white background) ---------- */
+.author-box {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.author-box-photo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.author-box-name {
+  font-weight: 700;
+  color: #111827;
+  font-size: 1rem;
+}
+
+.author-box-title {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.author-box-credentials {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+.author-box-link {
+  font-size: 0.8rem;
+  color: var(--course-accent);
+  text-decoration: none;
+  margin-top: 0.35rem;
+  display: inline-block;
+}
+
+.author-box-link:hover {
+  color: #1e3a5f;
+}
+
+/* ---------- Lesson navigation (prev/next) ---------- */
+.lesson-prev-next {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  max-width: 800px;
+  margin: 2rem auto 0;
+}
+
+.lesson-prev-next a {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #6b7280;
+  font-size: 0.875rem;
+  transition: color 200ms;
+}
+
+.lesson-prev-next a:hover {
+  color: #111827;
+}
+
+/* ---------- CTA section (dark accent) ---------- */
+.course-cta-section {
+  padding: 2rem 1.5rem;
+  background: var(--course-bg-surface);
+  border-top: 1px solid var(--course-border);
+  text-align: center;
+}
+
+.course-cta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.course-cta-card {
+  padding: 1.25rem;
+  background: var(--course-bg-elevated);
+  border: 1px solid var(--course-border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--course-text);
+  transition: background 200ms, border-color 200ms, transform 200ms;
+}
+
+.course-cta-card:hover {
+  background: var(--course-bg-hover);
+  border-color: var(--course-accent);
+  transform: translateY(-2px);
+}
+
+.course-cta-card p {
+  font-size: 0.9rem;
+  color: var(--course-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.course-cta-card .cta-arrow {
+  color: var(--course-cta);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* ---------- Trust micro-line ---------- */
+.trust-micro {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  padding: 1rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.trust-micro a {
+  color: #6b7280;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- Related lessons ---------- */
+.related-lessons {
+  padding: 1rem 1.5rem;
+  background: #f3f4f6;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 1.5rem auto;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.related-lessons a {
+  color: var(--course-accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.related-lessons a:hover {
+  color: #1e3a5f;
+  text-decoration: underline;
+}
+
+/* ---------- Hub page specifics ---------- */
+
+/* Hub hero — cinematic dark split layout */
+.hub-hero {
+  background: #0a1014;
+  color: var(--course-text);
+}
+
+.hub-hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.hub-hero-content {
+  padding: 2rem 1.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hub-hero-content .course-breadcrumbs {
+  color: var(--course-text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.hub-hero-content .course-breadcrumbs a {
+  color: var(--course-text-muted);
+}
+
+.hub-hero-content .course-breadcrumbs a:hover {
+  color: var(--course-text);
+}
+
+.hub-hero-content .course-breadcrumbs .separator {
+  color: var(--course-text-dim);
+}
+
+.hub-hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 0.75rem;
+  color: #fff !important;
+}
+
+.hub-hero-subtitle {
+  font-size: 1rem;
+  color: var(--course-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+}
+
+.hub-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--course-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.hub-hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hub-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--course-cta);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.85rem 1.75rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 200ms, transform 200ms, box-shadow 200ms;
+  align-self: flex-start;
+  margin-bottom: 1.75rem;
+}
+
+.hub-hero-cta:hover {
+  background: var(--course-cta-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(234, 88, 12, 0.35);
+  color: #fff;
+}
+
+/* Movie-poster credit line in hero */
+.hub-hero-credit {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hub-hero-credit-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--course-text-dim);
+  font-weight: 400;
+}
+
+.hub-hero-credit-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.hub-hero-credit-role {
+  font-size: 0.75rem;
+  color: var(--course-text-muted);
+  letter-spacing: 0.02em;
+  flex-basis: 100%;
+}
+
+/* Hero image (right column) */
+.hub-hero-image {
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+}
+
+.hub-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dark lesson grid section */
+.hub-lessons-section {
+  background: #0a1014;
+  padding: 2.5rem 0 3rem;
+}
+
+.hub-lessons-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--course-text) !important;
+}
+
+/* Lesson card grid (hub) */
+.lesson-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  padding: 0 1.5rem;
+  max-width: 1168px;
+  margin: 0 auto;
+}
+
+.lesson-card {
+  background: var(--course-bg-surface);
+  border: 1px solid var(--course-border);
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--course-text);
+  transition: border-color 200ms, transform 200ms, box-shadow 200ms;
+}
+
+.lesson-card:hover {
+  border-color: var(--course-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.lesson-card-thumb {
+  aspect-ratio: 16/9;
+  background: var(--course-bg);
+  overflow: hidden;
+}
+
+.lesson-card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lesson-card-body {
+  padding: 1rem;
+}
+
+.lesson-card-number {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--course-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.lesson-card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+.lesson-card-desc {
+  font-size: 0.85rem;
+  color: var(--course-text-muted);
+  line-height: 1.5;
+}
+
+.lesson-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--course-border);
+  font-size: 0.8rem;
+  color: var(--course-text-dim);
+}
+
+/* ---------- Trust block (hub — white background) ---------- */
+.trust-block {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 2rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.trust-block-item {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.trust-block-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.25rem;
+}
+
+/* ---------- FAQ section (hub — white background) ---------- */
+.course-faq {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.course-faq-item {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.course-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 0;
+  background: none;
+  border: none;
+  color: #111827;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: color 200ms;
+}
+
+.course-faq-question:hover {
+  color: var(--course-accent);
+}
+
+.course-faq-question .faq-icon {
+  font-size: 1.25rem;
+  color: #6b7280;
+  transition: transform 300ms;
+}
+
+.course-faq-item[open] .faq-icon {
+  transform: rotate(45deg);
+}
+
+.course-faq-answer {
+  padding: 0 0 1.25rem;
+  color: #4b5563;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+/* ---------- Transcript visual polish ---------- */
+
+/* Section dividers on h2 */
+.course-transcript.prose h2 {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.course-transcript.prose > h1 + h2,
+.course-transcript.prose h2:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* h3 accent colour */
+.course-transcript.prose h3 {
+  color: var(--course-accent);
+  font-size: 1.1rem;
+}
+
+/* Better list spacing */
+.course-transcript.prose li {
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+/* Blockquote styling */
+.course-transcript.prose blockquote {
+  border-left-color: var(--course-accent);
+  background: #f9fafb;
+  padding: 1rem 1.25rem;
+  border-radius: 0 6px 6px 0;
+  font-style: italic;
+}
+
+/* Bold text emphasis */
+.course-transcript.prose strong {
+  color: #111827;
+}
+
+/* Horizontal rule as breathing space */
+.course-transcript.prose hr {
+  border: none;
+  border-top: 1px solid #e5e7eb;
+  margin: 2.5rem 0;
+}
+
+/* ---------- Print styles (checklist only) ---------- */
+
+/* When printing, hide everything except the target checklist */
+@media print {
+  /* Hide all top-level body children (header, main, footer, etc.) */
+  body.printing-checklist > *:not(.print-checklist-wrapper) {
+    display: none !important;
+  }
+
+  /* Show the cloned checklist wrapper */
+  .print-checklist-wrapper {
+    display: block !important;
+    position: static !important;
+    padding: 2rem;
+  }
+
+  .print-checklist-wrapper .packing-checklist {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    color: black !important;
+    max-width: 600px;
+    margin: 0;
+    padding: 1.5rem;
+  }
+
+  .print-checklist-wrapper .packing-checklist-title {
+    color: black !important;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .print-checklist-wrapper .packing-checklist li {
+    color: black !important;
+  }
+
+  .print-checklist-wrapper .packing-checklist .checklist-box {
+    border-color: #333 !important;
+  }
+
+  .print-checklist-wrapper .packing-checklist-header {
+    justify-content: flex-start;
+  }
+
+  .print-checklist-wrapper .packing-checklist-print {
+    display: none !important;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1023px) {
+  .lesson-cinema {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-sidebar {
+    border-left: none;
+    border-top: 1px solid var(--course-border);
+    max-height: 300px;
+  }
+
+  .lesson-cinema[data-focus="true"] .lesson-sidebar {
+    max-height: 0;
+    border-top: none;
+  }
+
+  .cinema-video {
+    padding: 0.75rem 1rem 0;
+  }
+
+  .course-transcript {
+    padding: 1.5rem 1rem 2rem;
+  }
+}
+
+/* Hub hero — desktop split (image bleeds to right edge) */
+@media (min-width: 1024px) {
+  .hub-hero-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .hub-hero-content {
+    max-width: 584px;      /* half of 1168 */
+    margin-left: auto;
+    padding: 3rem 3rem 3rem 1.5rem;
+  }
+
+  .hub-hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .hub-hero-image {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 639px) {
+  .hub-hero h1 {
+    font-size: 1.75rem;
+  }
+
+  .hub-hero-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .lesson-card-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+  }
+
+  .course-cta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trust-block {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+}

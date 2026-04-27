@@ -1,0 +1,52 @@
+---
+/**
+ * FactBox — Quick-reference card with categorised rows
+ *
+ * Supports default (cream) and gold variants.
+ */
+
+export interface FactRow {
+  label: string;
+  value: string;
+}
+
+export interface FactSection {
+  icon: string;
+  heading: string;
+  rows: FactRow[];
+}
+
+export interface Props {
+  title: string;
+  sections: FactSection[];
+  variant?: 'default' | 'gold';
+}
+
+const { title, sections, variant = 'default' } = Astro.props;
+
+const boxClass = variant === 'gold'
+  ? 'bg-amber-50 border border-accent-400/30 rounded-xl p-5 md:p-6'
+  : 'bg-cream border border-gray-200 rounded-xl p-5 md:p-6';
+---
+
+<aside class={boxClass}>
+  <h2 class="text-base font-heading font-semibold text-gray-900 mb-4">{title}</h2>
+  <div class="space-y-4">
+    {sections.map((section) => (
+      <div>
+        <div class="flex items-center gap-1.5 mb-2">
+          <span class="text-sm" aria-hidden="true">{section.icon}</span>
+          <span class="text-[10px] uppercase tracking-widest font-semibold text-secondary-500">{section.heading}</span>
+        </div>
+        <dl class="space-y-1.5">
+          {section.rows.map((row) => (
+            <div class="flex justify-between text-sm">
+              <dt class="text-gray-500">{row.label}</dt>
+              <dd class="font-medium text-gray-800 text-right">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    ))}
+  </div>
+</aside>

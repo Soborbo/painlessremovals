@@ -1,0 +1,252 @@
+---
+/**
+ * /removals-bristol/redland/ — Redland neighbourhood page
+ *
+ * Type B: Neighbourhood Page — editorial prose, 1200-1500 words.
+ */
+
+import NeighbourhoodLayout from '@/components/areas/NeighbourhoodLayout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Redland Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~2 miles' },
+        { label: 'Drive time from depot', value: '8 minutes' },
+        { label: 'Postcode area', value: 'BS6' },
+        { label: 'Nearest motorway', value: 'M5 J17 (5 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed Victorian house' },
+        { label: 'Typical crew', value: '3 movers, 1 van' },
+        { label: 'Usual duration', value: '5–7 hours' },
+        { label: 'Local move cost', value: '£550–£950' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£596,000' },
+        { label: 'Typical property', value: 'Victorian terrace / villa' },
+        { label: 'Typical floors', value: '2–3 storeys' },
+        { label: 'HMO conversions', value: 'Common' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking zone', value: 'RPS Mon–Fri 9–5' },
+        { label: 'Suspension needed', value: 'Weekdays only (free weekends)' },
+        { label: 'Main difficulty', value: 'School-run timing' },
+        { label: 'Conservation area', value: 'Partial (Area 18)' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Highly recommend. Great communication throughout, competitively priced, and the team were so friendly and efficient. Really did make the move painless.",
+  name: 'Maddy',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Redland, Bristol';
+const description = `Redland removal experts who know BS6 inside out. School-run gridlock, narrow Victorian hallways, Mon–Fri parking zones — free weekends. Since 1978. ${siteConfig.company.rating.value}★ rated.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Redland Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Redland, Bristol",
+    "address": { "@type": "PostalAddress", "postalCode": "BS6", "addressLocality": "Bristol" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-25",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Is there a parking zone in Redland?', answer: 'Yes. The Redland RPS operates Monday to Friday, 9am–5pm. Weekends are unrestricted, so Saturday moves are ideal. Parking bay suspensions need about 7–10 working days\' notice via Bristol City Council. Your Move Manager handles the application.' },
+  { question: 'Can you move furniture from upper floors in Redland\'s Victorian houses?', answer: 'Yes. Many Redland properties are 3-storey Victorian villas with narrow staircases. We bring stair-climbing equipment and extra crew, and it\'s included in your quote from the start. If a house has been converted into an HMO, we check access during the <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a>.' },
+  { question: 'How much does a removal in Redland typically cost?', answer: 'A 3-bed Victorian house moving locally runs roughly £550–£950 depending on floors, access, and packing requirements. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a quote based on your specific situation.' },
+  { question: 'Should I avoid school-run times for my Redland move?', answer: 'Strongly recommended. Streets near Bishop Road Primary and Redland Green School become gridlocked at 8:30–9:15am and 3:00–3:30pm. We schedule Redland moves to arrive either before 8am or after 9:30am to avoid the worst of it.' },
+  { question: 'Is Redland in a conservation area?', answer: 'Parts of Redland fall within the Cotham & Redland Conservation Area (Area 18), adopted in 2011. Many individual properties carry Grade II listings. This can affect access for larger vehicles on certain streets. We know which routes work and plan accordingly.' },
+  { question: 'How do Redland\'s houses compare to Clifton for removals?', answer: 'Similar character — three and four-storey Victorian houses with comparable stair runs and crew sizing requirements. The properties tend to be slightly smaller overall than <a href="/removals-bristol/clifton/" class="text-secondary-500 underline underline-offset-2">Clifton\'s</a> grandest houses, and parking is more manageable, but the same principles apply for multi-storey moves.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Areas", path: "/areas/" },
+  { name: "Redland" },
+])];
+---
+
+<NeighbourhoodLayout
+  title={title}
+  description={description}
+  areaName="Redland"
+  slug="redland"
+  schema={schema}
+  ogImage="/img/areas/redland-removal-team-1200w.webp"
+  factBox={factBoxProps}
+  review={reviewProps}
+  faqs={faqs}
+  heroImage="areas/redland-removal-team"
+  heroAlt="Painless Removals team at a removal job in Redland, Bristol"
+  heroSubtitle="Nearly five decades of home removals across Bristol — we bring that experience to every move in Redland."
+>
+
+  <!-- S1: Editorial Intro -->
+  <div class="pt-6 pb-8">
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Redland is one of our busiest BS6 postcodes. Our Southmead Road depot is about eight minutes up the road, and we've been moving people around these Victorian streets since 1978. It's a family neighbourhood — school catchments drive a significant proportion of the moves we handle here — close to the Downs, well served by independent shops on Chandos Road, and home to some of the most sought-after housing in north Bristol. We're in Redland most weeks.</p>
+    <p class="text-[17px] leading-relaxed text-gray-800">The key advantage for anyone planning a weekend move: Redland's parking zone is Monday to Friday only. Saturday moves mean completely unrestricted parking on almost every street in the neighbourhood. That's a genuine operational difference. During the week, you'll need a <a href="https://www.bristol.gov.uk/residents/parking/parking-suspensions" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">parking bay suspension</a> booked about 7–10 working days ahead. Your Move Manager handles the paperwork when you book with us.</p>
+  </div>
+
+  <!-- Mobile: FactBox (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <FactBox {...factBoxProps} />
+  </div>
+
+  <!-- S2a: The Streets -->
+  <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Redland Different?</h2>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">School-Run Gridlock</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bishop Road Primary and Redland Green School between them draw hundreds of families twice a day. Between 8:30 and 9:15 in the morning, and again around 3:00–3:30pm, the streets near both schools are basically impassable. A removal van stuck behind parents doing three-point turns is losing time you're paying for. We schedule Redland moves to arrive before 8am or after 9:30am. Your Move Manager sorts the timing during the survey.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The streets themselves add their own character. Cranbrook Road and Clyde Road narrow to single-lane passage for most of the day with cars parked on both sides. Woolcot Street — originally built for estate workers — is particularly tight. Clyde Park is a dead-end oval with limited turning space, and our drivers know to reverse in rather than attempt to turn a loaded van at the far end.</p>
+  </div>
+
+  <!-- Mobile: Review (hidden on desktop) -->
+  <div class="area-mobile-only py-6">
+    <ReviewInline {...reviewProps} />
+  </div>
+
+  <!-- S2b: Parking -->
+  <div class="pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Parking: Weekdays Need a Suspension, Weekends Are Free</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Redland's Residents' Parking Scheme operates Monday to Friday, 9am–5pm. Outside those hours the zones are unenforced, which makes Saturday moves the simplest option for most households. If you do need to move on a weekday, a parking bay suspension gives the van a guaranteed space close to your front door. It needs about 7–10 working days' notice through Bristol City Council — your Move Manager handles the application as part of the booking process.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">Compared to neighbourhoods with 24/7 parking restrictions, the Monday-to-Friday window is a genuine advantage. It keeps your options open and often saves the suspension fee entirely.</p>
+  </div>
+
+  <!-- Mid CTA — bleed full-width on mobile -->
+  <div class="midcta-bleed">
+    <MidCTA
+      heading="Moving to or from Redland?"
+      description="Get a personalised quote — we factor in your parking zone and school-run timing automatically."
+      buttonText="Get Your Redland Removal Quote →"
+      buttonHref="/instantquote"
+    />
+  </div>
+
+  <!-- S3b: Properties & Chandos Road -->
+  <div class="pt-10 md:pt-12 pb-10 md:pb-12">
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Properties: Clifton's Slightly Smaller Sibling</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Redland's housing stock is predominantly three and four-storey Victorian houses — similar character to <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a>, though not quite as large overall. The same principles apply: multi-storey homes need the right number of people to work efficiently, and crew sizing matters for both speed and the wellbeing of the team. Many of the Victorian villas have been split into flats or student houses over the decades, creating shared hallways with communal front doors on timed locks — corridors that were never designed for moving furniture through.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">We check access during the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a>. Sometimes that means carrying items through a rear garden, and we need to know before the crew arrives. If you're in a converted property and want a fast turnaround, our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing service</a> sends a team the day before to handle everything.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Chandos Road and the Restaurant Quarter</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Keith Floyd ran his first restaurant on Chandos Road. These days the street is home to Michelin-recommended Wilsons and a string of excellent independents. On a weekday morning, though, it's also one of the tighter routes for a removal van — delivery vehicles for the restaurants and double-parked cars narrow the road significantly. Our drivers use Redland Road or Hampton Road as the primary approach and only cut through Chandos Road when traffic allows.</p>
+  </div>
+
+  <!-- S4: The Housing — cream box -->
+  <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What the Houses Are Like</h2>
+
+    <figure class="my-6">
+      <div class="overflow-hidden rounded-xl">
+        <OptimizedPicture
+          name="areas/redland-van-victorian"
+          pattern="HALF"
+          alt="Painless Removals van outside a Victorian villa on a tree-lined Redland street"
+          class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500"
+        />
+      </div>
+      <figcaption class="text-sm text-gray-500 mt-2 italic">A typical Redland Victorian villa — three storeys, no driveway, and a staircase that needs assessing before moving day.</figcaption>
+    </figure>
+
+    <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+      "Redland's Victorian villas have a particular rhythm. The hallways look generous from the street but narrow at the first turn. The staircases are steep — steeper than people expect in a house of that size. The bay windows are beautiful but rarely wide enough to get a three-seater sofa through without removing the feet. Once you've done a few hundred of these houses, you know exactly where the pinch points are."
+    </blockquote>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The villa conversions are the ones that need the most thought. A house that was once a single family home now split into three or four flats creates a different moving challenge on every floor. Ground-floor flats are straightforward. Second and third-floor flats involve narrow communal staircases, timed entry locks, and sometimes access agreements with other residents. We assess all of this during the survey so the crew arrives knowing exactly what they're walking into.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800">The important thing is knowing about it before the van arrives rather than discovering it on the day. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> lets us assess the internal access, the street parking, and any items that need special handling — and price accordingly.</p>
+  </div>
+
+
+  <!-- S5: Is Redland a Difficult Place to Move? -->
+  <div class="pb-10 md:pb-12">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Redland a Difficult Place to Move?</h2>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not especially. It has its quirks — the school-run timing, the weekday parking zones, the Victorian staircase geometry — but none of these are unusual for a Bristol neighbourhood of this character. We work in <a href="/removals-bristol/clifton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Clifton</a>, <a href="/removals-bristol/cotham/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Cotham</a>, and <a href="/removals-bristol/bishopston/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">Bishopston</a> on the same basis. The houses are familiar, the streets are manageable, and the parking situation has a genuine weekend advantage that many comparable postcodes don't offer.</p>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Our <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free home survey</a> covers all of it — we'll visit your property, assess the access, and confirm the right crew size and timing for your specific street. If you need <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">packing</a>, we can send a team the day before to make the moving-day turnaround faster.</p>
+
+    <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Redland Move: A Quick Checklist</h3>
+
+    <p class="text-[17px] leading-relaxed text-gray-800 mb-3">Before you confirm your removal booking, run through these:</p>
+
+    <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 area-checklist">
+      <li><strong>Weekend or weekday?</strong> Saturday moves avoid the parking zone entirely. Weekday moves need a suspension booked 7–10 working days ahead.</li>
+      <li><strong>School-run timing.</strong> Avoid 8:30–9:15am and 3:00–3:30pm near Bishop Road Primary and Redland Green School. Arrive before 8am or after 9:30.</li>
+      <li><strong>Which floor?</strong> Ground-floor flat, whole house, or upper-floor conversion? Each has different crew and equipment requirements.</li>
+      <li><strong>Shared hallway?</strong> If you're in an HMO or converted villa, check whether the communal door is on a timed lock and whether neighbours need notice.</li>
+      <li><strong>Large items?</strong> Victorian hallways and staircases catch people out. Flag oversized furniture at booking so we assess the route in advance.</li>
+    </ul>
+  </div>
+
+  <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+  <div class="area-mobile-only py-6">
+    <SidebarAuthorBox />
+  </div>
+
+</NeighbourhoodLayout>

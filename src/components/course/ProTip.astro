@@ -1,0 +1,31 @@
+---
+/**
+ * ProTip — "Pro tip from Jay" callout block
+ *
+ * Orange left border, elevated background, Jay's photo.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+
+export interface Props {
+  quote: string;
+  context?: string;
+}
+
+const { quote, context } = Astro.props;
+---
+
+<div class="pro-tip">
+  <OptimizedPicture
+    name="about/team/Jay-Newton"
+    pattern="SIXTH"
+    alt="Jay Newton"
+    sizes="48px"
+    class="pro-tip-photo"
+  />
+  <div class="pro-tip-body">
+    <div class="pro-tip-label">Pro Tip from Jay</div>
+    <p class="pro-tip-quote">&ldquo;{quote}&rdquo;</p>
+    <p class="pro-tip-attribution">&mdash; Jay Newton, Director{context ? `, ${context}` : ''}</p>
+  </div>
+</div>

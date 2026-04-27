@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 50" width="220" height="50">
+  <!-- Star -->
+  <path fill="#00B67A" d="M25,0 L30.9,18.2 L50,18.2 L34.5,29.5 L40.5,47.6 L25,36.4 L9.5,47.6 L15.5,29.5 L0,18.2 L19.1,18.2 Z"/>
+  <!-- Text: Trustpilot -->
+  <text x="60" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="700" fill="#191919">Trustpilot</text>
+</svg>

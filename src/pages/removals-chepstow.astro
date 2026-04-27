@@ -1,0 +1,322 @@
+---
+/**
+ * /removals-chepstow/ — Chepstow town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Chepstow Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~17 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'NP16' },
+        { label: 'Nearest motorway', value: 'M48 J2 (1 mile)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi / detached' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£500–£900' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£320,000' },
+        { label: 'Typical property', value: 'Period townhouse / detached' },
+        { label: 'Typical floors', value: '2–3 storeys' },
+        { label: 'Lifts available', value: 'New-builds only' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Town centre / Bridge St' },
+        { label: 'Suspension needed', value: 'Sometimes' },
+        { label: 'Main difficulty', value: 'Narrow medieval streets' },
+        { label: 'Conservation area', value: 'Castle & town centre' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Outstanding start to finish. The website was easy to follow and they gave us a very reasonable quote that beat all others. When it came to moving day the team was amazing.",
+  name: 'Newts',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Chepstow';
+const description = `Chepstow removal specialists — 17 miles from Bristol via M48 Severn Bridge (no toll). Medieval town centre to modern suburbs, cross-border moves handled. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Chepstow Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Chepstow",
+    "address": { "@type": "PostalAddress", "postalCode": "NP16", "addressLocality": "Chepstow", "addressRegion": "Monmouthshire" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol, not Wales?', answer: 'At 17 miles via the M48, the mileage component is low. There\'s been no toll on the Severn Bridge since December 2018 — so no added crossing cost.' },
+  { question: 'Do you handle cross-border moves between England and Wales?', answer: 'Yes, regularly. Bristol to Chepstow, Chepstow to Bristol, and beyond. The bridge crossing adds minutes, not complexity.' },
+  { question: 'Is there still a toll to cross the Severn Bridge?', answer: 'No. Tolls on both Severn crossings were abolished in December 2018. The M48 crossing is free in both directions.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 25 minutes from Chepstow.' },
+  { question: 'What about the older properties near Chepstow Castle?', answer: 'The streets around the castle are narrow — sometimes extremely so. We always assess access before the day for any property in the old centre. Luton vans only for most of it, careful routing, and a conversation in advance about van positioning.' },
+  { question: 'Is the Chepstow town centre difficult for removal vans?', answer: 'Yes, parts of it. The medieval street layout wasn\'t designed for vehicles wider than a cart. We know which approaches work and which don\'t. If your property is in the old centre, we do a <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">site visit</a> before quoting.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/chepstow-house-move-team-1200w.webp" preloadImage="/img/areas/chepstow-house-move-team-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/chepstow-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Chepstow"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Chepstow</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=chepstow`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/chepstow-house-move-team"
+      pattern="FULL"
+      alt="Painless Removals team working on a house move in Chepstow"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Chepstow' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Chepstow sits right on the border between England and Wales — technically Wales, with the River Wye marking the line. It's a town with a lot going for it: a spectacular castle perched above the river, beautiful countryside around it, the Wye Valley on the doorstep, and a location that gives you access to both Bristol and Cardiff without being swallowed by either.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We do a good number of moves to and from Chepstow. It's close enough to Bristol — around 25 minutes up the M48, no toll since December 2018 — that it sits comfortably within our regular range. The people moving here tend to be making a deliberate lifestyle decision rather than ending up somewhere by default.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/chepstow-house-move-team" pattern="FULL" alt="Painless Removals team working on a house move in Chepstow" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Chepstow Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Two Different Chepstows</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">This is the thing about Chepstow that matters most for removals: the town centre and the surrounding areas are two completely different propositions.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The town centre — around the castle, down toward the river, the old streets that grew up inside what was once a walled medieval town — is tight. The streets are narrow, they turn sharply, they weren't designed with anything wider than a cart in mind and they haven't significantly changed since. If you're moving into a property in the old centre, access needs to be properly assessed before the day. We're talking Luton vans only, careful routing to approach from the right direction, and a conversation in advance about where the van sits while we work.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The areas outside the centre are a different story. Come across the bridge, bear right at the roundabout, and within a few minutes you're into modern residential streets with good road widths, proper drives, easy access. These moves run efficiently — no drama, no complicated manoeuvring.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Castle End of Town</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">If your property is anywhere near the castle, up toward Bridge Street, or in the older streets that run back from the river, call us before you assume anything about access. The streets can be extremely narrow — not tight-feeling but restrictive. There are corners where you're threading a Luton through with not much room either side, and parked cars throughout the day add to the complexity.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Blocking the road while you unload is less of an option than on a quiet residential street. Chepstow is a market town with through traffic and you can't occupy a narrow street indefinitely. Loading and unloading needs to be efficient, and ideally you've sorted out reserved space in advance. None of this is insurmountable — we've done it plenty of times — but it requires planning, not improvisation.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The M48 and Getting Here</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">From Bristol, Chepstow is easy. The M48 takes you over the old Severn Bridge — the elegant suspension one — and you're there. The bridge tolls were abolished in December 2018, so there's no queue to factor in. For a direct Bristol to Chepstow move, you're looking at a comfortable one-day job for most household sizes.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving to or from Chepstow?" description="Get a personalised quote — we know the old town access and the bridge crossing." buttonText="Get Your Chepstow Removal Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Why People Move to Chepstow</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">We notice what draws people to places. Chepstow gets people who want the Wye Valley on their doorstep, a commutable distance from Bristol without paying Bristol prices, and a town with history and character rather than another ring-road suburb. The castle is extraordinary — one of the oldest surviving post-Roman stone fortifications in Britain, right in the middle of town.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/chepstow-removal-completed" pattern="HALF" alt="Removal job in Chepstow" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Knowing which Chepstow you're moving into — old centre or modern suburbs — shapes everything about how we plan the job. The areas outside the centre are a dream to work in. The castle end requires planning, not improvisation. Both are manageable when you know what you're dealing with."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">The countryside around Chepstow is spectacular — the Wye Valley is one of the most beautiful stretches of river in Britain. Some of the rural properties out this way are down lanes that need a route check first, but our Lutons handle these well. Let Painless Removals assess the access before the day.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Chepstow a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The modern suburbs: no. Good access, space to work, sensible road layout. The old town centre: yes, it can be challenging. The medieval street layout is restrictive for removal vehicles and needs careful planning. But we've done it many times and know which approaches work.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">If you're in the old town, we'll make sure access is sorted before the day, not on it. Get in touch for a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a> and a clear price.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Chepstow Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 chepstow-checklist">
+          <li><strong>Old centre or modern suburbs?</strong> This single question shapes crew size, routing, van positioning, and timing.</li>
+          <li><strong>Castle area?</strong> Properties near the castle need a site visit before we quote — the streets are genuinely narrow.</li>
+          <li><strong>Rural property?</strong> Check lane width and overhead clearance before moving day.</li>
+          <li><strong>Cross-border logistics?</strong> Bristol to Chepstow is a standard one-day job — no toll, no complications.</li>
+          <li><strong>Parking?</strong> Town centre streets need reserved space arranged in advance — we can advise on this.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Chepstow Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Chepstow Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Chepstow sits on the M48 between Bristol and South Wales — well positioned for both English and Welsh routes.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Chepstow" to="London" meta="~145 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Chepstow" to="Birmingham" meta="~110 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Chepstow" to="Cardiff" meta="~30 miles via A48/M4" days="1 day" href="/removals-bristol-to-cardiff/" />
+      <RouteCard from="Chepstow" to="Manchester" meta="~190 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+    </div>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Chepstow?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across the Severn crossings area. If you're moving from or to
+        <a href="/removals-thornbury/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Thornbury</a>,
+        <a href="/removals-yate/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Yate</a>, or
+        <a href="/removals-portishead/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Portishead</a>,
+        we know these towns well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3><p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p></a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3><p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p></a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500"><span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg></span><h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3><p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move to or from Chepstow?" description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed { margin-left: -1rem; margin-right: -1rem; }
+  @media (min-width: 640px) { .midcta-bleed { margin-left: -1.5rem; margin-right: -1.5rem; } }
+  @media (min-width: 800px) { .midcta-bleed { margin-left: 0; margin-right: 0; } }
+  .chepstow-checklist { list-style: none; padding-left: 0; }
+  .chepstow-checklist li { position: relative; padding-left: 2rem; }
+  .chepstow-checklist li::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 1.15rem; height: 1.15rem; border: 2px solid #3b6587; border-radius: 0.25rem; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E"); background-size: 0.8rem; background-position: center; background-repeat: no-repeat; }
+</style>

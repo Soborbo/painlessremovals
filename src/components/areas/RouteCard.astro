@@ -1,0 +1,28 @@
+---
+/**
+ * RouteCard — Long-distance route link card
+ */
+
+export interface Props {
+  from: string;
+  to: string;
+  meta: string;
+  days: string;
+  href: string;
+}
+
+const { from, to, meta, days, href } = Astro.props;
+---
+
+<a href={href} class="group grid grid-cols-[1fr_auto_auto] items-center gap-4 bg-white border border-gray-200 rounded-lg p-4 no-underline hover:border-primary-300 hover:shadow-sm transition-all">
+  <div>
+    <div class="font-medium text-gray-900 group-hover:text-primary-700 transition-colors">
+      {from} → {to}
+    </div>
+    <div class="text-xs text-gray-500 mt-0.5">{meta}</div>
+  </div>
+  <span class="inline-flex items-center px-2.5 py-1 bg-teal-50 text-teal-700 text-xs font-medium rounded-full">
+    {days}
+  </span>
+  <svg class="w-4 h-4 text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+</a>

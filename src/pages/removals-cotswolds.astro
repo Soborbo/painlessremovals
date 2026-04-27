@@ -1,0 +1,354 @@
+---
+/**
+ * /removals-cotswolds/ — Cotswolds area page
+ *
+ * Type B: Area Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ * Covers Tetbury (GL8), Horsley (GL6), Nailsworth, Dursley (GL11) and surrounding villages.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Cotswolds Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Coverage',
+      rows: [
+        { label: 'Main towns', value: 'Tetbury, Nailsworth, Dursley' },
+        { label: 'Villages', value: 'Horsley, Inchbrook, Minchinhampton' },
+        { label: 'Postcodes', value: 'GL5, GL6, GL8, GL11' },
+        { label: 'Region', value: 'Gloucestershire (south Cotswolds)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3–4 bed cottage / house' },
+        { label: 'Typical crew', value: '3 movers, 1–2 vans' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Cost range', value: '£600–£1,100' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£400k–£650k' },
+        { label: 'Typical property', value: 'Stone cottage / farmhouse' },
+        { label: 'Common features', value: 'Low lintels, narrow stairs' },
+        { label: 'Listed buildings', value: 'Very common (Grade II)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Lane access', value: 'Often single-track' },
+        { label: 'Building age', value: '16th–19th century common' },
+        { label: 'Main difficulty', value: 'Access + period features' },
+        { label: 'Conservation areas', value: 'Extensive' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Used Painless Removals for our move from Bristol to Stroud. Pete and Maya were absolutely brilliant — methodical and efficient. The customer service throughout was top notch.",
+  name: 'David Thomas',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in the Cotswolds';
+const description = `Cotswolds removal services from Bristol — covering Tetbury, Nailsworth, Dursley, Horsley and surrounding villages. Narrow lanes, listed buildings, ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Cotswolds Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Cotswolds, Gloucestershire",
+    "address": { "@type": "PostalAddress", "addressRegion": "Gloucestershire" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'How far is the Cotswolds from your depot?', answer: 'It depends on the village. Tetbury is about 30 miles (50 minutes) via the M4 and A46. Nailsworth and Horsley are closer at around 25 miles. We serve the southern Cotswolds regularly and the mileage is factored into every quote.' },
+  { question: 'Can your vans handle narrow Cotswold lanes?', answer: 'Yes. Many Cotswold villages have single-track lanes with passing places. We assess access during the <a href="/free-home-survey/" class="text-secondary-500 underline underline-offset-2">survey</a> and select the right vehicle. For the tightest lanes, we shuttle from a smaller van to the Luton.' },
+  { question: 'Do you have experience with listed buildings?', answer: 'Cotswold stone properties are often Grade II listed with low doorways, uneven floors, and narrow staircases. We use furniture blankets, corner protectors, and specialist techniques — including removing doors from hinges where needed.' },
+  { question: 'How much does a Cotswolds removal cost?', answer: 'A smaller move to a well-accessed Tetbury or Cirencester property: £600–£900. A family-sized mid-Cotswolds move with 2–3 van loads: £1,000–£1,600. Access complications push above those ranges. Use our <a href="/instantquote/" class="text-secondary-500 underline underline-offset-2">instant calculator</a> for a specific estimate.' },
+  { question: 'Can you move us from the Cotswolds to London?', answer: 'Yes. The Cotswolds\' proximity to the M4 makes long-distance moves efficient. We handle Cotswolds-to-London relocations in a single day via Swindon. Same insurance, same crew.' },
+  { question: 'Why do you survey Cotswolds properties before moving day?', answer: 'Because rural properties can hide access problems no map will show you. Getting a van in and getting it back out are two different challenges — the angle changes, the ground behaves differently when loaded. The survey makes that difference predictable rather than discovered on the day.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/cotswolds-stone-property-removal-1200w.webp" preloadImage="/img/areas/cotswolds-stone-property-removal-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/cotswolds-stone-property-removal"
+      pattern="FULL"
+      alt="Removal van at a Cotswold stone property"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">the Cotswolds</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=cotswolds`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/cotswolds-stone-property-removal"
+      pattern="FULL"
+      alt="Removal van at a Cotswold stone property"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Cotswolds' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">The Cotswolds AONB stretches across 800 square miles, from Chipping Campden in the north to Bath in the south. The area we serve most frequently — Tetbury, Nailsworth, Horsley, Dursley, and the villages in between — sits in the Gloucestershire section closest to Bristol, reachable via the M4 and the A-roads threading through the Stroud valleys.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The Cotswolds doesn't lend itself to generalisations. We've moved people into large country houses, converted barns, farmhouses, and terraced stone cottages. The access situation varies as much as the properties themselves — some are completely uncomplicated, others need careful planning. We survey every Cotswolds property before committing to a plan, because the challenges here — low lintels, single-track lanes, unmade drives through farmland gates — don't show up on Google Street View.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/cotswolds-stone-property-removal" pattern="FULL" alt="Removal van at a Cotswold stone property" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in the Cotswolds Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Access Is Non-Negotiable</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">One Cotswolds move stays with us. An old farmhouse on a hillside — parking 100 metres down at the bottom, a narrow road through a tight gate into a small courtyard. Turning the van around took about 40 moves back and forth. There was a low balcony from the adjacent property at exactly the wrong height, and the landlady watching from her window throughout. The load went smoothly. Getting out was the test: van at a 30-degree angle to the gate, reversing on a slope, with Fidel guiding from outside. We came through with about two millimetres to spare on either side.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">That move worked because the <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> told us the van had gone in through the gate — so we knew it could come back out. Without that survey, the same move would have meant a 100-metre carry uphill. The survey is what turns a difficult access into a manageable plan.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Period Properties and Their Quirks</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Cotswold stone properties are often Grade II listed — some with doorways from the 1650s that weren't designed for modern furniture. Low beams mean tall items sometimes need dismantling. Stone floors and steps need protection — we lay heavy-duty floor runners to prevent scratching. Gravel drives and uneven paths need stable footing for the crew. None of this is unusual for us, but it's the kind of thing a less experienced outfit might not anticipate.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Converted barns are their own category. Vast open-plan spaces where furniture was sometimes built in situ — we've had to carefully extract pieces that were assembled inside the room because they wouldn't fit through the door whole. Always worth a conversation before moving day.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Towns We Cover</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4"><strong>Tetbury</strong> (GL8) is the largest town in our Cotswolds coverage — 30 miles from our depot, about 50 minutes via the M4 and A46. The town centre is a conservation area with listed buildings dating to the 16th century, but residential streets around Hampton Street have more modern homes with good access.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4"><strong>Horsley and Nailsworth</strong> (GL6) sit in the Stroud valleys where steep hillsides and winding lanes define the landscape. Properties range from converted mills to hillside cottages with stunning views but challenging access. Some addresses are only reachable via single-track lanes.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800"><strong>Dursley</strong> (GL11) is a market town at the western edge, overlooking the Severn Vale — more accessible than the deeper Cotswold villages, with wider roads. About 25 miles from our depot via the M5 and A38.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving from the Cotswolds?" description="Free quote in about two minutes. We'll assess your lane access and property during the survey." buttonText="Get Your Cotswolds Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Why People Move to the Cotswolds</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Bristol families relocating to the Cotswolds is one of our most common routes. People want the stone villages, the countryside, the space — and the M4 keeps Bristol commutable. We've also had teams push branches up with a broom so a van could pass underneath on a lane approach. That's Cotswolds removals in a nutshell: beautiful setting, practical challenges.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/cotswolds-tetbury" pattern="HALF" alt="Removal job at a property in Tetbury, Cotswolds" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Getting a van in and getting it back out are two different challenges. The angle changes, the ground behaves differently when you're loaded, and a tight gate that seemed manageable on the way in can look very different on the way out. The survey is what makes that difference predictable."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Insurance matters here. Cotswolds contents tend to be high-value — antiques, artwork, period furniture. Painless Removals carries {siteConfig.company.insurance} per Luton van; items over £2,000 should be declared separately. We also recommend the Key Wait Waiver for chain moves where completion timing is uncertain.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is the Cotswolds Difficult to Move In?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The towns: generally no. The deeper villages: it can be. The combination of single-track lanes, listed building constraints, and rural access means every move needs a proper assessment. But we've done it many times and know which approaches work.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">One practical consideration: approach road width, turning space, overhead clearance (trees, phone lines, barn roofs), and surface conditions. A farm track fine in August can be treacherous in February. Get in touch for a survey and a clear price.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Cotswolds Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 cotswolds-checklist">
+          <li><strong>Lane access?</strong> Check width, overhead clearance, and surface condition before the day.</li>
+          <li><strong>Listed building?</strong> Low doorways and narrow stairs may need furniture dismantled before carrying.</li>
+          <li><strong>Converted barn?</strong> Check whether large items were assembled inside — they may not fit through doors whole.</li>
+          <li><strong>High-value contents?</strong> Declare items over £2,000 separately for full insurance coverage.</li>
+          <li><strong>Seasonal conditions?</strong> Farm tracks and gravel drives are weather-dependent — plan accordingly.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Cotswolds Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Long-Distance Moves From the Cotswolds</h2>
+    <p class="text-gray-500 max-w-xl mb-8">The M4 and M5 are both within reach, making the Cotswolds well-connected for moves in any direction.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Cotswolds" to="London" meta="~100 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Cotswolds" to="Birmingham" meta="~70 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Cotswolds" to="Oxford" meta="~50 miles via A40/A44" days="1 day" href="/removals-bristol-to-oxford/" />
+      <RouteCard from="Cotswolds" to="Cardiff" meta="~65 miles via M4/M48" days="1 day" href="/removals-bristol-to-cardiff/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Mileage from Tetbury. Exact distances vary by village.</p>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Areas Do We Cover Near the Cotswolds?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We also serve families across the wider region. If you're moving from or to
+        <a href="/removals-bath/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Bath</a>,
+        <a href="/removals-yate/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Yate</a>, or
+        <a href="/removals-thornbury/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Thornbury</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">All Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">See everything we offer, from storage to concierge.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move from the Cotswolds?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-[#D4A84B] no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  .cotswolds-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .cotswolds-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

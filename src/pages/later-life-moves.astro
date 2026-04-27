@@ -1,0 +1,1268 @@
+---
+/**
+ * Later Life Moves — Comprehensive Downsizing Concierge Landing Page
+ *
+ * Bristol's first integrated downsizing service. 21 sections covering
+ * the full journey from discovery to settlement.
+ *
+ * Primary audience: Adult children (45–65) worried about ageing parents
+ * Secondary audience: Over-65 homeowners considering downsizing
+ * Tone: Warm, calm, confident. Never clinical. Never salesy.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import EquityCalculator from '@/components/later-life/EquityCalculator.astro';
+import PostcodeLookup from '@/components/later-life/PostcodeLookup.astro';
+import WorryCard from '@/components/later-life/WorryCard.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+
+// Page metadata
+const pageTitle = 'Later Life Moves Bristol | Downsizing Concierge | Painless Removals';
+const pageDescription = 'Bristol\'s first integrated downsizing concierge. One trusted team guides you from the first conversation to settling into your new home — 47 years of caring service. Free discovery visit.';
+
+// ===== DATA: 7 Phases =====
+const phases = [
+  {
+    number: 1,
+    title: 'Discovery & Planning',
+    summary: 'A free home visit. We listen, we understand, we build a plan.',
+    detail: 'Your Transition Coordinator visits the home — no pressure, no sales pitch. This is about understanding: what does your parent (or you) actually want? What are the fears? What are the practical constraints? We map the timeline together and agree on next steps. If it is not right for us, we will say so. If it is, you will leave with a personalised transition plan, not a quote.',
+  },
+  {
+    number: 2,
+    title: 'Financial Roadmap',
+    summary: 'We introduce you to vetted IFAs and equity release specialists. We never advise — we connect.',
+    detail: 'Downsizing is not just emotional — it is financial. How much equity is locked in the property? What are the tax implications? Is equity release the right option, or is selling outright better? We do not answer these questions because we are not financial advisors. But we introduce you to people who are — vetted, local, patient professionals who specialise in later-life finance. No commission-driven recommendations. No pressure.',
+  },
+  {
+    number: 3,
+    title: 'Property & Legal',
+    summary: 'Estate agent coordination, solicitor introductions, care home search.',
+    detail: 'We work with a network of approved partners — estate agents, solicitors, and care home specialists — who understand later-life transitions. They will not rush your parent. They will not use jargon. They will communicate clearly, patiently, and with respect. If the next step is a care home, we search with you — not for you.',
+  },
+  {
+    number: 4,
+    title: 'The Emotional Sort',
+    summary: 'Heritage cataloguing. Cherished items rehoming. Family distribution support.',
+    detail: 'This is where most people get stuck — and where most removal companies do not even show up. A lifetime of belongings does not fit into a two-bedroom flat. But this is not about throwing things away. It is about deciding what matters, preserving the stories behind the things that do, and finding good homes for the things that cannot come along. We photograph treasured items, record the stories behind them, and create a digital memory book.',
+  },
+  {
+    number: 5,
+    title: 'The Move Itself',
+    summary: 'Our own crew, at your pace. New home ready before you arrive.',
+    detail: 'This is what we have done for 47 years — except now we do it slower, gentler, and with more care. Our team is DBS-checked, Dementia Friends trained, and briefed on your parent\'s specific needs. We take two to three days instead of one. We set up the new home before they arrive: bed made, kettle on, milk in the fridge, familiar photos on the wall. When they walk in, it already feels like theirs.',
+  },
+  {
+    number: 6,
+    title: 'Admin & Settlement',
+    summary: 'GP, council tax, utilities, Royal Mail, ID — we handle it or sit alongside every form.',
+    detail: 'Nobody tells you how much admin comes with a move. We do all of it or help you do it: GP registration, council tax notification, utility transfers, Royal Mail redirect, driving licence update, electoral roll, TV licence, insurance updates, bank address changes, pension notifications. For someone in their seventies or eighties, this is overwhelming. For us, it is a checklist we have done hundreds of times.',
+  },
+  {
+    number: 7,
+    title: '30-Day Aftercare',
+    summary: 'Follow-up calls, community welcome pack, ongoing support.',
+    detail: 'The first month is the hardest. Everything is new. The shops are different. The sounds are different. So we stay in touch. Your Transition Coordinator calls at 7 days, 14 days, and 30 days. We provide a personalised Community Welcome Pack — local activities, walking clubs, coffee mornings, library events. If something is not right — the curtains do not fit, the washing machine is playing up — we help.',
+  },
+];
+
+// ===== DATA: Margaret's Day =====
+const margaretBefore = [
+  { time: '7:00', text: 'Wakes up. Lies in bed for 20 minutes because the stairs worry her.' },
+  { time: '8:30', text: 'Breakfast alone at a kitchen table built for six. Radio on for company.' },
+  { time: '10:00', text: 'Tries to tidy the spare bedroom. Gives up. It has been a dumping ground for years.' },
+  { time: '11:30', text: 'Cancels a coffee with Jean because parking is difficult and she does not feel confident driving.' },
+  { time: '13:00', text: 'Lunch. Beans on toast. Eating in the same chair she has sat in for 30 years.' },
+  { time: '15:00', text: 'The boiler makes that noise again. She does not know who to call. David always handled that.' },
+  { time: '17:00', text: 'Watches television. Heating only the living room because the rest of the house is too expensive to warm.' },
+  { time: '19:30', text: 'Locks up. Checks every door twice. The garden backs onto an alley and she heard something last week.' },
+  { time: '21:00', text: 'Bed. Sleeps in the guest room now because the master bedroom feels too empty.' },
+];
+
+const margaretAfter = [
+  { time: '7:00', text: 'Wakes up. Everything is on one level. No stairs. Walks straight to the kitchen.' },
+  { time: '8:30', text: 'Breakfast. The flat is warm — the heating costs a third of what the house did.' },
+  { time: '10:00', text: 'Walks to the community centre. She joined a watercolour class her Transition Coordinator found for her.' },
+  { time: '11:30', text: 'Coffee with Jean at the café on the corner. It is a three-minute walk.' },
+  { time: '13:00', text: 'Lunch. Her daughter pops in — she is 10 minutes away now, not 45.' },
+  { time: '15:00', text: 'Reads in the living room. David\'s favourite armchair is here. So is his bookshelf. The things that matter came with her.' },
+  { time: '17:00', text: 'FaceTimes her grandson. The Painless team set up her tablet and showed her how.' },
+  { time: '19:30', text: 'The building has a secure entry system. She locks the front door once and that is it.' },
+  { time: '21:00', text: 'Bed. Her own bed. Her own bedroom. She sleeps properly for the first time in years.' },
+];
+
+// ===== DATA: What Happens to Your Things =====
+const thingsPaths = [
+  {
+    title: 'Keep',
+    subtitle: 'Comes to your new home',
+    text: 'The things that make it home — your bed, your armchair, David\'s bookshelf, the kitchen clock, the photos on the wall. We help you decide what fits, plan the layout, and make sure it is all in place before you arrive.',
+    color: 'bg-green-50 border-green-300 text-green-800',
+    iconColor: 'text-green-500',
+  },
+  {
+    title: 'Gift',
+    subtitle: 'Goes to family',
+    text: 'The dining table goes to your daughter. The toolbox goes to your grandson. We help facilitate these conversations so nobody feels awkward — or left out.',
+    color: 'bg-blue-50 border-blue-300 text-blue-800',
+    iconColor: 'text-blue-500',
+  },
+  {
+    title: 'Cherish',
+    subtitle: 'Rehomed to someone who will love it',
+    text: 'The piano you cannot take but cannot bear to skip. We find people — through our network, local charities, and community groups — who will give them a second life. You will know where they went.',
+    color: 'bg-amber-50 border-amber-300 text-amber-800',
+    iconColor: 'text-amber-500',
+  },
+  {
+    title: 'Store',
+    subtitle: 'Kept safe until you are ready',
+    text: 'Not sure yet? No rush. Our secure storage means you do not have to decide everything now. Take the pressure off. You can revisit in three months, six months, whenever you are ready.',
+    color: 'bg-gray-50 border-gray-300 text-gray-700',
+    iconColor: 'text-gray-500',
+  },
+  {
+    title: 'Let Go',
+    subtitle: 'Donated, auctioned, or recycled responsibly',
+    text: 'Some things have served their purpose. We partner with local charities, Bristol auction houses, and recycling services to make sure nothing goes to waste. If it has value, we help you capture it.',
+    color: 'bg-orange-50 border-orange-300 text-orange-800',
+    iconColor: 'text-orange-500',
+  },
+];
+
+// ===== DATA: Memory Keeper Carousel =====
+const memoryItems = [
+  {
+    title: 'Albert\'s Reading Chair',
+    story: 'Albert bought this chair in 1967 from a shop on Gloucester Road that does not exist anymore. He read every evening after dinner. Dorothy could not bear to part with it, but it would not fit in the new flat. Today it is in her grandson Tom\'s first house in Bedminster. He reads to his daughter in it.',
+    placeholder: 'Photo: A worn leather armchair',
+  },
+  {
+    title: 'The Allotment Kit',
+    story: 'Bill kept these tools for 40 years. The fork handle was replaced twice but it was still "his" fork. The allotment went when he moved, but we found him a community garden plot 15 minutes from his new flat. The tools went with him.',
+    placeholder: 'Photo: A set of garden tools',
+  },
+  {
+    title: 'Jean\'s Jazz Collection',
+    story: '312 records. Duke Ellington. Coltrane. Billie Holiday. Jean\'s daughter did not want them, and Jean was heartbroken. We connected her with a vintage record shop in Clifton who bought 80 of the rarest ones and donated the rest to a local youth music project. Jean got £400 and the knowledge that someone is still playing them.',
+    placeholder: 'Photo: A collection of vinyl records',
+  },
+  {
+    title: 'The Wedding Blanket',
+    story: 'Knitted by Margaret\'s mother for her wedding in 1971. Too fragile to use but impossible to discard. We photographed it in detail, recorded Margaret telling the story, and carefully stored it in acid-free tissue in her new home. It takes up the space of a shoebox. The memory takes up no space at all.',
+    placeholder: 'Photo: A hand-knitted blanket',
+  },
+];
+
+// ===== DATA: 3AM Worry List =====
+const worries = [
+  {
+    worry: 'What if Mum hates the new place?',
+    answer: 'We have seen this fear a hundred times — and in almost every case, within two weeks, they wonder why they did not move sooner. But if they genuinely do not settle, we help. We check in at 7, 14, and 30 days. We connect them with neighbours, local groups, and familiar routines. And if it really is not right? We will help them move again.',
+  },
+  {
+    worry: 'What if I throw away something important?',
+    answer: 'You will not — because we do not throw anything away without your explicit say-so. Our Heritage Cataloguing service means nothing leaves without being photographed and documented. And our storage service means you do not have to decide right now.',
+  },
+  {
+    worry: 'My siblings will argue about who gets what.',
+    answer: 'Family distribution is one of the most delicate parts of our job. Your Transition Coordinator can facilitate the conversation — neutral, calm, practical. We have seen every scenario. We help you create a fair process before emotions run hot.',
+  },
+  {
+    worry: 'What about the cat?',
+    answer: 'We love this question because we get it a lot. We help find pet-friendly accommodation, arrange pet transport, and make sure your pet\'s bed, bowls, and favourite spot are set up in the new home before they arrive. Cats are creatures of habit — so are we.',
+  },
+  {
+    worry: 'I cannot afford this.',
+    answer: 'Most people who downsize release tens or hundreds of thousands of pounds in equity. Our service fee is typically 1 to 3 percent of that. The estate agent, solicitor, and other professionals are costs you would face anyway. We do not add cost — we add coordination. And the financial introductions are free.',
+  },
+  {
+    worry: 'What if Mum falls between now and the move?',
+    answer: 'This is the worry that keeps adult children awake more than any other. Over 210,000 over-65s are admitted to hospital each year from falls. We cannot eliminate that risk, but we can shorten the timeline between "thinking about it" and "done."',
+  },
+  {
+    worry: 'I live too far away to help.',
+    answer: 'That is exactly why we exist. Your Transition Coordinator is the person on the ground — visiting weekly, coordinating tradespeople, updating you by phone or video. You do not have to take two weeks off work. You do not have to drive three hours every weekend.',
+  },
+  {
+    worry: 'Dad has dementia. Is this even possible?',
+    answer: 'Yes. We have supported families through transitions involving early-stage and moderate dementia. Your Transition Coordinator works closely with the family, the GP, and any care professionals already involved. We take extra time, maintain familiar routines, and ensure the new environment is safe and comforting. Every staff member is Dementia Friends trained.',
+  },
+];
+
+// ===== DATA: Did You Know — 10 Facts =====
+const facts = [
+  { number: '210,000', text: 'emergency hospital admissions per year in England are caused by falls in people aged 65+. Falls are the leading cause of hospital admission for older people — and most happen at home, on stairs, or in the garden.', source: 'NICE Guidelines, 2024; NHS England' },
+  { number: '76,000', text: 'people break their hip every year in the UK. The average hospital stay afterwards is 32 days. 20% of hip fracture patients never return home — they go straight into long-term care.', source: 'National Hip Fracture Database 2024' },
+  { number: '940,000', text: 'older people in the UK are chronically lonely. Loneliness is as harmful to your health as smoking 15 cigarettes a day.', source: 'Age UK, December 2024; Campaign to End Loneliness' },
+  { number: '86%', text: 'of households headed by someone aged 65+ are under-occupied — meaning they have at least one bedroom more than they need.', source: 'ONS Census 2021; English Housing Survey' },
+  { number: '£160k–£250k', text: 'is the average equity released when downsizing from a 4-bed detached to a 2-bed retirement flat in the South West. That is money sitting in bricks and mortar doing nothing.', source: 'Savills Research; Rightmove regional data' },
+  { number: '£1,400', text: 'annual energy saving when moving from a 4-bed detached house to a 2-bed flat. Add council tax, insurance, and maintenance, and the difference is nearly £5,000 per year.', source: 'Nesta household energy analysis; Ofgem 2025' },
+  { number: '3.1 million', text: 'people aged 65+ want to downsize. Only 55,000 actually move each year — a conversion rate of less than 2%. The number one barrier is "the hassle and stress of moving."', source: 'Centre for Ageing Better; English Housing Survey' },
+  { number: '300,000', text: 'people in the UK are forced to move each year following the death of a partner. There is currently no dedicated national service supporting bereavement-triggered housing transitions.', source: 'Marie Curie' },
+  { number: '50%', text: 'more likely to visit A&E — that is the risk for older people living alone compared to those who live with others.', source: 'The Health Foundation' },
+  { number: '£15,525', text: 'is the average social care cost following a hip fracture. Homes without stairs, with level-access showers, and with better heating dramatically reduce fall risk.', source: 'University of Bristol, February 2026' },
+];
+
+// ===== DATA: GP Facts =====
+const gpFacts = [
+  'One in three people over 65 falls at least once a year. Among over-80s, it is one in two.',
+  'Falls at home account for the majority of the 210,000 annual emergency admissions among over-65s. Stairs, uneven floors, cold bathrooms, and poor lighting are the main culprits.',
+  'After a hip fracture, 18 to 33 percent of patients die within one year. Of those who survive, 20% move directly into long-term care.',
+  'Cold homes increase the risk of heart attacks, strokes, and respiratory illness. A smaller, well-insulated home can be life-saving, not just cost-saving.',
+  'Social isolation is clinically linked to depression, cognitive decline, and increased mortality risk equivalent to smoking 15 cigarettes a day.',
+];
+
+// ===== DATA: Who Is This For =====
+const audiences = [
+  { label: 'Older homeowners (65+)', text: 'living in a home that has become too large, too expensive, or hard to maintain.' },
+  { label: 'Recently bereaved partners', text: 'facing a move they never planned for — with sensitivity and patience.' },
+  { label: 'Adult children (45–65)', text: 'worried about a parent who needs help but lives too far away or does not have the time.' },
+  { label: 'Hospital discharge teams', text: 'who need housing-ready patients to transition safely and quickly.' },
+  { label: 'Families navigating care', text: 'where moving to a care home or sheltered housing is the next step.' },
+  { label: 'Couples right-sizing', text: 'not just downsizing — moving to something that fits the life you want now.' },
+];
+
+// ===== DATA: What Makes Us Different =====
+const differences = [
+  {
+    title: 'We do the move ourselves.',
+    text: 'Other senior move managers coordinate. We coordinate AND execute. One team, start to finish. No subcontractors. No handoffs. No strangers.',
+  },
+  {
+    title: 'We have been doing this for 47 years.',
+    text: 'We are not a startup. We are not a franchise. We are a Bristol family business that has been carrying people\'s lives from one home to another since 1978. We added the concierge service because our community needed it.',
+  },
+  {
+    title: 'Every person who enters your parent\'s home is checked, trained, and accountable.',
+    text: 'DBS-checked. Dementia Friends trained. Full public liability insurance. Adult safeguarding policy. Because trust is not a tagline — it is a background check.',
+  },
+];
+
+// ===== DATA: Downsizing Diary =====
+const diaryEntries = [
+  {
+    week: 'Week 1',
+    title: 'The First Visit',
+    excerpt: 'Dorothy is 78, lives alone in a 4-bed house in Knowle, and has not been upstairs in six months. She sleeps in the dining room. When we visited, she said: "I am not going anywhere." We said: "That is fine. Let us just have a cup of tea and talk."',
+  },
+  {
+    week: 'Week 3',
+    title: 'The Numbers Conversation',
+    excerpt: 'We introduced Dorothy to Helen, an independent financial advisor who specialises in later-life planning. Helen came to the house and spent 90 minutes explaining options. Dorothy had no idea she was sitting on £310,000 of equity.',
+  },
+  {
+    week: 'Week 5',
+    title: 'The Emotional Sort',
+    excerpt: 'Today was hard. Dorothy opened the wardrobe where her husband Arthur\'s clothes still hang. He died four years ago. She had not touched them. We did not rush her. We sat with her while she held his favourite jacket.',
+  },
+  {
+    week: 'Week 7',
+    title: 'The Move',
+    excerpt: 'Two days, not one. When Dorothy walked into the new flat, her bed was made, her kettle was out, Arthur\'s photo was on the bedside table, and there was milk in the fridge. She sat down and said: "This will do nicely."',
+  },
+];
+
+// ===== DATA: FAQ =====
+const faqs = [
+  {
+    question: 'How is this different from a standard removal service?',
+    answer: 'A standard removal company turns up, loads the van, and leaves. We start months before the van arrives — with a dedicated Transition Coordinator who manages every aspect of the move: financial introductions, property search, the emotional process of letting go, the physical move itself, and all the admin that comes after.',
+  },
+  {
+    question: 'How much does the full service cost?',
+    answer: 'It depends on which services you choose. The Transition Coordinator fee ranges from £1,500 to £3,500. The physical move is £800 to £2,500. Many additional services like financial and property introductions are included at no extra charge. Use our <a href="#calculator" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">equity calculator</a> to see a personalised estimate.',
+  },
+  {
+    question: 'Can you help if my parent has dementia?',
+    answer: 'Yes. Every member of our team is Dementia Friends trained. We work closely with the family, the GP, and any care professionals already involved. We take extra time, maintain familiar routines, and ensure the new environment is safe and comforting.',
+  },
+  {
+    question: 'What if my parent refuses to move?',
+    answer: 'This is very common. Our first visit is never about convincing anyone. It is about listening, understanding, and gently exploring options. Many of the people we help initially said they would never move. There is no pressure and no timeline — we work at your family\'s pace.',
+  },
+  {
+    question: 'I live far away. Can you manage everything?',
+    answer: 'Absolutely. Many of the families we work with are coordinating from another city or country. Your Transition Coordinator handles everything on the ground — from the initial survey to the final 30-day check-in. We provide regular updates by phone, email, or video call.',
+  },
+  {
+    question: 'What happens to items that do not fit in the new home?',
+    answer: 'Nothing is thrown away without your say-so. We offer five pathways for belongings: keep, gift to family, rehome to someone who will love it, store safely until you are ready, or let go responsibly through charities, auctions, or recycling. Our Heritage Cataloguing service photographs and documents everything.',
+  },
+  {
+    question: 'Do you work with care homes?',
+    answer: 'Yes. We coordinate with care home staff about delivery times, access routes, and room measurements. We help families decide what furniture and personal items will fit, and we set up the room so it feels personal and familiar from the first day.',
+  },
+  {
+    question: 'Are you financial advisors?',
+    answer: 'No. We are not financial advisors, solicitors, or care providers. All financial, legal, and care introductions are to independently regulated professionals. Our introductions are pure introductions — no commission, no pressure.',
+  },
+];
+
+// ===== SCHEMA MARKUP =====
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Later Life Moves Bristol",
+  "description": pageDescription,
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": { "@type": "City", "name": "Bristol" },
+  "serviceType": "Later Life Moving Service",
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": { "@type": "Answer", "text": faq.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How Later Life Moves Work — 7 Phases",
+  "description": "Every transition is different. Some take 6 weeks, some take 6 months. We never rush. Here is the shape of the journey.",
+  "step": phases.map(p => ({
+    "@type": "HowToStep",
+    "name": p.title,
+    "text": p.detail,
+    "position": p.number,
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema, howToSchema];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} noindex>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-primary-50">
+      <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-400">
+        <div class="text-center p-6">
+          <svg class="w-20 h-20 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+          <p class="text-sm font-medium">Hero image: Warm later-life scene</p>
+          <p class="text-xs mt-1 opacity-70">Recommended: 1280&times;720 or larger</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Later Life Moves &middot; Bristol
+          </p>
+
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold leading-tight">
+            Your home held a lifetime of memories. <span class="text-secondary-500">We help you carry them forward.</span>
+          </h1>
+
+          <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+            Bristol&rsquo;s first integrated downsizing concierge. One trusted team guides you from the first conversation to settling into your new home &mdash; and every step in between.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3 mb-5 justify-center">
+            <a href="#callback" class="btn-cta-orange">
+              Get a Free Discovery Visit
+            </a>
+            <a href="#calculator" class="inline-block border-2 border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white px-8 py-4 text-base font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1">
+              See Your Equity Estimate
+            </a>
+          </div>
+
+          <!-- Trust strip -->
+          <p class="text-xs text-warm-gray/70 mb-4">
+            EST. 1978 &middot; 47 Years of Trusted Service &middot; BAR Member &middot; Dementia Friends Trained &middot; DBS-Checked Staff
+          </p>
+
+          <TrustpilotStrip />
+        </div>
+      </div>
+
+      <!-- Right: Image placeholder (desktop) -->
+      <div class="hidden lg:block relative overflow-hidden bg-primary-50">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-400">
+          <div class="text-center p-6">
+            <svg class="w-20 h-20 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+            <p class="text-sm font-medium">Hero image: Warm later-life scene</p>
+            <p class="text-xs mt-1 opacity-70">Recommended: 1280&times;720 or larger</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 2: STATS BAR
+  ============================================ -->
+  <section class="py-12 md:py-16 bg-primary-600" id="stats-bar">
+    <div class="container-wide">
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="stat-card-blue">
+          <p class="font-heading text-4xl md:text-5xl font-bold text-white leading-none mb-2" id="stat-millions">3.1 million</p>
+          <p class="text-sm text-white/80">over-65s want to downsize but cannot face the process</p>
+        </div>
+        <div class="stat-card-blue">
+          <p class="font-heading text-4xl md:text-5xl font-bold text-white leading-none mb-2" id="stat-percent">86%</p>
+          <p class="text-sm text-white/80">of 65+ households have more bedrooms than they need</p>
+        </div>
+        <div class="stat-card-blue">
+          <p class="font-heading text-4xl md:text-5xl font-bold text-white leading-none mb-2" id="stat-wealth">&pound;2.9 trillion</p>
+          <p class="text-sm text-white/80">of housing wealth held by over-60s &mdash; most of it locked in bricks</p>
+        </div>
+      </div>
+      <p class="text-center text-white/40 text-xs mt-6">Source: ONS Census 2021, English Housing Survey, Savills Research</p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 3: INTRO — WHAT WE ACTUALLY DO
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-5">
+      <!-- Text (60%) -->
+      <div class="lg:col-span-3 p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">We do not just move your furniture. <span class="text-secondary-500">We manage your entire life transition.</span></h2>
+
+        <div class="space-y-4 text-warm-gray">
+          <p class="text-lg leading-relaxed">
+            Most removal companies turn up, load the van, and leave. We start months before the van arrives &mdash; and we are still checking in weeks after you have unpacked.
+          </p>
+          <p>
+            Painless Later Life Moves gives you a single, dedicated Transition Coordinator who stays with you through every phase: financial introductions, property search, the emotional process of letting go of a home you have loved, the physical move itself, and all the admin that nobody tells you about &mdash; the GP transfer, the council tax, the utility switches, the Royal Mail redirect.
+          </p>
+          <p>
+            We do this because we have been Bristol&rsquo;s trusted removals company for 47 years. We have seen what happens when an elderly person is left to figure this out alone. And we decided to build the service we wished existed.
+          </p>
+        </div>
+
+        <div class="mt-6">
+          <a href="#callback" class="btn-cta-orange">
+            Talk To Us &mdash; It&rsquo;s Free
+          </a>
+        </div>
+      </div>
+
+      <!-- Image (40%) -->
+      <div class="lg:col-span-2 relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] bg-primary-50">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <p class="text-sm font-medium">Image: Coordinator with older couple at kitchen table</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 4: MARGARET'S DAY — BEFORE & AFTER
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">What does downsizing actually change? <span class="text-secondary-500">More than you&rsquo;d think.</span></h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-3xl mx-auto">
+        Margaret is 74. She lived alone in a 4-bedroom house in Bishopston for 31 years after her husband passed. Here is what a Tuesday looked like &mdash; before and after.
+      </p>
+
+      <div class="grid lg:grid-cols-2 gap-8 lg:gap-0 max-w-5xl mx-auto">
+        <!-- BEFORE -->
+        <div class="bg-white rounded-xl lg:rounded-r-none p-6 md:p-8 border-t-4 border-gray-400">
+          <h3 class="text-gray-500 text-sm font-semibold uppercase tracking-wide mb-6">Before &mdash; 4-bed house, alone</h3>
+          <div class="space-y-5">
+            {margaretBefore.map(item => (
+              <div class="flex gap-4">
+                <div class="flex flex-col items-center shrink-0">
+                  <span class="text-xs font-bold text-gray-400 whitespace-nowrap w-12 text-right">{item.time}</span>
+                </div>
+                <div class="border-l-2 border-gray-200 pl-4">
+                  <p class="text-warm-gray text-sm leading-relaxed">{item.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- AFTER -->
+        <div class="bg-white rounded-xl lg:rounded-l-none p-6 md:p-8 border-t-4 border-secondary-500">
+          <h3 class="text-secondary-500 text-sm font-semibold uppercase tracking-wide mb-6">After &mdash; 2-bed flat, 10 minutes from her daughter</h3>
+          <div class="space-y-5">
+            {margaretAfter.map(item => (
+              <div class="flex gap-4">
+                <div class="flex flex-col items-center shrink-0">
+                  <span class="text-xs font-bold text-secondary-500 whitespace-nowrap w-12 text-right">{item.time}</span>
+                </div>
+                <div class="border-l-2 border-secondary-200 pl-4">
+                  <p class="text-warm-gray text-sm leading-relaxed">{item.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-2xl mx-auto mt-10 text-center">
+        <p class="text-warm-gray italic mb-4">Margaret is not real &mdash; but her story is. We hear it every week.</p>
+        <p class="text-warm-gray mb-6">If this sounds like someone you love, we should talk.</p>
+        <a href="#callback" class="btn-cta-orange">
+          Arrange a Free Discovery Visit
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 5: THE 7 PHASES
+  ============================================ -->
+  <section class="section bg-white" id="phases">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">How it works &mdash; <span class="text-secondary-500">7 phases, one team, your pace.</span></h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Every transition is different. Some take 6 weeks, some take 6 months. We never rush. Here is the shape of the journey.
+      </p>
+
+      <div class="max-w-3xl mx-auto space-y-0">
+        {phases.map(phase => (
+          <details class="group border-b border-gray-200">
+            <summary class="flex items-center gap-4 py-5 cursor-pointer list-none font-heading text-lg text-primary-700 font-medium hover:text-primary-900 transition-colors [&::-webkit-details-marker]:hidden">
+              <span class="shrink-0 w-10 h-10 rounded-full bg-primary-600 text-white flex items-center justify-center text-sm font-bold">{phase.number}</span>
+              <div class="flex-1">
+                <span class="font-semibold">{phase.title}</span>
+                <span class="block text-sm text-warm-gray font-normal mt-0.5">{phase.summary}</span>
+              </div>
+              <span class="shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-primary-50 text-primary-600 text-sm font-bold transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+            </summary>
+            <div class="pb-5 pl-14 pr-10 text-warm-gray text-[15px] leading-relaxed">
+              {phase.detail}
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 6: WHAT HAPPENS TO YOUR THINGS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Nothing gets thrown away. <span class="text-secondary-500">Everything gets a plan.</span></h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        The number one fear we hear is not about money. It is: &ldquo;What happens to all my things?&rdquo; Here is what happens.
+      </p>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        {thingsPaths.map(path => (
+          <div class={`rounded-xl border-2 p-5 ${path.color}`}>
+            <h3 class="text-lg font-bold mb-1">{path.title}</h3>
+            <p class="text-xs font-semibold uppercase tracking-wide mb-3 opacity-70">{path.subtitle}</p>
+            <p class="text-sm leading-relaxed opacity-90">{path.text}</p>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-warm-gray italic mt-10">
+        We never skip. We never rush. And we never, ever make someone feel bad about what they own.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 7: MEMORY KEEPER — HERITAGE CATALOGUING
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Every object has a story. <span class="text-secondary-500">We make sure it is not lost.</span></h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-3xl mx-auto">
+        Our Heritage Cataloguing service photographs your treasured items, records the stories behind them, and creates a digital memory book your family can keep forever.
+      </p>
+
+      <!-- Carousel -->
+      <div class="relative">
+        <div id="memory-carousel" class="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4">
+          {memoryItems.map(item => (
+            <div class="snap-center shrink-0 w-72 md:w-80 bg-cream rounded-xl shadow-sm overflow-hidden">
+              <div class="h-48 bg-primary-50 flex items-center justify-center">
+                <div class="text-center p-4">
+                  <svg class="w-10 h-10 mx-auto mb-2 text-primary-300 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                  <p class="text-xs text-primary-400">{item.placeholder}</p>
+                </div>
+              </div>
+              <div class="p-5">
+                <h4 class="font-heading font-bold text-primary-600 mb-2">{item.title}</h4>
+                <p class="text-warm-gray text-sm leading-relaxed">{item.story}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Arrows (desktop) -->
+        <button id="carousel-prev" class="hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg items-center justify-center text-primary-600 hover:bg-primary-50 transition-colors z-10" aria-label="Previous">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button id="carousel-next" class="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 bg-white rounded-full shadow-lg items-center justify-center text-primary-600 hover:bg-primary-50 transition-colors z-10" aria-label="Next">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+
+      <p class="text-center text-warm-gray mt-8 max-w-2xl mx-auto">
+        Every Painless Later Life Moves client receives a digital memory book &mdash; a keepsake for the whole family. Because the move is temporary. The memories are permanent.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 8: HIDDEN COSTS OF NOT MOVING
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-white text-center mb-4">What staying costs you every year</h2>
+      <p class="text-center text-white/70 text-lg mb-12 max-w-2xl mx-auto">
+        Downsizing releases equity. But it also stops the money drain you might not have noticed.
+      </p>
+
+      <!-- Comparison table -->
+      <div class="max-w-3xl mx-auto bg-white/10 rounded-xl overflow-hidden backdrop-blur-sm border border-white/20">
+        <div class="grid grid-cols-4 text-center text-sm font-semibold border-b border-white/20">
+          <div class="p-4 text-white/60">Cost</div>
+          <div class="p-4">4-Bed Detached</div>
+          <div class="p-4">2-Bed Flat</div>
+          <div class="p-4 text-secondary-300">Annual Saving</div>
+        </div>
+        <div class="grid grid-cols-4 text-center text-sm border-b border-white/10">
+          <div class="p-3 text-white/80 text-left pl-4">Energy bills</div>
+          <div class="p-3">&pound;2,500</div>
+          <div class="p-3">&pound;1,100</div>
+          <div class="p-3 text-secondary-300 font-bold">&pound;1,400</div>
+        </div>
+        <div class="grid grid-cols-4 text-center text-sm border-b border-white/10">
+          <div class="p-3 text-white/80 text-left pl-4">Council tax</div>
+          <div class="p-3">&pound;2,600</div>
+          <div class="p-3">&pound;1,500</div>
+          <div class="p-3 text-secondary-300 font-bold">&pound;1,100</div>
+        </div>
+        <div class="grid grid-cols-4 text-center text-sm border-b border-white/10">
+          <div class="p-3 text-white/80 text-left pl-4">Home insurance</div>
+          <div class="p-3">&pound;450</div>
+          <div class="p-3">&pound;200</div>
+          <div class="p-3 text-secondary-300 font-bold">&pound;250</div>
+        </div>
+        <div class="grid grid-cols-4 text-center text-sm border-b border-white/10">
+          <div class="p-3 text-white/80 text-left pl-4">Maintenance</div>
+          <div class="p-3">&pound;2,000</div>
+          <div class="p-3">&pound;400</div>
+          <div class="p-3 text-secondary-300 font-bold">&pound;1,600</div>
+        </div>
+        <div class="grid grid-cols-4 text-center text-sm border-b border-white/10">
+          <div class="p-3 text-white/80 text-left pl-4">Garden upkeep</div>
+          <div class="p-3">&pound;600</div>
+          <div class="p-3">&pound;0</div>
+          <div class="p-3 text-secondary-300 font-bold">&pound;600</div>
+        </div>
+        <div class="grid grid-cols-4 text-center text-sm font-bold">
+          <div class="p-4 text-white text-left pl-4">Total</div>
+          <div class="p-4">&pound;8,150</div>
+          <div class="p-4">&pound;3,200</div>
+          <div class="p-4 text-secondary-300 text-lg">&pound;4,950</div>
+        </div>
+      </div>
+
+      <div class="max-w-2xl mx-auto mt-10 text-center">
+        <p class="text-white/90 text-lg mb-4">
+          Over 10 years, staying in a home that is too big could cost you <strong>&pound;49,500</strong> more than you need to spend &mdash; on top of the equity you are not releasing.
+        </p>
+        <p class="text-white/60 text-sm">
+          That is before we count the things money cannot measure: the fall risk, the isolation, the cold rooms, the worry.
+        </p>
+      </div>
+
+      <p class="text-center text-white/30 text-xs mt-8">Figures based on Nesta household energy data, regional council tax averages, and ABI insurance benchmarks.</p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 9: EQUITY & SERVICE CALCULATOR
+  ============================================ -->
+  <section class="section bg-white" id="calculator">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">See what downsizing could look like for you</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Answer 4 simple questions and we will show you a personalised estimate &mdash; how much equity you could release and what our services would cost.
+      </p>
+
+      <EquityCalculator />
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 10: 3AM WORRY LIST
+  ============================================ -->
+  <section class="section bg-gray-900">
+    <div class="container-wide">
+      <h2 class="text-white text-center mb-4">We know what keeps you up at 3AM.</h2>
+      <p class="text-center text-gray-400 text-lg mb-12 max-w-2xl mx-auto">
+        You are not the first person to lie awake thinking these things. And we have answers.
+      </p>
+
+      <!-- Desktop: flip card grid -->
+      <div class="hidden lg:grid lg:grid-cols-4 gap-6">
+        {worries.map((w, i) => (
+          <WorryCard worry={w.worry} answer={w.answer} index={i} />
+        ))}
+      </div>
+
+      <!-- Mobile: accordion -->
+      <div class="lg:hidden max-w-xl mx-auto rounded-xl overflow-hidden">
+        {worries.map((w, i) => (
+          <WorryCard worry={w.worry} answer={w.answer} index={i} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 11: ASK MARGARET'S DAUGHTER — TESTIMONIAL
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">Do not take our word for it. <span class="text-secondary-500">Ask the people who have been where you are.</span></h2>
+
+      <div class="review-quote max-w-3xl mx-auto">
+        <p class="text-warm-gray mb-6 text-lg leading-relaxed">
+          &ldquo;Mum said she would never move. For three years, every time I visited from London, I would see the damp getting worse, the garden getting wilder, and Mum getting smaller in that big house. I did not know where to start. I could not take three weeks off work. I could not be there every day. <mark>The Painless team were there when I could not be.</mark> Sarah &mdash; her Transition Coordinator &mdash; called me every Friday with an update. Six weeks later, Mum was in a beautiful flat ten minutes from my sister. She FaceTimed me on the first night and said: <mark>&lsquo;Why didn&rsquo;t I do this years ago?&rsquo;</mark> I cried.&rdquo;
+        </p>
+        <p class="font-bold text-primary-600">&mdash; Rachel, 52, London</p>
+        <p class="text-sm text-warm-gray">Mum moved from Westbury-on-Trym to Henleaze</p>
+      </div>
+
+      <p class="text-center text-xs text-warm-gray/60 mt-6 italic">
+        Template testimonial illustrating the tone and format. Real testimonials will replace this as pilot clients complete their transitions.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 12: DID YOU KNOW — 10 FACTS
+  ============================================ -->
+  <section class="section bg-gray-100" id="facts">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">10 things nobody tells you about growing old in the wrong home.</h2>
+
+      <div class="max-w-3xl mx-auto space-y-6">
+        {facts.map((fact, i) => (
+          <div class="fact-card bg-white rounded-xl p-6 md:p-8 shadow-sm flex gap-6 items-start">
+            <span class="shrink-0 font-heading text-3xl md:text-4xl font-bold text-secondary-500 leading-none">#{i + 1}</span>
+            <div>
+              <p class="text-warm-gray leading-relaxed">
+                <strong class="text-primary-600">{fact.number}</strong> {fact.text}
+              </p>
+              <p class="text-xs text-warm-gray/50 mt-2 italic">Source: {fact.source}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 13: WHAT YOUR GP WON'T TELL YOU
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-center mb-4">The health case for downsizing</h2>
+        <p class="text-center text-warm-gray text-lg mb-12">
+          GPs see the consequences of elderly people living in homes that do not suit them. These are the facts behind the concern.
+        </p>
+
+        <div class="space-y-6">
+          {gpFacts.map(fact => (
+            <div class="flex gap-4 items-start">
+              <div class="shrink-0 w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
+                <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+              </div>
+              <p class="text-warm-gray leading-relaxed">{fact}</p>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-10 bg-cream rounded-xl p-6 md:p-8">
+          <p class="text-warm-gray italic leading-relaxed">
+            We do not say this to frighten you. We say it because the right home is not just about comfort. It is about safety, health, and years of life. If your GP could prescribe a home that is warm, safe, close to family, and easy to manage &mdash; they would.
+          </p>
+        </div>
+
+        <div class="mt-8 text-center">
+          <a href="#callback" class="btn-cta-orange">
+            Talk To Us About Your Parent&rsquo;s Situation
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 14: WHO IS THIS FOR?
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">We help people who need more than a removal van.</h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+        {audiences.map(a => (
+          <div class="bg-white rounded-lg p-5 shadow-sm">
+            <p class="font-semibold text-primary-600 mb-1">{a.label}</p>
+            <p class="text-warm-gray text-sm">{a.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 15: WHAT MAKES US DIFFERENT
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">Three things no other service in Bristol can say.</h2>
+
+      <div class="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        {differences.map((d, i) => (
+          <div class="text-center">
+            <div class="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">{i + 1}</div>
+            <h3 class="text-lg font-bold text-primary-600 mb-3">{d.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">{d.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 16: FOR REFERRAL PARTNERS
+  ============================================ -->
+  <section class="section bg-primary-50">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-center mb-4">Work with us. <span class="text-secondary-500">Your clients deserve a better experience.</span></h2>
+        <p class="text-center text-warm-gray text-lg mb-10">
+          We work with estate agents, solicitors, financial advisors, care home providers, and health professionals across Bristol and the South West.
+        </p>
+
+        <div class="grid sm:grid-cols-2 gap-4 mb-10">
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 text-lg shrink-0">&#10003;</span>
+            <p class="text-warm-gray text-sm">Your client gets one coordinator &mdash; no chasing multiple suppliers.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 text-lg shrink-0">&#10003;</span>
+            <p class="text-warm-gray text-sm">We refer back to you for the services in your expertise.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 text-lg shrink-0">&#10003;</span>
+            <p class="text-warm-gray text-sm">Transparent, written introducer agreements &mdash; FCA-compliant where applicable.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 text-lg shrink-0">&#10003;</span>
+            <p class="text-warm-gray text-sm">Formal feedback loop: you always know how your client is progressing.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 text-lg shrink-0">&#10003;</span>
+            <p class="text-warm-gray text-sm">Co-branded workshop opportunities at your office, our expertise, your clients.</p>
+          </div>
+          <div class="flex items-start gap-3">
+            <span class="text-green-500 text-lg shrink-0">&#10003;</span>
+            <p class="text-warm-gray text-sm">Priority service for your referred clients.</p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a href="/contact/" class="btn-cta-orange">
+            Become a Referral Partner
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 17: POSTCODE LOOKUP
+  ============================================ -->
+  <section class="section bg-white" id="postcode">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">What could downsizing look like in your area?</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Enter your postcode and we will show you real local numbers.
+      </p>
+
+      <PostcodeLookup />
+
+      <p class="text-center text-xs text-warm-gray/50 mt-8">Based on the last 5 years of HM Land Registry sold price data. Median prices by postcode district and property type.</p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 18: DOWNSIZING DIARY
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">The Downsizing Diary</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Follow a real later-life transition from start to finish. Updated weekly.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        {diaryEntries.map(entry => (
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <span class="text-xs font-bold text-secondary-500 uppercase tracking-wide">{entry.week}</span>
+            <h3 class="text-lg font-bold text-primary-600 mt-1 mb-3">{entry.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">{entry.excerpt}</p>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-warm-gray text-sm mt-8 italic">
+        Names have been changed. Stories are based on real transitions with permission.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 19: LEAD MAGNET — CONVERSATION STARTER
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-primary-600 text-white">
+    <div class="container-wide">
+      <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-white text-2xl md:text-3xl mb-4">Not ready to call? Start with a conversation at home.</h2>
+        <p class="text-white/80 text-lg mb-2">
+          Download our free guide:
+        </p>
+        <p class="text-white font-heading text-xl font-semibold mb-6">
+          &ldquo;How to Talk to Your Parents About Downsizing &mdash; Without Anyone Getting Upset.&rdquo;
+        </p>
+
+        <div class="text-left bg-white/10 rounded-xl p-6 mb-8 backdrop-blur-sm">
+          <p class="text-white/90 text-sm mb-3">A practical 8-page PDF for adult children. Inside:</p>
+          <ul class="text-white/80 text-sm space-y-1.5">
+            <li>5 questions that open the door gently (and 3 that slam it shut)</li>
+            <li>How to bring it up without making Mum or Dad feel like they are being &ldquo;put away&rdquo;</li>
+            <li>The financial facts that make the case without sounding heartless</li>
+            <li>A checklist: &ldquo;Is it time?&rdquo; &mdash; 10 signs the home is no longer safe or suitable</li>
+          </ul>
+        </div>
+
+        <form id="lead-magnet-form" class="max-w-md mx-auto space-y-4">
+          <input type="text" name="firstName" required placeholder="First name" autocomplete="given-name" class="w-full px-4 py-3 rounded-lg text-gray-900 border-0 focus:ring-2 focus:ring-secondary-500" />
+          <input type="email" name="email" required placeholder="Email address" autocomplete="email" class="w-full px-4 py-3 rounded-lg text-gray-900 border-0 focus:ring-2 focus:ring-secondary-500" />
+          <!-- Honeypot -->
+          <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <input type="text" name="company" tabindex="-1" autocomplete="off" />
+          </div>
+          <button type="submit" class="w-full btn-cta-orange">
+            Send Me the Free Guide
+          </button>
+        </form>
+        <div id="lead-magnet-success" class="hidden py-6">
+          <p class="text-white text-lg font-semibold">Thank you. Check your inbox shortly.</p>
+        </div>
+        <p class="text-white/40 text-xs mt-4">We will send you the guide and nothing else unless you ask. No spam. Unsubscribe any time.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       SECTION 20: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Later Life Moves" bgClass="bg-white" />
+
+
+  <!-- ============================================
+       SECTION 21: FINAL CTA + CALLBACK FORM
+  ============================================ -->
+  <section class="py-20 md:py-28 bg-gray-900 text-white text-center" id="callback">
+    <div class="container-wide">
+      <h2 class="text-white text-3xl md:text-4xl mb-6">
+        You have read this far. That tells us something.
+      </h2>
+      <p class="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+        You are thinking about someone you love. You want to help but you are not sure where to start. That is exactly what we are here for. Leave your name and number. We will call you &mdash; not to sell you anything, but to listen.
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-6 mb-10">
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span> Free discovery visit
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span> No obligation
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span> Dementia Friends trained
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-green-400">&#10003;</span> DBS-checked staff
+        </div>
+      </div>
+
+      <p class="text-2xl font-bold mb-8">{siteConfig.company.contact.phone}</p>
+
+      <!-- Callback form -->
+      <form id="final-callback-form" class="max-w-md mx-auto space-y-4 text-left mb-10">
+        <div>
+          <label for="final-name" class="block text-sm font-semibold text-white/80 mb-1.5">Your name</label>
+          <input type="text" id="final-name" name="name" required autocomplete="name" class="w-full px-4 py-3 border-0 rounded-lg text-gray-900 focus:ring-2 focus:ring-secondary-500 transition-colors" />
+        </div>
+        <div>
+          <label for="final-phone" class="block text-sm font-semibold text-white/80 mb-1.5">Phone number</label>
+          <input type="tel" id="final-phone" name="phone" required autocomplete="tel" class="w-full px-4 py-3 border-0 rounded-lg text-gray-900 focus:ring-2 focus:ring-secondary-500 transition-colors" />
+        </div>
+        <div>
+          <label for="final-time" class="block text-sm font-semibold text-white/80 mb-1.5">Best time to call</label>
+          <select id="final-time" name="bestTime" class="w-full px-4 py-3 border-0 rounded-lg text-gray-900 focus:ring-2 focus:ring-secondary-500 transition-colors">
+            <option value="morning">Morning</option>
+            <option value="afternoon">Afternoon</option>
+            <option value="evening">Evening</option>
+          </select>
+        </div>
+        <div>
+          <label for="final-note" class="block text-sm font-semibold text-white/80 mb-1.5">Anything we should know? <span class="text-white/50 font-normal">(optional)</span></label>
+          <textarea id="final-note" name="note" rows="2" class="w-full px-4 py-3 border-0 rounded-lg text-gray-900 focus:ring-2 focus:ring-secondary-500 transition-colors"></textarea>
+        </div>
+        <!-- Honeypot -->
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+        <button type="submit" class="w-full btn-cta-orange">
+          Call Me Back &mdash; Free, No Obligation
+        </button>
+      </form>
+      <div id="final-callback-success" class="hidden py-8">
+        <svg class="w-12 h-12 text-green-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <p class="text-white text-xl font-semibold mb-2" id="final-callback-msg">Thank you. We will call you soon.</p>
+        <p class="text-gray-400">If it is urgent, call us now on <strong class="text-white">{siteConfig.company.contact.phone}</strong>.</p>
+      </div>
+
+      <p class="text-gray-500 text-sm mt-4">
+        Or email: <strong>{siteConfig.company.contact.email}</strong>
+      </p>
+      <p class="text-gray-500 text-sm">We respond to every enquiry within 24 hours. Usually sooner.</p>
+
+      <div class="inline-block bg-white/10 px-8 py-4 rounded-lg mt-8">
+        <span>Serving Bristol families with care and patience since 1978.</span>
+      </div>
+    </div>
+  </section>
+
+
+
+</Layout>
+
+<!-- ============================================
+     PAGE SCRIPTS
+============================================ -->
+
+<!-- Stats countUp animation -->
+<script>
+  // CountUp for stats bar
+  function animateCountUp(el: HTMLElement, target: string, duration = 1500) {
+    const numericPart = parseFloat(target.replace(/[^0-9.]/g, ''));
+    const prefix = target.match(/^[^0-9]*/)?.[0] || '';
+    const suffix = target.replace(/^[^0-9]*[0-9.,]*/, '') || '';
+    const start = performance.now();
+    const isDecimal = target.includes('.');
+
+    function tick(now: number) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = eased * numericPart;
+      if (isDecimal) {
+        el.textContent = prefix + val.toFixed(1) + suffix;
+      } else {
+        el.textContent = prefix + Math.round(val).toLocaleString('en-GB') + suffix;
+      }
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = target; // Ensure final value is exact
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  const statsSection = document.getElementById('stats-bar');
+  let statsAnimated = false;
+
+  if (statsSection) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !statsAnimated) {
+          statsAnimated = true;
+          const stat1 = document.getElementById('stat-millions');
+          const stat2 = document.getElementById('stat-percent');
+          const stat3 = document.getElementById('stat-wealth');
+          if (stat1) animateCountUp(stat1, '3.1 million', 1500);
+          if (stat2) animateCountUp(stat2, '86%', 1200);
+          if (stat3) animateCountUp(stat3, '£2.9 trillion', 1800);
+        }
+      });
+    }, { threshold: 0.3 });
+    observer.observe(statsSection);
+  }
+</script>
+
+<!-- Memory Keeper carousel arrows -->
+<script>
+  const carousel = document.getElementById('memory-carousel');
+  const prevBtn = document.getElementById('carousel-prev');
+  const nextBtn = document.getElementById('carousel-next');
+
+  prevBtn?.addEventListener('click', () => {
+    carousel?.scrollBy({ left: -320, behavior: 'smooth' });
+  });
+  nextBtn?.addEventListener('click', () => {
+    carousel?.scrollBy({ left: 320, behavior: 'smooth' });
+  });
+</script>
+
+<!-- Worry card flip (desktop) -->
+<script>
+  document.querySelectorAll('.worry-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('flipped');
+    });
+    card.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter' || (e as KeyboardEvent).key === ' ') {
+        e.preventDefault();
+        card.classList.toggle('flipped');
+      }
+    });
+  });
+</script>
+
+<!-- Fact cards fade-in on scroll -->
+<script>
+  const factCards = document.querySelectorAll('.fact-card');
+  if (factCards.length > 0) {
+    factCards.forEach(card => {
+      (card as HTMLElement).style.opacity = '0';
+      (card as HTMLElement).style.transform = 'translateY(20px)';
+      (card as HTMLElement).style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    });
+
+    const factObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).style.opacity = '1';
+          (entry.target as HTMLElement).style.transform = 'translateY(0)';
+          factObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    factCards.forEach(card => factObserver.observe(card));
+  }
+</script>
+
+<!-- Lead magnet form -->
+<script>
+  const leadForm = document.getElementById('lead-magnet-form') as HTMLFormElement;
+  const leadSuccess = document.getElementById('lead-magnet-success');
+
+  leadForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(leadForm);
+    const honeypot = formData.get('company') as string;
+    if (honeypot) return;
+
+    try {
+      const res = await fetch('/api/contact/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('firstName'),
+          email: formData.get('email'),
+          phone: 'N/A',
+          message: '[Later Life Moves Lead Magnet] Requested: How to Talk to Your Parents About Downsizing guide',
+          honeypot: '',
+          source: 'later-life-lead-magnet',
+        }),
+      });
+      if (!res.ok) console.error('Lead magnet submission failed:', res.status);
+    } catch (err) {
+      console.error('Lead magnet submission error:', err);
+    }
+
+    leadForm.reset();
+    leadForm.classList.add('hidden');
+    leadSuccess?.classList.remove('hidden');
+  });
+</script>
+
+<!-- Final callback form -->
+<script>
+  const finalForm = document.getElementById('final-callback-form') as HTMLFormElement;
+  const finalSuccess = document.getElementById('final-callback-success');
+  const finalMsg = document.getElementById('final-callback-msg');
+
+  finalForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(finalForm);
+    const honeypot = formData.get('website') as string;
+    if (honeypot) return;
+
+    const name = formData.get('name') as string;
+    const bestTime = formData.get('bestTime') as string;
+
+    try {
+      const res = await fetch('/api/contact/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          phone: formData.get('phone'),
+          email: 'N/A',
+          message: `[Later Life Moves Callback]\nBest time: ${bestTime}\nNote: ${formData.get('note') || 'None'}`,
+          honeypot: '',
+          source: 'later-life-callback',
+        }),
+      });
+      if (!res.ok) console.error('Callback submission failed:', res.status);
+    } catch (err) {
+      console.error('Callback submission error:', err);
+    }
+
+    finalForm.classList.add('hidden');
+    finalSuccess?.classList.remove('hidden');
+    if (finalMsg) {
+      finalMsg.textContent = `Thank you, ${name}. We will call you ${bestTime === 'morning' ? 'in the morning' : bestTime === 'afternoon' ? 'this afternoon' : 'this evening'}.`;
+    }
+  });
+</script>
+

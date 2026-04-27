@@ -1,0 +1,362 @@
+---
+/**
+ * /removals-bristol-to-glasgow/ — Long-distance route page
+ *
+ * Type B: Route Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import RouteMap from '@/components/areas/RouteMap.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+
+/* ── Sidebar data ── */
+
+const factBoxProps = {
+  title: 'Route Overview',
+  variant: 'gold' as const,
+  sections: [
+    {
+      icon: '',
+      heading: 'Journey',
+      rows: [
+        { label: 'Distance', value: '390 miles' },
+        { label: 'Drive time', value: '~6 hours' },
+        { label: 'Primary route', value: 'M5/M6/M74' },
+        { label: 'Move duration', value: '2 days (3 with packing)' },
+        { label: 'Crew size', value: '3–4 movers, 1–2 vans' },
+        { label: 'Typical cost', value: '£2,500–£5,000' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "From initial quotation to dealing with our move date being delayed and the actual move, the team was absolutely fantastic. All very friendly and respectful of our belongings. Highly recommend.",
+  name: 'Pietro Viecelli',
+  context: 'Google Review',
+};
+
+const title = 'Removals Bristol to Glasgow — 390 Miles, 2–3 Days';
+const description = `House removals from Bristol to Glasgow, 390 miles via M5/M6/M74. Two- to three-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Removals Bristol to Glasgow",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": [
+    { "@type": "City", "name": "Bristol" },
+    { "@type": "City", "name": "Glasgow" },
+  ],
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-20",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  {
+    question: 'Why does a Bristol to Glasgow move take two days?',
+    answer: 'The distance is 390 miles — roughly six hours of driving in each direction. Day one covers loading at your Bristol address and driving north via the M5, M6, and M74, with an overnight stop. Day two is the delivery and unload at your Glasgow property. Trying to compress that into a single day would mean starting before dawn, arriving exhausted, and handling your furniture in fading light — that is not how we work.',
+  },
+  {
+    question: 'Do we pay extra for crew accommodation?',
+    answer: 'No. The overnight stay for our crew is included in every two-day quote. We factor accommodation and subsistence into the price from the start — there are no surprise charges on move day.',
+  },
+  {
+    question: 'How do you handle Glasgow tenement stairs?',
+    answer: 'West End and Southside tenements often mean four or five flights of communal stairs with no lift. We bring stair-climbing trolleys, protective runners for the common close, and allocate extra crew where needed. During the pre-move survey we assess the stairwell width, any turns on the landings, and whether larger items need to be dismantled before going up.',
+  },
+  {
+    question: 'Is Scottish property law different from England?',
+    answer: 'Yes. Scotland uses a Date of Entry system rather than the Exchange and Completion process used in England and Wales. Your solicitor will confirm the specific date, but the key difference is that the timeline can be shorter and more certain once missives are concluded. We coordinate with your solicitor to confirm dates before scheduling the move.',
+  },
+  {
+    question: 'Can you store our belongings between selling and buying?',
+    answer: 'Yes. If your Bristol sale completes before your Glasgow purchase is ready, we collect everything into secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol depot. When your Date of Entry arrives, we load from storage and drive north — no need to handle your belongings twice.',
+  },
+  {
+    question: 'Is a Glasgow move the same as Edinburgh?',
+    answer: "In terms of logistics, yes. Both cities are 6+ hours from Bristol, both require a two-day move structure, and both fall in the £2,500–£5,000 range for a typical household. The access challenges differ — Glasgow's West End tenements have wider common closes than Edinburgh's Old Town stairs, and the city centre parking situation is its own puzzle — but the planning framework, crew requirements, and cost structure are comparable.",
+  },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Home Removals", path: "/home-removals-bristol/" },
+  { name: "Bristol to Glasgow" },
+])];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/scotland-removal1-1200w.webp">
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Bristol to Glasgow' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+        <h1 class="font-heading text-3xl md:text-[42px] font-semibold text-gray-900 leading-tight mb-3">
+          Removals Bristol to Glasgow — 390&nbsp;Miles, Two&nbsp;Days
+        </h1>
+        <AuthorByline lastUpdated="February 2026" variant="inline" />
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Glasgow is our joint-longest route from Bristol, alongside Edinburgh. Three hundred and ninety miles via the M5, M6, and M74 — over six hours of motorway driving before you reach the city limits. This is a two-day move, always. Day one is loading and driving north with an overnight stop. Day two is delivery and unloading at your Glasgow address. Add a third day if you want us to pack for you at the Bristol end first.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">The drive itself is well-served motorway for most of the distance. The M5 takes you out of Bristol, the M6 carries you through the Midlands and past the Lake District, and the M74 brings you into Scotland's Central Belt. It is the city at the far end that demands the planning — Glasgow's red and blonde sandstone tenements, its West End grid, its Southside villas, and its city centre parking restrictions all need careful thought before a removal van arrives.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="areas/scotland-removal1" pattern="FULL" alt="Removal van prepared for a Bristol to Glasgow long-distance house move" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes This Move Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes a Bristol to Glasgow Move Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Two-Day Structure</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Anything over four hours' drive from Bristol becomes a two-day move. Glasgow, at six-plus hours, is well past that threshold. On day one, our crew loads at your Bristol property in the morning, drives north through the afternoon, and stops overnight. On day two, they arrive at your Glasgow address fresh and unload in full. Rushing a 390-mile move into a single day would mean starting before dawn, arriving exhausted, and handling your furniture in fading light — that is not how we work.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">For larger homes or those who want a full packing service, we add a third day. Day one: packing at your Bristol home. Day two: loading and driving. Day three: unloading in Glasgow. The crew size for this route is typically three to four movers with one or two vans, depending on volume.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Glasgow's Neighbourhoods</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The West End — Hyndland, Partick, Hillhead — is defined by its sandstone tenements. Four or five flights of communal stairs, no lift, and shared common closes that are wider than Edinburgh's but still require protective runners and careful manoeuvring. Pianos, wardrobes, and large sofas need to be assessed during the pre-move survey. The grid layout of the West End streets is more navigable than some older parts of the city, but parking a Luton van on Byres Road during the day takes planning.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The Southside — Pollokshields, Shawlands, Queens Park — offers Victorian villas with better ground-level access but heavier, larger furniture to match the bigger rooms. Driveways are more common here, which helps with van positioning.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">East End regeneration areas around the Barras and Dennistoun present a mix of new-build flats and older tenement stock. New-builds tend to have better access — wider corridors, sometimes a goods lift — while the older buildings follow the same tenement pattern as the West End. The M8 through Glasgow city centre is congested at peak times, so we schedule arrivals to avoid the worst of it.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Scottish Property Law</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Scotland operates a Date of Entry system rather than the Exchange and Completion process used in England and Wales. Once missives are concluded between solicitors, you have a confirmed move date — often with less of the last-minute uncertainty that plagues English property chains. We coordinate directly with your solicitor once dates are confirmed. One thing to watch: Old Firm fixture weekends can cause hotel price surges across central Glasgow, which is worth knowing if you are arranging your own accommodation around move day.</p>
+      </div>
+
+      <!-- Mobile: Review -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mobile: Route Map -->
+      <div class="area-mobile-only py-6">
+        <RouteMap destination="Glasgow, UK" />
+      </div>
+
+      <!-- Mid CTA -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving from Bristol to Glasgow?"
+          description="Free quote in about two minutes. Two- to three-day moves, full insurance, no hidden charges."
+          buttonText="Get Your Glasgow Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We Know From Experience -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Experience</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Painless Removals runs the Bristol-to-Glasgow route regularly, and the logistics mirror our Edinburgh service closely. The distance, the two-day structure, the crew size, and the cost range are all comparable. What differs is the city itself — Glasgow's tenement architecture, its parking culture, and its neighbourhood character all shape how we plan the delivery end of the move.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/scotland-removal2" pattern="HALF" alt="Removal crew carrying furniture during a long-distance move to Glasgow" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Glasgow follows the same rule of thumb as Edinburgh — anything over four hours' drive from Bristol is a two-day move, no exceptions. The planning, the overnight stay, the cost range — it's all comparable. Glasgow has its own character for access — the West End tenements, the city centre parking — but the structural approach to getting your belongings from Bristol to Scotland is the same reliable framework."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">If your sale in Bristol completes before your Date of Entry in Glasgow, we offer flexible <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> at our Bristol depot for any duration. When you are ready, we load from storage and drive north — your belongings are handled once, not shuttled between temporary locations.</p>
+      </div>
+
+      <!-- S5: Costs and Checklist -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Does a Bristol to Glasgow Move Cost?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">A one- or two-bed flat typically costs £2,500–£3,500. A standard family home with a full household runs £3,500–£5,000. West End tenement access — stair-climbing equipment, extra crew for upper floors, protective runners in the common close — can push the price toward the higher end. Adding our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> introduces a third day but takes the physical work off your shoulders entirely.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Every quote includes {siteConfig.company.insurance} insurance cover per van, all fuel, crew accommodation, and equipment. No hidden charges for mileage, overnight stays, or parking coordination. What we quote is what you pay.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Bristol to Glasgow Move</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 glasgow-checklist">
+          <li><strong>Book 4–6 weeks ahead.</strong> Two-day routes need crew scheduling, vehicle allocation, and accommodation booking. Earlier is better.</li>
+          <li><strong>Tenement access?</strong> Let us know the floor level and whether there is a lift. We assess stairwell width and landing turns during the survey.</li>
+          <li><strong>Check your Date of Entry.</strong> Scottish property law moves faster once missives conclude — confirm dates with your solicitor early.</li>
+          <li><strong>Avoid Old Firm weekends.</strong> Celtic v Rangers fixtures cause hotel surges and city centre congestion. We check the fixture list when scheduling.</li>
+          <li><strong>Professional packing?</strong> We pack the day before loading at your Bristol address, adding a third day to the move but removing the stress.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <RouteMap destination="Glasgow, UK" />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="Bristol to Glasgow Moving FAQs" />
+  </div>
+
+</div>
+
+<!-- S7: Other Popular Routes -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">Other Popular Routes from Bristol</h2>
+    <p class="text-gray-500 max-w-xl mb-8">We run long-distance moves across the UK from our Bristol depot.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Bristol" to="Edinburgh" meta="~390 miles via M5/M6/A1(M)" days="2–3 days" href="/removals-bristol-to-edinburgh/" />
+      <RouteCard from="Bristol" to="Manchester" meta="~170 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+      <RouteCard from="Bristol" to="Leeds" meta="~200 miles via M5/M1" days="2 days" href="/removals-bristol-to-leeds/" />
+      <RouteCard from="Bristol" to="Birmingham" meta="~90 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate. All routes quoted individually based on your specific requirements.</p>
+  </div>
+</section>
+
+<!-- S8: Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+    <div class="grid sm:grid-cols-3 gap-5">
+      <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+      </a>
+      <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+      </a>
+      <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+        </span>
+        <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move from Bristol to Glasgow?"
+  description='Free quote in two minutes. Or see <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+  .glasgow-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .glasgow-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .glasgow-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

@@ -1,0 +1,610 @@
+---
+/**
+ * Home Removals with Autism — How We Adapt
+ *
+ * Educational inclusion/guide page for autistic individuals and families.
+ * Covers specific challenges, service adaptations, preparation strategies,
+ * resources, and FAQs. Written with genuine care and respect.
+ *
+ * Illustrated with custom watercolour artwork throughout.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import { article, faqPage, breadcrumbs } from '@/utils/schema';
+import UspBar from '@/components/UspBar.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import JayAuthorBlock from '@/components/JayAuthorBlock.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+// ── Page metadata ───────────────────────────────────────
+const pageTitle = 'Home Removals with Autism — How We Adapt Our Service';
+const pageDescription = 'Moving house can be especially challenging for autistic people and their families. Learn how Painless Removals adapts our service with clear timelines, sensory awareness, and consistent crews to make moving day calmer and more predictable.';
+
+// ── Challenges with images ──────────────────────────────
+const challengesWithImages = [
+  {
+    title: 'Sensory Overload',
+    description: 'Moving day involves loud noises, unfamiliar people in personal spaces, strong smells from packing materials, and the physical disruption of familiar surroundings. For someone who processes sensory input differently, this can be genuinely overwhelming — not just uncomfortable, but distressing.',
+    imageName: 'autism/2.sensory-overload',
+    alt: 'Illustration of a child covering their ears, overwhelmed by the chaos of moving day',
+  },
+  {
+    title: 'Disruption to Routine',
+    description: 'Routine provides structure, safety, and predictability. On moving day, everything changes at once — mealtimes shift, the usual sequence of the day is broken, and familiar patterns are suddenly gone. For many autistic people, this loss of routine can cause significant anxiety, even if the move itself is wanted.',
+    imageName: 'autism/3.disruption-to-routine',
+    alt: 'Illustration of familiar routine objects — a clock, cup, book, and shoes — scattered and displaced',
+  },
+  {
+    title: 'Loss of Safe Space',
+    description: 'For many autistic people, their bedroom or a particular room in the house serves as a sanctuary — a place to decompress and regulate. During a move, that space is packed up and eventually ceases to exist. The new home does not yet feel safe. There can be a period where there is simply no retreat available, and that is frightening.',
+    imageName: 'autism/4.loss-of-safe-space',
+    alt: 'Illustration of a stuffed toy bunny sitting alone as a bedroom fades away behind it',
+  },
+];
+
+const challengesBottom = [
+  {
+    title: 'Uncertainty and Unpredictability',
+    description: 'When will the crew arrive? How long will it take? What happens next? What if something goes wrong? These unanswered questions can be a major source of stress. Not knowing the timeline — or having the timeline change without warning — makes it very difficult to feel safe or in control.',
+    imageName: 'autism/13.uncertainty-and-unpredictability',
+    alt: 'Illustration of a person anxiously looking out of a window at the road, with a clock on the wall',
+  },
+  {
+    title: 'Communication Differences',
+    description: 'A removal crew who are not aware of someone\'s communication preferences may inadvertently cause stress — by making too much direct eye contact, asking questions that feel pressured, speaking too quickly, or not understanding that someone needs more processing time. None of this is intentional, but it can make an already difficult day much harder.',
+    imageName: 'autism/17.Communication-Differences',
+    alt: 'Illustration of two people at a table — one speaking, the other writing, showing different communication styles',
+  },
+  {
+    title: 'Every Person Is Different',
+    description: 'Autism is a spectrum, and no two people experience it in the same way. Some of these challenges will be highly relevant to your situation; others may not apply at all. What matters is that we listen to what you need and adapt accordingly — not apply a one-size-fits-all approach.',
+    imageName: 'autism/14.every-person-is-different',
+    alt: 'Illustration of six different people of various ages, each in their own space, showing the diversity of the autism spectrum',
+  },
+];
+
+// ── Adaptations with images ─────────────────────────────
+const adaptationsWithImages = [
+  {
+    title: 'Pre-Visit Timeline',
+    description: 'Before the move, we provide a clear written timeline of exactly what will happen and when — from the moment the crew arrives to the point we leave the new property. If a visual timeline or social story format would be more helpful, we can provide that instead. You know the schedule before we arrive, and we stick to it.',
+    imageName: 'autism/5.previsit-timeline',
+    alt: 'Illustration of a hand holding a visual moving-day timeline showing van, boxes, and furniture steps',
+  },
+  {
+    title: 'Quiet Space Preserved',
+    description: 'We always leave one room until last so there is a calm, familiar retreat available throughout the move. This room stays intact — door closed, belongings untouched — until the person is ready for it to be packed. At the new property, we prioritise setting up that same room first.',
+    imageName: 'autism/6.quiet-space-preserved',
+    alt: 'Illustration of a closed door with a cosy armchair and lamp visible in the quiet room beyond',
+  },
+  {
+    title: 'Consistent Crew',
+    description: 'The same team handles your move from the initial survey through to moving day. No unfamiliar faces on the morning of the move, no last-minute crew changes. If you met Tom and Dave at the survey, Tom and Dave are the ones knocking on your door on moving day.',
+    imageName: 'autism/7.consistent-crew',
+    alt: 'Illustration of two friendly removal crew members standing together at a front door',
+  },
+];
+
+const adaptationsBottom = [
+  {
+    title: 'Communication Preferences',
+    description: 'We ask in advance how the autistic person prefers to communicate. Some people prefer direct speech; others prefer written instructions, visual cues, or communicating through a parent, carer, or partner. We follow whatever works best — and we brief the entire crew so everyone is on the same page.',
+    imageName: 'autism/15.communication-preference',
+    alt: 'Illustration of two hands passing a written note card between them',
+  },
+  {
+    title: 'Sensory Awareness',
+    description: 'Our crew are briefed on keeping noise to a minimum, not using strong-scented cleaning products or air fresheners, knocking before entering rooms, and avoiding sudden loud sounds where possible. We cannot make moving day silent — but we can make it significantly calmer than it would otherwise be.',
+    imageName: 'autism/16.sensory-awareness',
+    alt: 'Illustration of a crew member gently knocking on a door before entering, holding a box',
+  },
+  {
+    title: 'Predictable Timing',
+    description: 'We give accurate arrival times and proactively update you if anything changes. If we said 8:30am, we mean 8:30am. If traffic means we will be ten minutes late, we call ahead so there are no surprises. Knowing what is happening and when makes a real difference.',
+    imageName: 'autism/18.Predictable-Timing',
+    alt: 'Illustration of a Painless Removals van arriving at a house with a clock showing the exact promised time',
+  },
+];
+
+// ── Strategies with images ──────────────────────────────
+const strategiesWithImages = [
+  {
+    title: 'Create a Social Story',
+    description: 'Put together a simple visual story about the move — photographs of the new house, a picture of the removal van, photos of the crew if we can provide them in advance. Walk through the story together in the days before the move so the sequence of events feels familiar before it happens.',
+    imageName: 'autism/8.social-story',
+    alt: 'Illustration of a parent and child sitting together, looking at picture cards of the moving process',
+  },
+  {
+    title: 'Prepare a Comfort Box',
+    description: 'Pack the person\'s favourite items, comfort objects, and essential sensory tools last — and unpack them first at the new home. This box travels with the family, not on the van. Knowing that their most important things are always within reach provides a genuine anchor during the upheaval.',
+    imageName: 'autism/9.comfort-box',
+    alt: 'Illustration of an open comfort box containing headphones, a stuffed bunny, a blanket, and sensory items',
+  },
+  {
+    title: 'Photograph the Old Room',
+    description: 'Take detailed photos of the current bedroom layout — where the bed sits in relation to the window, the position of shelves, even where specific items go on the desk. Use these photos to recreate the layout as closely as possible in the new home. Familiarity in arrangement can make a new space feel safe much faster.',
+    imageName: 'autism/10.photographing-the-old-room',
+    alt: 'Illustration of a hand holding a phone, photographing a bedroom to record the familiar layout',
+  },
+  {
+    title: 'Visit the New Home Beforehand',
+    description: 'If at all possible, visit the new property before moving day. Walk through each room. Let the person spend time in what will be their bedroom. Take photos they can look at later. The more familiar the new home feels before the move, the less threatening it will be on the day.',
+    imageName: 'autism/11.visiting-the-old-home',
+    alt: 'Illustration of a child standing in an empty room, gently touching the wall and beginning to feel at home',
+  },
+];
+
+const strategiesBottom = [
+  {
+    title: 'Pack Gradually',
+    description: 'Start packing non-essential items weeks before the move. Gradual, incremental change is far easier to process than everything changing at once. If boxes appearing causes distress, consider packing when the person is out of the house, or labelling boxes clearly so the contents are not a mystery.',
+    imageName: 'autism/19.pack-gradually',
+    alt: 'Illustration of three moving boxes at different stages of packing — open, partially packed, and sealed',
+  },
+  {
+    title: 'Keep One Familiar Object Accessible',
+    description: 'Throughout the entire day, make sure the person has access to at least one familiar, comforting object — a weighted blanket, a favourite book, headphones, a particular toy. It sounds small, but having something constant in a day of change can make the difference between coping and crisis.',
+    imageName: 'autism/20.familiar-object',
+    alt: 'Illustration of a pair of headphones resting on a neatly folded weighted blanket',
+  },
+];
+
+// ── On moving day principles ────────────────────────────
+const movingDayPrinciples = [
+  {
+    title: 'We Arrive on Time',
+    description: 'The time we give you is the time we arrive. If anything changes, we call ahead — never a surprise knock on the door.',
+  },
+  {
+    title: 'The Quiet Room Stays',
+    description: 'One room remains untouched until the very end. The person always has somewhere to retreat to if they need space.',
+  },
+  {
+    title: 'We Follow the Plan',
+    description: 'The written timeline we provided before the move is the plan we follow on the day. Rooms are packed in the agreed order.',
+  },
+  {
+    title: 'We Keep Noise Down',
+    description: 'No radio, no shouting between rooms, no unnecessary banging. Our crew work efficiently but calmly.',
+  },
+  {
+    title: 'We Respect Boundaries',
+    description: 'We knock before entering rooms. We follow agreed communication preferences. We do not initiate conversation unless invited to.',
+  },
+];
+
+// ── FAQs ────────────────────────────────────────────────
+const faqs = [
+  {
+    question: 'Can we talk to the crew before moving day?',
+    answer: 'Absolutely. We can arrange for you to meet the crew during the home survey, or we can provide their names and photographs in advance so they are familiar faces on the day. We want the person to feel as comfortable as possible with the people who will be in their home.',
+  },
+  {
+    question: 'What if the person needs the crew to leave a room immediately?',
+    answer: 'We will agree a clear signal beforehand — a word, a gesture, or a message through a parent or carer — that means "please leave this room now." Our crew will respect this instantly, without question or delay. No explanations needed in the moment.',
+  },
+  {
+    question: 'Can you provide a written timeline of the move?',
+    answer: 'Yes. After the home survey, we provide a detailed written schedule covering arrival time, the order rooms will be packed and loaded, estimated travel time, and the unloading plan at the new property. If a visual timeline, numbered step list, or social story format would be more useful, we are happy to adapt the format.',
+  },
+  {
+    question: 'Do you charge extra for these adaptations?',
+    answer: 'No. Adapting our service to meet individual needs is simply part of doing the job well. There is no surcharge for any of the adjustments described on this page. The quote you receive is the price you pay.',
+  },
+  {
+    question: 'What if the person becomes very distressed on moving day?',
+    answer: 'We will pause. Our crew are briefed to stop work if someone is in distress, give the person space, and wait for guidance from the family or carer. Moving day can wait ten minutes — or longer if needed. The person\'s wellbeing comes before the schedule. We can also discuss a contingency plan during the survey so everyone knows what to do if things become difficult.',
+  },
+  {
+    question: 'Can we request that the crew avoid specific things?',
+    answer: 'Yes — and the more specific you can be, the better. If certain sounds, smells, phrases, or behaviours are likely to cause distress, tell us during the survey and we will brief the crew accordingly. Common requests include avoiding strong aftershave, not playing music or the radio, not whistling, knocking before entering any room, and avoiding small talk with the autistic person unless they initiate it. We will accommodate whatever you need.',
+  },
+];
+
+// ── Cross-link cards ────────────────────────────────────
+const crossLinks = [
+  {
+    title: 'Home Removals in Bristol',
+    description: 'Our core home removal service, covering everything from a single-bedroom flat to a five-bedroom family home. Full packing, loading, transport, and unpacking.',
+    href: '/home-removals-bristol/',
+    cta: 'VIEW HOME REMOVALS',
+  },
+  {
+    title: 'Professional Packing Service',
+    description: 'We pack the entire house the day before your move. One less thing to worry about — and it means far less disruption on moving day itself.',
+    href: '/home-packing-service/',
+    cta: 'LEARN ABOUT PACKING',
+  },
+  {
+    title: 'Free Packing Guide',
+    description: 'If you prefer to pack yourself, our free eight-lesson video course covers every room in the house. Work at your own pace, with printable checklists.',
+    href: '/packing-guide/',
+    cta: 'START THE GUIDE',
+  },
+];
+
+// ── Schema markup ───────────────────────────────────────
+const pageSchema = [
+  article({
+    headline: "Home Removals with Autism — How We Adapt Our Service",
+    description: pageDescription,
+    url: "/home-removals-with-autism/",
+    datePublished: "2026-02-14",
+    dateModified: "2026-02-26",
+    image: "/img/autism/1.moving-with-autism-1200w.webp",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Home Removals with Autism" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/autism/1.moving-with-autism-1200w.webp" preloadImage="/img/autism/1.moving-with-autism-750w.avif">
+
+  <!-- Breadcrumbs -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="container-wide py-3">
+      <nav class="text-sm text-warm-gray" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li><a href="/moving-advice/" class="text-primary-600 hover:text-primary-700 no-underline">Moving Advice</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Home Removals with Autism</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 1: HERO — Split 50/50
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-cream">
+      <OptimizedPicture
+        name="autism/1.moving-with-autism"
+        pattern="FULL"
+        alt="Watercolour illustration of a person standing calmly while removal crew work around them"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Autism-Friendly Removals in Bristol
+        </p>
+
+        <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          Home Removals with Autism &mdash; <span class="text-secondary-500">How We Adapt</span>
+        </h1>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed">
+          Moving house is one of life's most stressful events. For autistic people and their families, it can be significantly harder. We adapt our service to make moving day calmer, more predictable, and genuinely manageable.
+        </p>
+
+        <p class="text-sm text-warm-gray/70 mb-6 max-w-md mx-auto">
+          Identity-first language ("autistic people") is used throughout, as preferred by the majority of the UK autistic community. We respect both forms.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/free-home-survey/" class="btn-cta-orange">
+            BOOK YOUR FREE SURVEY
+          </a>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden bg-cream">
+      <OptimizedPicture
+        name="autism/1.moving-with-autism"
+        pattern="FULL"
+        alt="Watercolour illustration of a person standing calmly while removal crew work around them"
+        loading="eager"
+        fetchpriority="high"
+        class="w-full h-full object-cover"
+      />
+    </div>
+  </section>
+
+  <!-- USP Bar -->
+  <UspBar />
+
+  <!-- ============================================
+       SECTION 2: WHY MOVING IS CHALLENGING
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Why Moving Is Especially Challenging</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-3xl mx-auto">
+        Moving day involves a concentration of changes that most neurotypical people find stressful but manageable. For autistic people, these same changes can be profoundly disorienting. Understanding why is the first step to making it better.
+      </p>
+
+      <!-- Image cards — 3 columns -->
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8 mb-8">
+        {challengesWithImages.map((challenge) => (
+          <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="aspect-[4/3] overflow-hidden bg-cream">
+              <OptimizedPicture
+                name={challenge.imageName}
+                pattern="THIRD"
+                alt={challenge.alt}
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-6 lg:p-8">
+              <h3 class="text-xl font-bold text-primary-600 mb-3">{challenge.title}</h3>
+              <p class="text-warm-gray leading-relaxed">{challenge.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Remaining challenges — also image cards -->
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {challengesBottom.map((challenge) => (
+          <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="aspect-[4/3] overflow-hidden bg-cream">
+              <OptimizedPicture
+                name={challenge.imageName}
+                pattern="THIRD"
+                alt={challenge.alt}
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-6 lg:p-8">
+              <h3 class="text-xl font-bold text-primary-600 mb-3">{challenge.title}</h3>
+              <p class="text-warm-gray leading-relaxed">{challenge.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: HOW WE ADAPT OUR SERVICE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">How We Adapt Our Service</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-3xl mx-auto">
+        These are not token gestures. They are practical, specific changes to how we plan and carry out your move. Every adaptation described here is something we actually do &mdash; because we have learned that they make a real difference.
+      </p>
+
+      <!-- Alternating image + text rows -->
+      <div class="space-y-10 lg:space-y-16 max-w-5xl mx-auto mb-12">
+        {adaptationsWithImages.map((adaptation, index) => (
+          <div class="grid md:grid-cols-2 gap-6 lg:gap-10 items-center">
+            <div class={`rounded-xl overflow-hidden shadow-md bg-white ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+              <OptimizedPicture
+                name={adaptation.imageName}
+                pattern="HALF"
+                alt={adaptation.alt}
+                class="w-full h-auto"
+              />
+            </div>
+            <div class={index % 2 === 1 ? 'lg:order-1' : ''}>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-secondary-100 text-secondary-700 rounded-full flex items-center justify-center font-bold text-lg shrink-0">
+                  {index + 1}
+                </div>
+                <h3 class="text-xl font-bold text-primary-600">{adaptation.title}</h3>
+              </div>
+              <p class="text-warm-gray leading-relaxed">{adaptation.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Remaining adaptations — also alternating image rows -->
+      <div class="space-y-10 lg:space-y-16 max-w-5xl mx-auto">
+        {adaptationsBottom.map((adaptation, index) => (
+          <div class="grid md:grid-cols-2 gap-6 lg:gap-10 items-center">
+            <div class={`rounded-xl overflow-hidden shadow-md bg-white ${(index + 1) % 2 === 1 ? 'lg:order-2' : ''}`}>
+              <OptimizedPicture
+                name={adaptation.imageName}
+                pattern="HALF"
+                alt={adaptation.alt}
+                class="w-full h-auto"
+              />
+            </div>
+            <div class={(index + 1) % 2 === 1 ? 'lg:order-1' : ''}>
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-secondary-100 text-secondary-700 rounded-full flex items-center justify-center font-bold text-lg shrink-0">
+                  {index + 4}
+                </div>
+                <h3 class="text-xl font-bold text-primary-600">{adaptation.title}</h3>
+              </div>
+              <p class="text-warm-gray leading-relaxed">{adaptation.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: JAY'S NOTE
+  ============================================ -->
+  <JayAuthorBlock
+    heading="A Note from Jay"
+    quote="We have moved families where an autistic family member was the most anxious person in the house, and families where they were the calmest — because they had been properly prepared and knew exactly what to expect. The difference is nearly always in the preparation, not the person. That is why we take the time to plan these moves properly. A clear timeline, a consistent crew, and genuine flexibility on the day cost us nothing extra — but they can transform the experience for your family."
+    credential="Personally overseen 2,000+ completed moves"
+    description="Painless Removals has been serving Bristol since 1978. Jay oversees every move personally — including those where a family member is autistic. No extra paperwork, no special process. Just a conversation about what you need."
+    learnMoreHref="/about/jay-newton"
+  />
+
+  <!-- ============================================
+       SECTION 5: PREPARATION STRATEGIES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Preparation Strategies for Families</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-3xl mx-auto">
+        The weeks before the move matter as much as moving day itself. These practical strategies can significantly reduce anxiety and help the autistic person in your family feel more prepared and in control.
+      </p>
+
+      <!-- Image cards — 2x2 grid -->
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-8 mb-8">
+        {strategiesWithImages.map((strategy) => (
+          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="aspect-[16/10] overflow-hidden bg-cream">
+              <OptimizedPicture
+                name={strategy.imageName}
+                pattern="HALF"
+                alt={strategy.alt}
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-6 lg:p-8">
+              <h3 class="text-lg font-bold text-primary-600 mb-3">{strategy.title}</h3>
+              <p class="text-warm-gray leading-relaxed">{strategy.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <!-- Remaining strategies — also image cards -->
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-8">
+        {strategiesBottom.map((strategy) => (
+          <div class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="aspect-[16/10] overflow-hidden bg-cream">
+              <OptimizedPicture
+                name={strategy.imageName}
+                pattern="HALF"
+                alt={strategy.alt}
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="p-6 lg:p-8">
+              <h3 class="text-lg font-bold text-primary-600 mb-3">{strategy.title}</h3>
+              <p class="text-warm-gray leading-relaxed">{strategy.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: ON MOVING DAY
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-center text-white mb-4">On Moving Day &mdash; What to Expect from Us</h2>
+      <p class="text-center text-white/80 text-lg mb-10 max-w-2xl mx-auto">
+        Every adaptation we have discussed is put into practice on the day. Here is what you can count on.
+      </p>
+
+      <!-- Featured illustration -->
+      <div class="max-w-md mx-auto mb-10">
+        <div class="rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-sm p-2">
+          <OptimizedPicture
+            name="autism/12.we-pause-if-needed"
+            pattern="HALF"
+            alt="Illustration of a crew member standing back patiently while a child sits and takes a moment to recover"
+            class="w-full h-auto rounded-lg"
+          />
+        </div>
+        <p class="text-center text-white/60 text-sm mt-3 italic">We pause if needed &mdash; the schedule is never more important than the person.</p>
+      </div>
+
+      <!-- Principle cards -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        {movingDayPrinciples.map((principle) => (
+          <div class="bg-white/10 rounded-lg p-6 backdrop-blur-sm">
+            <h3 class="text-lg font-bold text-white mb-2">{principle.title}</h3>
+            <p class="text-white/80 text-sm">{principle.description}</p>
+          </div>
+        ))}
+
+        <!-- We Pause if Needed — special emphasis card -->
+        <div class="bg-white/20 rounded-lg p-6 backdrop-blur-sm border border-white/20">
+          <h3 class="text-lg font-bold text-white mb-2">We Pause if Needed</h3>
+          <p class="text-white/80 text-sm">If someone is struggling, we stop. We give space. We wait for guidance from the family. The schedule is never more important than the person.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: RESOURCES
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <h2 class="text-center mb-4">Helpful Resources</h2>
+        <p class="text-center text-warm-gray text-lg mb-10">
+          We are a removal company, not autism specialists. For expert guidance on supporting autistic people through major life changes, these organisations offer far more depth than we can.
+        </p>
+
+        <div class="bg-cream rounded-lg p-6 lg:p-8 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-3">National Autistic Society</h3>
+          <p class="text-warm-gray mb-4">
+            The UK's leading charity for autistic people. Their website includes extensive guidance on managing change, preparing for transitions, and supporting autistic children and adults through stressful life events including moving house.
+          </p>
+          <a href="https://www.autism.org.uk" target="_blank" rel="noopener noreferrer" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 font-semibold transition-colors duration-200">
+            Visit autism.org.uk
+          </a>
+        </div>
+
+        <p class="text-sm text-warm-gray mt-6 text-center">
+          If you are aware of other organisations that provide useful resources for autistic people who are moving home, we would welcome suggestions &mdash; please <a href="/contact/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">get in touch</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: CROSS-LINKS
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">You May Also Find These Helpful</h2>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {crossLinks.map((link) => (
+          <div class="bg-white rounded-lg p-6 lg:p-8 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col">
+            <h3 class="text-xl font-bold text-primary-600 mb-3">{link.title}</h3>
+            <p class="text-warm-gray mb-6 flex-grow">{link.description}</p>
+            <a href={link.href} class="inline-block bg-primary-600 hover:bg-primary-700 text-white px-5 py-3 font-bold uppercase tracking-wide no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:text-white/90 text-sm text-center">
+              {link.cta}
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Common Questions About Moving with Autism" bgClass="bg-white" />
+
+  <!-- ============================================
+       SECTION 10: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Let's Talk About Your Move"
+    description="Every family is different, and we would rather listen than assume. Call us or get in touch online, and tell us what you need. We will adapt our service to make moving day work for everyone in your household — not just most of them."
+    bullets={['Adapted service at no extra cost', 'Bristol families since 1978', `${siteConfig.company.rating.value} star rating`]}
+    primaryText="BOOK YOUR FREE SURVEY"
+    primaryHref="/free-home-survey"
+    secondaryText="CALL US TO DISCUSS"
+    bottomNote="When you call, just let us know that someone in the household is autistic and we will take it from there. No forms to fill in, no hoops to jump through."
+  />
+
+</Layout>

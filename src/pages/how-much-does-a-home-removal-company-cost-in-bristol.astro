@@ -1,0 +1,503 @@
+---
+/**
+ * How Much Does a Home Removal Company Cost in Bristol?
+ *
+ * Pricing guide targeting "how much does a removal company cost bristol" queries.
+ * Transparent pricing tables, cost factors, inclusions, reviews, and FAQ.
+ * Strong conversion intent — funnels to /free-home-survey/ and /instant-quote.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import ReviewQuote from '@/components/ReviewQuote.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, article, faqPage, breadcrumbs } from '@/utils/schema';
+
+const pageTitle = 'How Much Does a Home Removal Company Cost in Bristol?';
+const pageDescription = 'Typical Bristol removal costs from £350 for a 1-bed flat to £2,500+ for a 4-bed house. Honest pricing guide from Painless Removals — serving Bristol since 1978 with a ' + siteConfig.company.rating.value + ' star rating. No hidden fees.';
+
+const director = siteConfig.company.director;
+
+// Pricing data
+const pricingTiers = [
+  {
+    type: '1-Bed Flat',
+    range: '£350–£600',
+    note: 'Studio or 1-bedroom flat, local Bristol move',
+    details: 'Typically 1 van, 2 crew members, half-day service',
+  },
+  {
+    type: '2-Bed House',
+    range: '£500–£900',
+    note: '2-bedroom house or large flat, local Bristol move',
+    details: 'Usually 1 van, 2–3 crew members, full-day service',
+  },
+  {
+    type: '3-Bed House',
+    range: '£800–£1,500',
+    note: 'Typical family home with garage and loft',
+    details: '1–2 vans, 3 crew members, full-day service',
+  },
+  {
+    type: '4-Bed House',
+    range: '£1,200–£2,500',
+    note: 'Larger family home, potentially multi-van',
+    details: '2+ vans, 3–4 crew members, may require 2 days',
+  },
+];
+
+// Cost factors
+const costFactors = [
+  {
+    title: 'Volume of Belongings',
+    description: 'The single biggest factor. A 3-bed house with a full loft, packed garage, and garden shed costs more to move than the same house with minimal possessions. We measure volume in cubic feet during our survey — not by bedroom count alone.',
+  },
+  {
+    title: 'Distance',
+    description: 'A move within Bristol (say Clifton to Bedminster) costs less than a move from Bristol to Bath, and considerably less than Bristol to London. Local moves are charged as a day rate; long-distance moves factor in fuel, travel time, and motorway tolls.',
+  },
+  {
+    title: 'Access Difficulties',
+    description: 'Narrow streets, no parking outside the property, high floors without a lift, tight staircases — these all add time. A flat on the third floor of a Victorian conversion in Montpelier takes longer to load than a ground-floor new-build in Bradley Stoke. If we need a parking suspension from the council, that is an additional cost (around £45 in Bristol).',
+  },
+  {
+    title: 'Packing Requirements',
+    description: 'If you pack everything yourself, the cost is lower. If you need our team to pack fragile items only, there is a modest add-on. A full packing service — where we pack the entire house the day before — adds more but saves you days of work. See our <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> for details.',
+  },
+  {
+    title: 'Time of Year',
+    description: 'Summer (June to August) and end-of-month Fridays are the busiest times for removal companies across Bristol. Demand is higher, and so are prices. If you have flexibility, mid-week moves in autumn or winter are often cheaper and easier to schedule.',
+  },
+  {
+    title: 'Special Items',
+    description: 'Pianos, antiques, hot tubs, safes, grandfather clocks, gym equipment, and artwork all require specialist handling, extra crew members, or specific equipment. These items need to be flagged during the survey so we can price accurately and bring the right kit on the day.',
+  },
+];
+
+// What's included
+const inclusions = [
+  'Dedicated Move Manager who plans your move and oversees the day',
+  'Experienced, uniformed removal crew (not agency staff)',
+  'Fully equipped removal van (or vans) with ramps, trolleys, and straps',
+  'Quilted furniture blankets to protect every piece during transit',
+  'Furniture disassembly and reassembly — beds, wardrobes, tables',
+  `${siteConfig.company.insurance} Goods in Transit insurance per van`,
+  'All fuel costs included in your quote',
+  'No hidden charges, no surcharges, no "oh we didn\'t realise" extras',
+];
+
+// Reviews
+const reviews = [
+  {
+    quote: 'I recently used Painless Removals in Bristol for a house move and was extremely impressed with the service provided. They were <mark>prompt and professional</mark> from the initial quote through to the end of the removal process. I wouldn\'t hesitate to use Painless Removals again for any future moves. <mark>The whole experience was effortless.</mark>',
+    name: 'Dr. John Jones',
+    context: 'Verified Google Review',
+  },
+  {
+    quote: 'Painless Removals have been brilliant, <mark>couldn\'t recommend them more</mark>. They helped us move in Bristol and then helped us organise a cross-country move. Both were done on a tight timeline and at a good price. The guys who moved us were <mark>very kind and efficient</mark> &ndash; Thanks again!',
+    name: 'Laura Carnegie-Brown',
+    context: 'Verified Google Review',
+  },
+  {
+    quote: 'Very good service. <mark>Good response to enquiries</mark> and offer a <mark>competitive pricing</mark> for the service. Would recommend.',
+    name: 'Rahul R',
+    context: 'Verified Google Review',
+  },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'Why do removal company prices vary so much in Bristol?',
+    answer: 'Because every move is different. A 3-bed house with a full loft, double garage, and a piano on the second floor is a completely different job to a 3-bed house with minimal furniture. Prices also vary based on access — a Victorian terrace in Montpelier with no parking is harder to move than a new-build with a driveway. Legitimate companies will always want to survey your home before quoting. If a company gives you a fixed price over the phone without seeing your belongings, be cautious — that price is likely to change on the day.',
+  },
+  {
+    question: 'Is it cheaper to move mid-week?',
+    answer: 'Usually, yes. Friday is the most popular completion day, and weekends are in high demand too. Tuesday to Thursday moves are often easier to schedule and can be slightly cheaper. Similarly, moving outside of peak season (September to February) may reduce costs because demand is lower. If you have any flexibility on dates, it is worth asking your removal company what their quieter days look like.',
+  },
+  {
+    question: 'What is included in a standard removal quote?',
+    answer: 'Our standard quote includes your dedicated Move Manager, a team of experienced movers, a fully equipped removal van (or vans), quilted blankets for furniture protection, furniture disassembly and reassembly, straps and trolleys, fuel, and £15,000 Goods in Transit insurance per van. Packing and storage are available as add-ons if needed. We never add hidden charges — the price you are quoted is the price you pay.',
+  },
+  {
+    question: 'Should I choose the cheapest removal company?',
+    answer: 'Not necessarily. The cheapest quote often means fewer crew members (so the move takes longer), no proper insurance, no furniture protection, and sometimes agency staff who have never worked together before. Ask what is included: Does the price cover insurance? Furniture blankets? Disassembly and reassembly? Fuel? A surprisingly low quote usually means something has been left out — and you will pay for it on the day as an "extra".',
+  },
+  {
+    question: 'Do you charge extra for stairs, parking, or difficult access?',
+    answer: 'No — but only because we assess these factors during the survey and build them into your quote upfront. If your property has steep stairs, no nearby parking, or tight doorways, we account for the extra time and equipment needed before giving you a price. That way there are no surprises. Companies that do not survey your home are the ones most likely to add access surcharges on moving day.',
+  },
+  {
+    question: 'How accurate are online removal cost calculators?',
+    answer: 'They give you a rough idea, but that is all. Online calculators cannot see your loft full of boxes, your narrow staircase, or the fact that your street has permit parking. They also cannot assess special items like a piano or antique furniture. For an accurate quote, you need a proper survey — either a quick video walkthrough on your phone or an in-person visit from your Move Manager. Ours is completely free.',
+  },
+  {
+    question: 'Can I reduce the cost of my removal?',
+    answer: 'Yes. The most effective way is to declutter before the survey — everything you do not move, you do not pay to move. Packing yourself rather than using our packing service also reduces the cost, though it adds days of work. Moving mid-week or outside peak season helps too. And be honest during the survey about what needs moving — a forgotten garage full of boxes on the day will cost more than one that was included in the original quote.',
+  },
+  {
+    question: 'Do I need to pay a deposit to book?',
+    answer: 'Yes, we ask for a 30% deposit to secure your moving date. The remaining 70% is due on the day of the move. This is standard practice for reputable removal companies and guarantees that your preferred date is reserved with the right size team and number of vans.',
+  },
+];
+
+// Schema — entity-linked
+const pageSchema = [
+  article({
+    headline: pageTitle,
+    description: pageDescription,
+    url: "/how-much-does-a-home-removal-company-cost-in-bristol/",
+    datePublished: "2026-02-14",
+    dateModified: "2026-02-14",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Removal Costs Bristol" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       BREADCRUMBS
+  ============================================ -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="container-wide py-3">
+      <nav class="text-sm text-warm-gray" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li><a href="/moving-advice/" class="text-primary-600 hover:text-primary-700 no-underline">Moving Advice</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Removal Costs Bristol</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 1: HERO
+  ============================================ -->
+  <section class="section bg-white !pb-10">
+    <div class="container-narrow">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+        How Much Does a Home Removal Company Cost in Bristol?
+      </h1>
+      <p class="text-lg text-warm-gray max-w-2xl leading-relaxed mb-6">
+        Honest, transparent pricing from a Bristol removal company that has been moving families since 1978. No hidden fees, no surprises on the day &mdash; just a straightforward price for a professional service.
+      </p>
+      <div class="flex flex-wrap gap-3 mb-6">
+        <span class="text-sm font-semibold bg-cream px-3.5 py-1.5 rounded-full border border-gray-200">&#9733; {siteConfig.company.rating.value} average rating</span>
+        <span class="text-sm font-semibold bg-cream px-3.5 py-1.5 rounded-full border border-gray-200">Since 1978</span>
+        <span class="text-sm font-semibold bg-cream px-3.5 py-1.5 rounded-full border border-gray-200">{siteConfig.company.insurance} insurance per van</span>
+      </div>
+      <p class="text-warm-gray text-sm leading-relaxed">
+        Written by <a href="/about/jay-newton/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">{director.name}</a>, Director of Painless Removals &mdash; personally overseen 2,000+ moves across Bristol and the South West.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: TYPICAL COSTS TABLE
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <h2 class="text-center text-white mb-4">Typical Bristol Removal Costs</h2>
+      <p class="text-center text-white/80 text-lg mb-12 max-w-2xl mx-auto">
+        These are guide prices for local moves within Bristol. Your actual cost depends on volume, access, and specific requirements &mdash; but this gives you a realistic starting point.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {pricingTiers.map((tier) => (
+          <div class="stat-card-blue bg-white/10 rounded-lg p-6 text-center backdrop-blur-sm">
+            <p class="text-3xl font-bold text-white mb-2">{tier.range}</p>
+            <p class="text-white/90 text-sm font-semibold mb-1">{tier.type}</p>
+            <p class="text-white/70 text-xs mb-3">{tier.note}</p>
+            <p class="text-white/60 text-xs border-t border-white/20 pt-3">{tier.details}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-10 text-center">
+        <p class="text-white/70 text-sm mb-6 max-w-2xl mx-auto">
+          These prices include crew, van(s), furniture protection, fuel, and {siteConfig.company.insurance} Goods in Transit insurance per van. Packing and storage are available as add-ons. For an accurate quote based on your actual belongings, book a free survey.
+        </p>
+        <a href="/free-home-survey/" class="btn-cta-orange">
+          GET YOUR FREE QUOTE
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: WHAT AFFECTS THE PRICE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">What Affects the Cost of Your Removal?</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        No two moves are the same. Here are the six main factors that determine what you will pay.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {costFactors.map((factor, index) => (
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="w-10 h-10 bg-primary-100 text-primary-700 rounded-full flex items-center justify-center font-bold text-lg mb-4">
+              {index + 1}
+            </div>
+            <h3 class="text-lg font-bold text-primary-600 mb-2">{factor.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed" set:html={factor.description}></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: WHAT'S INCLUDED IN OUR PRICE
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] bg-primary-50">
+        <!-- IMAGE PLACEHOLDER: Removal crew loading a van, professional and uniformed -->
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <p class="text-sm font-medium">Image: Crew loading van with furniture blankets</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">What&rsquo;s Included in Our Price</h2>
+
+        <p class="text-xl text-primary-600 font-medium mb-6">
+          When we quote you a price, it covers everything you need for a professional move. There are no hidden extras and no last-minute surcharges.
+        </p>
+
+        <ul class="space-y-3 mb-6">
+          {inclusions.map((item) => (
+            <li class="flex items-start gap-3 text-warm-gray">
+              <span class="text-green-500 mt-1 shrink-0 text-lg">&#10003;</span>
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+
+        <p class="text-warm-gray text-sm mb-6">
+          Optional add-ons &mdash; <a href="/home-packing-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">packing service</a> and <a href="/storage-service/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">storage</a> &mdash; are priced separately and always discussed during the survey. Nothing is ever added without your agreement.
+        </p>
+
+        <div class="bg-cream border border-gray-200 rounded-lg p-5">
+          <p class="text-sm text-warm-gray">
+            <strong class="text-gray-900">Our philosophy:</strong> We would rather lose a job by being honest about the price than win it with a low quote that doubles on moving day. We have been in business since 1978 because customers trust us to do what we say we will do.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 5: HOW TO GET AN ACCURATE QUOTE
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">How to Get an Accurate Removal Quote</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Online calculators and phone estimates are just guesses. Here is how to get a price you can actually plan around.
+      </p>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8 relative">
+        <!-- Connector line (desktop only) -->
+        <div class="hidden md:block absolute top-10 left-[calc(16.67%+40px)] right-[calc(16.67%+40px)] h-0.5 bg-gray-200 -z-0"></div>
+
+        <div class="text-center relative z-10 group cursor-default">
+          <div class="w-16 h-16 lg:w-20 lg:h-20 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl lg:text-3xl font-bold mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:bg-primary-700">
+            1
+          </div>
+          <h3 class="text-base lg:text-lg font-bold mb-2 transition-colors duration-300 group-hover:text-primary-600">Book a Free Survey</h3>
+          <p class="text-warm-gray text-sm">Record a quick video walkthrough of your home on your phone, or book a free in-person visit from your Move Manager. Takes 5&ndash;10 minutes either way.</p>
+        </div>
+
+        <div class="text-center relative z-10 group cursor-default">
+          <div class="w-16 h-16 lg:w-20 lg:h-20 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl lg:text-3xl font-bold mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:bg-primary-700">
+            2
+          </div>
+          <h3 class="text-base lg:text-lg font-bold mb-2 transition-colors duration-300 group-hover:text-primary-600">We Assess Your Move</h3>
+          <p class="text-warm-gray text-sm">Our team reviews the volume of your belongings, checks access at both properties, notes any special items, and calculates exactly what is needed.</p>
+        </div>
+
+        <div class="text-center relative z-10 group cursor-default">
+          <div class="w-16 h-16 lg:w-20 lg:h-20 bg-primary-600 text-white rounded-full flex items-center justify-center text-2xl lg:text-3xl font-bold mx-auto mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:bg-primary-700">
+            3
+          </div>
+          <h3 class="text-base lg:text-lg font-bold mb-2 transition-colors duration-300 group-hover:text-primary-600">Receive a Fixed Quote</h3>
+          <p class="text-warm-gray text-sm">You receive a detailed, written quote — usually within a few hours. The price is fixed and will not change on the day. No obligation, no pressure.</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-12">
+        <a href="/free-home-survey/" class="btn-cta-orange">
+          BOOK YOUR FREE SURVEY
+        </a>
+        <p class="text-warm-gray text-sm mt-3">No obligation. No pressure. Just an honest price.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: HIDDEN COSTS TO WATCH OUT FOR
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-narrow">
+      <h2 class="text-center mb-4">Hidden Costs to Watch Out For</h2>
+      <p class="text-center text-warm-gray text-lg mb-10 max-w-2xl mx-auto">
+        Not every removal company is upfront about pricing. Here are the most common extras that other companies slip in after you have booked.
+      </p>
+
+      <div class="space-y-4">
+        <div class="bg-cream rounded-lg p-5 border-l-4 border-red-400">
+          <h3 class="font-bold text-gray-900 mb-1">Stair surcharges</h3>
+          <p class="text-warm-gray text-sm">Some companies quote a ground-floor rate, then add &pound;50&ndash;&pound;100 per flight of stairs on the day. We assess this during the survey and include it in the quote.</p>
+        </div>
+
+        <div class="bg-cream rounded-lg p-5 border-l-4 border-red-400">
+          <h3 class="font-bold text-gray-900 mb-1">Fuel surcharges</h3>
+          <p class="text-warm-gray text-sm">A "base price" that does not include fuel is not a real price. All our quotes include fuel costs.</p>
+        </div>
+
+        <div class="bg-cream rounded-lg p-5 border-l-4 border-red-400">
+          <h3 class="font-bold text-gray-900 mb-1">Insurance exclusions</h3>
+          <p class="text-warm-gray text-sm">The cheapest quote often comes with minimal insurance or none at all. We include {siteConfig.company.insurance} Goods in Transit insurance per van as standard &mdash; items we have surveyed are fully covered.</p>
+        </div>
+
+        <div class="bg-cream rounded-lg p-5 border-l-4 border-red-400">
+          <h3 class="font-bold text-gray-900 mb-1">Overtime charges</h3>
+          <p class="text-warm-gray text-sm">If a company underestimates the job because they did not survey properly, the move takes longer than quoted &mdash; and you pay the difference. Our surveys are thorough precisely to avoid this.</p>
+        </div>
+
+        <div class="bg-cream rounded-lg p-5 border-l-4 border-red-400">
+          <h3 class="font-bold text-gray-900 mb-1">Furniture disassembly/reassembly</h3>
+          <p class="text-warm-gray text-sm">Some companies charge extra for taking apart and rebuilding beds, wardrobes, and tables. Ours is included as standard because it is a normal part of every move.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: REVIEWS ABOUT FAIR PRICING
+  ============================================ -->
+  <section class="section bg-gray-100">
+    <div class="container-wide">
+      <h2 class="text-center mb-12">What Our Customers Say About Our Pricing</h2>
+
+      <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
+        {reviews.map((review) => (
+          <ReviewQuote
+            text={review.quote}
+            name={review.name}
+            source={review.context}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: COMPARE — WHAT TO LOOK FOR IN A QUOTE
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">How to Compare Removal Quotes</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Getting three quotes is standard advice. But make sure you are comparing like for like.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div class="bg-cream rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Questions to Ask Every Company</h3>
+          <ul class="space-y-3 text-warm-gray text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Did you survey my home, or is this a phone estimate?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>What insurance is included and what does it cover?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Is furniture disassembly/reassembly included?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Are there any surcharges for stairs, distance, or overtime?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Are your crew employed or agency staff?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-primary-500 mt-1 shrink-0">&#8226;</span>
+              <span>Is fuel included in the price?</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-cream rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Red Flags to Watch For</h3>
+          <ul class="space-y-3 text-warm-gray text-sm">
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 mt-1 shrink-0">&#10007;</span>
+              <span>A fixed price given over the phone without any survey</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 mt-1 shrink-0">&#10007;</span>
+              <span>No written quote &mdash; just a verbal agreement</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 mt-1 shrink-0">&#10007;</span>
+              <span>Vague language about insurance ("we&rsquo;re covered" without specifics)</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 mt-1 shrink-0">&#10007;</span>
+              <span>No online reviews or reviews only on their own website</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 mt-1 shrink-0">&#10007;</span>
+              <span>Pressure to book immediately with a "today only" discount</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 mt-1 shrink-0">&#10007;</span>
+              <span>A quote that seems significantly cheaper than every other company</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} heading="Frequently Asked Questions About Removal Costs" />
+
+  <!-- ============================================
+       SECTION 10: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Get an Accurate Quote for Your Bristol Move"
+    description="Stop guessing. Our free home survey gives you a fixed price based on your actual belongings — not a rough estimate from a phone call. No obligation, no pressure."
+    bullets={[`${siteConfig.company.rating.value} star rating`, `${siteConfig.company.insurance} insurance per van`, 'No hidden charges', 'Serving Bristol since 1978']}
+    primaryText="BOOK YOUR FREE SURVEY"
+    primaryHref="/free-home-survey/"
+    bottomNote={`The price we quote is the price you pay. That is how we have done it since 1978 — and why ${siteConfig.company.rating.count}+ customers have given us ${siteConfig.company.rating.value} stars.`}
+  />
+
+</Layout>

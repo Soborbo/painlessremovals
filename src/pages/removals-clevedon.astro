@@ -1,0 +1,433 @@
+---
+/**
+ * /removals-clevedon/ — Clevedon town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+
+/* ── Sidebar data (shared between desktop aside & mobile inline) ── */
+
+const factBoxProps = {
+  title: 'Clevedon Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '~14 miles' },
+        { label: 'Drive time from depot', value: '~25 minutes' },
+        { label: 'Postcode area', value: 'BS21' },
+        { label: 'Nearest motorway', value: 'M5 J20 (4 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3-bed semi' },
+        { label: 'Typical crew', value: '2–3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half to full day' },
+        { label: 'Local move cost', value: '£450–£850' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£385,000' },
+        { label: 'Typical property', value: 'Edwardian semi / villa' },
+        { label: 'Typical floors', value: '2–3 storeys' },
+        { label: 'Lifts available', value: 'New-builds only' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Seafront/centre only' },
+        { label: 'Suspension needed', value: 'Usually no' },
+        { label: 'Main difficulty', value: 'Hillside roads + period villas' },
+        { label: 'Conservation area', value: 'Seafront triangle' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Live up to their name! Pete and Harry were excellent — quick, efficient, professional and seem really nice guys too. Highly recommended.",
+  name: 'Lucy Dennison',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Clevedon';
+const description = `Clevedon removal specialists — 14 miles from our Bristol depot. Victorian seafront villas to modern estates, we know both halves of this town. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Clevedon Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Clevedon",
+    "address": { "@type": "PostalAddress", "postalCode": "BS21", "addressLocality": "Clevedon", "addressRegion": "North Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+/* ── FAQ data (single source of truth) ── */
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol?', answer: 'At 14 miles from our depot, the mileage component is minimal. For most Clevedon moves, the total cost is comparable to hiring locally — but with full insurance, dedicated Move Manager, and professional equipment included.' },
+  { question: 'How quickly can you reach Clevedon?', answer: 'About 25 minutes from our depot via M5 J20 or the B3130 through Tickenham. On moving day, our crew arrives at your agreed start time — typically 8am.' },
+  { question: 'Do I need a parking permit for a Clevedon move?', answer: 'Usually not. Most residential streets in Clevedon have unrestricted parking. Seafront and town centre streets have loading restrictions during peak hours — we plan around these with early arrival.' },
+  { question: 'Can you store my belongings if there\'s a gap between moves?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 25 minutes from Clevedon. Units from small wardrobe to garage size.' },
+  { question: 'What about the large Victorian houses on the seafront?', answer: 'We move from these regularly. Multiple floors, period features, often high-value contents. We bring extra crew, stair-climbing trolleys, and blanket wrapping for banisters — all factored into your quote upfront.' },
+  { question: 'Does the summer holiday traffic affect Clevedon moves?', answer: 'For standard weekday moves, rarely. We\'re typically finished before the afternoon beach rush. For long-distance moves where the team needs to overnight near Clevedon, we book accommodation early — coastal towns fill up during school holidays and half-terms.' },
+  { question: 'Is Clevedon in Bristol or North Somerset?', answer: 'North Somerset — which means different council rules, different waste collection arrangements if you\'re doing a <a href="/house-and-waste-clearance/" class="text-secondary-500 underline underline-offset-2">house clearance</a>, and different permit processes. We handle moves across both council areas regularly.' },
+];
+
+/* Generate FAQ schema from display data (strip HTML tags for plain-text answers) */
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/clevedon-period-property-removal-1200w.webp" preloadImage="/img/areas/clevedon-period-property-removal-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/clevedon-period-property-removal"
+      pattern="FULL"
+      alt="Painless Removals team at a period property in Clevedon"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Clevedon</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=clevedon`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/clevedon-period-property-removal"
+      pattern="FULL"
+      alt="Painless Removals team at a period property in Clevedon"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <!-- Breadcrumbs -->
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Clevedon' },
+  ]} />
+
+  <!-- ═══ Two-column layout ═══ -->
+  <div class="area-layout">
+
+    <!-- ─── Article column ─── -->
+    <article>
+
+      <!-- S1: Editorial Hero -->
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Clevedon is a town that surprises people the first time they visit. A restored Victorian pier — one of the finest in England — stretches into the Bristol Channel, and behind it sits a seafront that feels unspoiled. Streets of Victorian and Edwardian housing give the town the character of somewhere built with care, and the elevated roads above the seafront offer views across the Severn Estuary toward Wales that are hard to match anywhere in North Somerset. There's also a Millionaire's Row, a stretch of properties that we drive past on the way to jobs and quietly clock as the kind of houses that make you rethink what property in Somerset can look like.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">But Clevedon is a town of two halves. The grand seafront properties and the streets climbing the hill above the pier sit at one end. The council estate areas further inland sit at the other. Both are part of the same town, and which half you're moving to or from shapes the job considerably.</p>
+      </div>
+
+      <!-- Hero Image -->
+      <div class="pb-6">
+        <OptimizedPicture name="areas/clevedon-period-property-removal" pattern="FULL" alt="Painless Removals van loading furniture outside a period property in Clevedon" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <!-- Mobile: FactBox (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <FactBox {...factBoxProps} />
+      </div>
+
+      <!-- S2: What Makes Moving in Clevedon Different? -->
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Clevedon Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Seafront and Hillside Roads</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The more affluent side of Clevedon runs along and above the seafront, climbing the hill that looks out over the estuary. The views from up here are spectacular — on a clear day you can see across to the Welsh coast — and the combination of big sky, open water, and well-maintained Victorian housing makes this one of the more pleasant corners of the South West to work in.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The properties on and near the seafront vary more than you'd expect. We've moved people into beautiful houses here — and also into one memorable art deco property designed and lived in by a well-known local artist, the kind of place that photographs strikingly but arrives in a different condition than the photographs suggest. Character properties on the Clevedon seafront carry their age in different ways. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey</a> first, always.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Access near the seafront and the older streets climbing the hill can be uneven. Some roads are fine. Others narrow as you get onto the older residential streets above the town centre, and the gradient adds a complication — parking a laden van on a slope and working against it is manageable with the right crew, but worth knowing about in advance rather than discovering on the day.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Estate End</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The other side of Clevedon is more efficient to work in from a logistical perspective. Roads on the estate side are wider, houses are smaller and more uniformly built, and access is uncomplicated. What these moves lack in drama they make up for in speed.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">It's worth saying that this part of Clevedon is changing. The tide that has lifted property values across the wider Bristol commuter belt has reached Clevedon too. Streets that were purely functional a decade ago have been improved by successive homeowners. The divide is real, but less stark than it used to be.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Summer Question</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Clevedon is a seaside town, and everything that applies to coastal towns on timing applies here. The Esplanade and the seafront fill up on sunny weekends and throughout the school holidays. Roads that are calm on a November Wednesday feel different on an August Saturday.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">For properties near the seafront, the holiday traffic consideration is real. For properties further back in the residential streets, it's less acute — but still worth factoring into the date decision. If you can move in term time, do. If you can't, plan around it.</p>
+      </div>
+
+      <!-- Mobile: Review (hidden on desktop) -->
+      <div class="area-mobile-only py-6">
+        <ReviewInline {...reviewProps} />
+      </div>
+
+      <!-- Mid CTA — bleed full-width on mobile -->
+      <div class="midcta-bleed">
+        <MidCTA
+          heading="Moving to or from Clevedon?"
+          description="Get a personalised quote — we factor in the distance from our depot automatically."
+          buttonText="Get Your Clevedon Removal Quote →"
+          buttonHref="/instantquote"
+        />
+      </div>
+
+      <!-- S4: What We've Learned From Clevedon -->
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We've Learned From Clevedon Moves</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Clevedon sits off the M5, which makes it deceptively quick to reach from Bristol — about 25 minutes in normal conditions. That ease of access is part of why the town has become an increasingly popular destination for people priced out of Bristol or looking for a different quality of life. The commute is manageable. The town itself feels a long way from the city.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/clevedon-removal-team-working" pattern="HALF" alt="Painless Removals team working on a removal job in Clevedon" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Clevedon has a wider range of property than almost anywhere in our area. The two ends of the town feel like different places entirely. Most of our moves sit comfortably in between — in the well-established family housing that makes up much of the town. We've been moving Clevedon families since the early 1980s."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">From a removals perspective, this proximity means Clevedon is firmly within our local service area. It's a one-day job in almost every case — load, drive, unload. The M5 junction keeps the approach clean, and once you're off the motorway the roads into town are easy.</p>
+      </div>
+
+      <!-- S5: Is Clevedon a Difficult Place to Move? -->
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Clevedon a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Not for most properties. The estate side of Clevedon is among the easier work we do — modern road widths, predictable access, houses that don't throw surprises. The seafront and hillside properties need more planning, and the period villas can demand extra crew, stair-climbing equipment, and furniture disassembly for wardrobes and bed frames that won't clear the staircase in one piece.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">Our advice: don't assume either way. Let Painless Removals come and take a look first. A <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a> takes an hour and gives you a price that reflects your property, not a Clevedon average.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Clevedon Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 clevedon-checklist">
+          <li><strong>Which end of Clevedon?</strong> Seafront properties need a different approach from estate housing — crew size, equipment, and timing all change.</li>
+          <li><strong>Hill access?</strong> If you're on one of the elevated streets above the seafront, check whether the approach road narrows or has gradient issues for a loaded van.</li>
+          <li><strong>Time of year?</strong> Summer and school holidays bring extra traffic to the seafront and approach roads. Term-time moves are calmer.</li>
+          <li><strong>Period property?</strong> Large Victorian and Edwardian houses often need furniture dismantled to clear the staircase. Flag this at <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">survey stage</a>.</li>
+          <li><strong>Parking?</strong> Seafront and town centre streets have loading restrictions — we plan around these with early arrival.</li>
+        </ul>
+      </div>
+
+      <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
+      <div class="area-mobile-only py-6">
+        <SidebarAuthorBox />
+      </div>
+
+    </article>
+
+    <!-- ─── Sidebar column ─── -->
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+
+        <!-- Combined Quick Area Guide -->
+        <FactBox {...factBoxProps} />
+
+        <!-- Review -->
+        <ReviewInline {...reviewProps} />
+
+        <!-- Author box -->
+        <SidebarAuthorBox />
+
+        <!-- Sticky CTA -->
+        <SidebarCTA />
+
+      </div>
+    </aside>
+
+  </div>
+  <!-- ═══ End two-column layout ═══ -->
+
+  <!-- S6: FAQ -->
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Clevedon Residents Ask Us?" />
+  </div>
+
+</div>
+<!-- ═══ Full-width sections (break out of container) ═══ -->
+
+<!-- S7: Long-Distance Routes from Clevedon -->
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Clevedon Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Bristol's M4/M5 junction means we're already on the route for most long-distance moves from Clevedon.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Clevedon" to="London" meta="~140 miles via M5/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Clevedon" to="Manchester" meta="~200 miles via M5/M6" days="1 day" href="/removals-bristol-to-manchester/" />
+      <RouteCard from="Clevedon" to="Edinburgh" meta="~390 miles" days="2–3 days*" href="/removals-bristol-to-edinburgh/" />
+      <RouteCard from="Clevedon" to="Cornwall" meta="~175 miles via M5" days="1 day" href="/removals-bristol-to-cornwall/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">* With efficient loading and early start, sometimes completable in a long single day.</p>
+  </div>
+</section>
+
+<!-- S8: Nearby & Services -->
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Clevedon?</h2>
+      <p class="text-[17px] leading-relaxed text-gray-800">
+        We also serve families across North Somerset and the surrounding area. If you're moving from or to
+        <a href="/removals-portishead/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Portishead</a>,
+        <a href="/removals-nailsea/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Nailsea</a>, or
+        <a href="/removals-weston-super-mare/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">Weston-super-Mare</a>,
+        we know these towns well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-secondary-500 hover:text-secondary-700 underline decoration-secondary-300 underline-offset-2 font-medium transition-colors">areas page</a>.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-5">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <a href="/home-removals-bristol/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-primary-500">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-primary-50 text-primary-600 mb-3 group-hover:bg-primary-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" /></svg>
+          </span>
+          <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Home Removals</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-secondary-500">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-orange-50 text-secondary-500 mb-3 group-hover:bg-orange-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+          </span>
+          <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Packing Services</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/storage-service/" class="group block bg-white rounded-xl p-6 no-underline shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border-t-[3px] border-accent-500">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-amber-50 text-accent-500 mb-3 group-hover:bg-amber-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+          </span>
+          <h3 class="font-semibold text-gray-900 text-[15px] mb-1">Storage</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Short or long-term storage, collected and delivered.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S9: Final CTA -->
+<AreaFinalCTA
+  heading="Ready to Move to or from Clevedon?"
+  description='Free quote in two minutes. Or explore <a href="/areas/" class="text-accent-500 no-underline hover:underline">all areas we cover</a>.'
+/>
+
+</Layout>
+
+<style>
+  /* ── Mid CTA: full-width bleed on mobile ── */
+  .midcta-bleed {
+    margin-left: -1rem;   /* cancels px-4 */
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem; /* cancels sm:px-6 */
+      margin-right: -1.5rem;
+    }
+  }
+  @media (min-width: 800px) {
+    .midcta-bleed {
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+
+  /* ── Checklist: checkmark icons ── */
+  .clevedon-checklist {
+    list-style: none;
+    padding-left: 0;
+  }
+  .clevedon-checklist li {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .clevedon-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    border: 2px solid #3b6587;
+    border-radius: 0.25rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%233b6587'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2.5-2.5a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+    background-size: 0.8rem;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+</style>

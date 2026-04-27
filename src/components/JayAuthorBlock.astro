@@ -1,0 +1,72 @@
+---
+/**
+ * JayAuthorBlock — Jay Newton photo + credential + quote + description
+ *
+ * Reusable author/trust block appearing on 9+ service pages.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+
+export interface Props {
+  /** Blockquote text (varies per page) */
+  quote: string;
+  /** Section heading */
+  heading?: string;
+  /** Credential badge text */
+  credential?: string;
+  /** Description paragraph below quote */
+  description?: string;
+  /** Learn more link href */
+  learnMoreHref?: string;
+  /** Background class for the section */
+  bgClass?: string;
+}
+
+const {
+  quote,
+  heading = 'Nearly 50 Years of Moving Bristol',
+  credential = 'Personally overseen 2,000+ completed moves',
+  description = 'Painless Removals has been serving Bristol since 1978. Jay oversees every move personally, ensuring the same standards that built our reputation nearly five decades ago.',
+  learnMoreHref = '/about',
+  bgClass = 'bg-white',
+} = Astro.props;
+---
+
+<section class={`section ${bgClass}`}>
+  <div class="container-wide">
+    <div class="max-w-4xl mx-auto">
+      <div class="grid md:grid-cols-[200px_1fr] gap-8 lg:gap-12 items-start">
+        <div>
+          <OptimizedPicture
+            name="about/team/Jay-Newton"
+            pattern="QUARTER"
+            alt="Jay Newton, Director of Painless Removals"
+            sizes="200px"
+            class="rounded-xl"
+          />
+        </div>
+
+        <div>
+          <h2 class="mb-2">{heading}</h2>
+          <p class="text-secondary-500 font-semibold mb-5">Jay Newton, Director</p>
+
+          <div class="credential-badge mb-5">
+            &#10003; {credential}
+          </div>
+
+          <blockquote class="director-quote my-6">
+            &ldquo;{quote}&rdquo;
+          </blockquote>
+
+          <p class="text-warm-gray mb-6">
+            {description}
+          </p>
+
+          <a href={learnMoreHref} class="soft-cta">
+            Learn more about our team
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

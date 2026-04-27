@@ -1,0 +1,1452 @@
+---
+/**
+ * Pricing Page
+ *
+ * Transparent pricing for Painless Removals Bristol.
+ * Leads with costs, explains factors, pushes instant quote + free survey.
+ * Primary keyword: removal costs Bristol
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import UspBar from '@/components/UspBar.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import OvertimeChart from '@/components/OvertimeChart.astro';
+import CancellationChart from '@/components/CancellationChart.astro';
+import CoverageCard from '@/components/CoverageCard.astro';
+import PiggybackMap from '@/components/PiggybackMap.astro';
+import PayIn3 from '@/components/PayIn3.astro';
+import QuoteTeaser from '@/components/QuoteTeaser.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+const pageTitle = 'Removal Costs Bristol — What Your Move Will Cost';
+const pageDescription = 'Transparent removal pricing from Painless Removals Bristol. See what every quote includes, payment options, price examples, and exactly what you\'re paying for. No hidden charges.';
+
+const phone = siteConfig.company.contact.phone;
+const phoneTel = phone.replace(/\s/g, '');
+
+// 21 move example cards: 7 property sizes × 3 distances
+// Images cycle through available photos
+const cardImageNames = [
+  'home-removals/Bristol-home-removals-service-1',    // 0
+  'home-removals/Bristol-home-removals-service-2',    // 1
+  'about/Painless-Removals-van-Bristol',              // 2
+  'home-removals/Bristol-home-removals-service-main', // 3
+  'home-removals/Bristol-home-removals-valuables',    // 4
+  'packing/home-packing-service-main',                // 5
+  'homepage/painless-removals-team',                  // 6
+  'home-removals/Bristol-furniture-disassembly-service', // 7
+  'storage/painless-removals-storage',                // 8
+  'concierge/Concierge-service-Painless-Removals',    // 9
+  'packing/Tamara-packing',                            // 10
+  'home-removals/Bristol-removals-service-3',         // 11
+  'home-removals/Bristol-home-removals-service-4',    // 12
+  'home-removals/Bristol-home-removals-service-5',    // 13
+  'home-removals/Bristol-home-removals-company',      // 14
+  'packing/Bristol-home-packing-service',             // 15
+  'packing/Bristol-packing-homes',                    // 16
+  'packing/Tamara-packing2',                          // 17
+  'storage/painless-removals-storage-door',           // 18
+  'homepage/painless-removals-Bristol-service',       // 19
+  'homepage/home-removals-painless-boxes',            // 20
+];
+const moveCards = [
+  // === LOCAL BRISTOL ===
+  { property: 'studio', distance: 'local', label: 'Studio / 1-bed', distLabel: 'Local Bristol', route: 'Bedminster → Southville',       price: '£350–£490',       men: 2,   vans: 1,   duration: 'Half day',     pushesUp: 'Upper floors, no lift, bulky items',             imgIdx: 0 },
+  { property: '2bed',   distance: 'local', label: '2-bed',          distLabel: 'Local Bristol', route: 'Bishopston → Redland',          price: '£490–£750',       men: 2,   vans: 1,   duration: 'Half–full day',pushesUp: 'Packing, narrow access, 1st floor+',             imgIdx: 1 },
+  { property: '3sm',    distance: 'local', label: '3-bed (small)',   distLabel: 'Local Bristol', route: 'Horfield → Henleaze',           price: '£790–£1,100',     men: 3,   vans: 2,   duration: 'Full day',     pushesUp: 'Full packing, garden furniture',                 imgIdx: 11 },
+  { property: '3lg',    distance: 'local', label: '3-bed (large)',   distLabel: 'Local Bristol', route: 'Westbury → Stoke Bishop',       price: '£1,200–£1,550',   men: 4,   vans: 3,   duration: 'Full day',     pushesUp: 'Full packing, stairs, chain delays',             imgIdx: 12 },
+  { property: '4bed',   distance: 'local', label: '4-bed',          distLabel: 'Local Bristol', route: 'Clifton → Redland',             price: '£1,500–£1,900',   men: 4,   vans: 3,   duration: 'Full day',     pushesUp: 'Volume, period property access, piano',          imgIdx: 13 },
+  { property: '5bed',   distance: 'local', label: '5-bed',          distLabel: 'Local Bristol', route: 'Sneyd Park → Long Ashton',      price: '£1,600–£2,150',   men: 5,   vans: 3,   duration: 'Full day+',    pushesUp: 'Volume, specialist items, storage',              imgIdx: 14 },
+  { property: '5plus',  distance: 'local', label: '5+ bed',         distLabel: 'Local Bristol', route: 'Leigh Woods → Abbots Leigh',    price: 'Free survey required',  men: 5,   vans: 3,   duration: 'Multi-day',    pushesUp: 'Volume, outbuildings, multi-day logistics',      imgIdx: 6 },
+  // === REGIONAL ===
+  { property: 'studio', distance: 'regional', label: 'Studio / 1-bed', distLabel: 'Regional', route: 'Bristol → Bath',                price: '£600–£950',       men: 2,   vans: 1,   duration: 'Full day',     pushesUp: 'Packing, stairs, fragile items',                 imgIdx: 15 },
+  { property: '2bed',   distance: 'regional', label: '2-bed',          distLabel: 'Regional', route: 'Bristol → Weston-super-Mare',    price: '£690–£990',       men: 2,   vans: 1,   duration: 'Full day',     pushesUp: 'Access, packing, timing',                        imgIdx: 2 },
+  { property: '3sm',    distance: 'regional', label: '3-bed (small)',   distLabel: 'Regional', route: 'Bristol → Gloucester',           price: '£1,000–£1,500',   men: 3,   vans: 2,   duration: 'Full day',     pushesUp: 'Full packing, chain coordination',               imgIdx: 16 },
+  { property: '3lg',    distance: 'regional', label: '3-bed (large)',   distLabel: 'Regional', route: 'Henleaze → Bath',               price: '£1,350–£1,800',   men: 4,   vans: 3,   duration: 'Full day',     pushesUp: 'Full packing, stairs, Key Wait Waiver',          imgIdx: 4 },
+  { property: '4bed',   distance: 'regional', label: '4-bed',          distLabel: 'Regional', route: 'Bristol → Cardiff',              price: '£1,400–£1,900',   men: 4,   vans: 3,   duration: 'Full day',     pushesUp: 'Volume, furniture assembly, storage',            imgIdx: 7 },
+  { property: '5bed',   distance: 'regional', label: '5-bed',          distLabel: 'Regional', route: 'Bristol → Swindon',              price: '£1,750–£2,200',   men: 5,   vans: 3,   duration: 'Full day',     pushesUp: 'Volume, specialist items, 2 collections',       imgIdx: 17 },
+  { property: '5plus',  distance: 'regional', label: '5+ bed',         distLabel: 'Regional', route: 'Bristol → Cheltenham',           price: 'Free survey required',  men: 5,   vans: 3,   duration: 'Multi-day',    pushesUp: 'Volume, distance, specialist items',             imgIdx: 18 },
+  // === LONG DISTANCE ===
+  { property: 'studio', distance: 'long', label: 'Studio / 1-bed', distLabel: 'Long Distance', route: 'Bristol → London',             price: '£750–£1,200',     men: 2,   vans: 1,   duration: 'Full day',     pushesUp: 'London parking, congestion zone, access',        imgIdx: 19 },
+  { property: '2bed',   distance: 'long', label: '2-bed',          distLabel: 'Long Distance', route: 'Bristol → Birmingham',         price: '£750–£1,200',     men: 2,   vans: 1,   duration: 'Full day',     pushesUp: 'Packing, access, timing',                        imgIdx: 20 },
+  { property: '3sm',    distance: 'long', label: '3-bed (small)',   distLabel: 'Long Distance', route: 'Bristol → Manchester',         price: '£1,400–£2,200',   men: 3,   vans: 2,   duration: '1.5 days',     pushesUp: 'Volume, packing, overnight',                     imgIdx: 5 },
+  { property: '3lg',    distance: 'long', label: '3-bed (large)',   distLabel: 'Long Distance', route: 'Bristol → Leeds',              price: '£3,400–£4,300',   men: 4,   vans: 3,   duration: '2 days',       pushesUp: 'Full packing, chain, overnight',                 imgIdx: 3 },
+  { property: '4bed',   distance: 'long', label: '4-bed',          distLabel: 'Long Distance', route: 'Bristol → Edinburgh',          price: '£3,900–£5,200',   men: 4,   vans: 3,   duration: '2–3 days',     pushesUp: 'Volume, distance, specialist items',             imgIdx: 9 },
+  { property: '5bed',   distance: 'long', label: '5-bed',          distLabel: 'Long Distance', route: 'Bristol → Cornwall',           price: '£3,200–£4,900',   men: 5,   vans: 3,   duration: '2 days',       pushesUp: 'Volume, rural access, specialist items',         imgIdx: 10 },
+  { property: '5plus',  distance: 'long', label: '5+ bed',         distLabel: 'Long Distance', route: 'Clifton → London',             price: 'Free survey required',  men: 5,   vans: 3,   duration: '2 days',       pushesUp: 'Volume, London parking, storage',                imgIdx: 8 },
+];
+
+// FAQ data
+const faqs = [
+  {
+    question: "Can I get an exact price without a survey?",
+    answer: 'You can get a ballpark from our <a href="/instantquote/">instant calculator</a>. For an exact, fixed quote, we need a survey — video (15 mins), in-person (30 mins), or you can send us a walkthrough video yourself. All free, no obligation.',
+  },
+  {
+    question: "Will the price change on moving day?",
+    answer: 'The quoted price is the price you pay, within our <a href="/terms-conditions/">terms</a>. The only scenario where costs can increase is if the move runs past 5pm due to circumstances outside your control (like late keys in a chain) — and the Key Wait Waiver removes even that.',
+  },
+  {
+    question: "Can I pay in instalments?",
+    answer: "Yes. 30% deposit to book (BACS), then spread the balance across up to 4 payments before moving day. We also accept PayPal Pay in 3 for the balance — split into 3 interest-free payments. Subject to PayPal's eligibility and terms.",
+  },
+  {
+    question: "Why is your quote higher than another company's?",
+    answer: 'Check what\'s included. Our quotes cover full-day allocation, all protection materials, a dedicated Move Manager, and transit insurance. Some cheaper quotes exclude packing materials, charge for protection wrapping, or book multiple jobs in one day. Ask any company quoting you: "What happens if my chain delays by 3 hours?"',
+  },
+  {
+    question: "Is it cheaper to move on a weekday?",
+    answer: "Weekdays tend to have more availability. End-of-month weekends are busiest. If your date is flexible, your Move Manager can suggest the most available slots.",
+  },
+  {
+    question: "Do you charge for parking permits?",
+    answer: "If your move requires a council parking suspension (common in Bath, central Bristol, London), we'll advise you on this during the survey. The council fee varies by area and is your responsibility, but we'll tell you exactly what's needed and help with the application.",
+  },
+  {
+    question: "What's a piggyback removal?",
+    answer: 'Because Bristol sits at the M4/M5 junction, our vans regularly travel routes like London to Cornwall or London to Cardiff. If your move falls on one of these corridors, you may benefit from a piggyback rate — our vans are already making the trip. <a href="#piggyback-pricing">Learn more about piggyback pricing</a>.',
+  },
+  {
+    question: "What happens if I'm in a property chain and keys are late?",
+    answer: 'For chain moves, we allocate the full day, so we\'re already there. Your dedicated Move Manager stays in contact with your solicitor. If the delay runs past 5pm, overtime charges can apply — but the Key Wait Waiver (a small one-off fee) removes that risk entirely. <a href="#property-chains">Read more about chain moves</a>.',
+  },
+  {
+    question: "Is professional packing worth the extra cost?",
+    answer: 'For most people, yes. A full pack for a 3-bed home starts at £580 — less than most expect. The key benefit: everything we pack is covered by our £15,000 transit insurance. Items you self-pack aren\'t covered. <a href="/home-packing-service/">See packing prices</a>.',
+  },
+  {
+    question: "Are prices higher in summer?",
+    answer: "We don't have a peak-season surcharge. However, summer months (especially July–August and end-of-month weekends) have the most demand and least availability. Booking 4–6 weeks ahead gives you the widest choice of dates.",
+  },
+];
+
+// Compare table data (realistic "typical" column)
+const compareItems = [
+  { feature: 'Full day allocation', painless: 'Always', typical: 'Often not', painlessGood: true, typicalGood: false },
+  { feature: 'Mattress protectors', painless: 'Included', typical: 'Usually included', painlessGood: true, typicalGood: true },
+  { feature: 'Sofa covers', painless: 'Included', typical: 'Usually included', painlessGood: true, typicalGood: true },
+  { feature: 'TV bags', painless: 'Included', typical: 'Rarely offered', painlessGood: true, typicalGood: false },
+  { feature: 'Blanket wrapping', painless: 'Included', typical: 'Standard', painlessGood: true, typicalGood: true },
+  { feature: 'Dedicated Move Manager', painless: 'Always', typical: 'Rarely', painlessGood: true, typicalGood: false },
+  { feature: 'No mileage surprises', painless: 'Quoted upfront', typical: 'Sometimes added on the day', painlessGood: true, typicalGood: false },
+  { feature: 'Transit insurance', painless: '£15k per van', typical: 'Varies', painlessGood: true, typicalGood: false },
+  { feature: 'Overtime protection', painless: 'Waivable', typical: 'By the minute', painlessGood: true, typicalGood: false },
+  { feature: 'Furniture reassembly', painless: 'If quoted', typical: 'Extra charge', painlessGood: true, typicalGood: false },
+  { feature: 'Free survey', painless: 'Always', typical: 'Sometimes', painlessGood: true, typicalGood: false },
+  { feature: 'Instalment payments', painless: 'Yes', typical: 'Rarely', painlessGood: true, typicalGood: false },
+];
+
+// Schema markup
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "House Removals Pricing",
+  "description": "Transparent pricing for house removals in Bristol and UK-wide. Includes what's covered, payment options, and insurance details.",
+  "provider": {
+    "@type": "MovingCompany",
+    "name": siteConfig.company.name,
+    "@id": `${siteConfig.brand.domain}/#business`,
+    "url": siteConfig.brand.domain,
+  },
+  "areaServed": {
+    "@type": "City",
+    "name": "Bristol",
+  },
+  "url": `${siteConfig.brand.domain}/pricing/`,
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "House Removal Pricing",
+    "itemListElement": moveCards.filter(c => c.price !== 'Free survey required').map(c => ({
+      "@type": "Offer",
+      "name": `${c.label} Removal (${c.distLabel})`,
+      "priceSpecification": {
+        "@type": "PriceSpecification",
+        "priceCurrency": "GBP",
+        "description": `${c.price} — ${c.men} men, ${c.vans} van${c.vans !== 1 ? 's' : ''}, ${c.duration}`,
+      },
+    })),
+  },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer.replace(/<[^>]*>/g, ''),
+    },
+  })),
+};
+
+const pageSchema = [serviceSchema, faqSchema, breadcrumbs([
+  { name: "Home", path: "/" },
+  { name: "Pricing" },
+])];
+
+// Cancellation chart tiers
+const cancellationTiers = [
+  { notice: 'More than 15 working days', pct: 0,   label: '0% — full deposit refund', color: 'green',      targetWidth: '2%'  },
+  { notice: '10–15 working days',        pct: 30,  label: '30% of total quote',       color: 'gold',       targetWidth: '30%' },
+  { notice: 'Less than 10 working days', pct: 60,  label: '60% of total quote',       color: 'orange',     targetWidth: '60%' },
+  { notice: 'Less than 3 working days',  pct: 75,  label: '75% of total quote',       color: 'terracotta', targetWidth: '75%' },
+  { notice: 'Less than 24 hours',        pct: 100, label: '100% of total quote',      color: 'red',        targetWidth: '100%'},
+];
+
+// Overtime chart slots
+const overtimeSlots = [
+  { time: '5:00–5:30 pm', blocks: 1 },
+  { time: '5:30–6:00 pm', blocks: 2 },
+  { time: '6:00–6:30 pm', blocks: 3 },
+  { time: '6:30–7:00 pm', blocks: 4 },
+];
+
+// Seasonal demand data
+const seasonalData = [
+  { months: 'Jan–Feb', level: 'Low', pct: 25, color: 'bg-green-500' },
+  { months: 'Mar–Apr', level: 'Medium', pct: 50, color: 'bg-amber-400' },
+  { months: 'May–Jun', level: 'High', pct: 75, color: 'bg-orange-500' },
+  { months: 'Jul–Aug', level: 'Peak', pct: 100, color: 'bg-red-500' },
+  { months: 'Sep–Oct', level: 'High', pct: 75, color: 'bg-orange-500' },
+  { months: 'Nov–Dec', level: 'Low–Med', pct: 35, color: 'bg-green-500' },
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/pricing/removal-cost-calculator-bristol-1080w.webp" preloadImage="/img/pricing/removal-cost-calculator-bristol-640w.avif">
+
+  <!-- ============================================
+       S1: HERO
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+      <OptimizedPicture
+        name="pricing/removal-cost-calculator-bristol"
+        pattern="HALF"
+        alt="Choose your home size to get an instant removal cost estimate in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        sizes="100vw"
+        class="w-full h-full object-contain"
+      />
+    </div>
+
+    <!-- Left: Content area -->
+    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+      <div class="max-w-xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+          Removal Costs Bristol
+        </p>
+
+        <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold font-heading">
+          How Much Does a Removal Cost in <span class="text-secondary-500">Bristol?</span>
+        </h1>
+
+        <p class="text-lg lg:text-xl text-warm-gray mb-5 lg:mb-6 leading-relaxed py-[15px]">
+          A local Bristol move starts from £400 for a studio and ranges up to £3,500+ for a 5-bed home. Long-distance moves cost more — use the examples below or get your price in 47 seconds.
+        </p>
+
+        <div class="flex flex-col gap-2 mb-5 items-center">
+          <a href="/instantquote/" class="btn-cta-orange">
+            GET YOUR INSTANT QUOTE
+          </a>
+          <a href={`tel:${phoneTel}`} class="inline-flex items-center gap-2 text-primary-600 font-semibold no-underline hover:text-secondary-500 transition-colors text-lg mt-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            Call {phone}
+          </a>
+        </div>
+
+        <TrustpilotStrip />
+      </div>
+    </div>
+
+    <!-- Right: Full-bleed image (desktop only) -->
+    <div class="hidden lg:block relative overflow-hidden">
+      <OptimizedPicture
+        name="pricing/removal-cost-calculator-bristol"
+        pattern="HALF"
+        alt="Choose your home size to get an instant removal cost estimate in Bristol"
+        loading="eager"
+        fetchpriority="high"
+        sizes="50vw"
+        class="absolute inset-0 w-full h-full object-contain"
+      />
+    </div>
+  </section>
+
+  <UspBar hideBadge={true} />
+
+
+  <!-- ============================================
+       INSTANT QUOTE TEASER
+  ============================================ -->
+  <QuoteTeaser headingId="pricing-quote-heading" />
+
+
+  <!-- ============================================
+       S8: PAYMENT OPTIONS + PAYPAL PAY IN 3
+  ============================================ -->
+  <section class="section bg-white" id="payment-options">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">Flexible Payment Options</h2>
+        <p class="text-center text-warm-gray text-lg mb-10 max-w-2xl mx-auto">
+          Moving is expensive enough. We offer multiple ways to spread the cost so you can focus on settling in.
+        </p>
+
+        <!-- PayPal Pay in 3 -->
+        <PayIn3 class="mb-10" />
+
+        <!-- Payment calculator -->
+        <div class="bg-gray-50 rounded-xl p-6 md:p-8" id="payment-calculator">
+          <h3 class="text-xl font-bold mb-2 text-center">What Would I Actually Pay?</h3>
+          <p class="text-warm-gray text-sm text-center mb-6">
+            Enter your quote amount (or use our example) to see your payment breakdown.
+          </p>
+
+          <div class="max-w-md mx-auto">
+            <div class="flex gap-3 mb-6">
+              <div class="relative flex-1">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-warm-gray font-semibold">£</span>
+                <input
+                  type="number"
+                  id="quote-amount"
+                  min="100"
+                  max="50000"
+                  step="50"
+                  placeholder="1500"
+                  class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg text-lg font-semibold focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600"
+                  aria-label="Enter your quote amount"
+                />
+              </div>
+              <button
+                id="calc-payment-btn"
+                class="btn-cta-orange !py-3 !px-5 whitespace-nowrap !text-sm"
+              >Show my payments</button>
+            </div>
+
+            <!-- Results -->
+            <div id="payment-result" class="hidden">
+              <div class="space-y-3">
+                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span class="text-warm-gray">Your quote</span>
+                  <span class="font-bold text-lg" id="res-total"></span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span class="text-warm-gray" id="res-deposit-label">Deposit (30%)</span>
+                  <span class="font-semibold" id="res-deposit"></span>
+                </div>
+                <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                  <span class="text-warm-gray">Balance</span>
+                  <span class="font-semibold" id="res-balance"></span>
+                </div>
+                <div class="mt-4 bg-white rounded-lg p-4 border border-gray-200">
+                  <p class="text-sm font-semibold mb-3">Pay the balance via:</p>
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                      <span class="text-warm-gray">BACS (full balance)</span>
+                      <span class="font-medium" id="res-bacs"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-warm-gray">4 instalments (BACS)</span>
+                      <span class="font-medium" id="res-instalments"></span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-warm-gray flex items-center gap-1">
+                        <svg viewBox="0 0 100 32" class="h-4 w-auto inline" aria-hidden="true"><path fill="#003087" d="M12.237 2.8L4.437 2.8C3.937 2.8 3.437 3.2 3.337 3.7L0.237 23.7C0.137 24.1 0.437 24.4 0.837 24.4L4.537 24.4C5.037 24.4 5.537 24 5.637 23.5L6.437 18.1C6.537 17.6 6.937 17.2 7.537 17.2L10.037 17.2C15.137 17.2 18.137 14.7 18.937 9.8C19.237 7.7 18.937 6 17.937 4.8C16.837 3.5 14.837 2.8 12.237 2.8Z"/><path fill="#0070E0" d="M35.437 10L31.737 10C31.437 10 31.137 10.2 31.137 10.5L30.937 11.5 30.637 11.1C29.837 9.9 28.037 9.5 26.237 9.5 22.137 9.5 18.637 12.6 17.937 17 17.537 19.2 18.037 21.3 19.337 22.7 20.437 24 22.137 24.6 24.037 24.6 27.337 24.6 29.237 22.5 29.237 22.5L29.037 23.5C28.937 23.9 29.237 24.3 29.637 24.3L33.037 24.3C33.537 24.3 34.037 23.9 34.137 23.4L36.037 10.6C36.137 10.4 35.837 10 35.437 10Z"/></svg>
+                        Pay in 3
+                      </span>
+                      <span class="font-medium" id="res-paypal"></span>
+                    </div>
+                    <p class="text-xs text-warm-gray mt-2" id="res-paypal-note"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="payment-default" class="text-center text-sm text-warm-gray">
+              Don't have a quote yet? <a href="/instantquote/" class="soft-cta !text-sm">Get your instant quote</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S3: HOW MUCH DOES A REMOVAL COST? (21 interactive cards)
+  ============================================ -->
+  <section class="section bg-white" id="removal-costs">
+    <div class="container-wide">
+      <div class="max-w-6xl mx-auto">
+        <h2 class="text-center mb-4">How Much Does a Removal Cost?</h2>
+        <p class="text-center text-warm-gray text-lg mb-8 max-w-3xl mx-auto">
+          Select your property size and distance to see a real-world example with pricing. These are guide prices — your actual quote depends on what you own, not just how many bedrooms you have.
+        </p>
+
+        <!-- Filter buttons -->
+        <div class="flex flex-col gap-4 items-center mb-10" id="move-selector">
+          <div>
+            <p class="text-sm font-semibold text-primary-600 mb-2 text-center">Property size</p>
+            <div class="flex flex-wrap gap-2 justify-center" role="radiogroup" aria-label="Property size">
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="studio">Studio / 1-bed</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="2bed">2-bed</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="3sm">3-bed (small)</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="3lg">3-bed (large)</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="4bed">4-bed</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="5bed">5-bed</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-property="5plus">5+ bed</button>
+            </div>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-primary-600 mb-2 text-center">Distance</p>
+            <div class="flex flex-wrap gap-2 justify-center" role="radiogroup" aria-label="Distance">
+              <button class="move-filter-btn border-2 border-primary-600 bg-primary-600 text-white rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-distance="local">Local Bristol</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-distance="regional">Regional</button>
+              <button class="move-filter-btn border-2 border-gray-200 rounded-full px-3 py-1.5 text-sm font-medium transition-all hover:border-primary-600" data-distance="long">Long distance (100+ mi)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 21 cards grid -->
+        <div class="grid md:grid-cols-3 gap-5" id="move-cards">
+          {moveCards.map((card) => (
+            <div class="move-card bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all duration-300" data-match={`${card.property}-${card.distance}`}>
+              <div class="aspect-[3/2] overflow-hidden">
+                <OptimizedPicture name={cardImageNames[card.imgIdx]} pattern="THIRD" alt={`${card.label} removal: ${card.route}`} loading="lazy" class="w-full h-full object-cover object-center" />
+              </div>
+              <div class="p-4">
+                <p class="text-xs text-primary-600 font-semibold uppercase tracking-wide mb-1">{card.label} &middot; {card.distLabel}</p>
+                <p class="font-bold text-base mb-1">{card.route}</p>
+                <p class="text-xl font-bold text-primary-600 mb-2">{card.price}</p>
+                {/* Crew/van icons + duration */}
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="flex items-center gap-0.5" title={`${card.men} men`}>
+                    {Array.from({ length: Math.floor(card.men) }).map(() => (
+                      <svg class="w-3.5 h-4 text-primary-600" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    ))}
+                    {card.men % 1 !== 0 && (
+                      <svg class="w-3.5 h-4 text-primary-600/40" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    )}
+                  </span>
+                  <span class="flex items-center gap-0.5" title={`${card.vans} vans`}>
+                    {Array.from({ length: Math.floor(card.vans) }).map(() => (
+                      <svg class="w-4 h-4 text-secondary-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+                    ))}
+                    {card.vans % 1 !== 0 && (
+                      <svg class="w-4 h-4 text-secondary-500/40" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>
+                    )}
+                  </span>
+                  <span class="text-warm-gray text-xs">&middot;</span>
+                  <span class="text-warm-gray text-xs">{card.duration}</span>
+                </div>
+                <p class="text-xs text-warm-gray"><strong>What pushes it up:</strong> {card.pushesUp}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Volume not bedrooms callout -->
+        <div class="max-w-2xl mx-auto mt-10 bg-white py-5 px-6 border-l-4 border-secondary-500 rounded-r-lg shadow-sm">
+          <p class="font-heading italic text-primary-600 text-lg leading-relaxed mb-2">
+            "We move volume, not bedrooms."
+          </p>
+          <p class="text-warm-gray text-sm leading-relaxed">
+            A minimalist 4-bed costs less to move than a packed 2-bed. We quote based on cubic feet — the actual volume of your belongings — not the number of rooms. That's why every accurate quote starts with a survey.
+          </p>
+        </div>
+
+        <p class="text-xs text-warm-gray italic text-center mt-6">
+          All examples are based on recent moves and are for illustration only. Your price will be confirmed after a free survey.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+          <a href="/instantquote/" class="btn-cta-orange">GET YOUR PERSONALISED QUOTE</a>
+          <a href="/free-home-survey/" class="soft-cta">Book your free survey</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       WHY A FREE SURVEY MEANS AN ACCURATE QUOTE
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-cream">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-4">Why a Free Survey Means an Accurate Quote</h2>
+        <p class="text-center text-warm-gray mb-8 max-w-2xl mx-auto">
+          Be cautious of any company that quotes without seeing your belongings first. A proper survey is how we guarantee no surprises on moving day.
+        </p>
+
+        <div class="grid md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white rounded-xl p-6 shadow-sm text-center">
+            <svg class="w-8 h-8 text-primary-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <p class="font-semibold mb-1">Items surveyed = insured</p>
+            <p class="text-warm-gray text-sm">Everything we've seen and listed is covered by our £15,000 Goods in Transit insurance. Choose our packing service and your boxes are covered too. Items over £2,000? Just let us know.</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm text-center">
+            <svg class="w-8 h-8 text-primary-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <p class="font-semibold mb-1">Fixed price, no surprises</p>
+            <p class="text-warm-gray text-sm">An accurate survey means an accurate quote. The price we give you is the price you pay — no "we didn't realise you had a loft full of boxes" surcharges.</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm text-center">
+            <svg class="w-8 h-8 text-primary-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <p class="font-semibold mb-1">Right crew, right vans</p>
+            <p class="text-warm-gray text-sm">Knowing exactly what you own means we send the right number of men and the right size vans. No wasted time, no second trips.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-6 justify-center items-center text-center mb-6">
+          <div>
+            <p class="font-semibold text-primary-600">Video self-survey</p>
+            <p class="text-warm-gray text-sm">15 mins from your phone</p>
+          </div>
+          <span class="hidden sm:block text-warm-gray">or</span>
+          <div>
+            <p class="font-semibold text-primary-600">In-person visit</p>
+            <p class="text-warm-gray text-sm">30 mins, we come to you</p>
+          </div>
+        </div>
+
+        <div class="text-center">
+          <a href="/free-home-survey/" class="btn-cta-orange">BOOK YOUR FREE SURVEY</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S10: ADD-ON SERVICES GRID
+  ============================================ -->
+  <section class="section bg-white" id="add-on-services">
+    <div class="container-wide">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-center mb-4">Additional Services & Pricing</h2>
+        <p class="text-center text-warm-gray text-lg mb-10 max-w-2xl mx-auto">
+          Every service below can be added to your removal booking. All prices are estimates — your Move Manager will confirm exact costs at survey stage.
+        </p>
+
+        <!-- Packing upsell callout -->
+        <div class="bg-orange-50 border-2 border-orange-200 rounded-xl p-6 md:p-8 mb-10">
+          <div class="lg:grid lg:grid-cols-3 lg:gap-8 items-center">
+            <div class="lg:col-span-2">
+              <h3 class="text-lg font-bold mb-2">Professional Packing Is Cheaper Than You Think</h3>
+              <p class="text-warm-gray leading-relaxed mb-4">
+                Everything we pack is covered by our £15,000 transit insurance. Items you self-pack aren't covered. All materials included.
+              </p>
+
+              <!-- Simplified packing prices -->
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5">
+                <div class="bg-white rounded-lg p-3 text-center">
+                  <p class="text-xs text-warm-gray mb-1">Fragile Only</p>
+                  <p class="text-primary-600 font-bold text-lg">£435</p>
+                </div>
+                <div class="bg-white rounded-lg p-3 text-center">
+                  <p class="text-xs text-warm-gray mb-1">Small <span class="hidden sm:inline">/ Flat</span></p>
+                  <p class="text-primary-600 font-bold text-lg">£395</p>
+                </div>
+                <div class="bg-white rounded-lg p-3 text-center border-2 border-orange-300 relative">
+                  <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Popular</span>
+                  <p class="text-xs text-warm-gray mb-1">2–3 bed</p>
+                  <p class="text-primary-600 font-bold text-lg">£580</p>
+                </div>
+                <div class="bg-white rounded-lg p-3 text-center">
+                  <p class="text-xs text-warm-gray mb-1">3–4 bed</p>
+                  <p class="text-primary-600 font-bold text-lg">£725</p>
+                </div>
+                <div class="bg-white rounded-lg p-3 text-center">
+                  <p class="text-xs text-warm-gray mb-1">5+ bed</p>
+                  <p class="text-primary-600 font-bold text-lg">£990</p>
+                </div>
+              </div>
+
+              <a href="/home-packing-service/" class="btn-cta-orange !text-sm">SEE FULL DETAILS</a>
+            </div>
+            <div class="hidden lg:block rounded-xl overflow-hidden">
+              <OptimizedPicture
+                name="packing/Tamara-packing"
+                pattern="THIRD"
+                alt="Professional packing for fragile items"
+                loading="lazy"
+                class="w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6">
+          <!-- Storage -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group">
+            <div class="h-44 overflow-hidden">
+              <OptimizedPicture name="storage/painless-removals-storage" pattern="THIRD" alt="Painless Removals storage facility in Clifton" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="font-bold text-lg">Storage</h3>
+                <p class="text-primary-600 font-bold text-lg">From £41/mo</p>
+              </div>
+              <p class="text-warm-gray text-sm mb-3">Bristol facilities. Prices with removal booking:</p>
+              <div class="space-y-1.5 mb-3">
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">25 sq ft <span class="hidden sm:inline">(few boxes)</span></span>
+                  <span class="font-bold text-primary-600">£41/mo</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">50 sq ft <span class="hidden sm:inline">(+ sofa)</span></span>
+                  <span class="font-bold text-primary-600">£59/mo</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">85 sq ft <span class="hidden sm:inline">(studio)</span></span>
+                  <span class="font-bold text-primary-600">£82/mo</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">100 sq ft <span class="hidden sm:inline">(1-bed)</span></span>
+                  <span class="font-bold text-primary-600">£92/mo</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">150 sq ft <span class="hidden sm:inline">(2-bed)</span></span>
+                  <span class="font-bold text-primary-600">£124/mo</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">200 sq ft <span class="hidden sm:inline">(3-bed)</span></span>
+                  <span class="font-bold text-primary-600">£157/mo</span>
+                </div>
+              </div>
+              <p class="text-[10px] text-warm-gray mb-2">+VAT. 50% discount with removal. First month free with some moves.</p>
+              <a href="/storage-service/" class="soft-cta !text-sm">See storage options</a>
+            </div>
+          </div>
+
+          <!-- Cleaning -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group">
+            <div class="h-44 overflow-hidden">
+              <OptimizedPicture name="cleaning/cleaning-service" pattern="THIRD" alt="End of tenancy cleaning service" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="font-bold text-lg">Cleaning</h3>
+                <p class="text-primary-600 font-bold text-lg">£90–£210</p>
+              </div>
+              <p class="text-warm-gray text-sm mb-3">Surface clean same day as your move. Priced by bedroom count:</p>
+              <div class="space-y-1.5 mb-3">
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">1 bedroom</span>
+                  <span class="font-bold text-primary-600">£90</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">2 bedrooms</span>
+                  <span class="font-bold text-primary-600">£105</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">3 bedrooms</span>
+                  <span class="font-bold text-primary-600">£120</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">4 bedrooms</span>
+                  <span class="font-bold text-primary-600">£155</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">5 bedrooms</span>
+                  <span class="font-bold text-primary-600">£180</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">6 bedrooms</span>
+                  <span class="font-bold text-primary-600">£210</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Deep clean</span>
+                  <span class="font-bold text-primary-600">N/A</span>
+                </div>
+              </div>
+              <a href="/cleaning-service/" class="soft-cta !text-sm">See cleaning options</a>
+            </div>
+          </div>
+
+          <!-- Clearance -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group">
+            <div class="h-44 overflow-hidden">
+              <OptimizedPicture name="house-clearance/Bristol-clearance-service" pattern="THIRD" alt="House clearance and waste removal in Bristol" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="font-bold text-lg">House & Waste Clearance</h3>
+                <p class="text-primary-600 font-bold text-lg whitespace-nowrap ml-2">£40–£400</p>
+              </div>
+              <p class="text-warm-gray text-sm mb-3">Single items or full rooms. We sort into charity, recycling and waste.</p>
+              <div class="space-y-1.5 mb-3">
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Garden waste</span>
+                  <span class="font-bold text-primary-600">£40/ton bag</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Mixed non-recyclables</span>
+                  <span class="font-bold text-primary-600">£60/ton bag</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Mattress / Washing machine</span>
+                  <span class="font-bold text-primary-600">£40/each</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Sofa / Bed + mattress</span>
+                  <span class="font-bold text-primary-600">£80/set</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Fridge / Large appliance</span>
+                  <span class="font-bold text-primary-600">£110/each</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Full room clearance</span>
+                  <span class="font-bold text-primary-600">£400/room</span>
+                </div>
+              </div>
+              <a href="/house-and-waste-clearance/#clearance-calculator" class="soft-cta !text-sm">Quick price estimator</a>
+            </div>
+          </div>
+
+          <!-- Furniture Assembly -->
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden group">
+            <div class="h-44 overflow-hidden">
+              <OptimizedPicture name="home-removals/Bristol-furniture-disassembly-service" pattern="THIRD" alt="Furniture disassembly and reassembly" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-2">
+                <h3 class="font-bold text-lg">Furniture Assembly</h3>
+                <p class="text-primary-600 font-bold text-lg whitespace-nowrap ml-2">£20–£120</p>
+              </div>
+              <p class="text-warm-gray text-sm mb-3">Disassembled at your old home, reassembled at your new one. Per item:</p>
+              <div class="space-y-1.5 mb-3">
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Very simple <span class="hidden sm:inline">(tables)</span></span>
+                  <span class="font-bold text-primary-600">£20</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Simple <span class="hidden sm:inline">(frame beds, shelves)</span></span>
+                  <span class="font-bold text-primary-600">£30</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">General <span class="hidden sm:inline">(ottoman/bunk beds)</span></span>
+                  <span class="font-bold text-primary-600">£60</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Complex <span class="hidden sm:inline">(sliding wardrobes)</span></span>
+                  <span class="font-bold text-primary-600">£90</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-warm-gray">Very complex <span class="hidden sm:inline">(gym equipment)</span></span>
+                  <span class="font-bold text-primary-600">£120</span>
+                </div>
+              </div>
+              <a href="/free-home-survey/" class="soft-cta !text-sm">Discuss at your survey</a>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="text-xs text-warm-gray italic text-center mt-6">
+          All prices are estimates and may vary based on your specific requirements. Your Move Manager will confirm exact costs after a free survey.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S4: FACTORS THAT INFLUENCE PRICE
+  ============================================ -->
+  <section class="section bg-cream" id="pricing-factors">
+    <div class="container-wide">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-center mb-4">What Affects Your Removal Price?</h2>
+        <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+          No two moves are the same. Here's what goes into your quote — and why a free survey is the only way to get an accurate price.
+        </p>
+
+        <div class="space-y-12">
+          <!-- Factor 1: Volume -->
+          <div class="lg:grid lg:grid-cols-2 lg:gap-10 items-center">
+            <div>
+              <h3 class="text-xl font-bold mb-3">
+                <span class="text-secondary-500 mr-2">1.</span>Volume of Belongings
+              </h3>
+              <p class="text-warm-gray leading-relaxed mb-3">
+                This is the single biggest factor. We measure in cubic feet during the survey — not bedrooms. A house full of books, antiques and wardrobes takes longer to wrap, load and unload than one with minimal furniture.
+              </p>
+              <p class="text-warm-gray leading-relaxed">
+                <strong>Be cautious of any company that quotes without a survey.</strong> If they haven't seen what you own, they're guessing — and that guess usually turns into a surprise on moving day.
+              </p>
+            </div>
+            <div class="mt-6 lg:mt-0 rounded-xl overflow-hidden">
+              <OptimizedPicture
+                name="home-removals/Bristol-home-removals-service-2"
+                pattern="HALF"
+                alt="Removal crew carefully loading wrapped furniture"
+                loading="lazy"
+                class="w-full h-auto"
+              />
+            </div>
+          </div>
+
+          <!-- Factor 2: Distance -->
+          <div class="lg:grid lg:grid-cols-2 lg:gap-10 items-center">
+            <div class="lg:order-2">
+              <h3 class="text-xl font-bold mb-3">
+                <span class="text-secondary-500 mr-2">2.</span>Distance
+              </h3>
+              <p class="text-warm-gray leading-relaxed mb-3">
+                A local Bristol-to-Bristol move costs less than Bristol to London. But distance isn't always straightforward — if your move falls on one of our regular corridors (like the M4 to London or M5 to Cornwall), you could benefit from our <a href="#piggyback-pricing" class="text-primary-600 font-semibold hover:text-secondary-500 transition-colors">piggyback pricing</a>.
+              </p>
+            </div>
+            <div class="lg:order-1 mt-6 lg:mt-0 rounded-xl overflow-hidden">
+              <OptimizedPicture
+                name="about/Painless-Removals-van-Bristol"
+                pattern="HALF"
+                alt="Painless Removals van on the road in Bristol"
+                loading="lazy"
+                class="w-full h-auto"
+              />
+            </div>
+          </div>
+
+          <!-- Factor 3: Access -->
+          <div class="lg:grid lg:grid-cols-2 lg:gap-10 items-center">
+            <div>
+              <h3 class="text-xl font-bold mb-3">
+                <span class="text-secondary-500 mr-2">3.</span>Access at Both Ends
+              </h3>
+              <p class="text-warm-gray leading-relaxed">
+                Narrow staircases, no lift in a block of flats, tight parking, long carries from the van to the front door — all of these add time. The survey catches access issues early so there are no surprises on the day.
+              </p>
+            </div>
+            <div class="mt-6 lg:mt-0 rounded-xl overflow-hidden">
+              <OptimizedPicture
+                name="home-removals/Bristol-home-removals-service-main"
+                pattern="HALF"
+                alt="Crew navigating access at a Bristol property"
+                loading="lazy"
+                class="w-full h-auto"
+              />
+            </div>
+          </div>
+
+          <!-- Remaining factors (compact grid) -->
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+              <h3 class="font-bold mb-2">
+                <span class="text-secondary-500 mr-1">4.</span>When You Move
+              </h3>
+              <p class="text-warm-gray text-sm leading-relaxed">
+                Summer months and end-of-month weekends are busiest. Flexible dates mean more availability and smoother scheduling. <a href="#seasonal-pricing" class="text-primary-600 font-semibold hover:text-secondary-500 transition-colors text-sm">See seasonal demand</a>.
+              </p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+              <h3 class="font-bold mb-2">
+                <span class="text-secondary-500 mr-1">5.</span>Packing Requirements
+              </h3>
+              <p class="text-warm-gray text-sm leading-relaxed">
+                Self-pack costs nothing extra. Professional packing is a popular add-on — and cheaper than most people expect. A full 3-bed pack starts at just £580. <a href="/home-packing-service/" class="text-primary-600 font-semibold hover:text-secondary-500 transition-colors text-sm">See packing prices</a>.
+              </p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+              <h3 class="font-bold mb-2">
+                <span class="text-secondary-500 mr-1">6.</span>Property Chains
+              </h3>
+              <p class="text-warm-gray text-sm leading-relaxed">
+                Chain moves need more coordination. Late keys, last-minute changes, simultaneous completions — we plan for all of it. <a href="#property-chains" class="text-primary-600 font-semibold hover:text-secondary-500 transition-colors text-sm">How we handle chains</a>.
+              </p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+              <h3 class="font-bold mb-2">
+                <span class="text-secondary-500 mr-1">7.</span>Specialist Items
+              </h3>
+              <p class="text-warm-gray text-sm leading-relaxed">
+                Pianos, artwork, antiques, safes, hot tubs — specialist items require extra handling time and sometimes specialist equipment. Always mention these during your survey.
+              </p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+              <h3 class="font-bold mb-2">
+                <span class="text-secondary-500 mr-1">8.</span>Storage Needs
+              </h3>
+              <p class="text-warm-gray text-sm leading-relaxed">
+                If your move-in and move-out dates don't align, temporary storage bridges the gap. We have our own facility in Clifton. <a href="/storage-service/" class="text-primary-600 font-semibold hover:text-secondary-500 transition-colors text-sm">See storage options</a>.
+              </p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 class="font-bold mb-2">Need an Accurate Price?</h3>
+                <p class="text-warm-gray text-sm leading-relaxed mb-3">
+                  The fastest way to get a ballpark is our online calculator. For a fixed, all-inclusive quote, book a free survey.
+                </p>
+              </div>
+              <a href="/instantquote/" class="btn-cta-orange !text-sm text-center">GET INSTANT QUOTE</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S6: PIGGYBACK REMOVALS + MAP
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-primary-600 text-white" id="piggyback-pricing">
+    <div class="container-wide">
+      <div class="max-w-5xl mx-auto lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+        <div class="max-w-xs mx-auto lg:mx-0">
+          <PiggybackMap />
+        </div>
+
+        <div class="mt-8 lg:mt-0 text-center lg:text-left">
+          <h2 class="text-white mb-3">Why Bristol Means Better Value for Long-Distance Moves</h2>
+          <p class="text-white/80 mb-4">
+            Bristol is a midpoint that works quite well — our vans run Bristol to London, London back to Bristol, Bristol to Cornwall, Cornwall back to Bristol every week. The same goes for Cardiff, Birmingham and Edinburgh.
+          </p>
+          <p class="text-white/80 mb-6">
+            If your move falls on one of these corridors, our van is already making the journey. You're not paying for an empty van to drive to you — you're piggy-backing on a trip that's happening anyway. It costs us the same as if your next-door neighbour ran a removal company and offered to move you on his way home.
+          </p>
+          <a href="/instantquote/" class="btn-cta-orange">ASK ABOUT PIGGYBACK PRICING</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S7: SEASONAL PRICING / DEMAND
+  ============================================ -->
+  <section class="section bg-cream" id="seasonal-pricing">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
+          <div>
+            <h2 class="mb-4">When You Move Matters</h2>
+            <p class="text-warm-gray leading-relaxed mb-4">
+              Like any service business, our availability changes throughout the year. We don't apply a peak-season surcharge — but busier months mean less flexibility on dates, and booking early gives you the best choice.
+            </p>
+            <p class="text-warm-gray leading-relaxed mb-6">
+              <strong>End-of-month Fridays are the busiest days of the year.</strong> If your completion date is flexible, your Move Manager can suggest quieter slots with the most availability.
+            </p>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm mb-6">
+              <p class="text-sm font-semibold text-primary-600 mb-4">Demand by month</p>
+              <div class="space-y-3" id="seasonal-chart">
+                {seasonalData.map((s) => (
+                  <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium w-20 shrink-0">{s.months}</span>
+                    <div class="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
+                      <div
+                        class={`h-full rounded-full ${s.color} seasonal-bar`}
+                        style={`width: 0%; --target-width: ${s.pct}%;`}
+                        data-width={s.pct}
+                      ></div>
+                    </div>
+                    <span class="text-xs text-warm-gray w-16 text-right">{s.level}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 bg-white rounded-lg p-4 shadow-sm">
+              <svg class="w-6 h-6 text-green-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <p class="text-sm text-warm-gray">
+                <strong>Tip:</strong> Booking 4–6 weeks ahead gives you the widest choice of dates and crew availability.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-8 lg:mt-0 rounded-xl overflow-hidden">
+            <OptimizedPicture
+              name="packing/Tamara-packing"
+              pattern="HALF"
+              alt="Painless Removals team packing a Bristol home"
+              loading="lazy"
+              class="w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S9: WHAT'S INCLUDED + COMPARISON
+  ============================================ -->
+  <section class="section bg-cream" id="whats-included">
+    <div class="container-wide">
+      <div class="max-w-5xl mx-auto">
+        <h2 class="text-center mb-4">What's Actually in Your Quote?</h2>
+        <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+          Every Painless quote covers everything you need. Here's how we compare to a typical removal company — honestly.
+        </p>
+
+        <div class="lg:grid lg:grid-cols-5 lg:gap-10 items-start">
+          <!-- Comparison table (3 cols) -->
+          <div class="lg:col-span-3">
+            <!-- Desktop table -->
+            <div class="hidden md:block overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b-2 border-gray-200">
+                    <th class="px-4 py-3 font-semibold text-sm"></th>
+                    <th class="px-4 py-3 font-semibold text-sm text-primary-600">Painless</th>
+                    <th class="px-4 py-3 font-semibold text-sm text-warm-gray">Typical Company</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {compareItems.map((row, i) => (
+                    <tr class={`border-b border-gray-100 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
+                      <td class="px-4 py-3 text-sm font-medium">{row.feature}</td>
+                      <td class="px-4 py-3 text-sm">
+                        <span class={`inline-flex items-center gap-1 ${row.painlessGood ? 'text-green-600' : 'text-warm-gray'}`}>
+                          {row.painlessGood && <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>}
+                          {row.painless}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 text-sm">
+                        <span class={`inline-flex items-center gap-1 ${row.typicalGood ? 'text-green-600' : 'text-amber-600'}`}>
+                          {row.typicalGood
+                            ? <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            : <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                          }
+                          {row.typical}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Mobile cards -->
+            <div class="md:hidden space-y-3">
+              {compareItems.map((row) => (
+                <div class="bg-white rounded-lg p-4 shadow-sm">
+                  <p class="font-medium text-sm mb-2">{row.feature}</p>
+                  <div class="flex justify-between text-sm">
+                    <span class="text-green-600 font-semibold">{row.painless}</span>
+                    <span class={row.typicalGood ? 'text-green-600' : 'text-amber-600'}>{row.typical}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <!-- Team image (2 cols) -->
+          <div class="lg:col-span-2 mt-8 lg:mt-0">
+            <div class="rounded-xl overflow-hidden mb-6">
+              <OptimizedPicture
+                name="homepage/painless-removals-team"
+                pattern="HALF"
+                alt="The Painless Removals team"
+                loading="lazy"
+                class="w-full h-auto"
+              />
+            </div>
+
+            <div class="bg-white py-5 px-6 border-l-4 border-green-500 rounded-r-lg shadow-sm">
+              <p class="text-warm-gray text-sm leading-relaxed">
+                <strong>The real difference?</strong> When your chain delays by 3 hours, we're still there — because we allocated the full day to your chain move. Ask any company quoting you: "What happens if my keys are late?"
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S11: PROPERTY CHAINS + KEY WAIT WAIVER
+  ============================================ -->
+  <section class="section bg-cream" id="property-chains">
+    <div class="container-wide">
+      <div class="max-w-5xl mx-auto">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-start">
+          <div>
+            <h2 class="mb-4">Moving in a Property Chain?</h2>
+            <p class="text-warm-gray leading-relaxed mb-4">
+              Most house sales in England are part of a chain — a sequence of buyers and sellers who all need to complete on the same day. It's the part of moving that causes the most stress, because you're dependent on other people's solicitors, mortgage lenders and surveyors.
+            </p>
+
+            <h3 class="font-bold text-lg mb-3">Common pitfalls</h3>
+            <ul class="space-y-2 mb-6">
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                <span class="text-warm-gray text-sm"><strong>Late keys</strong> — Your solicitor says 1pm. Keys don't arrive until 4pm. Your removal crew has been waiting three hours.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                <span class="text-warm-gray text-sm"><strong>Collapsed chain</strong> — Someone at the top of the chain pulls out. Your move may need to go into storage while the chain is rebuilt.</span>
+              </li>
+              <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-orange-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                <span class="text-warm-gray text-sm"><strong>Simultaneous completions</strong> — You need to move out of your old home and into your new one on the same day, often with the previous owners still loading their van.</span>
+              </li>
+            </ul>
+
+            <h3 class="font-bold text-lg mb-3">How we handle it</h3>
+            <p class="text-warm-gray leading-relaxed mb-4">
+              We allocate the <strong>full day</strong> to your chain move — we don't rush off to another job. Your dedicated Move Manager stays in contact with your solicitor and the other party's removal company. If keys are late, we're already there.
+            </p>
+
+            <h3 class="font-bold text-lg mb-3">The Key Wait Waiver</h3>
+            <p class="text-warm-gray leading-relaxed mb-4">
+              If your move runs past 5pm due to chain delays, overtime charges normally apply (£35 per 30 minutes per crew member). The Key Wait Waiver is a small one-off fee added to your quote that removes overtime charges entirely. Think of it as insurance against the unpredictable.
+            </p>
+
+            <p class="text-warm-gray text-sm italic mb-6">
+              Your Move Manager will discuss whether the Key Wait Waiver makes sense for your specific move during the survey.
+            </p>
+          </div>
+
+          <div class="mt-8 lg:mt-0">
+            <div class="rounded-xl overflow-hidden mb-8">
+              <OptimizedPicture
+                name="home-removals/Bristol-home-removals-valuables"
+                pattern="HALF"
+                alt="Careful handling of valuables during a removal"
+                loading="lazy"
+                class="w-full h-auto"
+              />
+            </div>
+
+            <!-- Overtime chart -->
+            <div class="bg-white rounded-xl p-6 shadow-sm">
+              <h3 class="font-bold mb-4">What overtime looks like without the waiver</h3>
+              <OvertimeChart slots={overtimeSlots} />
+              <p class="text-xs text-warm-gray italic mt-3">Rate: £35 per 30 minutes per crew member. The Key Wait Waiver removes these charges for chain delays.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S12: INSURANCE / COVERAGE
+  ============================================ -->
+  <section class="section bg-white" id="insurance">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-10 items-center">
+          <div>
+            <h2 class="mb-4">Your Belongings Are Covered</h2>
+            <p class="text-warm-gray leading-relaxed mb-6">
+              Every quoted move includes Goods in Transit insurance — £15,000 per van. This covers everything the crew loads. If you add professional packing, those items are covered too.
+            </p>
+            <CoverageCard />
+          </div>
+          <div class="mt-8 lg:mt-0 rounded-xl overflow-hidden">
+            <OptimizedPicture
+              name="about/Painless-Removals-van-Bristol"
+              pattern="HALF"
+              alt="Painless Removals insured van in Bristol"
+              loading="lazy"
+              class="w-full h-auto"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S13: CANCELLATION POLICY (toned down)
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-gray-50" id="cancellation">
+    <div class="container-wide">
+      <div class="max-w-4xl mx-auto">
+        <h2 class="text-center mb-3 text-2xl">If Your Plans Change</h2>
+        <p class="text-center text-warm-gray mb-8 max-w-2xl mx-auto">
+          Property purchases don't always go to plan. We hope you'll never need this section, but here's our cancellation policy so you know where you stand.
+        </p>
+
+        <CancellationChart tiers={cancellationTiers} />
+
+        <p class="text-xs text-warm-gray italic text-center mt-6">
+          Full cancellation terms are in our <a href="/terms-conditions/" class="text-primary-600 hover:text-secondary-500 transition-colors">Terms & Conditions</a>. If your chain collapses, talk to us — we'll work with you to find a solution.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S14: FAQ
+  ============================================ -->
+  <section class="section bg-white" id="faq">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto">
+        <FAQAccordion faqs={faqs} />
+
+        <!-- Quick question capture -->
+        <div class="mt-10 bg-gray-50 rounded-xl p-6 text-center" id="question-form">
+          <h3 class="font-bold text-lg mb-2">Got a Question Not Listed Here?</h3>
+          <p class="text-warm-gray text-sm mb-4">Drop us a question and we'll get back to you.</p>
+          <form class="max-w-md mx-auto flex flex-col gap-3" id="pricing-question-form">
+            <input
+              type="text"
+              placeholder="Your question..."
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+              id="q-text"
+            />
+            <input
+              type="email"
+              placeholder="Your email (optional)"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+              id="q-email"
+            />
+            <button type="submit" class="btn-cta-orange !text-sm">SEND QUESTION</button>
+          </form>
+          <div id="q-thanks" class="hidden text-green-600 font-semibold py-4">
+            Thanks! We'll get back to you shortly.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================
+       S15: FINAL CTA
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to See Your Price?"
+    description="Get a ballpark in under a minute with our instant calculator, or book a free survey for an exact, all-inclusive quote."
+    bullets={['Instant online estimate — takes 47 seconds', 'Free no-obligation survey (video or in-person)', 'All prices include everything listed above']}
+    primaryText="GET INSTANT QUOTE"
+    primaryHref="/instantquote"
+    secondaryText="BOOK FREE SURVEY"
+    secondaryHref="/free-home-survey"
+    bottomNote="English, French, and Spanish spoken."
+  />
+
+
+  <!-- ============================================
+       JAVASCRIPT: All interactive modules
+  ============================================ -->
+  <script>
+    // ───────────────────────────────────────────
+    // M2: Payment Calculator
+    // ───────────────────────────────────────────
+    (function () {
+      const input = document.getElementById('quote-amount') as HTMLInputElement | null;
+      const btn = document.getElementById('calc-payment-btn');
+      const resultDiv = document.getElementById('payment-result');
+      const defaultDiv = document.getElementById('payment-default');
+
+      if (!input || !btn || !resultDiv || !defaultDiv) return;
+
+      function calculate() {
+        const amount = parseFloat(input!.value);
+
+        if (!amount || amount < 100) {
+          resultDiv!.classList.add('hidden');
+          defaultDiv!.classList.remove('hidden');
+          return;
+        }
+
+        let deposit = Math.round(amount * 0.3);
+        let balance = amount - deposit;
+
+        // PayPal Pay in 3 max is £3,000 — increase deposit if needed
+        if (balance > 3000) {
+          deposit = amount - 3000;
+          balance = 3000;
+        }
+
+        const depositPct = Math.round((deposit / amount) * 100);
+        const instalment = Math.round(balance / 4);
+        const paypal = Math.round((balance / 3) * 100) / 100;
+
+        (document.getElementById('res-total') as HTMLElement).textContent = `£${amount.toLocaleString()}`;
+        (document.getElementById('res-deposit-label') as HTMLElement).textContent = `Deposit (${depositPct}%)`;
+        (document.getElementById('res-deposit') as HTMLElement).textContent = `£${deposit.toLocaleString()}`;
+        (document.getElementById('res-balance') as HTMLElement).textContent = `£${balance.toLocaleString()}`;
+        (document.getElementById('res-bacs') as HTMLElement).textContent = `£${balance.toLocaleString()} before move day`;
+        (document.getElementById('res-instalments') as HTMLElement).textContent = `4 × £${instalment.toLocaleString()}`;
+
+        const paypalEl = document.getElementById('res-paypal') as HTMLElement;
+        const paypalNote = document.getElementById('res-paypal-note') as HTMLElement;
+
+        if (balance > 3000) {
+          paypalEl.textContent = 'N/A for full balance';
+          paypalNote.textContent = `Balance exceeds PayPal Pay in 3 limit (£3,000). You can use PayPal for part of the balance — ask your Move Manager.`;
+        } else {
+          paypalEl.textContent = `3 × £${paypal.toFixed(2)}`;
+          paypalNote.textContent = 'Subject to PayPal eligibility. 0% interest.';
+        }
+
+        resultDiv!.classList.remove('hidden');
+        defaultDiv!.classList.add('hidden');
+      }
+
+      btn.addEventListener('click', calculate);
+      input.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter') { e.preventDefault(); calculate(); }
+      });
+
+      // Show default £1,500 example on load
+      input.value = '1500';
+      calculate();
+    })();
+
+
+    // ───────────────────────────────────────────
+    // M4: Move Selector (7 sizes × 3 distances = 21 cards)
+    // ───────────────────────────────────────────
+    (function () {
+      const cards = document.querySelectorAll<HTMLElement>('.move-card');
+      const btns = document.querySelectorAll<HTMLButtonElement>('.move-filter-btn');
+
+      if (!cards.length || !btns.length) return;
+
+      let selectedProperty: string | null = null;
+      let selectedDistance: string | null = 'local'; // Default: Local Bristol
+
+      const grid = document.getElementById('move-cards');
+
+      function updateCards() {
+        let visible = 0;
+        cards.forEach(c => {
+          const match = c.getAttribute('data-match') || '';
+          const [cardProp, cardDist] = match.split('-');
+          const propMatch = !selectedProperty || cardProp === selectedProperty;
+          const distMatch = !selectedDistance || cardDist === selectedDistance;
+
+          if (propMatch && distMatch) {
+            c.style.display = '';
+            c.style.opacity = '1';
+            c.style.transform = selectedProperty ? 'translateY(-4px)' : '';
+            c.style.boxShadow = selectedProperty ? '0 8px 25px rgba(0,0,0,0.12)' : '';
+            visible++;
+          } else {
+            c.style.display = 'none';
+          }
+        });
+
+        // Center single card at readable width
+        if (grid) {
+          if (visible === 1) {
+            grid.style.gridTemplateColumns = '1fr 1fr 1fr';
+            cards.forEach(c => {
+              if (c.style.display !== 'none') c.style.gridColumn = '2';
+            });
+          } else {
+            grid.style.gridTemplateColumns = '';
+            cards.forEach(c => { c.style.gridColumn = ''; });
+          }
+        }
+      }
+
+      // Apply default filter on load
+      updateCards();
+
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const prop = btn.getAttribute('data-property');
+          const dist = btn.getAttribute('data-distance');
+
+          if (prop) {
+            // Toggle: clicking same button deselects
+            if (selectedProperty === prop) {
+              selectedProperty = null;
+              btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
+              btn.classList.add('border-gray-200');
+            } else {
+              selectedProperty = prop;
+              // Reset sibling buttons
+              btns.forEach(b => {
+                if (b.getAttribute('data-property')) {
+                  b.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
+                  b.classList.add('border-gray-200');
+                }
+              });
+              btn.classList.add('bg-primary-600', 'text-white', 'border-primary-600');
+              btn.classList.remove('border-gray-200');
+            }
+          }
+
+          if (dist) {
+            // Distance tabs: always one active, no toggle-off
+            if (selectedDistance === dist) return;
+            selectedDistance = dist;
+            btns.forEach(b => {
+              if (b.getAttribute('data-distance')) {
+                b.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
+                b.classList.add('border-gray-200');
+              }
+            });
+            btn.classList.add('bg-primary-600', 'text-white', 'border-primary-600');
+            btn.classList.remove('border-gray-200');
+          }
+
+          updateCards();
+        });
+      });
+    })();
+
+
+    // ───────────────────────────────────────────
+    // M5: Seasonal Chart Animation
+    // ───────────────────────────────────────────
+    (function () {
+      const chart = document.getElementById('seasonal-chart');
+      if (!chart) return;
+
+      const bars = chart.querySelectorAll<HTMLElement>('.seasonal-bar');
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              bars.forEach((bar, i) => {
+                setTimeout(() => {
+                  bar.style.transition = 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                  bar.style.width = bar.dataset.width + '%';
+                }, i * 120);
+              });
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+      observer.observe(chart);
+    })();
+
+
+
+
+    // ───────────────────────────────────────────
+    // M7: Question Form
+    // ───────────────────────────────────────────
+    (function () {
+      const form = document.getElementById('pricing-question-form') as HTMLFormElement | null;
+      const thanks = document.getElementById('q-thanks');
+
+      if (!form || !thanks) return;
+
+      form.addEventListener('submit', (e: Event) => {
+        e.preventDefault();
+        form.classList.add('hidden');
+        thanks.classList.remove('hidden');
+      });
+    })();
+  </script>
+
+</Layout>

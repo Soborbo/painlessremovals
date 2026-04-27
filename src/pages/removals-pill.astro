@@ -1,0 +1,339 @@
+---
+/**
+ * /removals-pill/ — Pill town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Pill Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '7 miles' },
+        { label: 'Drive time from depot', value: '~15 minutes' },
+        { label: 'Postcode area', value: 'BS20' },
+        { label: 'Nearest motorway', value: 'M5 J19 (2 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '2–3 bed cottage / terrace' },
+        { label: 'Typical crew', value: '2 movers, 1 van' },
+        { label: 'Usual duration', value: 'Half day' },
+        { label: 'Local move cost', value: '£400–£750' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '~£340,000' },
+        { label: 'Typical property', value: 'Cottage / terrace / estate' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'No' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Limited (narrow lanes)' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Narrow lanes, tight access' },
+        { label: 'Conservation area', value: 'Village core' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Wonderful guys, incredibly helpful and kept a positive attitude even after a long day. Highly recommended!",
+  name: 'Rebecca Durham',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Pill';
+const description = `Pill removal services from Bristol, 7 miles west. Narrow village lanes, compact cottages — we know the logistics. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Pill Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Pill",
+    "address": { "@type": "PostalAddress", "postalCode": "BS20", "addressLocality": "Pill", "addressRegion": "North Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Does it cost more because you\'re based in Bristol?', answer: 'At 7 miles from our depot — about 15 minutes — Pill is well within our core coverage area. There\'s no meaningful mileage premium. Your quote will be comparable to any local operator, but with full insurance and professional equipment included.' },
+  { question: 'Can your vans handle Pill\'s narrow lanes?', answer: 'Yes. We know Pill\'s layout — the compact streets around the village centre and Underbanks are tight but manageable with our smaller transit vans. For the narrowest lanes, we shuttle from a smaller van to the Luton at a wider point.' },
+  { question: 'How quickly can you reach Pill on moving day?', answer: 'About 15 minutes from our depot via the A369 Portishead Road or through Abbots Leigh. Our crew arrives at the agreed time — typically 8am.' },
+  { question: 'Can you store my belongings if completion dates don\'t align?', answer: 'Yes. Secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> at our Bristol warehouse — 15 minutes from Pill. Units from small wardrobe to garage size, with flexible terms.' },
+  { question: 'Do you move people from Pill to Portishead?', answer: 'Regularly. Pill to Portishead is one of the shortest moves we do — about 2 miles. We also handle moves between Pill and Bristol, Long Ashton, Clevedon, and beyond. Same crew, same insurance, same service.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/pill-van-blankets-1200w.webp" preloadImage="/img/areas/pill-van-blankets-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/pill-van-blankets"
+      pattern="FULL"
+      alt="Painless Removals van with protective blankets ready for a Pill village move"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Pill</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=pill`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/pill-van-blankets"
+      pattern="FULL"
+      alt="Painless Removals van with protective blankets ready for a Pill village move"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Pill' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Pill is a small village on the south bank of the River Avon that most people drive through without registering as somewhere distinct. It sits off the A369 on the way to Portishead, technically in North Somerset, about 15 minutes from our depot. For a lot of people, Pill is under the radar — but it's a village that may be on the verge of significant change if the proposed rail link to Bristol Temple Meads goes ahead.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">We do a steady number of moves in and out of Pill. It shares the BS20 postcode with neighbouring <a href="/removals-portishead/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">Portishead</a>, and many residents move between the two — upsizing to Portishead's larger housing stock or downsizing from Portishead to a more compact Pill cottage. The village sits on the cycle route between Portishead and Bristol — a route Jay uses himself — running along the river under the Clifton Suspension Bridge.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/pill-van-blankets" pattern="FULL" alt="Painless Removals van with protective blankets ready for a Pill village move" class="w-full rounded-xl object-cover object-top max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Pill Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Narrow Roads and Gradients</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Pill's character comes from its history as a small port and ferry crossing point on the Avon. The older part of the village — compact terraces and stone cottages built for dock workers — wasn't designed with removal logistics in mind. Narrow roads wind uphill through the village core, and the gradients and road angles are the main operational consideration. Nothing impassable for a Luton van, but a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">site visit</a> is worth doing specifically to work out where the van goes.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">For moves from the older village core, we typically bring a smaller transit for the initial load and transfer contents to the Luton at a wider staging point. It adds a few minutes but protects both your belongings and your neighbours' parked cars. The newer estates off Lodway and towards the Portishead end are a different story — wider roads, driveways, standard access.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">A Mix of Old and New</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">The housing ranges from older terraces and cottages near the harbour — compact, occasionally with limited internal access — to some flats in the centre, and modern new-builds at the top of the hill with driveways and garages. Most moves here are two-storey properties, comfortably finished in a day. Pill is too small to support a dedicated removal company, so you're looking at Bristol-based operators regardless — and at 7 miles, we're the closest full-service option.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Railway Question</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">There's a proposed rail link that would connect Pill to Bristol Temple Meads. If it happens, property values would shift — as Jay puts it, they "would not be what they are now." It's speculative, but it's the kind of thing that shapes whether people buy now or wait. From a removals perspective, more people moving in means more work — and we know Pill's lanes well enough to handle it.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving from Pill?" description="Free quote in about two minutes. We know the village lanes — your quote reflects your specific property." buttonText="Get Your Pill Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What We Know From Working in Pill</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Pill is a 10-to-15-minute drive from our depot in light traffic, longer during commuter windows on the A369. The cycle path along the river — under the Suspension Bridge, through to Bristol — gets properly muddy in winter, but the road access to the village is reliable year-round.</p>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Pill is right on the cycle route from Portishead into Bristol — I cycle it myself. The village is small but we know the lanes well. It's a quick hop from our depot and we're there comfortably."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Pill falls under <a href="https://www.n-somerset.gov.uk/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">North Somerset Council</a>, not Bristol. If you're combining your move with a <a href="/house-and-waste-clearance/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">house clearance</a>, waste collection rules differ. Let Painless Removals handle the logistics — we work across both council areas every week.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Pill a Difficult Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">The newer estates: no. Good road widths, driveways, easy access. The older village core: it needs planning. The narrow roads, gradients, and limited parking mean van positioning matters. But we've done it many times and know which approaches work.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For long-distance moves from Pill, M5 J19 is 2 miles away. Whether you're heading to London via the M4 or north on the M5, you're on the motorway within minutes.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Pill Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 pill-checklist">
+          <li><strong>Old village or new estate?</strong> This determines van size, routing, and whether we shuttle.</li>
+          <li><strong>Gradient?</strong> Pill's roads climb steeply — check that the van can park level for safe loading.</li>
+          <li><strong>Parking?</strong> Older streets have limited space — let us know if neighbours' cars may block access.</li>
+          <li><strong>Portishead move?</strong> Pill to Portishead is about 2 miles — one of the shortest moves we do.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Pill Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Pill Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">Pill is minutes from M5 J19, giving fast motorway access for moves in any direction.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Pill" to="London" meta="~130 miles via M5/M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Pill" to="Birmingham" meta="~100 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Pill" to="Exeter" meta="~85 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Pill" to="Edinburgh" meta="~385 miles" days="2–3 days" href="/removals-bristol-to-edinburgh/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate from Pill village centre.</p>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Pill?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We also serve families across North Somerset. If you're moving from or to
+        <a href="/removals-portishead/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Portishead</a>,
+        <a href="/removals-long-ashton/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Long Ashton</a>, or
+        <a href="/removals-clevedon/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Clevedon</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">All Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">See everything we offer, from storage to concierge.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move from Pill?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-[#D4A84B] no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  .pill-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .pill-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

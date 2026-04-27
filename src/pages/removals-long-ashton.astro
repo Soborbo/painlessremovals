@@ -1,0 +1,349 @@
+---
+/**
+ * /removals-long-ashton/ — Long Ashton town page
+ *
+ * Type B: Town Page (Clifton template) — editorial prose from Jay Newton interview, 1200-1500 words.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import TrustpilotStrip from '@/components/TrustpilotStrip.astro';
+import AreaBreadcrumbs from '@/components/areas/AreaBreadcrumbs.astro';
+import FactBox from '@/components/areas/FactBox.astro';
+import ReviewInline from '@/components/areas/ReviewInline.astro';
+import AuthorByline from '@/components/areas/AuthorByline.astro';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import MidCTA from '@/components/MidCTA.astro';
+import AreaFinalCTA from '@/components/AreaFinalCTA.astro';
+import SidebarCTA from '@/components/areas/SidebarCTA.astro';
+import SidebarAuthorBox from '@/components/areas/SidebarAuthorBox.astro';
+import RouteCard from '@/components/areas/RouteCard.astro';
+import { siteConfig } from '@/config/site.config';
+
+const factBoxProps = {
+  title: 'Long Ashton Quick Area Guide',
+  sections: [
+    {
+      icon: '',
+      heading: 'Location',
+      rows: [
+        { label: 'Depot distance', value: '4 miles' },
+        { label: 'Drive time from depot', value: '~10 minutes' },
+        { label: 'Postcode area', value: 'BS41' },
+        { label: 'Nearest motorway', value: 'M5 J19 (3 miles)' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Typical Move',
+      rows: [
+        { label: 'Typical job', value: '3–4 bed detached' },
+        { label: 'Typical crew', value: '3 movers, 1 van' },
+        { label: 'Usual duration', value: 'Full day' },
+        { label: 'Local move cost', value: '£550–£950' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Property',
+      rows: [
+        { label: 'Avg. property price', value: '£400–550k+' },
+        { label: 'Typical property', value: 'Detached / period cottage' },
+        { label: 'Typical floors', value: '2 storeys' },
+        { label: 'Lifts available', value: 'New-builds only' },
+      ],
+    },
+    {
+      icon: '',
+      heading: 'Local Challenges',
+      rows: [
+        { label: 'Parking restrictions', value: 'Rarely an issue' },
+        { label: 'Suspension needed', value: 'No' },
+        { label: 'Main difficulty', value: 'Narrow village lanes' },
+        { label: 'Conservation area', value: 'Village centre' },
+      ],
+    },
+  ],
+};
+
+const reviewProps = {
+  text: "Fantastic service from the team for our move from Bristol. Arrived bang on time, got through the work with no fuss whatsoever and nothing broken, scratched or damaged. Would 100% recommend!",
+  name: 'Matthew Green',
+  context: 'Google Review',
+};
+
+const title = 'House Removals in Long Ashton';
+const description = `Long Ashton removal services — 4 miles from our Bristol depot. Village cottages to woodland properties near Ashton Court, military family specialists. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Long Ashton Removal Services",
+  "provider": { "@id": `${siteConfig.brand.domain}/#business` },
+  "areaServed": {
+    "@type": "Place",
+    "name": "Long Ashton",
+    "address": { "@type": "PostalAddress", "postalCode": "BS41", "addressLocality": "Long Ashton", "addressRegion": "North Somerset" },
+  },
+};
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
+  "datePublished": "2026-02-10",
+  "dateModified": "2026-02-25",
+};
+
+const faqs = [
+  { question: 'Is Long Ashton close enough that there\'s no extra cost?', answer: 'At 4 miles from our depot — roughly 10 minutes — Long Ashton is one of the closest areas we serve. There\'s no mileage premium. You\'re paying the same rate as a Bristol city move.' },
+  { question: 'How quickly can you reach Long Ashton?', answer: 'About 10 minutes from our depot via the A370. On moving day, our crew typically arrives at 8am.' },
+  { question: 'Do I need a parking permit in Long Ashton?', answer: 'Generally no. Most of Long Ashton\'s residential streets have unrestricted parking. Some of the older lanes near the village centre are narrow and may need a loading plan, but permits aren\'t usually required.' },
+  { question: 'Can you handle the larger period properties?', answer: 'Yes. Long Ashton has substantial detached houses and period cottages. We bring extra crew for larger properties, specialist wrapping for antiques and period features, and furniture disassembly equipment as standard.' },
+  { question: 'Do you offer storage for Long Ashton residents?', answer: 'Yes. Our secure <a href="/storage-service/" class="text-secondary-500 underline underline-offset-2">storage</a> warehouse is 10 minutes away in Bristol — closer than most self-storage units you\'d find locally.' },
+  { question: 'Do you handle military family moves in Long Ashton?', answer: 'Yes. We\'ve built a strong relationship with the military community here. Service families posted to Bristol know the drill — fixed dates, smooth handovers, possessions handled with care. Word of mouth within that community keeps us busy.' },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.question,
+    "acceptedAnswer": { "@type": "Answer", "text": f.answer.replace(/<[^>]*>/g, '') },
+  })),
+};
+
+const schema = [serviceSchema, articleSchema, faqSchema];
+---
+
+<Layout title={title} description={description} schema={schema} ogImage="/img/areas/long-ashton-village-house-move-1200w.webp" preloadImage="/img/areas/long-ashton-village-house-move-750w.avif">
+
+<!-- ═══ Hero Section ═══ -->
+<section class="relative lg:grid lg:grid-cols-2 lg:max-h-[calc(100dvh-var(--header-h,104px))] lg:overflow-hidden">
+  <!-- Mobile: Image at top -->
+  <div class="lg:hidden w-full relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/long-ashton-village-house-move"
+      pattern="FULL"
+      alt="Removal team working on a house move near Long Ashton village"
+      loading="eager"
+      fetchpriority="high"
+      class="w-full h-auto"
+    />
+  </div>
+
+  <!-- Left: Content area -->
+  <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+    <div class="max-w-xl mx-auto text-center">
+      <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+        House Removals in <span class="text-secondary-500">Long Ashton</span>
+      </h1>
+
+      <div class="flex flex-col gap-2 mb-5 items-center">
+        <a href={`/instantquote?area=long-ashton`} class="btn-cta-orange">
+          GET YOUR FREE QUOTE NOW
+        </a>
+        <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
+      </div>
+
+      <TrustpilotStrip />
+    </div>
+  </div>
+
+  <!-- Right: Full-bleed image (desktop only) -->
+  <div class="hidden lg:block relative overflow-hidden">
+    <OptimizedPicture
+      name="areas/long-ashton-village-house-move"
+      pattern="FULL"
+      alt="Removal team working on a house move near Long Ashton village"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 w-full h-full object-cover object-center"
+    />
+  </div>
+</section>
+
+<div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+
+  <AreaBreadcrumbs items={[
+    { label: 'Home', href: '/' },
+    { label: 'Areas', href: '/areas/' },
+    { label: 'Long Ashton' },
+  ]} />
+
+  <div class="area-layout">
+    <article>
+
+      <div class="pt-6 pb-8">
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4 mt-6">Long Ashton is one of those places Bristol people drive through regularly without quite registering it as somewhere distinct. It sits on the western edge of the city, technically in North Somerset, with Nailsea down the road and the Ashton Court estate on the doorstep. At 4 miles from our depot — around 10 minutes — it's one of the closest areas we serve. No mileage premium, no logistical complication.</p>
+        <p class="text-[17px] leading-relaxed text-gray-800">For a lot of people, that proximity is the point. You get a village with its own identity and character, reasonable property prices compared to a Bristol postcode, and you don't give up much of the convenience. We do a good number of moves in and out of Long Ashton and it's one of those areas we've always found rewarding to work in — a good mix of properties, interesting houses, and pleasant access.</p>
+      </div>
+
+      <div class="pb-6">
+        <OptimizedPicture name="areas/long-ashton-village-house-move" pattern="FULL" alt="Removal team working on a house move near Long Ashton village" class="w-full rounded-xl object-cover max-h-[420px]" loading="eager" />
+      </div>
+
+      <div class="area-mobile-only py-6"><FactBox {...factBoxProps} /></div>
+
+      <div class="pt-8 pb-4 md:pt-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">What Makes Moving in Long Ashton Different?</h2>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">A Village With More Variety Than You'd Expect</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Long Ashton has more variety than a village strung along one main road might suggest. There are the older properties in and around the village centre — attractive stone-built houses near All Saints Church and the Angel Inn, some with enough character to make them interesting to plan for. Then there are newer developments that have filled in around the edges, including modern housing on the former Long Ashton Research Station site.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">We've moved people into some distinctive properties here — older buildings with unusual layouts, careful conversions, and forestry commission houses that back onto the Ashton Court woodland. Each one needs a proper survey, not for access alone but to understand what kind of move you have. The <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">home survey</a> matters here more than in most villages.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Main Road Factor</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Long Ashton is built along the B3128 with the A370 running along the northern edge — both are commuter routes into Bristol. Traffic builds noticeably during peak hours. Most of the village's residential properties sit on quieter streets branching off the main road, where access for removal vans is good. But timing a move to avoid peak traffic is worth considering. We aim to have the van positioned and working before rush hour builds.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-8">Providence Lane and the older village lanes near the church can be narrow, so for those moves we plan loading positions in advance. Leigh Woods — technically within the same parish — has its own complication: the approach via the Clifton Suspension Bridge has weight and width restrictions our larger vehicles can't use, so we route via the A369 instead. And if you're moving during the Balloon Fiesta in August, book early — the roads around Ashton Court become gridlocked for the full weekend.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">The Military Connection</h3>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">This one might surprise you. We've done a notable number of moves in Long Ashton for military personnel — service families posted to Bristol for a tour of duty, living here for a few years before moving on to the next posting. The armed forces own properties in the area, and word gets around within that community. Military moves have their own rhythm: the dates are fixed, the handovers need to run smoothly, and there's a particular care taken with possessions. We understand what's needed and these tend to be well-organised, efficient jobs.</p>
+      </div>
+
+      <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
+
+      <div class="midcta-bleed">
+        <MidCTA heading="Moving from Long Ashton?" description="Free quote in about two minutes — at 4 miles away, we're practically your local removal company." buttonText="Get Your Long Ashton Quote →" buttonHref="/instantquote" />
+      </div>
+
+      <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Why People Stay in Long Ashton</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Many of our moves here are families upsizing within the village — they love the area and don't want to leave. Having Ashton Court on the doorstep — hundreds of acres of parkland and woodland — gives you walking and cycling from the village without needing a car. The proximity to Clifton and Bristol makes this one of the most desirable village locations near the city.</p>
+
+        <figure class="my-6">
+          <div class="overflow-hidden rounded-xl">
+            <OptimizedPicture name="areas/long-ashton-house-removal" pattern="HALF" alt="House removal in Long Ashton" class="w-full rounded-xl object-cover max-h-[400px] hover:scale-[1.02] transition-transform duration-500" />
+          </div>
+        </figure>
+
+        <blockquote class="border-l-4 border-accent-500 pl-5 my-6 text-[17px] leading-relaxed text-gray-700 italic">
+          "Long Ashton is harder to characterise than most areas — it has a bit of everything. Some beautiful old quirky properties, some forestry commission houses in the woods, and standard three-bed new builds. A little bit of everything."
+          <span class="block mt-2 text-sm not-italic text-gray-500">— Jay Newton, Director</span>
+        </blockquote>
+
+        <p class="text-[17px] leading-relaxed text-gray-800">Long Ashton also sits at the Bristol end of a useful corridor heading southwest. Nailsea is the next settlement along, then Backwell, then Clevedon. We cover all of these and often handle moves that connect them — someone leaving Long Ashton for Nailsea, or coming in from Backwell. The whole corridor is priced as local work. Long Ashton is in <a href="https://www.n-somerset.gov.uk/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">North Somerset</a>, not Bristol City Council — if you're combining a move with a <a href="/house-and-waste-clearance/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700">house clearance</a>, waste disposal arrangements differ. Let Painless Removals handle the cross-council logistics.</p>
+      </div>
+
+      <div class="pb-10 md:pb-12">
+        <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-5">Is Long Ashton an Easy Place to Move?</h2>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-4">Mostly, yes. The residential streets have good access, most properties have driveways, and there's no Residents' Parking Zone. The complications are specific: narrow lanes near the village centre, Leigh Woods access restrictions for larger vehicles, and rush-hour traffic on the A370. None of this is unusual for village removals.</p>
+
+        <p class="text-[17px] leading-relaxed text-gray-800 mb-6">For long-distance moves from Long Ashton, the M5 junction is 3 miles away. Whether you're heading to London via the M4 or north to Birmingham via the M5, you're on the motorway network within minutes. Get in touch for a <a href="/free-home-survey/" class="text-secondary-500 underline decoration-secondary-300 underline-offset-2 hover:text-secondary-700 transition-colors">free survey</a> and a clear price.</p>
+
+        <h3 class="font-heading text-xl font-semibold text-gray-900 mb-3">Planning Your Long Ashton Move: A Quick Checklist</h3>
+
+        <ul class="space-y-3 text-[17px] leading-relaxed text-gray-800 long-ashton-checklist">
+          <li><strong>Property type?</strong> Period cottage, modern detached, or woodland setting — each needs a different plan.</li>
+          <li><strong>Village lanes?</strong> Providence Lane and the streets near the church may need careful van positioning.</li>
+          <li><strong>Leigh Woods?</strong> If you're in the parish's Leigh Woods area, we route via the A369 — not the Suspension Bridge.</li>
+          <li><strong>Timing?</strong> Avoid loading during A370 rush hour if your property faces the main road.</li>
+          <li><strong>Balloon Fiesta?</strong> Moving in August? Check the Fiesta dates — Ashton Court traffic can gridlock the village.</li>
+        </ul>
+      </div>
+
+      <div class="area-mobile-only py-6"><SidebarAuthorBox /></div>
+    </article>
+
+    <aside class="area-sidebar">
+      <div class="space-y-5 pt-6 h-full">
+        <FactBox {...factBoxProps} />
+        <ReviewInline {...reviewProps} />
+        <SidebarAuthorBox />
+        <SidebarCTA />
+      </div>
+    </aside>
+  </div>
+
+  <div class="pt-12 md:pt-16 border-t border-gray-200">
+    <FAQAccordion faqs={faqs} heading="What Do Long Ashton Residents Ask Us?" />
+  </div>
+</div>
+
+<section class="section bg-teal-50">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <h2 class="font-heading text-2xl md:text-[30px] font-semibold text-gray-900 leading-snug mb-2">How Long Does a Long-Distance Move From Long Ashton Take?</h2>
+    <p class="text-gray-500 max-w-xl mb-8">With M5 J19 three miles away, Long Ashton has rapid motorway access for moves in any direction.</p>
+    <div class="grid md:grid-cols-2 gap-4">
+      <RouteCard from="Long Ashton" to="London" meta="~125 miles via M4" days="1–2 days" href="/removals-bristol-to-london/" />
+      <RouteCard from="Long Ashton" to="Birmingham" meta="~95 miles via M5" days="1 day" href="/removals-bristol-to-birmingham/" />
+      <RouteCard from="Long Ashton" to="Exeter" meta="~80 miles via M5" days="1 day" href="/removals-bristol-to-exeter/" />
+      <RouteCard from="Long Ashton" to="Manchester" meta="~185 miles via M5/M6" days="1–2 days" href="/removals-bristol-to-manchester/" />
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Distances approximate from Long Ashton village centre.</p>
+  </div>
+</section>
+
+<section class="section bg-cream">
+  <div class="max-w-[1100px] mx-auto px-4 sm:px-6">
+    <div class="mb-10">
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">What Other Towns Do We Cover Near Long Ashton?</h2>
+      <p class="text-[16px] leading-relaxed text-gray-800 max-w-[680px]">
+        We also serve families across North Somerset and the surrounding area. If you're moving from or to
+        <a href="/removals-nailsea/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Nailsea</a>,
+        <a href="/removals-clevedon/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Clevedon</a>, or
+        <a href="/removals-portishead/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">Portishead</a>,
+        we know these areas well. For Bristol neighbourhoods, see our <a href="/areas/" class="text-primary-600 hover:text-primary-800 no-underline font-medium">areas page</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="font-heading text-2xl font-semibold text-gray-900 mb-4">Our Services</h2>
+      <div class="grid sm:grid-cols-3 gap-4">
+        <a href="/home-removals-bristol/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Home Removals</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full house moves with dedicated Move Manager.</p>
+        </a>
+        <a href="/home-packing-service/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">Packing Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">Full or fragile-only packing, the day before your move.</p>
+        </a>
+        <a href="/" class="block bg-white border border-gray-200 rounded-xl p-5 no-underline hover:shadow-md hover:-translate-y-0.5 transition-all">
+          <h3 class="font-semibold text-gray-900 text-sm mb-1">All Services</h3>
+          <p class="text-xs text-gray-500 leading-relaxed">See everything we offer, from storage to concierge.</p>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<AreaFinalCTA heading="Ready to Move from Long Ashton?" description='Free quote in two minutes. Or see <a href="/areas/" class="text-[#D4A84B] no-underline hover:underline">all areas we cover</a>.' />
+
+</Layout>
+
+<style>
+  .midcta-bleed {
+    margin-left: -1rem;
+    margin-right: -1rem;
+  }
+  @media (min-width: 640px) {
+    .midcta-bleed {
+      margin-left: -1.5rem;
+      margin-right: -1.5rem;
+    }
+  }
+  .long-ashton-checklist li {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .long-ashton-checklist li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.3rem;
+    width: 1rem;
+    height: 1rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2316a34a'%3E%3Cpath fill-rule='evenodd' d='M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+</style>

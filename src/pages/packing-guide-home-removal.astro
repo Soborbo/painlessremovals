@@ -1,0 +1,601 @@
+---
+/**
+ * What The Pack? — Your Home Removal Packing Guide
+ *
+ * Quick-reference companion to the printed packing guide.
+ * Room-by-room tips, materials, labelling, fragile items, and hazards.
+ * Links to the full 8-lesson video course at /packing-guide/.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import FAQAccordion from '@/components/FAQAccordion.astro';
+import FinalCTA from '@/components/FinalCTA.astro';
+import { article, faqPage, breadcrumbs } from '@/utils/schema';
+
+// Page metadata
+const pageTitle = 'What The Pack? — Your Home Removal Packing Guide';
+const pageDescription = 'Your quick-reference packing guide for moving house. Room-by-room tips on decluttering, materials, furniture, fragile items, electronics, and labelling from Painless Removals Bristol.';
+
+// Packing materials grid
+const packingMaterials = [
+  {
+    title: 'Strong Double-Walled Boxes',
+    description: 'You need three sizes: small for heavy items like books, medium for general household goods, and large for lightweight bulky things like bedding and cushions. Double-walled corrugated boxes are essential — single-wall ones buckle under weight and collapse in stacks.',
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>`,
+  },
+  {
+    title: 'Bubble Wrap',
+    description: 'Use it for genuinely fragile items: glass ornaments, picture frames, mirrors, and electronics. Buy the large-bubble variety for better cushioning. One 50-metre roll covers a typical 3-bedroom house.',
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`,
+  },
+  {
+    title: 'Packing Paper',
+    description: 'The workhorse of packing materials. Use it to wrap plates, glasses, ornaments, and anything breakable. Buy proper acid-free packing paper — newspaper leaves ink stains on everything it touches. Budget 5 to 8 kilograms.',
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2"/></svg>`,
+  },
+  {
+    title: 'Tape Gun & Packing Tape',
+    description: 'A tape gun transforms your packing speed — you can seal a box in three seconds instead of wrestling with rolls. Buy 4 to 6 rolls of 48mm brown packing tape. Cheap parcel tape is not strong enough for heavy boxes.',
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>`,
+  },
+  {
+    title: 'Thick Marker Pens',
+    description: 'You need at least two chunky permanent markers in black, plus a set of coloured markers if you are using a colour-coding system (which we strongly recommend). Write large enough to read from across a room.',
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`,
+  },
+  {
+    title: 'Wardrobe Boxes',
+    description: 'Tall boxes with a built-in hanging rail. Transfer clothes directly from wardrobe to box without folding or creasing. Each box holds roughly one metre of rail. Two to four boxes cover most wardrobes.',
+    icon: `<svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>`,
+  },
+];
+
+// Room-by-room tips
+const rooms = [
+  {
+    name: 'Kitchen',
+    tips: [
+      'Wrap plates individually in packing paper and stand them vertically in the box like records — they are far stronger on their edges than stacked flat.',
+      'Stuff the inside of glasses and mugs with crumpled packing paper before wrapping the outside. This prevents them collapsing under pressure.',
+      'Keep cleaning chemicals and food in separate boxes. Bleach next to bread is a disaster nobody wants.',
+      'Use small boxes for crockery and heavy kitchen items. A large box filled with plates is too heavy to lift safely.',
+      'Pack your kettle, two mugs, tea bags, milk, and a spoon in a clearly labelled "First Brew" box — you will thank yourself at the other end.',
+    ],
+    imagePlaceholder: 'Image: Kitchen being packed, plates wrapped in paper',
+  },
+  {
+    name: 'Bedroom',
+    tips: [
+      'Use wardrobe boxes for suits, dresses, and anything that creases easily. Transfer clothes directly on their hangers — no folding required.',
+      'Vacuum-seal bags are brilliant for duvets, pillows, and spare bedding. They reduce volume by up to 75% and keep everything clean.',
+      'Disassemble bed frames and keep all bolts, screws, and Allen keys in a labelled ziplock bag taped to the frame.',
+      'Roll casual clothing and stack it in medium boxes or bin bags. Rolling prevents creases better than folding.',
+      'Strip beds last on moving day. Stuff duvets into bin bags — they make excellent padding for fragile items on the van.',
+    ],
+    imagePlaceholder: 'Image: Wardrobe box with hanging clothes',
+  },
+  {
+    name: 'Living Room',
+    tips: [
+      'For televisions, place two screens face-to-face with a large sheet of cardboard between them. Wrap the pair in a removal blanket or bubble wrap. If you have the original box, even better.',
+      'Sofa covers or removal blankets protect upholstery from dirt and tears. If you do not have covers, cling film works in a pinch.',
+      'Remove shelves from bookcases and wrap each shelf individually. Pack books in small boxes — a large box of books is impossibly heavy.',
+      'Wrap lamp bases and shades separately. Shades are surprisingly fragile and should sit upright in a box with padding around them.',
+      'Roll up rugs tightly and secure with tape or ties. Stand them vertically against the van wall.',
+    ],
+    imagePlaceholder: 'Image: Living room items being wrapped and boxed',
+  },
+  {
+    name: 'Bathroom',
+    tips: [
+      'Seal every bottle with a screw-top lid in a ziplock bag. Shampoo, conditioner, body wash — they all leak under pressure.',
+      'Pack medicines and prescriptions in a separate, clearly labelled bag and keep them with you, not on the van.',
+      'Towels make excellent padding. Use them to wrap around fragile bathroom items or stuff them into gaps between boxes.',
+      'Dispose of old prescriptions, expired medicines, and half-empty bottles before packing. Moving is the perfect excuse to clear out the medicine cabinet.',
+      'Razors, scissors, and nail clippers should be wrapped and packed with the blades protected — a cardboard sleeve works well.',
+    ],
+    imagePlaceholder: 'Image: Bathroom items sealed in ziplock bags',
+  },
+];
+
+// Labelling colours
+const labelColours = [
+  { colour: 'Red', room: 'Kitchen', hex: '#EF4444' },
+  { colour: 'Blue', room: 'Master Bedroom', hex: '#3B82F6' },
+  { colour: 'Green', room: 'Living Room', hex: '#22C55E' },
+  { colour: 'Yellow', room: 'Bathroom', hex: '#EAB308' },
+  { colour: 'Purple', room: 'Children\'s Rooms', hex: '#A855F7' },
+  { colour: 'Orange', room: 'Study / Office', hex: '#F97316' },
+];
+
+// FAQs
+const faqs = [
+  {
+    question: 'How many boxes do I need for a 3-bedroom house?',
+    answer: 'A typical 3-bedroom house needs roughly 40 to 60 boxes. That breaks down to about 10 to 15 small boxes for heavy items like books and kitchenware, 15 to 20 medium boxes for general household goods, 8 to 12 large boxes for bedding and light bulky items, and 3 to 5 wardrobe boxes for hanging clothes. Always order more than you think you need — most suppliers accept returns on unused boxes, and running out mid-pack means an annoying trip to the shops.',
+  },
+  {
+    question: 'What should I pack first?',
+    answer: 'Start with the rooms and items you use least. The loft, garage, spare bedroom, and bookshelves should be packed first — ideally 6 to 8 weeks before moving day. Then work through the study, dining room, and living room. Leave the kitchen and the bedroom you sleep in until the final two days. Pack an essentials box the night before (kettle, mugs, phone chargers, toilet roll, medications) and keep it in the car, not on the van.',
+  },
+  {
+    question: 'What shouldn\'t I pack myself?',
+    answer: 'Anything genuinely valuable or irreplaceable should be handled with extra care. Antiques, artwork worth more than a few hundred pounds, and musical instruments like pianos benefit from professional packing. Legally, removal companies cannot transport hazardous items — that includes aerosols, paint, gas bottles, petrol cans, and cleaning chemicals. You should also carry jewellery, important documents, passports, and medications with you personally rather than putting them on the van.',
+  },
+  {
+    question: 'Can I use supermarket boxes?',
+    answer: 'You can, but we would not recommend it for anything heavy or fragile. Supermarket boxes are single-walled and designed for one journey — they have already made that journey by the time you pick them up. They collapse under stacking pressure and rarely come in consistent sizes, which makes loading the van much harder. They are fine for soft items like cushions, towels, and bedding. For everything else, invest in proper double-walled removal boxes. The cost difference is a few pence per box and the protection difference is enormous.',
+  },
+  {
+    question: 'How do I pack a TV for moving?',
+    answer: 'The ideal approach is to pack it in its original box with the original polystyrene inserts. If you no longer have those, place the TV screen-down on a soft blanket, wrap it fully in bubble wrap (at least two layers), and then in a removal blanket. If you are moving two TVs, place them screen-to-screen with a sheet of cardboard between them. Never lay a TV flat on the van floor — it should always travel upright, secured against the side wall. Label it clearly as fragile and make sure nothing heavy is placed against it.',
+  },
+];
+
+// Schema markup
+const pageSchema = [
+  article({
+    headline: pageTitle,
+    description: pageDescription,
+    url: "/packing-guide-home-removal/",
+    datePublished: "2026-02-13",
+    dateModified: "2026-02-13",
+    image: "/images/og-default.png",
+  }),
+  faqPage(faqs),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Moving Advice", path: "/moving-advice/" },
+    { name: "Packing Guide" },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- Breadcrumbs -->
+  <div class="bg-white border-b border-gray-100">
+    <div class="container-wide py-3">
+      <nav class="text-sm text-warm-gray" aria-label="Breadcrumb">
+        <ol class="flex items-center gap-1.5">
+          <li><a href="/" class="text-primary-600 hover:text-primary-700 no-underline">Home</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li><a href="/moving-advice/" class="text-primary-600 hover:text-primary-700 no-underline">Moving Advice</a></li>
+          <li class="text-warm-gray/50">/</li>
+          <li class="text-warm-gray">Packing Guide</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- ============================================
+       SECTION 1: HERO — What The Pack?
+  ============================================ -->
+  <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
+    <!-- Mobile: Image at top -->
+    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-primary-100">
+      <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+        <div class="text-center p-6">
+          <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <p class="text-sm font-medium">Hero image: Neatly packed moving boxes with labels</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop: Split layout -->
+    <div class="lg:grid lg:grid-cols-2 lg:min-h-0 lg:overflow-hidden">
+      <!-- Left: Content area -->
+      <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+        <div class="max-w-xl mx-auto text-center">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
+            Your Packing Guide for Moving House
+          </p>
+
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl mb-3 lg:mb-4 font-bold">
+            What The <span class="text-secondary-500">Pack?</span>
+          </h1>
+
+          <h2 class="text-xl lg:text-2xl text-primary-600 font-semibold mb-4">
+            Your Quick-Reference Packing Guide for Moving House
+          </h2>
+
+          <p class="text-lg text-warm-gray mb-5 leading-relaxed">
+            Moving house is stressful enough without wondering whether your grandmother's china will survive the journey. This guide is your quick-reference companion &ndash; the same practical advice our team has given to thousands of families across Bristol since 1978. We have condensed nearly fifty years of professional packing experience into a room-by-room walkthrough covering decluttering, materials, fragile items, electronics, hazardous goods, and a labelling system that makes unpacking dramatically easier. Bookmark it, print it, or keep it open on your phone while you pack.
+          </p>
+
+          <div class="flex flex-col gap-2 mb-5 items-center">
+            <a href="/packing-guide/" class="btn-cta-orange">
+              WANT THE FULL VIDEO COURSE? START FREE
+            </a>
+            <p class="text-warm-gray text-sm">8 free video lessons &middot; Room-by-room walkthroughs &middot; Printable checklists</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Full-bleed image (desktop only) -->
+      <div class="hidden lg:block relative overflow-hidden bg-primary-100">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-100 text-primary-400">
+          <div class="text-center p-6">
+            <svg class="w-20 h-20 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <p class="text-sm font-medium">Hero image: Neatly packed moving boxes with labels</p>
+            <p class="text-xs mt-1 opacity-70">Recommended: 1280x720 or larger</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 2: DECLUTTERING & PREPARATION
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">Decluttering &amp; Preparation</h2>
+
+        <p class="text-warm-gray text-lg mb-4 leading-relaxed">
+          The single best thing you can do for your move is start decluttering six to eight weeks before moving day. Every item you get rid of is one fewer thing to wrap, box, carry, load, unload, and find a home for at the other end. Less stuff means fewer boxes, a smaller van, a quicker move, and a lower bill.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-4 leading-relaxed">
+          Work through one room at a time. For every item, ask yourself: <strong>&ldquo;Have I used this in the last twelve months?&rdquo;</strong> If the answer is no, it goes into one of three piles: sell, donate, or bin. Be ruthless. That bread maker from 2019, the exercise bike doubling as a clothes horse, the stack of magazines you will definitely read one day &ndash; they all add up, and they all cost money to move.
+        </p>
+
+        <p class="text-warm-gray text-lg mb-4 leading-relaxed">
+          Sell decent items on Facebook Marketplace or Gumtree. Donate usable clothes, books, and household goods to charity shops &ndash; many offer free collection for larger items. Recycle what you can and skip the rest. Bristol City Council offers a bulky waste collection service for furniture and large items that cannot go in your normal bins.
+        </p>
+
+        <p class="text-warm-gray text-lg leading-relaxed">
+          Once you have decluttered, take stock of what remains. This gives you a realistic picture of how many boxes you need, how much packing material to buy, and how long the packing process will take. It is always more than you think &ndash; but it is far less daunting when you have already stripped out everything you do not need.
+        </p>
+      </div>
+
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] bg-primary-50">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <p class="text-sm font-medium">Image: Decluttering before a house move</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 3: PACKING MATERIALS YOU'LL NEED
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Packing Materials You&rsquo;ll Need</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Good materials are the foundation of a damage-free move. Here is what to stock up on before you start packing.
+      </p>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {packingMaterials.map((material) => (
+          <div class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div class="text-primary-600 mb-4" set:html={material.icon} />
+            <h3 class="text-lg font-bold text-primary-600 mb-2">{material.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed">{material.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-8 bg-white rounded-lg p-6 shadow-sm border-l-4 border-secondary-500 max-w-3xl mx-auto">
+        <p class="text-warm-gray leading-relaxed">
+          <strong class="text-primary-600">Don&rsquo;t want to source materials yourself?</strong> Painless Removals supplies all packing materials as part of our professional packing service &ndash; boxes, paper, bubble wrap, tape, and wardrobe cartons delivered to your door. We bring exactly the right quantities based on your home survey, so there is no waste and no last-minute runs to the shop.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 4: ROOM-BY-ROOM QUICK TIPS
+  ============================================ -->
+  {rooms.map((room, roomIndex) => (
+    <section class={roomIndex % 2 === 0 ? 'bg-white' : 'bg-cream'}>
+      <div class="grid lg:grid-cols-2">
+        <!-- Text side -->
+        <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center ${roomIndex % 2 !== 0 ? 'order-2' : 'order-1'}`}>
+          <h2 class="text-2xl lg:text-3xl mb-4">{room.name}</h2>
+          <ul class="space-y-4">
+            {room.tips.map((tip) => (
+              <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+                <span class="text-green-500 mt-1 shrink-0 font-bold">&#10003;</span>
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Image side -->
+        <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[450px] ${roomIndex % 2 === 0 ? 'bg-primary-50' : 'bg-secondary-50'} ${roomIndex % 2 !== 0 ? 'order-1' : 'order-2'}`}>
+          <div class={`absolute inset-0 flex items-center justify-center ${roomIndex % 2 === 0 ? 'bg-primary-50 text-primary-300' : 'bg-secondary-50 text-secondary-300'}`}>
+            <div class="text-center p-6">
+              <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <p class="text-sm font-medium">{room.imagePlaceholder}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <!-- ============================================
+       SECTION 5: FRAGILE ITEMS & VALUABLES
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">Fragile Items &amp; Valuables</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        These are the items that cause the most anxiety on moving day. Get the packing right and you can relax.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Mirrors &amp; Picture Frames</h3>
+          <p class="text-warm-gray leading-relaxed mb-3">
+            Apply strips of masking tape in an X pattern across the glass surface. This will not prevent a crack, but it stops the glass shattering into dangerous shards if it does break. Wrap the entire piece in bubble wrap, then add cardboard corner protectors on all four corners.
+          </p>
+          <p class="text-warm-gray leading-relaxed">
+            For large mirrors, use a specialist mirror box or create a sandwich with two pieces of flat cardboard taped together around the mirror. Always stand mirrors and pictures upright in the van &ndash; never lay them flat. A flat mirror under a stack of boxes is a broken mirror.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Artwork &amp; Prints</h3>
+          <p class="text-warm-gray leading-relaxed mb-3">
+            Framed artwork should be double-boxed wherever possible: wrap the piece in bubble wrap, place it in a snug box, then place that box inside a larger one with crumpled paper filling the gap. The air cushion between the two layers absorbs impacts.
+          </p>
+          <p class="text-warm-gray leading-relaxed">
+            For canvases without glass, wrap in acid-free tissue paper first (to prevent the bubble wrap texture transferring onto the paint surface), then in bubble wrap. Label the box clearly and mark it as fragile on all sides.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">China &amp; Porcelain</h3>
+          <p class="text-warm-gray leading-relaxed mb-3">
+            Every single piece needs individual wrapping. Lay two sheets of packing paper on a flat surface, place the plate or bowl in one corner, and fold the paper over and around it, tucking the corners in as you go. Stack wrapped plates vertically in the box, not flat.
+          </p>
+          <p class="text-warm-gray leading-relaxed">
+            Place a thick pad of crumpled paper on the bottom of the box and between each layer. Fill every gap &ndash; nothing in the box should move when you gently shake it. If it rattles, add more paper.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-primary-600 mb-4">Jewellery &amp; Documents</h3>
+          <p class="text-warm-gray leading-relaxed mb-3">
+            <strong class="text-secondary-500">Do not put these on the van.</strong> Jewellery, important documents, passports, birth certificates, insurance policies, house deeds, and cash should travel with you personally &ndash; in a bag you keep in the car or on your person.
+          </p>
+          <p class="text-warm-gray leading-relaxed">
+            The same applies to anything with irreplaceable sentimental value: family photographs, heirlooms, and keepsakes. No amount of insurance replaces a lost wedding album. Keep them close.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 6: ELECTRONICS
+  ============================================ -->
+  <section class="bg-white">
+    <div class="grid lg:grid-cols-2">
+      <!-- Image 50% -->
+      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[450px] bg-primary-50">
+        <div class="absolute inset-0 flex items-center justify-center bg-primary-50 text-primary-300">
+          <div class="text-center p-6">
+            <svg class="w-16 h-16 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <p class="text-sm font-medium">Image: Electronics being carefully packed</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text 50% -->
+      <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center">
+        <h2 class="text-2xl lg:text-3xl mb-4">Electronics</h2>
+
+        <p class="text-warm-gray text-lg mb-6 leading-relaxed">
+          Modern homes are full of electronics, and they all need careful handling. The golden rule is simple: <strong class="text-primary-600">photograph everything before you unplug it</strong>. Take a clear photo of the back of your TV, router, sound system, and computer showing exactly which cable goes where. When you are setting up at the other end, you will be enormously grateful for those photos.
+        </p>
+
+        <ul class="space-y-4 mb-6">
+          <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+            <span class="text-green-500 mt-1 shrink-0 font-bold">&#10003;</span>
+            <span><strong>Original boxes are ideal.</strong> If you kept the box your TV, games console, or monitor came in, use it. The polystyrene inserts are designed to absorb exactly the right amount of impact. If you have already thrown them away, wrap the item in anti-static bubble wrap and surround it with crumpled paper in a sturdy box.</span>
+          </li>
+          <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+            <span class="text-green-500 mt-1 shrink-0 font-bold">&#10003;</span>
+            <span><strong>Use anti-static wrap for sensitive components.</strong> Standard bubble wrap can generate static electricity, which damages circuit boards. Anti-static (pink) bubble wrap is available from most packaging suppliers and is well worth the small extra cost for computers and hard drives.</span>
+          </li>
+          <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+            <span class="text-green-500 mt-1 shrink-0 font-bold">&#10003;</span>
+            <span><strong>Label every cable.</strong> Use masking tape flags or coloured cable ties to tag each cable with where it belongs. Write &ldquo;TV &ndash; HDMI 1&rdquo; or &ldquo;Router &ndash; Power&rdquo; directly on the tape. Bundle related cables together with a rubber band or zip tie and keep them in a labelled bag alongside the device they belong to.</span>
+          </li>
+          <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+            <span class="text-green-500 mt-1 shrink-0 font-bold">&#10003;</span>
+            <span><strong>Remove ink cartridges from printers</strong> and seal them in a ziplock bag. Transport printers upright. Hard drives should be backed up before the move &ndash; even a well-packed computer can suffer a jolt.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 7: HAZARDOUS ITEMS
+  ============================================ -->
+  <section class="section bg-primary-600 text-white">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-white mb-4">Hazardous Items &mdash; What Can&rsquo;t Go on the Van</h2>
+        <p class="text-primary-100 text-lg mb-10 leading-relaxed">
+          By law, removal companies cannot transport certain hazardous materials. These items must be disposed of before moving day or transported in your own vehicle with appropriate care. If in doubt, ask us &ndash; we would rather answer a quick question than deal with a safety incident.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div class="stat-card-blue text-center">
+          <svg class="w-10 h-10 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h3 class="text-white font-bold mb-2">Aerosols</h3>
+          <p class="text-primary-200 text-sm">Deodorant, hairspray, spray paint, air fresheners. Pressurised cans can explode in a hot van.</p>
+        </div>
+
+        <div class="stat-card-blue text-center">
+          <svg class="w-10 h-10 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h3 class="text-white font-bold mb-2">Paint &amp; Solvents</h3>
+          <p class="text-primary-200 text-sm">Tins of paint, white spirit, turpentine, varnish, and wood stain. Flammable and toxic if spilt.</p>
+        </div>
+
+        <div class="stat-card-blue text-center">
+          <svg class="w-10 h-10 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h3 class="text-white font-bold mb-2">Gas Bottles &amp; Fuel</h3>
+          <p class="text-primary-200 text-sm">BBQ gas cylinders, camping gas, petrol cans, paraffin heaters. Explosion risk in enclosed spaces.</p>
+        </div>
+
+        <div class="stat-card-blue text-center">
+          <svg class="w-10 h-10 mx-auto mb-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          <h3 class="text-white font-bold mb-2">Cleaning Chemicals</h3>
+          <p class="text-primary-200 text-sm">Bleach, oven cleaner, drain unblocker, ammonia-based products. Corrosive and hazardous if mixed.</p>
+        </div>
+      </div>
+
+      <div class="mt-8 text-center">
+        <p class="text-primary-200 text-sm max-w-2xl mx-auto">
+          Also avoid packing: fireworks, ammunition, car batteries, weedkiller, and pool chemicals. If you are unsure about a specific item, give us a call on <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`} class="text-white underline hover:text-secondary-300 transition-colors">{siteConfig.company.contact.phone}</a> and we will let you know.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 8: LABELLING SYSTEM
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <h2 class="text-center mb-4">The Labelling System That Makes Unpacking Easy</h2>
+      <p class="text-center text-warm-gray text-lg mb-12 max-w-2xl mx-auto">
+        Proper labelling is the difference between a one-day unpack and a three-week rummage through mystery boxes. Spend an extra thirty seconds per box now and save yourself hours later.
+      </p>
+
+      <div class="grid lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
+        <!-- Colour-coding system -->
+        <div>
+          <h3 class="text-xl font-bold text-primary-600 mb-4">Colour-Code by Room</h3>
+          <p class="text-warm-gray mb-6 leading-relaxed">
+            Assign one colour to each room and use coloured stickers, tape, or marker lines on every box. When the van arrives at your new home, your removal team can see at a glance which room each box belongs in &ndash; no need to read every label or ask you repeatedly. Stick a matching colour swatch on the door of each room in the new house.
+          </p>
+          <div class="grid grid-cols-2 gap-3">
+            {labelColours.map((item) => (
+              <div class="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
+                <div class="w-8 h-8 rounded-full shrink-0 border-2 border-white shadow-sm" style={`background-color: ${item.hex};`}></div>
+                <div>
+                  <p class="font-bold text-primary-600 text-sm">{item.colour}</p>
+                  <p class="text-warm-gray text-xs">{item.room}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Labelling rules -->
+        <div>
+          <h3 class="text-xl font-bold text-primary-600 mb-4">Labelling Rules</h3>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+              <span class="text-secondary-500 mt-1 shrink-0 font-bold text-lg">1</span>
+              <span><strong class="text-primary-600">Label all four sides and the top.</strong> Boxes are stacked in the van and you cannot always see the top. If only one side is labelled, it will inevitably be the one facing the wall.</span>
+            </li>
+            <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+              <span class="text-secondary-500 mt-1 shrink-0 font-bold text-lg">2</span>
+              <span><strong class="text-primary-600">Write the destination room, not the origin.</strong> &ldquo;New Kitchen&rdquo; is more useful than &ldquo;Old Kitchen&rdquo; when your movers are carrying boxes into an unfamiliar house.</span>
+            </li>
+            <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+              <span class="text-secondary-500 mt-1 shrink-0 font-bold text-lg">3</span>
+              <span><strong class="text-primary-600">Mark fragile boxes clearly.</strong> Write &ldquo;FRAGILE&rdquo; in large letters on every side and add &ldquo;THIS WAY UP&rdquo; with an arrow. Use red marker so it stands out.</span>
+            </li>
+            <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+              <span class="text-secondary-500 mt-1 shrink-0 font-bold text-lg">4</span>
+              <span><strong class="text-primary-600">Number every box and keep a master list.</strong> A simple spreadsheet or notepad with &ldquo;Box 1: Kitchen &ndash; plates, bowls, mugs&rdquo; means you can find anything instantly without opening twenty boxes. It also serves as an inventory for insurance purposes.</span>
+            </li>
+            <li class="flex items-start gap-3 text-warm-gray leading-relaxed">
+              <span class="text-secondary-500 mt-1 shrink-0 font-bold text-lg">5</span>
+              <span><strong class="text-primary-600">Note the priority.</strong> Mark boxes you will need first at the new house &ndash; the kettle, bed linen, toiletries, phone chargers &ndash; with a star or the word &ldquo;OPEN FIRST&rdquo; so they go in last on the van and come off first.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 9: CUSTOMER REVIEW
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide max-w-3xl mx-auto">
+      <div class="review-quote !max-w-none !text-left">
+        <p class="text-warm-gray leading-relaxed mb-3 text-lg">
+          "We went for the full packing and removal package when we moved. The whole process was <mark>painless from start to finish</mark> and the team was exceptionally friendly, efficient, and helpful from start to finish. <mark>Would strongly recommend</mark> their service to anyone."
+        </p>
+        <div class="flex items-center gap-2">
+          <p class="font-semibold text-primary-600">Caspian Johnson</p>
+          <span class="text-warm-gray">&middot;</span>
+          <img src="/images/trustpilot-logo.svg" alt="Trustpilot" class="w-4 h-4" width="16" height="16" />
+          <span class="text-sm text-warm-gray">Verified Trustpilot Review</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 10: CROSS-SELL CTAs
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Video course CTA -->
+        <div class="bg-primary-50 rounded-lg p-8 text-center hover:shadow-md transition-shadow duration-300">
+          <svg class="w-12 h-12 mx-auto mb-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/></svg>
+          <h3 class="text-xl font-bold text-primary-600 mb-3">Want the Full Video Course?</h3>
+          <p class="text-warm-gray mb-6 leading-relaxed">
+            This quick-reference guide covers the essentials, but our free 8-lesson video course goes deeper. Watch Jay and the team demonstrate every technique with room-by-room walkthroughs, printable checklists, and professional tips you will not find anywhere else.
+          </p>
+          <a href="/packing-guide/" class="btn-cta-orange">
+            START THE FREE COURSE
+          </a>
+        </div>
+
+        <!-- Packing service CTA -->
+        <div class="bg-secondary-50 rounded-lg p-8 text-center hover:shadow-md transition-shadow duration-300">
+          <svg class="w-12 h-12 mx-auto mb-4 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <h3 class="text-xl font-bold text-primary-600 mb-3">Rather We Packed for You?</h3>
+          <p class="text-warm-gray mb-6 leading-relaxed">
+            Short on time, energy, or patience? Our professional packing team can pack your entire home in a single day. We bring all the materials, wrap everything with care, and label every box. You do not lift a finger &ndash; just point us to the rooms and put the kettle on.
+          </p>
+          <a href="/home-packing-service/" class="btn-cta-orange">
+            VIEW PACKING SERVICE
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SECTION 11: FAQ
+  ============================================ -->
+  <FAQAccordion faqs={faqs} />
+
+  <!-- ============================================
+       SECTION 12: FINAL CTA — Dark section
+  ============================================ -->
+  <FinalCTA
+    heading="Ready to Make Your Move Painless?"
+    description="Whether you are packing yourself or want our team to handle it, the first step is the same — a quick call to discuss your move. We will give you honest advice, an accurate quote, and a plan that takes the stress out of moving day."
+    primaryText="BOOK YOUR FREE SURVEY"
+    primaryHref="/free-home-survey"
+    bottomNote="Painless Removals Ltd · Bristol's trusted removal company since 1978 · Mon–Fri 9am–5pm"
+    bgClass="bg-primary-600"
+  />
+
+</Layout>

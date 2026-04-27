@@ -1,0 +1,27 @@
+---
+/**
+ * RouteMap — Google Maps embed showing route from Bristol to destination.
+ * Uses free embed format (no API key required).
+ */
+
+export interface Props {
+  destination: string;
+  class?: string;
+}
+
+const { destination, class: className = '' } = Astro.props;
+const src = `https://maps.google.com/maps?saddr=Bristol,+UK&daddr=${encodeURIComponent(destination)}&output=embed`;
+---
+
+<div class:list={['rounded-xl overflow-hidden shadow-sm border border-gray-200', className]}>
+  <iframe
+    src={src}
+    width="100%"
+    height="360"
+    style="border:0"
+    allowfullscreen=""
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    title={`Route map: Bristol to ${destination}`}
+  ></iframe>
+</div>
