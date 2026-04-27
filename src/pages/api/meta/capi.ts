@@ -5,18 +5,21 @@
  * GTM. For each conversion the client also POSTs (or `sendBeacon`s)
  * here with the same `event_id` so Meta can dedupe browser + server.
  *
- * Server-side advantages:
- *   - iOS/ATT users where the browser Pixel is throttled
- *   - Adblock-affected sessions
- *   - Reliable hashed PII (we hash here; the browser side can't be
- *     trusted to do it consistently)
- *
- * Hardening: the endpoint accepts only events from our own origins,
- * rate-limits per-IP (KV-backed, shared with the rest of the API),
- * clamps `event_time` to a sane window so backdated/forward-dated
- * events can't pollute Smart Bidding, and only allows the conversion
- * event names we actually fire (no `Purchase` since we don't track
- * purchases here).
+ * Hardening:
+ *   - Origin allowlist FAIL-CLOSED: missing or unknown Origin → reject.
+ *   - Per-IP sliding-window rate limit (in-memory, 20/min) on top of
+ *     the shared KV-backed limiter — small enough that a runaway client
+ *     can't burn Meta CAPI quota even before the KV limiter catches it.
+ *   - Strict input validation: event_id regex, event_name allowlist,
+ *     event_time clamped, custom_data WHITELIST (only value/currency/
+ *     content_name with range/regex checks), event_source_url pinned to
+ *     our own origin (with Referer fallback), email regex, length caps
+ *     on every string.
+ *   - Consent re-check: the client sends its Consent Mode snapshot;
+ *     we refuse to forward to Meta if ad_storage or ad_user_data is
+ *     denied.
+ *   - OPTIONS preflight responder echoes only the requesting allowed
+ *     origin, never `*`.
  */
 
 import type { APIRoute } from 'astro';
@@ -30,19 +33,39 @@ import { DEFAULT_COUNTRY } from '@/lib/tracking/config';
 export const prerender = false;
 
 const ALLOWED_EVENTS = new Set(['Lead', 'Contact', 'ViewContent']);
+const SITE_ORIGIN = 'https://painlessremovals.com';
 
-/** Acceptable event_time skew. Clamp older than 24h or newer than 5min
- *  to "now" so backdated/forward-dated events can't poison the data. */
 const EVENT_TIME_MIN_AGE_S = 24 * 60 * 60;
 const EVENT_TIME_FUTURE_S = 5 * 60;
 
+const EVENT_ID_RE = /^[a-zA-Z0-9_-]{8,200}$/;
+const ISO_4217_RE = /^[A-Z]{3}$/;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// _fbp: fb.<subdomain_index>.<ms>.<rand>  — e.g. fb.1.1700000000000.1234567890
+const FBP_RE = /^fb\.[0-9]\.[0-9]{10,}\.[0-9]+$/;
+// _fbc: fb.<subdomain_index>.<ms>.<click_id>  — Meta accepts arbitrary id; loose check.
+const FBC_RE = /^fb\.[0-9]\.[0-9]{10,}\.[A-Za-z0-9_-]+$/;
+
+const MAX_EMAIL_LEN = 320;
+const MAX_NAME_LEN = 100;
+const MAX_PHONE_LEN = 32;
+const MAX_CITY_LEN = 100;
+const MAX_POSTAL_LEN = 20;
+const MAX_COUNTRY_LEN = 4;
+const MAX_VALUE = 1_000_000;
+
+const RATE_WINDOW_MS = 60 * 1000;
+const RATE_PER_IP_PER_WINDOW = 20;
+const ipBuckets = new Map<string, number[]>();
+
 interface IncomingPayload {
-  event_name?: string;
-  event_id?: string;
-  event_time?: number;
-  event_source_url?: string;
-  user_data?: Record<string, unknown>;
-  custom_data?: Record<string, unknown>;
+  event_name?: unknown;
+  event_id?: unknown;
+  event_time?: unknown;
+  event_source_url?: unknown;
+  user_data?: unknown;
+  custom_data?: unknown;
+  consent?: unknown;
 }
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {
@@ -57,71 +80,178 @@ function clampEventTime(input: unknown): number {
   return Math.floor(input);
 }
 
+function corsHeaders(origin: string | null): Record<string, string> {
+  // Echo only allowed origins. Never `*` — this endpoint reads PII.
+  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+    return {};
+  }
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age': '600',
+    'Vary': 'Origin',
+  };
+}
+
+function checkInMemoryRateLimit(ip: string): boolean {
+  if (!ip) return true; // can't bucket without an IP, fall through to KV limiter
+  const now = Date.now();
+  const cutoff = now - RATE_WINDOW_MS;
+  const bucket = ipBuckets.get(ip) || [];
+  const fresh = bucket.filter((t) => t > cutoff);
+  if (fresh.length >= RATE_PER_IP_PER_WINDOW) {
+    ipBuckets.set(ip, fresh);
+    return false;
+  }
+  fresh.push(now);
+  ipBuckets.set(ip, fresh);
+  // Periodic GC: keep the map bounded.
+  if (ipBuckets.size > 5000) {
+    for (const [k, v] of ipBuckets) {
+      if (!v.length || v[v.length - 1]! < cutoff) ipBuckets.delete(k);
+    }
+  }
+  return true;
+}
+
+function pickEventSourceUrl(input: unknown, referer: string | null): string {
+  // Pin to our own origin. If the client sent something off-domain or
+  // empty, fall back to the Referer header (also enforced to our origin).
+  for (const candidate of [input, referer]) {
+    if (typeof candidate !== 'string') continue;
+    try {
+      const u = new URL(candidate);
+      if (u.origin === SITE_ORIGIN) return u.toString().slice(0, 2000);
+    } catch {
+      // not a URL
+    }
+  }
+  return `${SITE_ORIGIN}/`;
+}
+
+function pickCustomData(input: unknown): Record<string, unknown> {
+  // Whitelist + range/regex validation. Anything else is dropped — we
+  // do NOT echo arbitrary client attributes to Meta because Smart
+  // Bidding consumes value/currency for optimisation and a hostile
+  // client could otherwise pollute the signal.
+  const out: Record<string, unknown> = {};
+  if (!isPlainObject(input)) return out;
+
+  if (typeof input.value === 'number' && Number.isFinite(input.value)) {
+    const v = input.value;
+    if (v >= 0 && v <= MAX_VALUE) out.value = v;
+  }
+  if (typeof input.currency === 'string' && ISO_4217_RE.test(input.currency)) {
+    out.currency = input.currency;
+  }
+  if (typeof input.content_name === 'string' && input.content_name.length > 0 && input.content_name.length <= 200) {
+    out.content_name = input.content_name;
+  }
+  return out;
+}
+
+function consentAllowsAds(input: unknown): boolean {
+  if (!isPlainObject(input)) return false;
+  return input.ad_storage === 'granted' && input.ad_user_data === 'granted';
+}
+
+export const OPTIONS: APIRoute = async ({ request }) => {
+  const origin = request.headers.get('Origin');
+  const headers = corsHeaders(origin);
+  if (Object.keys(headers).length === 0) {
+    return new Response(null, { status: 403 });
+  }
+  return new Response(null, { status: 204, headers });
+};
+
 export const POST: APIRoute = async (context) => {
   const { request } = context;
   const origin = request.headers.get('Origin');
 
-  // Origin allowlist — block CAPI mirroring from anywhere that isn't
-  // the painlessremovals domain. Same allowlist the rest of the API
-  // uses so adding a new origin to config.ts covers every endpoint at
-  // once.
-  if (origin && !CONFIG.security.allowedOrigins.includes(origin)) {
-    return new Response(null, { status: 204 });
+  // Origin allowlist — FAIL CLOSED. Missing Origin is suspicious for
+  // this endpoint (browser sendBeacon/fetch always sets it on
+  // cross-origin POSTs). Same-origin omits Origin per spec, but our
+  // custom domain is always cross-origin to the *.workers.dev preview;
+  // and on production the page origin matches an allowlist entry.
+  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+    return new Response(null, { status: 403 });
   }
 
-  // Rate-limit so a single client (or attacker) can't burn our Meta
-  // CAPI quota or pollute Smart Bidding signal with fake events.
+  const ip = request.headers.get('CF-Connecting-IP') || '';
+
+  if (!checkInMemoryRateLimit(ip)) {
+    return new Response(null, { status: 429 });
+  }
   const rateLimitOk = await checkRateLimit(context);
   if (!rateLimitOk) {
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: 429 });
   }
 
   try {
     const body = (await request.json()) as IncomingPayload;
 
-    if (!body || !body.event_name || !body.event_id) {
-      return new Response(JSON.stringify({ error: 'event_name and event_id required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+    if (!isPlainObject(body)) {
+      return new Response(JSON.stringify({ error: 'invalid body' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    if (!ALLOWED_EVENTS.has(body.event_name)) {
-      return new Response(JSON.stringify({ error: 'event_name not allowed' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+    if (typeof body.event_name !== 'string' || !ALLOWED_EVENTS.has(body.event_name)) {
+      return new Response(JSON.stringify({ error: 'event_name not allowed' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+    if (typeof body.event_id !== 'string' || !EVENT_ID_RE.test(body.event_id)) {
+      return new Response(JSON.stringify({ error: 'event_id invalid' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    const ip = request.headers.get('CF-Connecting-IP') || undefined;
+    // Consent re-check (defense in depth — client already gated, but
+    // we don't trust the client). Refuse to forward if ads consent is
+    // not granted.
+    if (!consentAllowsAds(body.consent)) {
+      return new Response(null, { status: 204 });
+    }
+
     const ua = request.headers.get('User-Agent') || undefined;
     const incomingUserData = isPlainObject(body.user_data) ? body.user_data : {};
-    const incomingCustom = isPlainObject(body.custom_data) ? body.custom_data : {};
 
     const userData: MetaCapiEvent['user_data'] = {};
-    if (typeof incomingUserData.email === 'string') userData.email = incomingUserData.email;
-    if (typeof incomingUserData.phone_number === 'string') userData.phone_number = incomingUserData.phone_number;
-    if (typeof incomingUserData.first_name === 'string') userData.first_name = incomingUserData.first_name;
-    if (typeof incomingUserData.last_name === 'string') userData.last_name = incomingUserData.last_name;
-    if (typeof incomingUserData.city === 'string') userData.city = incomingUserData.city;
-    if (typeof incomingUserData.postal_code === 'string') userData.postal_code = incomingUserData.postal_code;
-    userData.country = typeof incomingUserData.country === 'string' ? incomingUserData.country : DEFAULT_COUNTRY;
-    if (typeof incomingUserData.fbp === 'string') userData.fbp = incomingUserData.fbp;
-    if (typeof incomingUserData.fbc === 'string') userData.fbc = incomingUserData.fbc;
+    if (typeof incomingUserData.email === 'string' && incomingUserData.email.length <= MAX_EMAIL_LEN && EMAIL_RE.test(incomingUserData.email)) {
+      userData.email = incomingUserData.email;
+    }
+    if (typeof incomingUserData.phone_number === 'string' && incomingUserData.phone_number.length <= MAX_PHONE_LEN) {
+      userData.phone_number = incomingUserData.phone_number;
+    }
+    if (typeof incomingUserData.first_name === 'string' && incomingUserData.first_name.length <= MAX_NAME_LEN) {
+      userData.first_name = incomingUserData.first_name;
+    }
+    if (typeof incomingUserData.last_name === 'string' && incomingUserData.last_name.length <= MAX_NAME_LEN) {
+      userData.last_name = incomingUserData.last_name;
+    }
+    if (typeof incomingUserData.city === 'string' && incomingUserData.city.length <= MAX_CITY_LEN) {
+      userData.city = incomingUserData.city;
+    }
+    if (typeof incomingUserData.postal_code === 'string' && incomingUserData.postal_code.length <= MAX_POSTAL_LEN) {
+      userData.postal_code = incomingUserData.postal_code;
+    }
+    userData.country = (typeof incomingUserData.country === 'string' && incomingUserData.country.length <= MAX_COUNTRY_LEN)
+      ? incomingUserData.country
+      : DEFAULT_COUNTRY;
+    if (typeof incomingUserData.fbp === 'string' && FBP_RE.test(incomingUserData.fbp)) {
+      userData.fbp = incomingUserData.fbp;
+    }
+    if (typeof incomingUserData.fbc === 'string' && FBC_RE.test(incomingUserData.fbc)) {
+      userData.fbc = incomingUserData.fbc;
+    }
     if (ua) userData.client_user_agent = ua;
     if (ip) userData.client_ip_address = ip;
 
     const event: MetaCapiEvent = {
       event_name: body.event_name,
-      event_id: String(body.event_id).slice(0, 200),
+      event_id: body.event_id,
       event_time: clampEventTime(body.event_time),
       action_source: 'website',
       user_data: userData,
-      custom_data: incomingCustom,
+      custom_data: pickCustomData(body.custom_data),
+      event_source_url: pickEventSourceUrl(body.event_source_url, request.headers.get('Referer')),
     };
-    if (typeof body.event_source_url === 'string') {
-      event.event_source_url = body.event_source_url.slice(0, 2000);
-    }
 
     await sendMetaCapi(env, [event], DEFAULT_COUNTRY);
   } catch (err) {
@@ -130,5 +260,5 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: 204, headers: corsHeaders(origin) });
 };

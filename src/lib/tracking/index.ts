@@ -22,6 +22,7 @@ export {
   getActiveQuoteState,
   markQuoteUpgraded,
   markViewContentFired,
+  hasViewContentFired,
   resumeQuoteTimer,
   type QuoteState,
 } from './conversion-state';

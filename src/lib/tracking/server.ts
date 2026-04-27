@@ -18,7 +18,7 @@ import {
   type CountryCode,
   type UserData,
 } from './tracking';
-import { DEFAULT_COUNTRY } from './config';
+import { DEFAULT_COUNTRY, META_GRAPH_API_VERSION } from './config';
 
 interface ServerEnv {
   GA4_MEASUREMENT_ID?: string;
@@ -137,6 +137,16 @@ export async function sendMetaCapi(
   const transformed = events.map((evt) => {
     const ud = evt.user_data || {};
     const phone = ud.phone_number ? normalizePhoneE164(ud.phone_number, countryCode) : undefined;
+    // Hash each PII field exactly once. Earlier code called hash(...)
+    // twice per field (once in the conditional, once in the value),
+    // burning CPU and complicating diffs. Cache the result locally.
+    const em = hash(ud.email);
+    const ph = hash(phone);
+    const fn = hash(ud.first_name);
+    const ln = hash(ud.last_name);
+    const ct = hash(ud.city);
+    const zp = hashPostal(ud.postal_code);
+    const country = hashCountry(ud.country);
     return {
       event_name: evt.event_name,
       event_id: evt.event_id,
@@ -144,13 +154,13 @@ export async function sendMetaCapi(
       event_source_url: evt.event_source_url,
       action_source: evt.action_source || 'website',
       user_data: {
-        em: hash(ud.email) ? [hash(ud.email)] : undefined,
-        ph: hash(phone) ? [hash(phone)] : undefined,
-        fn: hash(ud.first_name) ? [hash(ud.first_name)] : undefined,
-        ln: hash(ud.last_name) ? [hash(ud.last_name)] : undefined,
-        ct: hash(ud.city) ? [hash(ud.city)] : undefined,
-        zp: hashPostal(ud.postal_code) ? [hashPostal(ud.postal_code)] : undefined,
-        country: hashCountry(ud.country) ? [hashCountry(ud.country)] : undefined,
+        em: em ? [em] : undefined,
+        ph: ph ? [ph] : undefined,
+        fn: fn ? [fn] : undefined,
+        ln: ln ? [ln] : undefined,
+        ct: ct ? [ct] : undefined,
+        zp: zp ? [zp] : undefined,
+        country: country ? [country] : undefined,
         fbp: ud.fbp,
         fbc: ud.fbc,
         client_user_agent: ud.client_user_agent,
@@ -165,7 +175,7 @@ export async function sendMetaCapi(
     payload.test_event_code = env.META_CAPI_TEST_EVENT_CODE;
   }
 
-  const url = `https://graph.facebook.com/v18.0/${encodeURIComponent(pixelId)}/events?access_token=${encodeURIComponent(accessToken)}`;
+  const url = `https://graph.facebook.com/${META_GRAPH_API_VERSION}/${encodeURIComponent(pixelId)}/events?access_token=${encodeURIComponent(accessToken)}`;
 
   try {
     const res = await fetch(url, {

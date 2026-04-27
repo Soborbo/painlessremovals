@@ -2,14 +2,16 @@
  * Form abandonment beacon endpoint.
  *
  * Receives `navigator.sendBeacon()` payloads from `form-tracking.ts` and
- * forwards them to GA4 Measurement Protocol so we have a server-side
- * record even when the browser failed to flush its dataLayer push during
- * `pagehide` (common on mobile).
+ * forwards them to GA4 Measurement Protocol.
  *
- * Always returns 204 — sendBeacon doesn't read the body and we don't
- * want a noisy retry loop on failure. Rate-limit + Origin gating
- * matters here because the endpoint forwards to GA4 MP and a flood
- * would burn quota and pollute reports.
+ * Hardening matches `/api/meta/capi`:
+ *   - Origin allowlist FAIL-CLOSED.
+ *   - Per-IP sliding-window in-memory rate limit (60/min — looser than
+ *     CAPI because abandonment beacons fire on every form drop-off,
+ *     and a bursty user filling and abandoning multiple forms is
+ *     legitimate).
+ *   - Field whitelist + length caps.
+ *   - OPTIONS preflight responder echoing only allowed origins.
  */
 
 import type { APIRoute } from 'astro';
@@ -30,6 +32,10 @@ const ALLOWED_KEYS = new Set([
   'exit_page_title',
   'exit_page_url',
 ]);
+
+const RATE_WINDOW_MS = 60 * 1000;
+const RATE_PER_IP_PER_WINDOW = 60;
+const ipBuckets = new Map<string, number[]>();
 
 interface AbandonmentPayload {
   form_name?: string;
@@ -52,32 +58,72 @@ function sanitize(input: unknown): AbandonmentPayload {
   return out as AbandonmentPayload;
 }
 
+function corsHeaders(origin: string | null): Record<string, string> {
+  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+    return {};
+  }
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Max-Age': '600',
+    'Vary': 'Origin',
+  };
+}
+
+function checkInMemoryRateLimit(ip: string): boolean {
+  if (!ip) return true;
+  const now = Date.now();
+  const cutoff = now - RATE_WINDOW_MS;
+  const bucket = ipBuckets.get(ip) || [];
+  const fresh = bucket.filter((t) => t > cutoff);
+  if (fresh.length >= RATE_PER_IP_PER_WINDOW) {
+    ipBuckets.set(ip, fresh);
+    return false;
+  }
+  fresh.push(now);
+  ipBuckets.set(ip, fresh);
+  if (ipBuckets.size > 5000) {
+    for (const [k, v] of ipBuckets) {
+      if (!v.length || v[v.length - 1]! < cutoff) ipBuckets.delete(k);
+    }
+  }
+  return true;
+}
+
+export const OPTIONS: APIRoute = async ({ request }) => {
+  const origin = request.headers.get('Origin');
+  const headers = corsHeaders(origin);
+  if (Object.keys(headers).length === 0) {
+    return new Response(null, { status: 403 });
+  }
+  return new Response(null, { status: 204, headers });
+};
+
 export const POST: APIRoute = async (context) => {
   const { request } = context;
   const origin = request.headers.get('Origin');
 
-  // Origin allowlist — same set the rest of the API uses. sendBeacon
-  // doesn't carry CORS preflight in many browsers, but the Origin
-  // header is still set on cross-origin POSTs from the page.
-  if (origin && !CONFIG.security.allowedOrigins.includes(origin)) {
-    return new Response(null, { status: 204 });
+  // Origin allowlist — FAIL CLOSED. sendBeacon does set Origin on
+  // cross-origin POSTs from the page, so missing-Origin here is
+  // suspicious and rejected.
+  if (!origin || !CONFIG.security.allowedOrigins.includes(origin)) {
+    return new Response(null, { status: 403 });
   }
 
-  // Rate-limit so a flood from a single client can't burn our GA4 MP
-  // quota or pollute the abandonment funnel report.
+  const ip = request.headers.get('CF-Connecting-IP') || '';
+  if (!checkInMemoryRateLimit(ip)) {
+    return new Response(null, { status: 429 });
+  }
   const rateLimitOk = await checkRateLimit(context);
   if (!rateLimitOk) {
-    return new Response(null, { status: 204 });
+    return new Response(null, { status: 429 });
   }
 
   try {
     const raw = (await request.json()) as unknown;
     const payload = sanitize(raw);
 
-    // Caller-supplied IP is unreliable; we use the CF-Connecting-IP for
-    // a fingerprint-only client_id. We do NOT send the IP to GA4 — that
-    // would breach our own CORS / consent posture.
-    const ip = request.headers.get('CF-Connecting-IP') || '';
     const ua = request.headers.get('User-Agent') || '';
     const clientId = deriveClientId(`${ip}${ua}`.replace(/[^a-f0-9]/gi, '').padEnd(32, '0'));
 
@@ -92,5 +138,5 @@ export const POST: APIRoute = async (context) => {
       error: err instanceof Error ? err.message : String(err),
     });
   }
-  return new Response(null, { status: 204 });
+  return new Response(null, { status: 204, headers: corsHeaders(origin) });
 };

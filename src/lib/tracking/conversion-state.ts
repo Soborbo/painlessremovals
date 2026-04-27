@@ -18,6 +18,7 @@
  * BroadcastChannel.
  */
 
+import { clearUserDataOnDOM } from './tracking';
 import { trackEvent } from './tracking';
 import { mirrorMetaCapi } from './meta-mirror';
 import { generateUUID } from './uuid';
@@ -27,6 +28,7 @@ import {
   QUOTE_STATE_CHANNEL,
   QUOTE_STATE_KEY,
   QUOTE_UPGRADE_WINDOW_MS,
+  VIEW_CONTENT_FIRED_KEY,
 } from './config';
 
 export interface QuoteState {
@@ -36,10 +38,6 @@ export interface QuoteState {
   completedAt: number;
   eventId: string;
   upgraded: boolean;
-  /** Whether `quote_calculator_first_view` has already fired in this
-   *  browser. Survives across re-completions so re-runs don't double-fire
-   *  the Meta `ViewContent` engagement signal. */
-  viewContentFired: boolean;
 }
 
 let pendingTimerId: ReturnType<typeof setTimeout> | null = null;
@@ -71,12 +69,32 @@ function clearPendingTimer(): void {
   }
 }
 
+function isValidState(v: unknown): v is QuoteState {
+  if (!v || typeof v !== 'object') return false;
+  const s = v as Record<string, unknown>;
+  return (
+    typeof s.value === 'number' && Number.isFinite(s.value) &&
+    typeof s.currency === 'string' && s.currency.length > 0 &&
+    typeof s.service === 'string' && s.service.length > 0 &&
+    typeof s.completedAt === 'number' && Number.isFinite(s.completedAt) &&
+    typeof s.eventId === 'string' && s.eventId.length > 0 &&
+    typeof s.upgraded === 'boolean'
+  );
+}
+
 function readState(): QuoteState | null {
   if (typeof localStorage === 'undefined') return null;
   try {
     const raw = localStorage.getItem(QUOTE_STATE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as QuoteState;
+    const parsed: unknown = JSON.parse(raw);
+    if (!isValidState(parsed)) {
+      // Schema drift (e.g. older calc deployed an extra field, or a hostile
+      // extension wrote junk). Drop instead of crashing.
+      try { localStorage.removeItem(QUOTE_STATE_KEY); } catch { /* ignore */ }
+      return null;
+    }
+    return parsed;
   } catch {
     return null;
   }
@@ -102,8 +120,12 @@ function deleteState(): void {
 
 /**
  * Called from the calculator's success handler to start a fresh upgrade
- * window. Resets the timer and event_id; preserves `viewContentFired` so
- * Meta ViewContent only fires once per browser even across re-runs.
+ * window. Resets the timer and event_id.
+ *
+ * The `viewContentFired` flag lives in its own localStorage key
+ * (`VIEW_CONTENT_FIRED_KEY`) so re-running the calculator (which calls
+ * `deleteState()` and then `resetQuoteState()`) doesn't refire Meta's
+ * ViewContent.
  *
  * `eventId` is optional — passing it lets the caller share a dedup key
  * with a server-side mirror that was fired earlier (e.g. save-quote.ts
@@ -117,7 +139,6 @@ export function resetQuoteState(input: {
   eventId?: string;
 }): QuoteState {
   clearPendingTimer();
-  const previous = readState();
 
   const state: QuoteState = {
     value: input.value,
@@ -126,7 +147,6 @@ export function resetQuoteState(input: {
     completedAt: Date.now(),
     eventId: input.eventId || generateUUID(),
     upgraded: false,
-    viewContentFired: previous?.viewContentFired ?? false,
   };
   writeState(state);
   pendingTimerId = setTimeout(
@@ -134,6 +154,15 @@ export function resetQuoteState(input: {
     QUOTE_UPGRADE_WINDOW_MS,
   );
   return state;
+}
+
+export function hasViewContentFired(): boolean {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    return localStorage.getItem(VIEW_CONTENT_FIRED_KEY) === '1';
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -161,13 +190,19 @@ export function markQuoteUpgraded(): void {
   writeState(state);
   clearPendingTimer();
   broadcast('upgraded');
+  // Caller already read PII off the hidden DOM element synchronously
+  // before this function was invoked (see global-listeners.ts), so it's
+  // safe to wipe — keeps PII at-rest exposure as short as possible.
+  clearUserDataOnDOM();
 }
 
 export function markViewContentFired(): void {
-  const state = readState();
-  if (!state) return;
-  state.viewContentFired = true;
-  writeState(state);
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(VIEW_CONTENT_FIRED_KEY, '1');
+  } catch {
+    // ignore
+  }
 }
 
 function fireQuoteConversionIfStillActive(isLate: boolean): void {
@@ -188,6 +223,9 @@ function fireQuoteConversionIfStillActive(isLate: boolean): void {
 
   deleteState();
   clearPendingTimer();
+  // mirrorMetaCapi reads from the DOM synchronously above, so wiping
+  // is safe and shrinks the at-rest PII window.
+  clearUserDataOnDOM();
 }
 
 /**

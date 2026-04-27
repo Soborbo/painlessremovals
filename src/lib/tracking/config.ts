@@ -45,3 +45,19 @@ export const META_CAPI_ENDPOINT = '/api/meta/capi';
 
 /** BroadcastChannel name for cross-tab sync of quote state mutations. */
 export const QUOTE_STATE_CHANNEL = 'pl_quote_state_v1';
+
+/** Meta Graph API version. Pinned (not "latest") so a Meta-side breaking
+ *  change can't silently break our CAPI ingestion — bump this deliberately
+ *  after testing in Events Manager. */
+export const META_GRAPH_API_VERSION = 'v22.0';
+
+/** localStorage key for the persistent ViewContent-fired flag. Lives in
+ *  its OWN key (not inside the quote state blob) so it survives
+ *  `deleteState()` and Meta ViewContent fires once per browser even
+ *  across re-completions. */
+export const VIEW_CONTENT_FIRED_KEY = 'pl_view_content_fired';
+
+/** TTL for at-rest user-data side-channel in localStorage. After this,
+ *  the blob is auto-purged on next read; we don't keep PII around longer
+ *  than needed for the late-conversion CAPI mirror. */
+export const USER_DATA_TTL_MS = 24 * 60 * 60 * 1000;

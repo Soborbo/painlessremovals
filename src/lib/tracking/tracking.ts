@@ -10,8 +10,52 @@
  * accidental third-party script that decides to grep it.
  */
 
-import { DEFAULT_COUNTRY, USER_DATA_ELEMENT_ID, USER_DATA_STORAGE_KEY } from './config';
+import {
+  DEFAULT_COUNTRY,
+  USER_DATA_ELEMENT_ID,
+  USER_DATA_STORAGE_KEY,
+  USER_DATA_TTL_MS,
+} from './config';
 import { generateUUID } from './uuid';
+
+/**
+ * Reads Google Consent Mode v2 state. Returns `true` only when
+ * `ad_storage` is granted; we use this gate before persisting PII to
+ * localStorage. A user who hasn't granted ads consent gets the in-memory
+ * DOM side-channel (which dies with the page) but no at-rest copy.
+ *
+ * Source of truth is `window.google_tag_data.ics`, populated by GTM's
+ * Consent Mode shim. Falls back to checking the dataLayer for an
+ * explicit `consent.update` push, then defaults to `denied`.
+ */
+function adStorageGranted(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: string; update?: string }> } } }).google_tag_data?.ics;
+    const entry = ics?.entries?.ad_storage;
+    if (entry) {
+      // ICS reports 'granted' / 'denied' on default and/or update.
+      return (entry.update || entry.default) === 'granted';
+    }
+  } catch {
+    // ignore
+  }
+  // Fallback: walk dataLayer for the most recent `consent` push.
+  try {
+    const dl = window.dataLayer || [];
+    for (let i = dl.length - 1; i >= 0; i--) {
+      const item = dl[i] as { 0?: string; 1?: string; 2?: { ad_storage?: string } } | undefined;
+      if (item && item[0] === 'consent' && (item[1] === 'update' || item[1] === 'default')) {
+        return item[2]?.ad_storage === 'granted';
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return false;
+}
+
+export { adStorageGranted };
 
 declare global {
   interface Window {
@@ -99,15 +143,27 @@ function writeUserDataToDOMElement(data: UserData): void {
  * Each call merges with previously-stored fields rather than replacing
  * the whole blob, so earlier-step data isn't wiped by later steps.
  */
+interface StoredUserData {
+  data: UserData;
+  savedAt: number;
+}
+
 export function setUserDataOnDOM(data: UserData): void {
   if (typeof document === 'undefined') return;
   writeUserDataToDOMElement(data);
+
+  // At-rest persistence is gated on ad_storage consent. Without it,
+  // PII still lives on the DOM for as long as the page is open (so
+  // the immediate Meta CAPI mirror works), but we do NOT write it to
+  // localStorage where it would survive into future sessions.
+  if (!adStorageGranted()) return;
 
   if (typeof localStorage !== 'undefined') {
     try {
       const existing = readUserDataFromStorage();
       const merged: UserData = { ...existing, ...data };
-      localStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(merged));
+      const blob: StoredUserData = { data: merged, savedAt: Date.now() };
+      localStorage.setItem(USER_DATA_STORAGE_KEY, JSON.stringify(blob));
     } catch {
       // localStorage full / disabled — DOM-only is still functional
     }
@@ -119,9 +175,21 @@ function readUserDataFromStorage(): UserData {
   try {
     const raw = localStorage.getItem(USER_DATA_STORAGE_KEY);
     if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
+    const parsed: unknown = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') return {};
-    return parsed as UserData;
+
+    // Backward-compat: pre-TTL blobs are bare UserData (no savedAt).
+    // Treat them as expired and purge so we converge on the TTL'd shape.
+    const blob = parsed as Partial<StoredUserData> & UserData;
+    if (typeof blob.savedAt !== 'number' || !blob.data) {
+      try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
+      return {};
+    }
+    if (Date.now() - blob.savedAt > USER_DATA_TTL_MS) {
+      try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
+      return {};
+    }
+    return blob.data;
   } catch {
     return {};
   }

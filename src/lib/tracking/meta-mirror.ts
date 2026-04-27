@@ -28,6 +28,35 @@ const META_EVENT_NAMES: Record<string, string> = {
   quote_calculator_first_view: 'ViewContent',
 };
 
+interface ConsentSnapshot {
+  ad_storage: 'granted' | 'denied' | 'unknown';
+  ad_user_data: 'granted' | 'denied' | 'unknown';
+}
+
+/**
+ * Reads the live Consent Mode v2 snapshot. The mirror endpoint trusts
+ * us less than gtag does — even with this client check, the server
+ * re-reads `consent` from the payload and re-validates (defense in
+ * depth). Both must say `granted` for ads-related signals.
+ */
+function readConsentSnapshot(): ConsentSnapshot {
+  const out: ConsentSnapshot = { ad_storage: 'unknown', ad_user_data: 'unknown' };
+  if (typeof window === 'undefined') return out;
+  try {
+    const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: string; update?: string }> } } }).google_tag_data?.ics;
+    const entries = ics?.entries;
+    if (entries) {
+      const a = entries.ad_storage;
+      const b = entries.ad_user_data;
+      if (a) out.ad_storage = ((a.update || a.default) === 'granted') ? 'granted' : 'denied';
+      if (b) out.ad_user_data = ((b.update || b.default) === 'granted') ? 'granted' : 'denied';
+    }
+  } catch {
+    // ignore — leave as 'unknown'
+  }
+  return out;
+}
+
 export async function mirrorMetaCapi(
   internalEventName: string,
   eventId: string,
@@ -36,6 +65,14 @@ export async function mirrorMetaCapi(
   if (typeof window === 'undefined') return;
   const metaName = META_EVENT_NAMES[internalEventName];
   if (!metaName) return;
+
+  // Client-side consent gate. The server re-checks via the snapshot
+  // we send below, but skipping here saves a network round-trip and
+  // never starts the request when the user hasn't consented.
+  const consent = readConsentSnapshot();
+  if (consent.ad_storage !== 'granted' || consent.ad_user_data !== 'granted') {
+    return;
+  }
 
   const userData: UserData = readUserDataFromDOM();
   // Best-effort _fbp / _fbc cookie parse — Meta uses these to attribute the
@@ -54,6 +91,12 @@ export async function mirrorMetaCapi(
       client_user_agent: navigator.userAgent,
     },
     custom_data: data,
+    // Consent snapshot. The server enforces this independently so we
+    // can't accidentally bypass by spoofing — defense in depth.
+    consent: {
+      ad_storage: consent.ad_storage,
+      ad_user_data: consent.ad_user_data,
+    },
   };
 
   try {

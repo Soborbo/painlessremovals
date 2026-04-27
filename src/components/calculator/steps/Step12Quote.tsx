@@ -38,6 +38,7 @@ import {
   mirrorMetaCapi,
   resetQuoteState,
   markViewContentFired,
+  hasViewContentFired,
   markQuoteUpgraded,
   getActiveQuoteState,
   generateUUID,
@@ -147,7 +148,8 @@ export function Step12Quote() {
 
       // Meta ViewContent — only the FIRST completion in this browser, no
       // value (engagement signal only, not optimization input).
-      if (!quoteState.viewContentFired) {
+      // Reads the dedicated VIEW_CONTENT_FIRED_KEY localStorage flag.
+      if (!hasViewContentFired()) {
         trackEvent('quote_calculator_first_view', {
           event_id: quoteState.eventId,
           service: state.serviceType || 'removal',
