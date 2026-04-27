@@ -1,0 +1,41 @@
+---
+/**
+ * INSTANT QUOTE STEP PAGE
+ *
+ * Dynamic SSR route for /instantquote/step-XX/.
+ * Each step is a hard navigation; no View Transitions (calculator state
+ * lives in nanostores hydrated on the client).
+ */
+
+export const prerender = false;
+
+import LayoutCalculator from '@/components/calculator/layout-calculator.astro';
+import { getStepById } from '@/lib/core/calculator/config';
+import { CalculatorStepRenderer } from '@/components/calculator/CalculatorStepRenderer';
+
+// Get step from URL
+const { step } = Astro.params;
+
+// Validate step
+const stepConfig = getStepById(step || '');
+
+if (!stepConfig) {
+  return Astro.redirect('/404/');
+}
+
+// Step 12 now lives at /instantquote/your-quote/
+if (step === 'step-12') {
+  return Astro.redirect('/instantquote/your-quote/');
+}
+
+// Get step order for progress
+const stepOrder = stepConfig.order;
+---
+
+<LayoutCalculator
+  title={stepConfig.title.en}
+  description={stepConfig.description?.en}
+  currentStep={stepOrder}
+>
+  <CalculatorStepRenderer client:load stepId={step!} />
+</LayoutCalculator>

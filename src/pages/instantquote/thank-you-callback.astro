@@ -1,0 +1,122 @@
+---
+/**
+ * INSTANT QUOTE — THANK YOU (CALLBACK REQUESTED)
+ *
+ * Shown after a customer submits the simple callback form from Step 1.
+ */
+
+export const prerender = false;
+
+import '@/styles/calculator.css';
+import GTMHead from '@/components/GTMHead.astro';
+import GTMBody from '@/components/GTMBody.astro';
+import { CONFIG } from '@/lib/config';
+const assetBase = CONFIG.site.assetBaseUrl;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Thank you — we'll call you back soon" />
+    <title>We'll Call You Back | Painless Removals</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <GTMHead />
+  </head>
+  <body class="min-h-screen bg-background antialiased flex flex-col">
+    <GTMBody />
+
+    <main class="container mx-auto px-4 py-16 flex-1">
+      <div class="max-w-md mx-auto text-center space-y-6">
+
+        <!-- Check icon -->
+        <div
+          class="w-20 h-20 rounded-full flex items-center justify-center mx-auto"
+          style="background-color: #e6f2f0;"
+        >
+          <svg
+            class="w-10 h-10"
+            style="color: #005349;"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+
+        <div>
+          <h1 class="text-2xl font-semibold text-foreground">Thank you for your enquiry!</h1>
+          <p class="text-muted-foreground mt-2">
+            Our team will call you back during business hours.
+          </p>
+        </div>
+
+        <!-- Business hours card -->
+        <div
+          class="rounded-xl p-5 text-sm space-y-3"
+          style="background: #f0f7f6; border: 1px solid #c2dbd7;"
+        >
+          <p class="font-medium" style="color: #005349;">What happens next?</p>
+          <ul class="space-y-2 text-left text-muted-foreground">
+            <li class="flex items-start gap-2">
+              <span
+                class="flex-shrink-0 w-5 h-5 rounded-full text-white text-xs font-bold flex items-center justify-center mt-0.5"
+                style="background: #005349;"
+              >1</span>
+              Our team will review your request
+            </li>
+            <li class="flex items-start gap-2">
+              <span
+                class="flex-shrink-0 w-5 h-5 rounded-full text-white text-xs font-bold flex items-center justify-center mt-0.5"
+                style="background: #005349;"
+              >2</span>
+              We'll call you as soon as possible — Mon–Sat, 8am–6pm
+            </li>
+            <li class="flex items-start gap-2">
+              <span
+                class="flex-shrink-0 w-5 h-5 rounded-full text-white text-xs font-bold flex items-center justify-center mt-0.5"
+                style="background: #005349;"
+              >3</span>
+              We'll discuss your requirements and provide a personalised quote
+            </li>
+          </ul>
+        </div>
+
+        <!-- Tom photo + contact -->
+        <div class="flex items-center gap-4 rounded-xl p-4 border text-left">
+          <img
+            src={`${assetBase}/images/email/tom.jpg`}
+            alt="Tom"
+            class="w-16 h-16 rounded-lg object-cover object-top flex-shrink-0"
+          />
+          <div class="text-sm">
+            <p class="font-semibold" style="color: #005349;">Tom</p>
+            <p class="text-muted-foreground">Operations, Painless Removals</p>
+            <a href="tel:01172870082" class="font-medium" style="color: #005349;">0117 28 700 82</a>
+          </div>
+        </div>
+
+        <!-- Back to home -->
+        <a
+          href="/"
+          class="inline-block text-sm text-muted-foreground hover:text-foreground underline underline-offset-4"
+        >
+          ← Back to homepage
+        </a>
+
+      </div>
+    </main>
+
+    <footer class="border-t mt-auto">
+      <div class="container mx-auto px-4 py-6">
+        <div class="text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} Painless Removals. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+  </body>
+</html>

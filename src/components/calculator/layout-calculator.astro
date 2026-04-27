@@ -1,0 +1,95 @@
+---
+/**
+ * CALCULATOR LAYOUT
+ *
+ * Wrapper for /instantquote/* pages. Uses the standalone shadcn-style
+ * design system from src/styles/calculator.css; the rest of the site
+ * uses src/styles/global.css.
+ */
+
+import '@/styles/calculator.css';
+import { ProgressBarReact } from './ProgressBarReact';
+import GTMHead from '@/components/GTMHead.astro';
+import GTMBody from '@/components/GTMBody.astro';
+
+interface Props {
+  title?: string;
+  description?: string | undefined;
+  currentStep?: number;
+}
+
+const {
+  title = 'Instant Quote',
+  description = 'Get your instant removals quote in 60 seconds.',
+  currentStep = 1,
+} = Astro.props;
+
+// Google Maps API key for address autocomplete
+import { env } from 'cloudflare:workers';
+const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY
+  || import.meta.env.GOOGLE_MAPS_API_KEY
+  || '';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} — Painless Removals</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <GTMHead />
+    {/* Google Maps API for address autocomplete */}
+    {googleMapsApiKey && (
+      <script
+        async
+        defer
+        src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places,routes&loading=async`}
+      />
+    )}
+  </head>
+  <body class="min-h-screen bg-background antialiased flex flex-col">
+    <GTMBody />
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6 flex-1">
+      <!-- Progress Bar -->
+      <div class="max-w-4xl mx-auto mb-6">
+        <ProgressBarReact client:load currentStep={currentStep} />
+      </div>
+
+      <!-- Calculator Content -->
+      <div class="max-w-[796px] mx-auto">
+        <slot />
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t mt-auto">
+      <div class="container mx-auto px-4 py-6">
+        <div class="text-center text-sm text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} Painless Removals. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Tracking bootstrap: resumes quote timer, installs click + scroll listeners -->
+    <script>
+      import '@/lib/tracking/boot';
+    </script>
+
+    <!-- Error Tracking — utolsó script </body> előtt -->
+    <script>
+      import { initGlobalCatcher } from '@/lib/errors/client-catcher';
+      import { initWebVitals } from '@/lib/errors/web-vitals';
+      initGlobalCatcher({
+        endpoint: '/api/error-report',
+        siteId: import.meta.env.PUBLIC_SITE_ID || 'painless-removals',
+        deployId: import.meta.env.PUBLIC_DEPLOY_ID || '',
+        isDev: import.meta.env.DEV,
+      });
+      initWebVitals();
+    </script>
+  </body>
+</html>

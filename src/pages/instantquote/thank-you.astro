@@ -1,0 +1,121 @@
+---
+/**
+ * INSTANT QUOTE — THANK YOU PAGE
+ *
+ * Shown after successful quote submission.
+ */
+
+export const prerender = false;
+
+import '@/styles/calculator.css';
+import GTMHead from '@/components/GTMHead.astro';
+import GTMBody from '@/components/GTMBody.astro';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+
+// Get quote ID from query params
+const quoteId = Astro.url.searchParams.get('id');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Thank you for your quote request" />
+    <title>Thank You | Calculator Boilerplate</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <GTMHead />
+  </head>
+  <body class="min-h-screen bg-background antialiased">
+    <GTMBody />
+    <!-- Header -->
+    <header class="border-b">
+      <div class="container mx-auto px-4 py-4">
+        <a href="/" class="text-xl font-bold text-primary"> Calculator Boilerplate </a>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-16">
+      <div class="max-w-2xl mx-auto">
+        <Card>
+          <CardHeader className="text-center">
+            <!-- Success Icon -->
+            <div
+              class="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center mx-auto mb-6"
+            >
+              <span class="text-4xl">✓</span>
+            </div>
+
+            <CardTitle className="text-3xl">Thank You!</CardTitle>
+            <CardDescription className="text-lg">
+              Your quote has been submitted successfully
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {
+              quoteId && (
+                <div class="bg-secondary rounded-lg p-4 text-center">
+                  <p class="text-sm text-muted-foreground mb-1">Your Quote ID</p>
+                  <p class="text-2xl font-bold text-primary">#{quoteId}</p>
+                </div>
+              )
+            }
+
+            <div class="space-y-4">
+              <h3 class="font-semibold">What happens next?</h3>
+              <ul class="space-y-3 text-sm text-muted-foreground">
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0">📧</span>
+                  <span>
+                    You'll receive a confirmation email with your quote details within the next few
+                    minutes.
+                  </span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0">👥</span>
+                  <span>
+                    Our team will review your request and get back to you within 24 hours.
+                  </span>
+                </li>
+                <li class="flex gap-3">
+                  <span class="flex-shrink-0">📞</span>
+                  <span>
+                    If you have any questions, feel free to contact us at hello@painlessremovals.com
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 pt-6">
+              <a href="/" class="flex-1">
+                <Button variant="outline" className="w-full"> ← Back to Home </Button>
+              </a>
+              <a href="/instantquote/step-01/" class="flex-1">
+                <Button className="w-full"> Create Another Quote </Button>
+              </a>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t mt-16">
+      <div class="container mx-auto px-4 py-8">
+        <div class="text-center text-sm text-muted-foreground">
+          <p>&copy; 2024 Calculator Boilerplate. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
