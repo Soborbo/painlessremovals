@@ -28,23 +28,54 @@ binding = "SESSIONS"
 id = "cfc7e5916f054125922731a9ddbce29a"
 
 # Plain env vars (non-secret).
-# Secrets (RESEND_API_KEY, TURNSTILE_SECRET_KEY, GA4_API_SECRET, META_CAPI_ACCESS_TOKEN,
-# GOOGLE_MAPS_API_KEY, GOOGLE_SERVICE_ACCOUNT_KEY, IMVE_API_KEY, HEALTH_CHECK_TOKEN,
-# IP_HASH_SALT) are set via `wrangler secret put <NAME>`.
+#
+# IMPORTANT: wrangler.toml is the source of truth for these. Each `wrangler deploy`
+# overrides the dashboard plain-text vars with whatever is here. Keep this file
+# in sync if you change a value in the dashboard, or it'll be wiped on next deploy.
+#
+# Secrets (RESEND_API_KEY, TURNSTILE_SECRET_KEY, GA4_API_SECRET,
+# META_CAPI_ACCESS_TOKEN, GOOGLE_MAPS_API_KEY, GOOGLE_SERVICE_ACCOUNT_KEY,
+# IMVE_API_KEY, HEALTH_CHECK_TOKEN, IP_HASH_SALT) are managed via
+# `wrangler secret put <NAME>` and never appear here.
 [vars]
-PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAACs7GfndiZsA_2c4"
-SITE_URL = "https://painlessremovals.com"
 ENVIRONMENT = "production"
+SITE_URL = "https://painlessremovals.com"
+PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAACs7GfndiZsA_2c4"
+
+# Tracking
 GTM_ID = "GTM-PXTH5JJK"
-# These can be filled in from the existing painless-calculator worker /
-# painlessremovals2026 Pages project. Until then, server-side mirrors
-# (GA4 MP, Meta CAPI) silently no-op (sendGA4MP / sendMetaCapi early-return
-# when the credential pair is missing) — useful for the initial deploy.
-GA4_MEASUREMENT_ID = ""
-META_PIXEL_ID = ""
+GA4_MEASUREMENT_ID = "G-05GFQ1XQFH"
+META_PIXEL_ID = "292656820246446"
+# WARNING: when this is non-empty, ALL Meta CAPI events go to the Test Events
+# tab in Meta Events Manager and DO NOT count for ad attribution. Empty for
+# real production conversion tracking; set to a TEST<n> code only when
+# debugging a specific session against the Test Events tab.
 META_CAPI_TEST_EVENT_CODE = ""
-ERROR_SHEETS_ID = ""
-GOOGLE_SERVICE_ACCOUNT_EMAIL = ""
-ERROR_EMAIL_TO = ""
-ERROR_ALERT_FROM = ""
-IMVE_API_URL = ""
+
+# Error tracking (Google Sheets sink)
+ERROR_SHEETS_ID = "14qcvJ7fyJeiTtVF68QkGbob7Mvgbzt5yrKpMUpI186s"
+GOOGLE_SERVICE_ACCOUNT_EMAIL = "painless-calculator@painless-removals.iam.gserviceaccount.com"
+ERROR_EMAIL_TO = "marketing@painlessremovals.com"
+ERROR_ALERT_FROM = "alerts@painlessremovals.com"
+
+# i-mve CRM sync (calculator quote completion)
+IMVE_API_URL = "https://api.app.i-mve.com/job/user/67afa16a88df164ff28c0780"
+
+# Observability — Workers Logs enabled at 100% sampling.
+# Top-level `enabled = false` is the legacy unified flag; we use the per-channel
+# `logs.enabled = true` instead. Traces stay off (extra cost, not needed for
+# our debugging needs).
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1
