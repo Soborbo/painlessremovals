@@ -117,7 +117,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     const result = await sendEmail(apiKey, {
       from: FROM_DEFAULT,
-      to: ['jay@painlessremovals.com'],
+      to: ['hello@painlessremovals.com'],
       reply_to: email,
       subject: `New Trade Partner Registration: ${stripNewlines(name)} — ${stripNewlines(companyName)}`,
       html: emailChrome(
