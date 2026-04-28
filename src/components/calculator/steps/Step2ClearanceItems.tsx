@@ -60,7 +60,7 @@ const ITEM_CONFIG: Record<DisposalItemType, {
     unitLabel: '/ each',
   },
   largeAppliance: {
-    image: '/images/calculator/clearance/fridge.jpg',
+    image: '/images/calculator/clearance/large-appliance.jpg',
     shortName: 'Large Appliance',
     unitLabel: '/ each',
   },
