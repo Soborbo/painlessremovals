@@ -15,8 +15,14 @@ keep_vars = true
 [assets]
 directory = "./dist"
 binding = "ASSETS"
-not_found_handling = "404-page"
 html_handling = "auto-trailing-slash"
+# Don't set `not_found_handling = "404-page"` — Cloudflare treats it as a
+# hard short-circuit for browser navigation (Sec-Fetch-Dest: document) and
+# serves /404.html without ever invoking the Worker, breaking SSR routes
+# (/instantquote/*, /api/*) in real browsers (curl and fetch still hit the
+# Worker, which is why this hides until you load the URL in a browser).
+# The Astro adapter renders the prerendered 404.astro itself when no route
+# matches, so the branded 404 still works for genuinely-missing paths.
 
 # KV namespaces (created via `wrangler kv namespace create` / MCP).
 # SESSION is auto-enabled by @astrojs/cloudflare (Astro's built-in session feature).
