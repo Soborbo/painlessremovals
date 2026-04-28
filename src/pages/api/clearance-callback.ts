@@ -9,6 +9,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
+import { logger } from '@/lib/utils/logger';
 
 export const prerender = false;
 
@@ -46,10 +47,14 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (!name || !phone || !email) return json({ error: 'Please fill in all required fields.' }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Please provide a valid email address.' }, 400);
+    if (!/^(?:\+44|0)\d{9,10}$/.test(phone.replace(/\s/g, ''))) {
+      return json({ error: 'Please provide a valid UK phone number.' }, 400);
+    }
 
     // Turnstile
     if (!turnstileToken) return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
-    if (env.TURNSTILE_SECRET_KEY && turnstileToken) {
+    if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Security verification unavailable. Please try again.' }, 500);
+    {
       const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +97,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!adminResult.ok) {
-      console.error('Resend admin email error:', adminResult.error);
+      logger.error('ClearanceCallback', 'Resend admin email failed', { error: adminResult.error });
       return json({ error: `Failed to send your request. Please try again or call us on ${PHONE}.` }, 500);
     }
 
@@ -123,7 +128,7 @@ export const POST: APIRoute = async ({ request }) => {
         </div>`,
     });
 
-    if (!userResult.ok) console.error('Resend user confirmation error:', userResult.error);
+    if (!userResult.ok) logger.error('ClearanceCallback', 'Resend user confirmation failed', { error: userResult.error });
 
     // ──────────────────────────────────────────────────────────────────
     // CONVERSION fire — server-side, only after Turnstile + Resend OK.
@@ -188,7 +193,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     return json({ success: true, event_id: event_id || null });
   } catch (err) {
-    console.error('Clearance callback error:', err);
+    logger.error('ClearanceCallback', 'Form handler crashed', { error: err instanceof Error ? err.message : String(err) });
     return json({ error: `Something went wrong. Please try again or call us on ${PHONE}.` }, 500);
   }
 };

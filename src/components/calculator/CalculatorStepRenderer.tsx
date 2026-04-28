@@ -8,6 +8,11 @@
 import * as React from 'react';
 import { useEffect, useLayoutEffect, useCallback, useState, useRef } from 'react';
 import { initializeStore, goToStep, applicableSteps, stepNumberToUrl } from '@/lib/calculator-store';
+import { trackFormStart, trackFormStep, registerFormForAbandonment } from '@/lib/tracking/form-tracking';
+
+const CALCULATOR_FORM_ID = 'instantquote_calculator';
+const CALCULATOR_FORM_NAME = 'instant_quote_calculator';
+const FORM_STARTED_SESSION_KEY = 'pl_calc_form_started';
 
 // Step components
 import { Step1ServiceType } from './steps/Step1ServiceType';
@@ -111,6 +116,30 @@ export const CalculatorStepRenderer: React.FC<CalculatorStepRendererProps> = ({ 
     window.addEventListener('pageshow', handlePageShow);
     return () => window.removeEventListener('pageshow', handlePageShow);
   }, [syncStep]);
+
+  // Fire step_view (form_step_complete) once per page load, after the
+  // store has hydrated so applicableSteps reflects user choices.
+  // Each step is a hard page load (fresh JS context), so we always
+  // re-register the form for abandonment tracking. `form_start` only
+  // fires the first time the user enters the calculator in a session;
+  // a sessionStorage flag dedupes across step navigations.
+  useEffect(() => {
+    if (!storeReady || !isValidStep) return;
+    const steps = applicableSteps.get();
+    const currentIndex = steps.indexOf(stepNumber!);
+    if (currentIndex === -1) return;
+    let alreadyStarted = false;
+    try {
+      alreadyStarted = sessionStorage.getItem(FORM_STARTED_SESSION_KEY) === '1';
+    } catch { /* sessionStorage may be unavailable in private mode */ }
+    if (!alreadyStarted) {
+      trackFormStart(CALCULATOR_FORM_ID, CALCULATOR_FORM_NAME);
+      try { sessionStorage.setItem(FORM_STARTED_SESSION_KEY, '1'); } catch { /* ignore */ }
+    } else {
+      registerFormForAbandonment(CALCULATOR_FORM_ID, CALCULATOR_FORM_NAME);
+    }
+    trackFormStep(CALCULATOR_FORM_ID, stepId, currentIndex + 1, steps.length);
+  }, [storeReady, isValidStep, stepId, stepNumber]);
 
   // Prefetch adjacent steps after mount so navigation feels instant
   useEffect(() => {

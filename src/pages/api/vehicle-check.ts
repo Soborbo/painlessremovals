@@ -8,6 +8,7 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { isAllowedOrigin, escapeHtml, stripNewlines, json } from '@/lib/forms/utils';
+import { logger } from '@/lib/utils/logger';
 
 export const prerender = false;
 
@@ -120,13 +121,13 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!resendRes.ok) {
-      console.error('Resend error:', await resendRes.text());
+      logger.error('VehicleCheck', 'Resend send failed', { error: await resendRes.text() });
       return json({ error: 'Failed to send inspection report. Please try again.' }, 500);
     }
 
     return json({ success: true, name });
   } catch (err) {
-    console.error('Vehicle check form error:', err);
+    logger.error('VehicleCheck', 'Form handler crashed', { error: err instanceof Error ? err.message : String(err) });
     return json({ error: 'Something went wrong. Please try again.' }, 500);
   }
 };

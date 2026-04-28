@@ -23,6 +23,7 @@ import {
   PHONE,
   FROM_DEFAULT,
 } from '@/lib/forms/utils';
+import { logger } from '@/lib/utils/logger';
 
 export const prerender = false;
 
@@ -44,6 +45,9 @@ export const POST: APIRoute = async ({ request }) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
       return json({ error: 'Please provide a valid email address for the client.' }, 400);
     }
+    if (!/^(?:\+44|0)\d{9,10}$/.test(clientPhone.replace(/\s/g, ''))) {
+      return json({ error: 'Please provide a valid UK phone number for the client.' }, 400);
+    }
 
     // 3. Turnstile
     if (!turnstileToken) {
@@ -51,7 +55,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
     const secret = env.TURNSTILE_SECRET_KEY;
     if (!secret) {
-      console.error('TURNSTILE_SECRET_KEY is not configured');
+      logger.error('Affiliate', 'TURNSTILE_SECRET_KEY is not configured');
       return json({ error: 'Security configuration error. Please try again later.' }, 500);
     }
     if (!(await verifyTurnstile(turnstileToken, secret))) {
@@ -61,7 +65,7 @@ export const POST: APIRoute = async ({ request }) => {
     // 4. Send emails via Resend REST API
     const apiKey = env.RESEND_API_KEY;
     if (!apiKey) {
-      console.error('RESEND_API_KEY is not configured');
+      logger.error('Affiliate', 'RESEND_API_KEY is not configured');
       return json({ error: `Email service is temporarily unavailable. Please call us on ${PHONE}.` }, 500);
     }
 
@@ -96,7 +100,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!adminResult.success) {
-      console.error('Resend admin email error:', adminResult.error);
+      logger.error('Affiliate', 'Resend admin email failed', { error: adminResult.error });
       return json({ error: `Failed to send the referral. Please try again or call us on ${PHONE}.` }, 500);
     }
 
@@ -146,7 +150,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!clientResult.success) {
-      console.error('Resend client email error:', clientResult.error);
+      logger.error('Affiliate', 'Resend client email failed', { error: clientResult.error });
       return json({
         success: true,
         clientName,
@@ -156,7 +160,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     return json({ success: true, clientName });
   } catch (err) {
-    console.error('Affiliate form error:', err);
+    logger.error('Affiliate', 'Form handler crashed', { error: err instanceof Error ? err.message : String(err) });
     return json({ error: `Something went wrong. Please try again or call us on ${PHONE}.` }, 500);
   }
 };

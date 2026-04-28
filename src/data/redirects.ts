@@ -77,7 +77,7 @@ export const redirectMap = new Map<string, string>([
   ['/contact-us', '/contact/'],
   ['/flat-removals-bristol', '/home-removals-bristol/'],
   ['/updates-and-info', '/about/'],
-  ['/calculation-result-general', '/instantquote/calculation-result/'],
+  ['/calculation-result-general', '/instantquote/your-quote/'],
   ['/home-removals-bath', '/removals-bath/'],
 
   // ── Old review hub pages (root-level, not under /reviews/) ───

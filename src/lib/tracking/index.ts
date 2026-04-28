@@ -32,6 +32,7 @@ export {
   trackFormFieldFocus,
   trackFormStep,
   trackFormSubmitted,
+  registerFormForAbandonment,
 } from './form-tracking';
 
 export { initGlobalListeners } from './global-listeners';
