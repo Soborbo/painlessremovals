@@ -39,6 +39,15 @@ const ADS_LABEL_QUOTE_CONVERSION = '_hSkCPT1iYUZEPSE39kq'; // was "Instant Quote
 const ADS_LABEL_PHONE = '4C2oCIe9ioUZEPSE39kq'; // was "Phone number click"
 const ADS_LABEL_CALLBACK = 'tmiYCKzk2MwaEPSE39kq'; // was "Call Back Requested"
 
+// New events introduced by the painlessremovals.com merge. By default
+// they share the existing CALLBACK label so they roll up as the same
+// Google Ads conversion action — ideal for quick activation. To split
+// them into separate Ads conversion actions later (so you can bid on
+// each independently), create new Conversion Actions in Google Ads
+// and replace the labels below with the new ones.
+const ADS_LABEL_CONTACT_FORM = ADS_LABEL_CALLBACK;
+const ADS_LABEL_CLEARANCE_CALLBACK = ADS_LABEL_CALLBACK;
+
 const fp = (n) => String(1714200000000 + n);
 
 // ---------------------------------------------------------------------------
@@ -65,6 +74,13 @@ const trigId = {
   attribution_skipped: '114',
   scroll_50: '115',
   scroll_90: '116',
+  // Conversions introduced by the painlessremovals.com merge.
+  contact_form_conversion: '117',
+  clearance_callback_conversion: '118',
+  // form_submission is the analytics-only event that all forms (including
+  // jobs / affiliate / partner_register) push for funnel reporting.
+  form_submission: '119',
+  instant_quote_cta_click: '120',
 };
 
 const varId = {
@@ -79,6 +95,10 @@ const varId = {
   dlv_attribution_source: '209',
   dlv_late_conversion: '210',
   dlv_tel_target: '211',
+  // New variables for the merge-introduced events.
+  dlv_form_source: '212',     // contact-page, clearance-calculator, jobs-page, ...
+  dlv_source_page: '213',     // pathname of the page where instant_quote_cta_click happened
+  dlv_postcode: '214',        // GA4 param on clearance_callback_conversion
   js_email_dom: '220',
   js_phone_dom: '221',
   js_first_name_dom: '222',
@@ -168,6 +188,9 @@ const variables = [
   dlv(varId.dlv_attribution_source, 'DLV - attribution_source', 'attribution_source'),
   dlv(varId.dlv_late_conversion, 'DLV - late_conversion', 'late_conversion'),
   dlv(varId.dlv_tel_target, 'DLV - tel_target', 'tel_target'),
+  dlv(varId.dlv_form_source, 'DLV - form_source', 'form_source'),
+  dlv(varId.dlv_source_page, 'DLV - source_page', 'source_page'),
+  dlv(varId.dlv_postcode, 'DLV - postcode', 'postcode'),
   jsVar(varId.js_email_dom, 'JS - email from DOM', 'email'),
   jsVar(varId.js_phone_dom, 'JS - phone from DOM', 'phone'),
   jsVar(varId.js_first_name_dom, 'JS - first_name from DOM', 'firstName'),
@@ -240,6 +263,11 @@ const triggers = [
   customEventTrigger(trigId.attribution_skipped, 'attribution_skipped'),
   customEventTrigger(trigId.scroll_50, 'scroll_50'),
   customEventTrigger(trigId.scroll_90, 'scroll_90'),
+  // Merge-introduced events.
+  customEventTrigger(trigId.contact_form_conversion, 'contact_form_conversion'),
+  customEventTrigger(trigId.clearance_callback_conversion, 'clearance_callback_conversion'),
+  customEventTrigger(trigId.form_submission, 'form_submission'),
+  customEventTrigger(trigId.instant_quote_cta_click, 'instant_quote_cta_click'),
 ];
 
 // ---------------------------------------------------------------------------
@@ -363,6 +391,11 @@ const ga4Events = [
   { name: 'attribution_skipped', trigger: trigId.attribution_skipped },
   { name: 'scroll_50', trigger: trigId.scroll_50 },
   { name: 'scroll_90', trigger: trigId.scroll_90 },
+  // Merge-introduced events.
+  { name: 'contact_form_conversion', trigger: trigId.contact_form_conversion, params: [['form_source', '{{DLV - form_source}}']] },
+  { name: 'clearance_callback_conversion', trigger: trigId.clearance_callback_conversion, params: [['form_source', '{{DLV - form_source}}'], ['value', '{{DLV - value}}'], ['currency', '{{DLV - currency}}'], ['postcode', '{{DLV - postcode}}']] },
+  { name: 'form_submission', trigger: trigId.form_submission, params: [['form_name', '{{DLV - form_name}}'], ['form_source', '{{DLV - form_source}}']] },
+  { name: 'instant_quote_cta_click', trigger: trigId.instant_quote_cta_click, params: [['source_page', '{{DLV - source_page}}']] },
 ];
 
 for (const ev of ga4Events) {
@@ -392,11 +425,18 @@ for (const ev of ga4Events) {
   });
 }
 
-// 5. Google Ads conversion tags — three existing labels (Quote, Phone, Callback).
+// 5. Google Ads conversion tags — three pre-existing labels (Quote,
+//    Phone, Callback) plus two new ones for the merge.
 const adsConversions = [
   { name: 'Google Ads — Quote Calculator Conversion', label: ADS_LABEL_QUOTE_CONVERSION, trigger: trigId.quote_calculator_conversion, useValue: true },
   { name: 'Google Ads — Phone Click', label: ADS_LABEL_PHONE, trigger: trigId.phone_conversion, useValue: true },
   { name: 'Google Ads — Callback Conversion', label: ADS_LABEL_CALLBACK, trigger: trigId.callback_conversion, useValue: true },
+  // Merge-introduced. Both currently roll up under the existing CALLBACK
+  // label; create separate Conversion Actions in Google Ads and update
+  // ADS_LABEL_CONTACT_FORM / ADS_LABEL_CLEARANCE_CALLBACK to bid on
+  // them independently.
+  { name: 'Google Ads — Contact Form Conversion', label: ADS_LABEL_CONTACT_FORM, trigger: trigId.contact_form_conversion, useValue: false },
+  { name: 'Google Ads — Clearance Callback Conversion', label: ADS_LABEL_CLEARANCE_CALLBACK, trigger: trigId.clearance_callback_conversion, useValue: true },
 ];
 
 for (const c of adsConversions) {
@@ -450,10 +490,15 @@ function metaPixelTag(name, fbqName, triggers, opts = {}) {
 
 metaPixelTag('Meta Pixel — Lead (quote conversion)', 'Lead', [trigId.quote_calculator_conversion], { value: true, currency: true });
 metaPixelTag('Meta Pixel — Lead (callback)', 'Lead', [trigId.callback_conversion], { value: true, currency: true });
+// New Lead from clearance callback — same Meta event_name "Lead" because
+// from Meta's standpoint it's another lead, with value if estimate parsed.
+metaPixelTag('Meta Pixel — Lead (clearance callback)', 'Lead', [trigId.clearance_callback_conversion], { value: true, currency: true });
 metaPixelTag('Meta Pixel — Contact (phone)', 'Contact', [trigId.phone_conversion], { value: true, currency: true });
 metaPixelTag('Meta Pixel — Contact (email)', 'Contact', [trigId.email_conversion]);
 metaPixelTag('Meta Pixel — Contact (whatsapp)', 'Contact', [trigId.whatsapp_conversion]);
 metaPixelTag('Meta Pixel — Contact (form submit)', 'Contact', [trigId.contact_form_submit]);
+// New: contact_form_conversion (Turnstile-validated, server-side mirrored).
+metaPixelTag('Meta Pixel — Contact (contact form conversion)', 'Contact', [trigId.contact_form_conversion]);
 // ViewContent — first-completion engagement signal, NO value (prevents Advantage+ corruption).
 metaPixelTag('Meta Pixel — ViewContent (first quote)', 'ViewContent', [trigId.quote_calculator_first_view]);
 
