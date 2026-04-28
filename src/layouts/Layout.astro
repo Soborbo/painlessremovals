@@ -249,8 +249,8 @@ const localBusinessSchema = {
   <!-- Fonts (self-hosted, loaded via global.css @font-face) -->
   <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
-  <!-- DM Sans italic: non-blocking (font-display:optional, not above-the-fold) — beasties defers it. -->
-  <link rel="stylesheet" href="/fonts/dm-sans-italic.css" />
+  <!-- DM Sans italic: non-blocking (font-display:optional, not above-the-fold) -->
+  <link rel="stylesheet" href="/fonts/dm-sans-italic.css" media="print" onload="this.media='all'" />
 
   {/* Page-specific LCP image preload — responsive form takes precedence */}
   {preload ? (

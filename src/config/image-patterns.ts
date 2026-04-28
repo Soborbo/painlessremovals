@@ -12,18 +12,18 @@ export const ALL_WIDTHS = [
 ] as const;
 
 export const patterns = {
-  FULL:        { widths: [640, 750, 828, 1080, 1200, 1920, 2048, 2560], sizes: '100vw' },
-  TWO_THIRDS:  { widths: [384, 640, 768, 1024, 1280, 1706, 2048],      sizes: '(min-width:1024px) 66vw, 100vw' },
-  LARGE:       { widths: [384, 640, 768, 1024, 1280, 1536, 1920],      sizes: '(min-width:1024px) 60vw, 100vw' },
-  HALF:        { widths: [320, 640, 960, 1280, 1600],                   sizes: '(min-width:1024px) 50vw, 100vw' },
-  HALF_CARD:   { widths: [480, 640, 828, 960, 1280],                    sizes: '(max-width:768px) 100vw, 464px' },
-  SMALL:       { widths: [256, 512, 640, 1024, 1280],                   sizes: '(min-width:1024px) 40vw, 100vw' },
-  THIRD:       { widths: [256, 512, 640, 853, 1280],                    sizes: '(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw' },
-  QUARTER:     { widths: [192, 384, 512, 640, 960],                     sizes: '(min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw' },
-  FIFTH:       { widths: [160, 320, 512, 640, 768],                     sizes: '(min-width:1024px) 20vw, (min-width:640px) 33vw, 50vw' },
-  SIXTH:       { widths: [128, 256, 427, 512, 640],                     sizes: '(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw' },
-  LOGO:        { widths: [128, 160, 256, 320],                          sizes: '(min-width:640px) 180px, 140px' },
-  ICON:        { widths: [80, 160, 256],                                sizes: '100px' },
+  FULL:        { widths: [480, 640, 750, 828, 1080, 1200, 1920, 2048, 2560], sizes: '100vw' },
+  TWO_THIRDS:  { widths: [384, 480, 640, 768, 1024, 1280, 1706, 2048],       sizes: '(min-width:1024px) 66vw, 100vw' },
+  LARGE:       { widths: [384, 480, 640, 768, 1024, 1280, 1536, 1920],       sizes: '(min-width:1024px) 60vw, 100vw' },
+  HALF:        { widths: [320, 480, 640, 960, 1280, 1600],                    sizes: '(min-width:1024px) 50vw, 100vw' },
+  HALF_CARD:   { widths: [480, 640, 828, 960, 1280],                          sizes: '(max-width:768px) 100vw, 464px' },
+  SMALL:       { widths: [256, 480, 512, 640, 1024, 1280],                    sizes: '(min-width:1024px) 40vw, 100vw' },
+  THIRD:       { widths: [256, 480, 512, 640, 853, 1280],                     sizes: '(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw' },
+  QUARTER:     { widths: [192, 384, 480, 512, 640, 960],                      sizes: '(min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw' },
+  FIFTH:       { widths: [160, 320, 480, 512, 640, 768],                      sizes: '(min-width:1024px) 20vw, (min-width:640px) 33vw, 50vw' },
+  SIXTH:       { widths: [128, 256, 427, 480, 512, 640],                      sizes: '(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw' },
+  LOGO:        { widths: [128, 160, 256, 320],                                sizes: '(min-width:640px) 180px, 140px' },
+  ICON:        { widths: [80, 160, 256],                                      sizes: '100px' },
 } as const;
 
 export type PatternName = keyof typeof patterns;

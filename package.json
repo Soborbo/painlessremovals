@@ -22,7 +22,6 @@
     "@astrojs/sitemap": "^3.7.2",
     "@nanostores/react": "^1.1.0",
     "@noble/hashes": "^2.2.0",
-    "@playform/inline": "^0.1.4",
     "astro": "^6.1.10",
     "clsx": "^2.1.1",
     "lite-youtube-embed": "^0.3.4",

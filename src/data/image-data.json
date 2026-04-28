@@ -69,6 +69,11 @@
     "height": 301,
     "format": "jpg"
   },
+  "about/steve-fanger-band": {
+    "width": 301,
+    "height": 301,
+    "format": "jpg"
+  },
   "about/steve-fanger-young": {
     "width": 4032,
     "height": 3024,
@@ -129,6 +134,11 @@
     "height": 1564,
     "format": "jpg"
   },
+  "areas/bath-georgian-townhouse-removal": {
+    "width": 2500,
+    "height": 1875,
+    "format": "jpg"
+  },
   "areas/bath-hero": {
     "width": 2500,
     "height": 1875,
@@ -155,6 +165,11 @@
     "format": "jpg"
   },
   "areas/bedminster-terrace": {
+    "width": 900,
+    "height": 500,
+    "format": "jpg"
+  },
+  "areas/bedminster-victorian-terrace-removal": {
     "width": 900,
     "height": 500,
     "format": "jpg"
@@ -189,6 +204,16 @@
     "height": 2500,
     "format": "jpg"
   },
+  "areas/brislington-property-removal-team": {
+    "width": 2500,
+    "height": 1875,
+    "format": "jpg"
+  },
+  "areas/brislington-removal-crew-working": {
+    "width": 1875,
+    "height": 2500,
+    "format": "jpg"
+  },
   "areas/brislington-walkthrough": {
     "width": 1875,
     "height": 2500,
@@ -207,6 +232,16 @@
   "areas/chepstow-hero": {
     "width": 2500,
     "height": 1875,
+    "format": "jpg"
+  },
+  "areas/chepstow-house-move-team": {
+    "width": 2500,
+    "height": 1875,
+    "format": "jpg"
+  },
+  "areas/chepstow-removal-completed": {
+    "width": 1875,
+    "height": 2500,
     "format": "jpg"
   },
   "areas/chepstow-team": {
@@ -229,6 +264,11 @@
     "height": 1080,
     "format": "jpg"
   },
+  "areas/chew-valley-countryside-removal": {
+    "width": 1080,
+    "height": 1080,
+    "format": "jpg"
+  },
   "areas/chew-valley-hero": {
     "width": 2500,
     "height": 1153,
@@ -247,6 +287,16 @@
   "areas/clevedon-period-loading": {
     "width": 1200,
     "height": 1600,
+    "format": "jpg"
+  },
+  "areas/clevedon-period-property-removal": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
+  "areas/clevedon-removal-team-working": {
+    "width": 2500,
+    "height": 1875,
     "format": "jpg"
   },
   "areas/clevedon-walkthrough": {
@@ -279,6 +329,11 @@
     "height": 1125,
     "format": "jpg"
   },
+  "areas/cotswolds-stone-property-removal": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
   "areas/cotswolds-tetbury": {
     "width": 2500,
     "height": 1875,
@@ -300,6 +355,11 @@
     "format": "jpg"
   },
   "areas/fishponds-van-victorian": {
+    "width": 960,
+    "height": 720,
+    "format": "jpg"
+  },
+  "areas/fishponds-victorian-terrace-removal": {
     "width": 960,
     "height": 720,
     "format": "jpg"
@@ -339,9 +399,24 @@
     "height": 1154,
     "format": "jpg"
   },
+  "areas/keynsham-house-move-team": {
+    "width": 2500,
+    "height": 1154,
+    "format": "jpg"
+  },
+  "areas/keynsham-removal-job": {
+    "width": 2500,
+    "height": 1125,
+    "format": "jpg"
+  },
   "areas/keynsham-walkthrough": {
     "width": 2500,
     "height": 1125,
+    "format": "jpg"
+  },
+  "areas/knowle-1930s-semi-detached-removal": {
+    "width": 2500,
+    "height": 1153,
     "format": "jpg"
   },
   "areas/knowle-boxes-stairs": {
@@ -369,12 +444,27 @@
     "height": 2500,
     "format": "jpg"
   },
+  "areas/long-ashton-house-removal": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
+  "areas/long-ashton-village-house-move": {
+    "width": 1406,
+    "height": 2500,
+    "format": "jpg"
+  },
   "areas/long-ashton-walkthrough": {
     "width": 2500,
     "height": 1153,
     "format": "jpg"
   },
   "areas/montpelier-hero": {
+    "width": 1153,
+    "height": 2500,
+    "format": "jpg"
+  },
+  "areas/montpelier-narrow-street-removal": {
     "width": 1153,
     "height": 2500,
     "format": "jpg"
@@ -394,6 +484,11 @@
     "height": 1153,
     "format": "jpg"
   },
+  "areas/nailsea-house-move-team": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
   "areas/nailsea-van-load": {
     "width": 1600,
     "height": 1200,
@@ -409,14 +504,29 @@
     "height": 1127,
     "format": "jpg"
   },
+  "areas/painless-removals-van-bristol-areas": {
+    "width": 2345,
+    "height": 1564,
+    "format": "jpg"
+  },
   "areas/patchway-hero": {
     "width": 2500,
     "height": 1125,
     "format": "jpg"
   },
+  "areas/patchway-little-stoke-removal": {
+    "width": 1200,
+    "height": 1600,
+    "format": "jpg"
+  },
   "areas/patchway-modern-flat": {
     "width": 1200,
     "height": 1600,
+    "format": "jpg"
+  },
+  "areas/patchway-removal-job": {
+    "width": 2500,
+    "height": 1125,
     "format": "jpg"
   },
   "areas/patchway-walkthrough": {
@@ -430,6 +540,11 @@
     "format": "jpg"
   },
   "areas/portishead-hero": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
+  "areas/portishead-property-removal-van": {
     "width": 2500,
     "height": 1153,
     "format": "jpg"
@@ -449,6 +564,11 @@
     "height": 1153,
     "format": "jpg"
   },
+  "areas/radstock-property-removal-team": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
   "areas/radstock-walkthrough": {
     "width": 2500,
     "height": 1875,
@@ -462,6 +582,11 @@
   "areas/redland-hero": {
     "width": 2500,
     "height": 1127,
+    "format": "jpg"
+  },
+  "areas/redland-removal-team": {
+    "width": 1080,
+    "height": 1080,
     "format": "jpg"
   },
   "areas/redland-van-victorian": {
@@ -494,6 +619,16 @@
     "height": 2500,
     "format": "jpg"
   },
+  "areas/southville-victorian-terrace-removal": {
+    "width": 1875,
+    "height": 2500,
+    "format": "jpg"
+  },
+  "areas/st-george-removals-loading-van": {
+    "width": 960,
+    "height": 720,
+    "format": "jpg"
+  },
   "areas/stoke-bishop-antiques": {
     "width": 1200,
     "height": 1600,
@@ -504,7 +639,22 @@
     "height": 1875,
     "format": "jpg"
   },
+  "areas/stoke-bishop-residential-street": {
+    "width": 2500,
+    "height": 1875,
+    "format": "jpg"
+  },
+  "areas/stoke-gifford-removals-loading-van": {
+    "width": 1600,
+    "height": 1200,
+    "format": "jpg"
+  },
   "areas/thornbury-hero": {
+    "width": 2500,
+    "height": 1875,
+    "format": "jpg"
+  },
+  "areas/thornbury-house-move-team": {
     "width": 2500,
     "height": 1875,
     "format": "jpg"
@@ -515,6 +665,11 @@
     "format": "webp"
   },
   "areas/totterdown-hero": {
+    "width": 1200,
+    "height": 1600,
+    "format": "jpg"
+  },
+  "areas/totterdown-tight-street-removal": {
     "width": 1200,
     "height": 1600,
     "format": "jpg"
@@ -532,6 +687,16 @@
   "areas/westbury-hand-truck": {
     "width": 2458,
     "height": 1639,
+    "format": "jpg"
+  },
+  "areas/weston-super-mare-crew-loading": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
+  "areas/weston-super-mare-removal-street": {
+    "width": 2500,
+    "height": 1127,
     "format": "jpg"
   },
   "areas/weston-van": {
@@ -570,6 +735,11 @@
     "format": "jpg"
   },
   "areas/yate-hero": {
+    "width": 2500,
+    "height": 1153,
+    "format": "jpg"
+  },
+  "areas/yate-house-move-team": {
     "width": 2500,
     "height": 1153,
     "format": "jpg"
@@ -665,6 +835,11 @@
     "format": "png"
   },
   "autism/12.we-pause-if-needed": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "autism/13.uncertainty-and-unpredictability": {
     "width": 1536,
     "height": 1024,
     "format": "png"
@@ -1044,6 +1219,11 @@
     "height": 1024,
     "format": "png"
   },
+  "later-life/later-life-moves": {
+    "width": 1920,
+    "height": 1440,
+    "format": "jpg"
+  },
   "logos/aim-logo": {
     "width": 500,
     "height": 311,
@@ -1194,6 +1374,56 @@
     "height": 630,
     "format": "jpg"
   },
+  "packing/Tamara-packing": {
+    "width": 2500,
+    "height": 1667,
+    "format": "jpg"
+  },
+  "packing/Tamara-packing2": {
+    "width": 2500,
+    "height": 2500,
+    "format": "jpg"
+  },
+  "packing/tamara-packing3": {
+    "width": 2500,
+    "height": 1667,
+    "format": "jpg"
+  },
+  "partners/bingo": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/elder-removal": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/later-life-removal": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/packing-elderly": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/partners-hero": {
+    "width": 8192,
+    "height": 4320,
+    "format": "jpg"
+  },
+  "partners/place": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/refer-a-client": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
   "pricing/removal-cost-calculator-bristol": {
     "width": 1100,
     "height": 1100,
@@ -1292,236 +1522,6 @@
   "usp/usp-since1978": {
     "width": 417,
     "height": 360,
-    "format": "png"
-  },
-  "about/steve-fanger-band": {
-    "width": 301,
-    "height": 301,
-    "format": "jpg"
-  },
-  "areas/bath-georgian-townhouse-removal": {
-    "width": 2500,
-    "height": 1875,
-    "format": "jpg"
-  },
-  "areas/bedminster-victorian-terrace-removal": {
-    "width": 900,
-    "height": 500,
-    "format": "jpg"
-  },
-  "areas/brislington-property-removal-team": {
-    "width": 2500,
-    "height": 1875,
-    "format": "jpg"
-  },
-  "areas/brislington-removal-crew-working": {
-    "width": 1875,
-    "height": 2500,
-    "format": "jpg"
-  },
-  "areas/chepstow-house-move-team": {
-    "width": 2500,
-    "height": 1875,
-    "format": "jpg"
-  },
-  "areas/chepstow-removal-completed": {
-    "width": 1875,
-    "height": 2500,
-    "format": "jpg"
-  },
-  "areas/chew-valley-countryside-removal": {
-    "width": 1080,
-    "height": 1080,
-    "format": "jpg"
-  },
-  "areas/clevedon-period-property-removal": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/clevedon-removal-team-working": {
-    "width": 2500,
-    "height": 1875,
-    "format": "jpg"
-  },
-  "areas/cotswolds-stone-property-removal": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/fishponds-victorian-terrace-removal": {
-    "width": 960,
-    "height": 720,
-    "format": "jpg"
-  },
-  "areas/keynsham-house-move-team": {
-    "width": 2500,
-    "height": 1154,
-    "format": "jpg"
-  },
-  "areas/keynsham-removal-job": {
-    "width": 2500,
-    "height": 1125,
-    "format": "jpg"
-  },
-  "areas/knowle-1930s-semi-detached-removal": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/long-ashton-house-removal": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/long-ashton-village-house-move": {
-    "width": 1406,
-    "height": 2500,
-    "format": "jpg"
-  },
-  "areas/montpelier-narrow-street-removal": {
-    "width": 1153,
-    "height": 2500,
-    "format": "jpg"
-  },
-  "areas/nailsea-house-move-team": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/painless-removals-van-bristol-areas": {
-    "width": 2345,
-    "height": 1564,
-    "format": "jpg"
-  },
-  "areas/patchway-little-stoke-removal": {
-    "width": 1200,
-    "height": 1600,
-    "format": "jpg"
-  },
-  "areas/patchway-removal-job": {
-    "width": 2500,
-    "height": 1125,
-    "format": "jpg"
-  },
-  "areas/portishead-property-removal-van": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/radstock-property-removal-team": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/redland-removal-team": {
-    "width": 1080,
-    "height": 1080,
-    "format": "jpg"
-  },
-  "areas/southville-victorian-terrace-removal": {
-    "width": 1875,
-    "height": 2500,
-    "format": "jpg"
-  },
-  "areas/st-george-removals-loading-van": {
-    "width": 960,
-    "height": 720,
-    "format": "jpg"
-  },
-  "areas/stoke-bishop-residential-street": {
-    "width": 2500,
-    "height": 1875,
-    "format": "jpg"
-  },
-  "areas/stoke-gifford-removals-loading-van": {
-    "width": 1600,
-    "height": 1200,
-    "format": "jpg"
-  },
-  "areas/thornbury-house-move-team": {
-    "width": 2500,
-    "height": 1875,
-    "format": "jpg"
-  },
-  "areas/totterdown-tight-street-removal": {
-    "width": 1200,
-    "height": 1600,
-    "format": "jpg"
-  },
-  "areas/weston-super-mare-crew-loading": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "areas/weston-super-mare-removal-street": {
-    "width": 2500,
-    "height": 1127,
-    "format": "jpg"
-  },
-  "areas/yate-house-move-team": {
-    "width": 2500,
-    "height": 1153,
-    "format": "jpg"
-  },
-  "autism/13.uncertainty-and-unpredictability": {
-    "width": 1536,
-    "height": 1024,
-    "format": "png"
-  },
-  "packing/Tamara-packing": {
-    "width": 2500,
-    "height": 1667,
-    "format": "jpg"
-  },
-  "packing/Tamara-packing2": {
-    "width": 2500,
-    "height": 2500,
-    "format": "jpg"
-  },
-  "packing/tamara-packing3": {
-    "width": 2500,
-    "height": 1667,
-    "format": "jpg"
-  },
-  "partners/bingo": {
-    "width": 1536,
-    "height": 1024,
-    "format": "png"
-  },
-  "partners/elder-removal": {
-    "width": 1536,
-    "height": 1024,
-    "format": "png"
-  },
-  "later-life/later-life-moves": {
-    "width": 1920,
-    "height": 1440,
-    "format": "jpg"
-  },
-  "partners/later-life-removal": {
-    "width": 1536,
-    "height": 1024,
-    "format": "png"
-  },
-  "partners/packing-elderly": {
-    "width": 1536,
-    "height": 1024,
-    "format": "png"
-  },
-  "partners/partners-hero": {
-    "width": 8192,
-    "height": 4320,
-    "format": "jpg"
-  },
-  "partners/place": {
-    "width": 1536,
-    "height": 1024,
-    "format": "png"
-  },
-  "partners/refer-a-client": {
-    "width": 1536,
-    "height": 1024,
     "format": "png"
   }
 }
