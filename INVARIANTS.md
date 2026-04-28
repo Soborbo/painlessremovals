@@ -6,9 +6,15 @@ reference; never renumber.
 
 ## 1. PII never goes into `dataLayer`
 
-`trackEvent()` strips a `user_data` key if anyone passes one and warns
-in dev. Persistent PII lives in a hidden DOM element (`__pl_user_data__`)
-and a TTL'd localStorage blob; GTM Variables read it from the DOM.
+`trackEvent()` silently strips the full `PII_KEYS` set (`user_data`,
+`user_email`, `user_phone`, `email`, `phone`, `phone_number`,
+`first_name`, `last_name`, `name`, `street`, `city`, `postal_code`,
+`postcode`, plus Meta Advanced Matching short-codes `em`/`ph`/`fn`/`ln`)
+and warns in dev with the list of stripped keys. The guard is name-based,
+not value-based — passing a PII string under a non-PII key is NOT caught.
+Add new PII-shaped fields to `PII_KEYS` in `tracking.ts`. Persistent PII
+lives in a hidden DOM element (`__pl_user_data__`) and a TTL'd
+localStorage blob; GTM Variables read it from the DOM.
 
 ## 2. Every `trackEvent` call has an `event_id`
 

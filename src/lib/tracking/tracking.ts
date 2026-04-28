@@ -68,6 +68,21 @@ declare global {
 
 export type TrackingParams = Record<string, unknown> & { event_id?: string };
 
+// Keys that must NEVER reach the dataLayer in cleartext. Meta's automatic
+// detection blocks events that ship raw email/phone/name through the pixel,
+// and Google's policies are equivalent. PII belongs on the hidden DOM
+// side-channel via `setUserDataOnDOM()` — server-hashed before egress.
+// The guard is name-based, not value-based: passing a PII string in a
+// non-PII key (e.g. `lead_id: '<email>'`) will NOT be caught.
+const PII_KEYS = new Set([
+  'user_data',
+  'user_email', 'user_phone',
+  'email', 'phone', 'phone_number',
+  'first_name', 'last_name', 'name',
+  'street', 'city', 'postal_code', 'postcode',
+  'em', 'ph', 'fn', 'ln',
+]);
+
 /**
  * Pushes a NON-PII event to `window.dataLayer`. Returns the `event_id`
  * used (generated if not provided) so callers that need to mirror to a
@@ -76,11 +91,20 @@ export type TrackingParams = Record<string, unknown> & { event_id?: string };
 export function trackEvent(name: string, params: TrackingParams = {}): string {
   if (typeof window === 'undefined') return '';
 
-  const { user_data, event_id: providedId, ...safe } = params;
-  if (user_data && import.meta.env.DEV) {
+  const { event_id: providedId, ...rest } = params;
+  const safe: Record<string, unknown> = {};
+  const stripped: string[] = [];
+  for (const [k, v] of Object.entries(rest)) {
+    if (PII_KEYS.has(k)) {
+      stripped.push(k);
+      continue;
+    }
+    safe[k] = v;
+  }
+  if (stripped.length && import.meta.env.DEV) {
     // eslint-disable-next-line no-console
     console.warn(
-      `[tracking] PII detected in trackEvent('${name}'). Use setUserDataOnDOM() instead.`,
+      `[tracking] PII keys stripped from trackEvent('${name}'): ${stripped.join(', ')}. Use setUserDataOnDOM() instead.`,
     );
   }
 

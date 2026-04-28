@@ -14,8 +14,14 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
 
 1. **PII never goes into `dataLayer`.** Email, phone, names, addresses are
    stored on a hidden DOM element via `setUserDataOnDOM()` and read by GTM
-   variables directly. `trackEvent()` strips a `user_data` key if anyone
-   accidentally passes one.
+   variables directly. `trackEvent()` silently strips the full `PII_KEYS`
+   set (`user_data`, `user_email`, `user_phone`, `email`, `phone`,
+   `phone_number`, `first_name`, `last_name`, `name`, `street`, `city`,
+   `postal_code`, `postcode`, plus Meta Advanced Matching short-codes
+   `em`/`ph`/`fn`/`ln`) and warns in dev. The guard is name-based, not
+   value-based — putting a PII string under a non-PII key won't be caught,
+   so pick the right field name. Add new PII-shaped fields to `PII_KEYS`
+   in `tracking.ts`.
 
 2. **Every `trackEvent` call ends up with an `event_id`.** Either pass one
    in (preferred — when the same event has a server-side mirror that needs
