@@ -18,6 +18,12 @@ interface Props {
   class?: string;
   style?: string;
   sizes?: string; // override pattern default
+  /**
+   * Mark this image as the LCP candidate.
+   * Shorthand for `loading="eager" fetchpriority="high"`.
+   * Pair with `getLcpPreload()` in the page's <Layout preload={...}> for matching responsive preload.
+   */
+  lcp?: boolean;
 }
 
 const {
@@ -30,7 +36,12 @@ const {
   class: className,
   style,
   sizes: sizesOverride,
+  lcp,
 } = Astro.props;
+
+// `lcp` shorthand → eager + high priority (explicit props win)
+const resolvedLoading = loading ?? (lcp ? 'eager' : undefined);
+const resolvedFetchpriority = fetchpriority ?? (lcp ? 'high' : undefined);
 
 const patternDef = patterns[pattern];
 if (!patternDef) {
@@ -75,8 +86,8 @@ const declaredHeight = Math.round(declaredWidth * aspectRatio);
     width={declaredWidth}
     height={declaredHeight}
     alt={alt}
-    loading={loading}
-    fetchpriority={fetchpriority}
+    loading={resolvedLoading}
+    fetchpriority={resolvedFetchpriority}
     decoding={decoding}
     class={className}
     style={style}
