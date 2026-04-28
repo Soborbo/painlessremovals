@@ -8,8 +8,21 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
 
 export const prerender = false;
+
+interface ClearanceBody {
+  name?: string;
+  phone?: string;
+  email?: string;
+  honeypot?: string;
+  turnstileToken?: string;
+  estimate?: string;
+  summary?: string;
+  postcode?: string;
+  event_id?: string;
+}
 
 async function sendResend(apiKey: string, payload: Record<string, unknown>): Promise<{ ok: boolean; error?: string }> {
   const res = await fetch('https://api.resend.com/emails', {
@@ -26,8 +39,8 @@ export const POST: APIRoute = async ({ request }) => {
     const origin = request.headers.get('origin') || '';
     if (origin && !isAllowedOrigin(origin)) return json({ error: 'Forbidden.' }, 403);
 
-    const body = await request.json() as Record<string, string>;
-    const { name, phone, email, honeypot, turnstileToken, estimate, summary, postcode } = body;
+    const body = await request.json() as ClearanceBody;
+    const { name, phone, email, honeypot, turnstileToken, estimate, summary, postcode, event_id } = body;
 
     if (honeypot) return json({ success: true });
 
@@ -112,7 +125,68 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (!userResult.ok) console.error('Resend user confirmation error:', userResult.error);
 
-    return json({ success: true });
+    // ──────────────────────────────────────────────────────────────────
+    // CONVERSION fire — server-side, only after Turnstile + Resend OK.
+    // Browser fires the same event with the same event_id; Meta dedupes.
+    // ──────────────────────────────────────────────────────────────────
+    if (event_id && typeof event_id === 'string') {
+      const fingerprint = event_id.replace(/-/g, '').slice(0, 16);
+      const clientId = deriveClientId(fingerprint);
+      const userAgent = request.headers.get('user-agent') || undefined;
+      const cf = (request as unknown as { cf?: { country?: string } }).cf;
+      const ipAddress = request.headers.get('cf-connecting-ip')
+        || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+        || undefined;
+
+      const nameParts = name.trim().split(/\s+/);
+      const firstName = nameParts[0];
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
+
+      // Parse the £ estimate to a numeric value for Smart Bidding signal.
+      const estimateValue = (() => {
+        if (!estimate) return undefined;
+        const m = String(estimate).replace(/,/g, '').match(/(\d+(?:\.\d+)?)/);
+        return m ? Number(m[1]) : undefined;
+      })();
+
+      void sendGA4MP(
+        env,
+        clientId,
+        [{
+          name: 'clearance_callback_conversion',
+          params: {
+            form_source: 'clearance-calculator',
+            engagement_time_msec: 100,
+            ...(estimateValue !== undefined ? { value: estimateValue, currency: 'GBP' } : {}),
+            ...(postcode ? { postcode } : {}),
+          },
+        }],
+        { userAgent, ipOverride: ipAddress },
+      ).catch(() => { /* best-effort */ });
+
+      void sendMetaCapi(env, [{
+        event_name: 'clearance_callback_conversion',
+        event_id,
+        event_time: Math.floor(Date.now() / 1000),
+        event_source_url: request.headers.get('referer') || `https://painlessremovals.com/house-and-waste-clearance/`,
+        action_source: 'website',
+        user_data: {
+          email,
+          phone_number: phone,
+          first_name: firstName,
+          last_name: lastName,
+          country: cf?.country,
+          client_user_agent: userAgent,
+          client_ip_address: ipAddress,
+        },
+        custom_data: {
+          form_source: 'clearance-calculator',
+          ...(estimateValue !== undefined ? { value: estimateValue, currency: 'GBP' } : {}),
+        },
+      }]).catch(() => { /* best-effort */ });
+    }
+
+    return json({ success: true, event_id: event_id || null });
   } catch (err) {
     console.error('Clearance callback error:', err);
     return json({ error: `Something went wrong. Please try again or call us on ${PHONE}.` }, 500);

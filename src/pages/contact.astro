@@ -510,12 +510,25 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
               });
               // Conversion: contact_form_conversion (mirror of the server
               // fire). Same event_id so Meta CAPI dedupes browser + server.
+              // Use GTM's eventCallback so the Google Ads Conversion tag
+              // gets to fire its pixel before we navigate away —
+              // otherwise the request can be cancelled mid-flight.
+              var navigated = false;
+              var goToThankYou = function() {
+                if (navigated) return;
+                navigated = true;
+                window.location.href = '/contact/thank-you/';
+              };
               window.dataLayer.push({
                 event: 'contact_form_conversion',
                 event_id: eventId,
                 form_source: 'contact-page',
+                eventCallback: goToThankYou,
+                eventTimeout: 2000,
               });
-              window.location.href = '/contact/thank-you/';
+              // Safety net: navigate even if GTM never calls back
+              // (e.g. GTM blocked by an extension).
+              setTimeout(goToThankYou, 2500);
             } else {
               window.showToast(data.error || 'Something went wrong sending your message. Please try again or call us on ' + PHONE + '.', 'error');
               submitBtn.disabled = false;

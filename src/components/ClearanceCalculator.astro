@@ -522,6 +522,28 @@ const phone = siteConfig.company.contact.phone;
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending\u2026';
 
+      // Generate event_id up-front so the server-side conversion fire
+      // and the browser-side dataLayer push share the same dedup key
+      // (Meta CAPI rule, CLAUDE.md tracking #2).
+      const eventId = (window.crypto && window.crypto.randomUUID)
+        ? window.crypto.randomUUID()
+        : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+
+      // Stash PII on the hidden DOM element for GTM Variables. PII
+      // never goes to dataLayer (CLAUDE.md tracking #1).
+      const setUserData = (window as unknown as { PR_setUserDataOnDOM?: (data: Record<string, string>) => void }).PR_setUserDataOnDOM;
+      if (setUserData) {
+        const nameParts = name.trim().split(/\s+/);
+        setUserData({
+          email,
+          phone_number: phone,
+          first_name: nameParts[0] || '',
+          last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ') : '',
+          country: 'GB',
+          ...(postcodeValue ? { postal_code: postcodeValue } : {}),
+        });
+      }
+
       try {
         const res = await fetch('/api/clearance-callback/', {
           method: 'POST',
@@ -532,6 +554,7 @@ const phone = siteConfig.company.contact.phone;
             estimate: totalEl.textContent,
             summary: getSummary(),
             source: 'clearance-calculator',
+            event_id: eventId,
           }),
         });
 
@@ -543,18 +566,38 @@ const phone = siteConfig.company.contact.phone;
           return;
         }
 
-        // Analytics-only event (NOT a conversion).
-        const eventId = (window.crypto && window.crypto.randomUUID)
-          ? window.crypto.randomUUID()
-          : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-        (window as any).dataLayer = (window as any).dataLayer || [];
-        (window as any).dataLayer.push({
+        const dataLayer = ((window as unknown as { dataLayer: Array<Record<string, unknown>> }).dataLayer ??= []);
+        // Analytics: form_submission for funnel reporting.
+        dataLayer.push({
           event: 'form_submission',
           event_id: eventId,
           form_name: 'clearance_callback',
           form_source: 'clearance-calculator',
         });
-        window.location.href = '/house-and-waste-clearance/thank-you/';
+        // Conversion: clearance_callback_conversion. Server already
+        // fired GA4 MP + Meta CAPI with the same event_id; this
+        // browser-side push is what GTM uses to fire the Google Ads
+        // Conversion tag and Meta Pixel browser-side. Use eventCallback
+        // so we wait for the tag to fire before navigating away \u2014
+        // otherwise the Google Ads pixel can be cancelled mid-flight.
+        const navigateOnce = (() => {
+          let navigated = false;
+          return () => {
+            if (navigated) return;
+            navigated = true;
+            window.location.href = '/house-and-waste-clearance/thank-you/';
+          };
+        })();
+        dataLayer.push({
+          event: 'clearance_callback_conversion',
+          event_id: eventId,
+          form_source: 'clearance-calculator',
+          eventCallback: navigateOnce,
+          eventTimeout: 2000,
+        });
+        // Safety net: navigate after 2.5s even if GTM never calls back
+        // (e.g. GTM blocked by an extension).
+        setTimeout(navigateOnce, 2500);
       } catch {
         window.showToast(`Network error — please check your connection and try again, or call us on ${PHONE}.`, 'error');
         submitBtn.disabled = false;

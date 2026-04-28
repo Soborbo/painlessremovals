@@ -37,6 +37,7 @@ events introduced by this merge are highlighted with **NEW**.
 | Event name | Google Ads Conversion tag | Meta Custom Event tag | GA4 Event tag |
 |---|---|---|---|
 | `contact_form_conversion` **NEW** | required | required (`event_id` forwarded for CAPI dedup) | required |
+| `clearance_callback_conversion` **NEW** | required | required (`event_id` forwarded for CAPI dedup) | required |
 | `phone_conversion` **NEW** | required | required (`event_id` forwarded) | required |
 | `email_conversion` **NEW** | required | required | required |
 | `whatsapp_conversion` **NEW** | required | required | required |
@@ -59,6 +60,10 @@ These should **NOT** be wired to Google Ads conversions:
 
 - [ ] `form_submission` — generic GA4 Event tag, parameters: `form_name`,
       `form_source`, `event_id`. Trigger: Custom Event = `form_submission`.
+      The `clearance_callback` form_name fires `form_submission` for analytics
+      AND a separate `clearance_callback_conversion` event for Google Ads /
+      Meta — keep the `form_submission` tag as analytics-only, do NOT wire
+      it to a conversion.
 - [ ] `instant_quote_cta_click` **NEW** — GA4 Event tag, parameter:
       `source_page`. Trigger: Custom Event = `instant_quote_cta_click`.
 - [ ] `quote_calculator_complete` (existing from calc) — verify still
@@ -116,8 +121,12 @@ Before publishing:
         `form_submission` (analytics) AND `contact_form_conversion`
         (conversion). Server-side mirror visible in Meta Events Manager
         within seconds.
-  - [ ] Submit jobs / affiliate / partner-register / clearance-callback
-        forms → ONLY `form_submission` event. NO conversion fire.
+  - [ ] Submit clearance-callback form (`/house-and-waste-clearance/`,
+        Turnstile passes, Resend sends email) → `form_submission`
+        (analytics) AND `clearance_callback_conversion` (conversion).
+        Server-side mirror visible in Meta Events Manager within seconds.
+  - [ ] Submit jobs / affiliate / partner-register forms → ONLY
+        `form_submission` event. NO conversion fire.
   - [ ] Complete a calculator quote → `quote_calculator_complete`
         (analytics) and, after upgrade action like phone-click,
         `quote_calculator_conversion` (conversion).

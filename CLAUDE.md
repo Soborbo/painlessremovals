@@ -60,11 +60,12 @@ Conversions fire to Google Ads + Meta. NOT every form is a conversion:
 | Event | Conversion? | Trigger |
 |---|---|---|
 | `contact_form_conversion` | yes | Server-side after Turnstile + Resend success in `/api/contact` |
-| `phone_click_conversion` | yes | Client-side `tel:` click in `lib/tracking/global-listeners.ts` |
-| `email_click_conversion` | yes | Client-side `mailto:` click |
-| `whatsapp_click_conversion` | yes | Client-side WhatsApp click |
+| `clearance_callback_conversion` | yes | Server-side after Turnstile + Resend success in `/api/clearance-callback` |
+| `phone_conversion` | yes | Client-side `tel:` click in `lib/tracking/global-listeners.ts` |
+| `email_conversion` | yes | Client-side `mailto:` click |
+| `whatsapp_conversion` | yes | Client-side WhatsApp click |
 | `quote_calculator_conversion` | yes | Calculator's existing `markQuoteUpgraded()` flow |
-| `form_submission` (jobs/affiliate/partner_register/clearance_callback) | no | Client-side analytics only |
+| `form_submission` (jobs/affiliate/partner_register/clearance_callback) | no | Client-side analytics only (clearance_callback also fires the conversion above; the analytics one is for funnel reporting) |
 | `instant_quote_cta_click` | no | Analytics only |
 
 ## Stack notes
