@@ -1,11 +1,26 @@
 ---
 /**
- * INSTANT QUOTE INDEX
+ * INSTANT QUOTE — first step (Service Type).
  *
- * Redirects to first step.
+ * `/instantquote/` IS step-01. Subsequent steps live at
+ * `/instantquote/step-02/` ... `/step-11/` and are handled by [step].astro.
+ * Keeping the entry URL clean for marketing/SEO links and skipping the
+ * redirect that used to bounce users from /instantquote/ to /step-01/.
  */
 
 export const prerender = false;
 
-return Astro.redirect('/instantquote/step-01/');
+import LayoutCalculator from '@/components/calculator/layout-calculator.astro';
+import { getStepById } from '@/lib/core/calculator/config';
+import { CalculatorStepRenderer } from '@/components/calculator/CalculatorStepRenderer';
+
+const stepConfig = getStepById('step-01')!;
 ---
+
+<LayoutCalculator
+  title={stepConfig.title.en}
+  description={stepConfig.description?.en}
+  currentStep={stepConfig.order}
+>
+  <CalculatorStepRenderer client:load stepId="step-01" />
+</LayoutCalculator>

@@ -777,6 +777,9 @@ export function clearState() {
  * Convert step number to URL path
  */
 export function stepNumberToUrl(step: number): string {
+  // Step 1 lives at /instantquote/ (the entry URL); steps 2+ at /step-XX/.
+  if (step === 1) return '/instantquote/';
+
   let stepId: string;
 
   // Handle sub-steps (10.1, 10.2, etc.)

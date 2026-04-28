@@ -587,7 +587,7 @@ export function ResultPage() {
 
   const handleRestart = () => {
     clearState();
-    window.location.href = '/instantquote/step-01/';
+    window.location.href = '/instantquote/';
   };
 
   const altQuote = (storeReady && quote)
@@ -621,7 +621,7 @@ export function ResultPage() {
         <p style={{ color: V.midGray, marginBottom: 24 }}>
           Some information may be missing. Please go back and check your details.
         </p>
-        <button onClick={() => window.location.href = '/instantquote/step-01/'} style={{
+        <button onClick={() => window.location.href = '/instantquote/'} style={{
           ...ctaStyle, background: V.teal, maxWidth: 320, margin: '0 auto',
         }}>
           Start new calculation
@@ -1210,7 +1210,7 @@ function CallbackRequiredView({
 
   const handleRestart = () => {
     clearState();
-    window.location.href = '/instantquote/step-01/';
+    window.location.href = '/instantquote/';
   };
 
   return (

@@ -16,6 +16,12 @@ import { CalculatorStepRenderer } from '@/components/calculator/CalculatorStepRe
 // Get step from URL
 const { step } = Astro.params;
 
+// step-01 lives at /instantquote/ now (handled by index.astro). Old links
+// /instantquote/step-01/ → 301 → /instantquote/.
+if (step === 'step-01') {
+  return Astro.redirect('/instantquote/', 301);
+}
+
 // Validate step
 const stepConfig = getStepById(step || '');
 
