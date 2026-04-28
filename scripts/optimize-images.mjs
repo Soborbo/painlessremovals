@@ -14,6 +14,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
+import crypto from 'node:crypto';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -25,13 +26,23 @@ const CACHE_FILE = path.join(__dirname, '.image-cache.json');
 const QUALITY = 60;
 const FORCE = process.argv.includes('--force');
 
-// Union of all pattern widths (sorted, deduplicated)
-// Every width that appears in any pattern must be here for srcset to work correctly
+// Union of all pattern widths (sorted, deduplicated).
+// Every width that appears in any pattern must be here for srcset to work correctly.
+// Must stay in sync with `ALL_WIDTHS` in src/config/image-patterns.ts.
 const ALL_WIDTHS = [
-  128, 160, 192, 256, 320, 384, 427, 512, 640, 750, 768,
+  80, 128, 160, 192, 256, 320, 384, 427, 480, 512, 640, 750, 768,
   828, 853, 960, 1024, 1080, 1200, 1280, 1536, 1600, 1706,
   1920, 2048, 2560,
 ];
+
+// Cache-key salt: invalidates the cache automatically whenever ALL_WIDTHS changes
+// (adding or removing a width). Without this, adding a width would silently skip
+// cached images and never generate the new variant.
+const WIDTHS_HASH = crypto
+  .createHash('sha1')
+  .update(ALL_WIDTHS.join(','))
+  .digest('hex')
+  .slice(0, 8);
 
 async function main() {
   // Dynamic import sharp (ESM)
@@ -78,7 +89,7 @@ async function main() {
       currentNames.add(name);
       const ext = path.extname(srcPath).toLowerCase();
       const stat = fs.statSync(srcPath);
-      const cacheKey = `${relPath}:${stat.mtimeMs}:${stat.size}`;
+      const cacheKey = `${relPath}:${stat.mtimeMs}:${stat.size}:w${WIDTHS_HASH}`;
 
       // Check cache (includes stored metadata to avoid re-reading with sharp)
       if (!FORCE && cache[relPath] && cache[relPath].key === cacheKey) {
