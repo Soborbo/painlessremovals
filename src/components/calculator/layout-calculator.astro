@@ -48,6 +48,10 @@ const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY
     <title>{title} — Painless Removals</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+    <!-- Fonts (self-hosted, loaded via calculator.css @font-face) -->
+    <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
+
     <GTMHead />
     {/* Google Maps API for address autocomplete */}
     {googleMapsApiKey && (
