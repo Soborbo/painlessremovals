@@ -8,6 +8,7 @@
 
 import OptimizedPicture from '@/components/OptimizedPicture.astro';
 import Layout from '@/layouts/Layout.astro';
+import { getLcpPreload } from '@/utils/lcp-preload';
 import UspBar from '@/components/UspBar.astro';
 import AccreditationLogos from '@/components/AccreditationLogos.astro';
 import ClientLogos from '@/components/ClientLogos.astro';
@@ -294,6 +295,12 @@ const faqs = [
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
 
+// LCP hero preload: mobile uses pattern="FULL" (100vw), desktop uses pattern="HALF" (50vw).
+// Sizes override covers both so the browser picks the right width per breakpoint.
+const heroPreload = getLcpPreload('homepage/painless-removals-team', 'FULL', {
+  sizes: '(min-width:1024px) 50vw, 100vw',
+});
+
 const schemas = [
   {
     "@context": "https://schema.org",
@@ -322,7 +329,7 @@ const schemas = [
   description={pageDescription}
   schema={schemas}
   ogImage="/img/homepage/painless-removals-team-1200w.webp"
-  preloadImage="/img/homepage/painless-removals-team-750w.avif"
+  preload={heroPreload}
 >
 
   <!-- ═══════════════════════════════════════════════════════════════════════════
@@ -335,8 +342,7 @@ const schemas = [
         name="homepage/painless-removals-team"
         pattern="FULL"
         alt="The Painless Removals crew sitting on the back of a removal van on a Bristol residential street"
-        loading="eager"
-        fetchpriority="high"
+        lcp
         class="w-full h-full object-cover object-bottom"
       />
     </div>
@@ -373,8 +379,7 @@ const schemas = [
         name="homepage/painless-removals-team"
         pattern="HALF"
         alt="The Painless Removals crew sitting on the back of a removal van on a Bristol residential street"
-        loading="eager"
-        fetchpriority="high"
+        lcp
         class="absolute inset-0 w-full h-full object-cover"
       />
     </div>

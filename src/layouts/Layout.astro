@@ -11,6 +11,7 @@ import MobileContactBar from '@/components/MobileContactBar.astro';
 import MobileMenu from '@/components/MobileMenu.astro';
 import GTMHead from '@/components/GTMHead.astro';
 import GTMBody from '@/components/GTMBody.astro';
+import type { PreloadAttrs } from '@/utils/lcp-preload';
 import '@/styles/global.css';
 
 export interface Props {
@@ -26,8 +27,10 @@ export interface Props {
   ogImage?: string;
   /** Prevent search engine indexing */
   noindex?: boolean;
-  /** Preload image URL for LCP optimisation (page-specific hero image) */
+  /** Preload image URL for LCP optimisation (page-specific hero image) — legacy single-URL form */
   preloadImage?: string;
+  /** Responsive LCP preload (preferred) — pass result of `getLcpPreload(name, pattern)` */
+  preload?: PreloadAttrs;
 }
 
 const {
@@ -38,6 +41,7 @@ const {
   ogImage,
   noindex = false,
   preloadImage,
+  preload,
 } = Astro.props;
 
 // Build full title with template
@@ -245,11 +249,21 @@ const localBusinessSchema = {
   <!-- Fonts (self-hosted, loaded via global.css @font-face) -->
   <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
-  <!-- DM Sans italic: non-blocking (font-display:optional, not above-the-fold) -->
-  <link rel="stylesheet" href="/fonts/dm-sans-italic.css" media="print" onload="this.media='all'" />
+  <!-- DM Sans italic: non-blocking (font-display:optional, not above-the-fold) — beasties defers it. -->
+  <link rel="stylesheet" href="/fonts/dm-sans-italic.css" />
 
-  {/* Page-specific LCP image preload */}
-  {preloadImage && (
+  {/* Page-specific LCP image preload — responsive form takes precedence */}
+  {preload ? (
+    <link
+      rel="preload"
+      as="image"
+      href={preload.href}
+      imagesrcset={preload.imagesrcset}
+      imagesizes={preload.imagesizes}
+      type={preload.type}
+      fetchpriority="high"
+    />
+  ) : preloadImage && (
     <link rel="preload" as="image" href={preloadImage} type="image/avif" fetchpriority="high" />
   )}
 

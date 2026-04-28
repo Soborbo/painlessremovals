@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
+import inline from '@playform/inline';
 import { redirectMap } from './src/data/redirects.ts';
 import { lastmod } from './src/data/lastmod.ts';
 
@@ -69,6 +70,9 @@ export default defineConfig({
         return item;
       },
     }),
+    // Critical CSS: inline above-the-fold rules into <head>, defer the rest.
+    // Eliminates the Layout.css render-blocker (~450 ms on slow 4G).
+    inline(),
   ],
   vite: {
     plugins: [tailwindcss()],
