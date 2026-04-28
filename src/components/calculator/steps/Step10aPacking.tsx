@@ -43,6 +43,7 @@ const FULL_HOUSE_TIERS = [
     sizeKey: 'small',
     label: 'Small',
     subtitle: 'Flats and smaller homes',
+    officeSubtitle: 'Small office, up to ~10 desks',
     price: 395,
     image: '/images/calculator/step-10-extras/packing/packing-small.jpg',
     badge: null,
@@ -58,6 +59,7 @@ const FULL_HOUSE_TIERS = [
     sizeKey: 'medium',
     label: 'Medium',
     subtitle: '2-3 bedroom homes',
+    officeSubtitle: 'Medium office, ~10–25 desks',
     price: 580,
     image: '/images/calculator/step-10-extras/packing/packing-medium.jpg',
     badge: 'Most Popular',
@@ -73,6 +75,7 @@ const FULL_HOUSE_TIERS = [
     sizeKey: 'large',
     label: 'Large',
     subtitle: '3-4 bedroom family homes',
+    officeSubtitle: 'Large office, ~25–50 desks',
     price: 725,
     image: '/images/calculator/step-10-extras/packing/packing-large.jpg',
     badge: null,
@@ -88,6 +91,7 @@ const FULL_HOUSE_TIERS = [
     sizeKey: 'xl',
     label: 'Extra',
     subtitle: '5+ bedrooms or lots of stuff',
+    officeSubtitle: '50+ desks or multi-floor office',
     price: 990,
     image: '/images/calculator/step-10-extras/packing/packing-extra-large.jpg',
     badge: null,
@@ -217,11 +221,11 @@ export function Step10aPacking() {
         </div>
       </div>
 
-      {/* ─── FULL HOUSE PACKING SECTION ─── */}
+      {/* ─── FULL HOUSE / OFFICE PACKING SECTION ─── */}
       <div>
         <div className="text-center mb-6">
           <h3 className="text-2xl font-bold text-foreground">
-            Full House Packing Service
+            {state.serviceType === 'office' ? 'Full Office Packing Service' : 'Full House Packing Service'}
           </h3>
         </div>
 
@@ -284,7 +288,7 @@ export function Step10aPacking() {
                     {tier.label}
                   </h4>
                   <p className="text-xs text-muted-foreground mb-3">
-                    {tier.subtitle}
+                    {state.serviceType === 'office' ? tier.officeSubtitle : tier.subtitle}
                   </p>
 
                   {/* Price */}

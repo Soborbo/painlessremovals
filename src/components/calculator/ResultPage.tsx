@@ -415,6 +415,12 @@ export function ResultPage() {
 
       const result = await response.json() as { quoteId?: string };
 
+      // Persist the server-issued quote ID so the displayed ref matches
+      // what the team sees in their inbox / DB.
+      if (result.quoteId) {
+        calculatorStore.setKey('quoteId', result.quoteId);
+      }
+
       // PII to DOM side-channel (never dataLayer).
       if (state.contact) {
         setUserDataOnDOM(
@@ -925,7 +931,7 @@ export function ResultPage() {
             }}>
               <div style={{ background: '#1a1a1a', position: 'relative', aspectRatio: '16 / 9' }}>
                 <iframe
-                  src="https://www.youtube.com/embed/CBTF-YgAwsw"
+                  src="https://www.youtube-nocookie.com/embed/CBTF-YgAwsw?hl=en&cc_lang_pref=en"
                   title="Painless Removals"
                   style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -946,7 +952,16 @@ export function ResultPage() {
             {/* Move details */}
             {(state.fromAddress || state.toAddress || state.selectedDate) && (
               <div style={{ padding: '16px 28px 0', fontSize: 13, color: V.midGray, lineHeight: 1.5 }}>
-                {state.fromAddress && state.toAddress && (
+                {state.serviceType === 'clearance' && state.fromAddress && (
+                  <div>
+                    <div style={{ fontWeight: 600, color: V.dark, fontSize: 12, textTransform: 'uppercase' as const, letterSpacing: '0.04em', marginBottom: 2 }}>Location</div>
+                    <div>{state.fromAddress.formatted.split(',').map((part, i) => (
+                      <span key={i}>{i > 0 && <br />}{part.trim()}</span>
+                    ))}</div>
+                    <div>{state.fromAddress.postcode}</div>
+                  </div>
+                )}
+                {state.serviceType !== 'clearance' && state.fromAddress && state.toAddress && (
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 12, alignItems: 'center' }}>
                     <div>
                       <div style={{ fontWeight: 600, color: V.dark, fontSize: 12, textTransform: 'uppercase' as const, letterSpacing: '0.04em', marginBottom: 2 }}>From</div>
@@ -1104,7 +1119,7 @@ export function ResultPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           fontSize: 13, color: V.midGray,
         }}>
-          <span>Quote ref: {state.sessionId?.slice(0, 8).toUpperCase()} · Valid for 30 days</span>
+          <span>Quote ref: {(state.quoteId || state.sessionId)?.slice(0, 8).toUpperCase()} · Valid for 30 days</span>
           <span>Guide price — personalised quote after survey</span>
           <a
             href="#"

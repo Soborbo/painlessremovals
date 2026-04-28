@@ -175,6 +175,7 @@ export interface CalculatorState {
   utmCampaign: string | null;
   landingPage: string | null;
   sessionId: string | null;
+  quoteId: string | null;
 }
 
 // ===================
@@ -235,6 +236,7 @@ export const initialState: CalculatorState = {
   utmCampaign: null,
   landingPage: null,
   sessionId: null,
+  quoteId: null,
 };
 
 // ===================
@@ -336,6 +338,7 @@ export const LocalStorageStateSchema = z.object({
   utmCampaign: z.string().max(100).nullable(),
   landingPage: z.string().max(500).nullable(),
   sessionId: z.string().nullable(),
+  quoteId: z.string().max(64).nullable().optional(),
 }).passthrough(); // Allow additional properties for forwards compatibility
 
 // ===================
@@ -367,7 +370,7 @@ export const applicableSteps = computed(calculatorStore, (state): number[] => {
 
   // Clearance flow: 1, 2 (items), 3 (access), 8 (address - single location), 11, 12
   // Furniture flow: 1, 2, 5, 8, 11, 12 (skip 3, 4, 6, 7, 9, 10)
-  // Office flow: 1, 2, 5, 6, 7, 8, 10, [extras sub-steps], 11, 12 (skip 3, 4, 9)
+  // Office flow: 1, 2, 5, 6, 8, 10, [extras sub-steps], 11, 12 (skip 3, 4, 7, 9 — offices don't have property chains)
   // Studio flow: 1, 2, 4, 5, 6, 7, 8, 9, 10, [extras sub-steps], 11, 12 (skip 3)
   // Full flow: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, [extras sub-steps], 11, 12
 
@@ -380,7 +383,7 @@ export const applicableSteps = computed(calculatorStore, (state): number[] => {
   }
 
   if (isOffice) {
-    return [1, 2, 5, 6, 7, 8, 10, ...extrasSubSteps, 11, 12];
+    return [1, 2, 5, 6, 8, 10, ...extrasSubSteps, 11, 12];
   }
 
   if (isStudio) {
@@ -872,6 +875,12 @@ export function setServiceType(type: ServiceType) {
   calculatorStore.setKey('propertySize', null);
   calculatorStore.setKey('officeSize', null);
   calculatorStore.setKey('furnitureOnly', null);
+
+  // Reset answers from steps that may be skipped in the new flow.
+  // Without this, e.g. a Home → Office switch leaves a stale Key Wait
+  // Waiver charge on the office quote (Step 9 isn't shown for office).
+  calculatorStore.setKey('propertyChain', null);
+  calculatorStore.setKey('keyWaitWaiver', null);
 
   saveState();
 }

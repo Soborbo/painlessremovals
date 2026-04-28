@@ -111,7 +111,7 @@ const cta = lessonCTAs[slug] || {
 // ---- Schema markup ----
 const domain = siteConfig.brand.domain;
 const thumbnailUrl = `https://i.ytimg.com/vi/${lesson.data.youtubeId}/hqdefault.jpg`;
-const embedUrl = `https://www.youtube.com/embed/${lesson.data.youtubeId}`;
+const embedUrl = `https://www.youtube.com/embed/${lesson.data.youtubeId}?hl=en&cc_lang_pref=en`;
 const isoDuration = `PT${lesson.data.durationMinutes}M`;
 
 const uploadDate = '2025-04-15T09:00:00+00:00';

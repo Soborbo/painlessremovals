@@ -282,7 +282,7 @@ export function Step11Contact() {
                 >
                   I agree to the{' '}
                   <a
-                    href="/terms"
+                    href="/terms-conditions/"
                     target="_blank"
                     className="text-primary underline hover:no-underline"
                   >
@@ -290,7 +290,7 @@ export function Step11Contact() {
                   </a>{' '}
                   and{' '}
                   <a
-                    href="/privacy"
+                    href="/privacy-policy/"
                     target="_blank"
                     className="text-primary underline hover:no-underline"
                   >
