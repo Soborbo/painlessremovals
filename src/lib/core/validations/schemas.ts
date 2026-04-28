@@ -46,21 +46,28 @@ export const emailSchema = z
   );
 
 /**
- * Phone validation (international)
+ * Phone validation (UK)
  *
- * Accepts an optional leading +, an optional country-code in parens, and
- * a mix of digits plus standard separators (space, dash, dot, slash).
- * Must contain at least 7 digits in total to catch typos.
+ * Mirrors the calculator's client-side regex
+ * (`Step11Contact.tsx:PHONE_REGEX`) so that a value passing the client
+ * also passes the server. Any whitespace is stripped before the regex
+ * runs so paste-with-spaces still validates. Calculator + callbacks
+ * are UK-only flows; if a non-UK endpoint is added, define a
+ * separate schema rather than loosening this one.
  */
 export const phoneSchema = z
   .string()
   .trim()
   .min(8, 'Phone number too short')
   .max(20, 'Phone number too long')
-  .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/, 'Invalid phone number')
-  .refine(
-    (v) => (v.match(/\d/g) ?? []).length >= 7,
-    'Phone number must contain at least 7 digits'
+  .transform((v) => v.replace(/\s/g, ''))
+  .pipe(
+    z
+      .string()
+      .regex(
+        /^(?:\+44|0)\d{9,10}$/,
+        'Please enter a valid UK phone number'
+      )
   );
 
 /**

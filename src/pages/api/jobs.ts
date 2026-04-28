@@ -8,6 +8,7 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { logger } from '@/lib/utils/logger';
 
 export const prerender = false;
 
@@ -54,6 +55,9 @@ export const POST: APIRoute = async ({ request }) => {
     // Validate
     if (!name || !phone || !email || !position || !licence) return json({ error: 'Please fill in all required fields.' }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Please provide a valid email address.' }, 400);
+    if (!/^(?:\+44|0)\d{9,10}$/.test(phone.replace(/\s/g, ''))) {
+      return json({ error: 'Please provide a valid UK phone number.' }, 400);
+    }
 
     // Validate CV
     let cvAttachment: { filename: string; content: string } | null = null;
@@ -121,7 +125,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     if (!resendRes.ok) {
       const err = await resendRes.text();
-      console.error('Resend error:', err);
+      logger.error('Jobs', 'Resend send failed', { error: err });
       return json({ error: `Failed to send your application. Please try again or call us on ${PHONE}.` }, 500);
     }
 
@@ -152,11 +156,11 @@ export const POST: APIRoute = async ({ request }) => {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(confirmationPayload),
-    }).catch((err) => console.error('Confirmation email error:', err));
+    }).catch((err) => logger.error('Jobs', 'Confirmation email failed', { error: err instanceof Error ? err.message : String(err) }));
 
     return json({ success: true });
   } catch (err) {
-    console.error('Job application form error:', err);
+    logger.error('Jobs', 'Form handler crashed', { error: err instanceof Error ? err.message : String(err) });
     return json({ error: `Something went wrong. Please try again or call us on ${PHONE}.` }, 500);
   }
 };

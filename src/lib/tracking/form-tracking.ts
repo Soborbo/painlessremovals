@@ -39,6 +39,19 @@ export function trackFormStart(formId: string, formName: string): void {
   });
 }
 
+/**
+ * Register a form for abandonment tracking without firing `form_start`.
+ * Used by the multi-page calculator: each step is a hard page load, so
+ * we need to re-register the form on every step to keep the
+ * pagehide/visibilitychange beacon alive — but `form_start` should only
+ * fire once per session, not once per step.
+ */
+export function registerFormForAbandonment(formId: string, formName: string): void {
+  if (activeForms.has(formId)) return;
+  activeForms.set(formId, { formName, startedAt: Date.now(), submitted: false });
+  installAbandonmentListeners();
+}
+
 export function trackFormFieldFocus(formId: string, fieldName: string): void {
   const state = activeForms.get(formId);
   if (!state) return;

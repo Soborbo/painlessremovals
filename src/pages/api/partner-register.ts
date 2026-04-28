@@ -19,6 +19,7 @@ import {
   PHONE,
   FROM_DEFAULT,
 } from '@/lib/forms/utils';
+import { logger } from '@/lib/utils/logger';
 
 export const prerender = false;
 
@@ -50,6 +51,9 @@ export const POST: APIRoute = async ({ request }) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: 'Please provide a valid email address.' }, 400);
     }
+    if (!/^(?:\+44|0)\d{9,10}$/.test(phone.replace(/\s/g, ''))) {
+      return json({ error: 'Please provide a valid UK phone number.' }, 400);
+    }
 
     // 3. Turnstile
     if (!turnstileToken) {
@@ -57,7 +61,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
     const secret = env.TURNSTILE_SECRET_KEY;
     if (!secret) {
-      console.error('TURNSTILE_SECRET_KEY is not configured');
+      logger.error('PartnerRegister', 'TURNSTILE_SECRET_KEY is not configured');
       return json({ error: 'Security configuration error. Please try again later.' }, 500);
     }
     if (!(await verifyTurnstile(turnstileToken, secret))) {
@@ -67,7 +71,7 @@ export const POST: APIRoute = async ({ request }) => {
     // 4. Send email via Resend REST API
     const apiKey = env.RESEND_API_KEY;
     if (!apiKey) {
-      console.error('RESEND_API_KEY is not configured');
+      logger.error('PartnerRegister', 'RESEND_API_KEY is not configured');
       return json({ error: `Email service is temporarily unavailable. Please call us on ${PHONE}.` }, 500);
     }
 
@@ -127,13 +131,13 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!result.success) {
-      console.error('Resend error:', result.error);
+      logger.error('PartnerRegister', 'Resend send failed', { error: result.error });
       return json({ error: `Failed to send your registration. Please try again or call us on ${PHONE}.` }, 500);
     }
 
     return json({ success: true });
   } catch (err) {
-    console.error('Partner registration error:', err);
+    logger.error('PartnerRegister', 'Form handler crashed', { error: err instanceof Error ? err.message : String(err) });
     return json({ error: `Something went wrong. Please try again or call us on ${PHONE}.` }, 500);
   }
 };
