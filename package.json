@@ -9,9 +9,9 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro check && astro build",
-    "build:prod": "astro check && astro build && wrangler deploy --dry-run",
-    "preview": "astro build && wrangler dev",
-    "deploy": "astro check && astro build && wrangler deploy",
+    "build:prod": "astro check && astro build && wrangler deploy --dry-run --config ./dist/server/wrangler.json",
+    "preview": "astro build && wrangler dev --config ./dist/server/wrangler.json",
+    "deploy": "astro check && astro build && wrangler deploy --config ./dist/server/wrangler.json",
     "astro": "astro",
     "check": "astro check",
     "typecheck": "tsc --noEmit"
