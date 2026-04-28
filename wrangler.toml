@@ -1,10 +1,70 @@
-# Cloudflare Pages configuration
-# Static site + Pages Functions for form handling
-
-name = "painlessremovals2026"
-pages_build_output_dir = "dist"
+name = 'painlessremovals-worker'
 compatibility_date = "2025-12-01"
 compatibility_flags = ["nodejs_compat"]
 
-[vars]
-PUBLIC_TURNSTILE_SITE_KEY = "0x4AAAAAACs7GfndiZsA_2c4"
+# Dashboard is the source of truth for plain env vars and secrets.
+# Without this, `wrangler deploy` would wipe any var set only in the dashboard.
+keep_vars = true
+
+# Static assets binding — Workers Static Assets.
+# The @astrojs/cloudflare adapter generates `dist/server/wrangler.json` at build
+# time, with `main = "entry.mjs"` and `assets.directory = "../client"`. Always
+# deploy via `wrangler deploy --config ./dist/server/wrangler.json` (this root
+# wrangler.toml is the source — fields propagate into the generated config).
+# The `directory` value here is overridden by the adapter to `../client`.
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "404-page"
+html_handling = "auto-trailing-slash"
+
+# KV namespaces (created via `wrangler kv namespace create` / MCP).
+# SESSION is auto-enabled by @astrojs/cloudflare (Astro's built-in session feature).
+# We don't actively use it, but the binding must exist or the worker fails to load.
+[[kv_namespaces]]
+binding = "SESSION"
+id = "ce6ead73cf464a6888d567bb96d68b27"
+
+[[kv_namespaces]]
+binding = "RATE_LIMITER"
+id = "b9ceca436b2d44e0a9d4dca42b998da8"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "cfc7e5916f054125922731a9ddbce29a"
+
+# Plain env vars and secrets are managed in the Cloudflare dashboard
+# (Workers > painlessremovals-worker > Settings > Variables and Secrets).
+# `keep_vars = true` above prevents `wrangler deploy` from wiping them.
+#
+# Expected vars (set in dashboard):
+#   Plain text: ENVIRONMENT, SITE_URL, PUBLIC_TURNSTILE_SITE_KEY,
+#     GTM_ID, GA4_MEASUREMENT_ID, META_PIXEL_ID, META_CAPI_TEST_EVENT_CODE,
+#     ERROR_SHEETS_ID, GOOGLE_SERVICE_ACCOUNT_EMAIL, ERROR_EMAIL_TO,
+#     ERROR_ALERT_FROM, IMVE_API_URL
+#   Secrets: RESEND_API_KEY, TURNSTILE_SECRET_KEY, GA4_API_SECRET,
+#     META_CAPI_ACCESS_TOKEN, GOOGLE_MAPS_API_KEY, GOOGLE_SERVICE_ACCOUNT_KEY,
+#     IMVE_API_KEY, HEALTH_CHECK_TOKEN, IP_HASH_SALT
+#
+# Note on META_CAPI_TEST_EVENT_CODE: when non-empty, ALL Meta CAPI events go
+# to the Test Events tab in Meta Events Manager and DO NOT count for ad
+# attribution. Keep empty in prod; set to TEST<n> only when debugging.
+
+# Observability — Workers Logs enabled at 100% sampling.
+# Top-level `enabled = false` is the legacy unified flag; we use the per-channel
+# `logs.enabled = true` instead. Traces stay off (extra cost, not needed for
+# our debugging needs).
+[observability]
+enabled = false
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+persist = true
+invocation_logs = true
+
+[observability.traces]
+enabled = false
+persist = true
+head_sampling_rate = 1

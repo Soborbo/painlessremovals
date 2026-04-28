@@ -6,7 +6,8 @@
       "@/*": ["src/*"]
     },
     "jsx": "react-jsx",
-    "jsxImportSource": "astro"
+    "jsxImportSource": "react",
+    "types": ["@cloudflare/workers-types", "@types/react", "@types/react-dom", "google.maps"]
   },
-  "exclude": ["dist", "node_modules", "functions"]
+  "exclude": ["dist", "node_modules"]
 }

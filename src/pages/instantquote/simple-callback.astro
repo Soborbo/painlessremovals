@@ -1,0 +1,41 @@
+---
+/**
+ * INSTANT QUOTE — SIMPLE CALLBACK PAGE
+ *
+ * For customers who want to skip the calculator and just request a callback.
+ * Reached from the 4th option on Step 1.
+ */
+
+export const prerender = false;
+
+import LayoutCalculator from '@/components/calculator/layout-calculator.astro';
+import { SimpleCallbackForm } from '@/components/calculator/SimpleCallbackForm';
+---
+
+<LayoutCalculator
+  title="Request a Callback"
+  description="Request a free callback from Painless Removals"
+  currentStep={1}
+>
+  <!-- Logo / back link -->
+  <div class="text-center mb-8">
+    <a
+      href="/instantquote/step-01/"
+      class="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mb-6"
+    >
+      ← Back
+    </a>
+    <h1 class="text-2xl font-semibold text-foreground">We'll call you back</h1>
+    <p class="text-muted-foreground mt-2 text-sm">
+      Leave your details and our team will be in touch during business hours (Mon–Fri 9am–5pm).
+    </p>
+  </div>
+
+  <!-- Form -->
+  <SimpleCallbackForm client:load />
+
+  <!-- Trust note -->
+  <p class="text-center text-xs text-muted-foreground mt-6">
+    Free advice · No obligation · 50 years' experience
+  </p>
+</LayoutCalculator>

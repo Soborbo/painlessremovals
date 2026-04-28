@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Walks src/pages/ at build time, extracts dateModified from each .astro file,
@@ -7,7 +8,8 @@ import { join, relative, sep } from 'node:path';
  * single source of truth is the dateModified inside each page's JSON-LD schema.
  */
 
-const pagesDir = new URL('../pages', import.meta.url).pathname;
+// fileURLToPath handles Windows drive-letter URLs correctly; URL.pathname does not.
+const pagesDir = fileURLToPath(new URL('../pages', import.meta.url));
 
 function walk(dir: string): string[] {
   const files: string[] = [];

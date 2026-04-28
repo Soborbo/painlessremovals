@@ -1,0 +1,244 @@
+---
+/**
+ * DEV PREVIEW PAGE
+ *
+ * Quickly populate localStorage with test scenarios and jump to the result page.
+ * Delete this file before going to production.
+ */
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dev Preview — Result Page Scenarios</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 640px; margin: 60px auto; padding: 0 24px; color: #111; }
+      h1 { font-size: 1.4rem; margin-bottom: 4px; }
+      p.sub { color: #666; font-size: 0.875rem; margin-bottom: 32px; }
+      .scenario { border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }
+      .scenario h2 { font-size: 1rem; margin: 0 0 4px; }
+      .scenario p { font-size: 0.85rem; color: #555; margin: 0 0 14px; }
+      button {
+        background: #1d4ed8; color: #fff; border: none; border-radius: 6px;
+        padding: 8px 18px; font-size: 0.875rem; cursor: pointer;
+      }
+      button:hover { background: #1e40af; }
+    </style>
+  </head>
+  <body>
+    <h1>Result Page Preview</h1>
+    <p class="sub">Sets localStorage and opens /your-quote. Dev use only.</p>
+
+    <div class="scenario">
+      <h2>Scenario 1 — Simple 2-bed home move, local</h2>
+      <p>Average belongings · no complications · short distance · no extras</p>
+      <button onclick="load('scenario1')">Load &rarr; /your-quote</button>
+    </div>
+
+    <div class="scenario">
+      <h2>Scenario 2 — Large 4-bed home move, further out</h2>
+      <p>Full belongings · stairs · longer drive · packing + assembly extras</p>
+      <button onclick="load('scenario2')">Load &rarr; /your-quote</button>
+    </div>
+
+    <div class="scenario">
+      <h2>Scenario 3 — Office move, medium size</h2>
+      <p>Average fill · no complications · 20-mile move</p>
+      <button onclick="load('scenario3')">Load &rarr; /your-quote</button>
+    </div>
+
+    <div class="scenario">
+      <h2>Scenario 4 — Furniture-only, specialist items</h2>
+      <p>5 items, piano, long distance · triggers callback required</p>
+      <button onclick="load('scenario4')">Load &rarr; /your-quote</button>
+    </div>
+
+    <script>
+      const KEY = 'painless-calculator-state';
+
+      const base = {
+        currentStep: 12,
+        highestStepReached: 12,
+        startedAt: new Date().toISOString(),
+        lastUpdatedAt: new Date().toISOString(),
+        sliderPosition: 3,
+        useManualOverride: false,
+        manualMen: null,
+        manualVans: null,
+        dateFlexibility: 'flexible',
+        selectedDate: null,
+        complications: [],
+        propertyChain: false,
+        keyWaitWaiver: false,
+        clearance: { disposalItems: [], accessDifficulties: [] },
+        extras: {
+          gateway: [],
+          packingTier: undefined,
+          disassemblyItems: [],
+          cleaningRooms: undefined,
+          cleaningType: undefined,
+          storageSize: undefined,
+          storageWeeks: undefined,
+          packing: undefined,
+          storage: undefined,
+          assembly: [],
+        },
+        contact: {
+          firstName: 'Alex',
+          lastName: 'Taylor',
+          phone: '07700900123',
+          email: 'alex@example.com',
+          gdprConsent: true,
+          marketingConsent: false,
+        },
+        gclid: null,
+        utmSource: 'dev-preview',
+        utmMedium: null,
+        utmCampaign: null,
+        landingPage: null,
+        sessionId: 'dev-session-001',
+      };
+
+      const scenarios = {
+        scenario1: {
+          ...base,
+          serviceType: 'home',
+          propertySize: '2bed',
+          officeSize: null,
+          furnitureOnly: null,
+          fromAddress: {
+            formatted: '12 Victoria Road, Bristol, BS6 5JR',
+            postcode: 'BS6 5JR',
+            lat: 51.465,
+            lng: -2.592,
+          },
+          toAddress: {
+            formatted: '34 Redland Road, Bristol, BS6 6NB',
+            postcode: 'BS6 6NB',
+            lat: 51.470,
+            lng: -2.601,
+          },
+          distances: {
+            depotToFrom: 6,
+            fromToTo: 2,
+            toToDepot: 5,
+            driveTimeHours: 0.3,
+            customerDistance: 2,
+            customerDriveMinutes: 8,
+          },
+        },
+
+        scenario2: {
+          ...base,
+          serviceType: 'home',
+          propertySize: '4bed',
+          officeSize: null,
+          furnitureOnly: null,
+          sliderPosition: 4,
+          complications: ['stairs'],
+          fromAddress: {
+            formatted: '88 Clifton Park, Bristol, BS8 3HN',
+            postcode: 'BS8 3HN',
+            lat: 51.458,
+            lng: -2.625,
+          },
+          toAddress: {
+            formatted: '5 The Avenue, Bath, BA1 2QT',
+            postcode: 'BA1 2QT',
+            lat: 51.386,
+            lng: -2.362,
+          },
+          distances: {
+            depotToFrom: 8,
+            fromToTo: 18,
+            toToDepot: 14,
+            driveTimeHours: 1.1,
+            customerDistance: 18,
+            customerDriveMinutes: 35,
+          },
+          extras: {
+            ...base.extras,
+            gateway: ['packing', 'assembly'],
+            packingTier: 'fragile',
+            disassemblyItems: [
+              { category: 'bed', quantity: 2 },
+              { category: 'wardrobe', quantity: 1 },
+            ],
+            assembly: [
+              { type: 'bed', quantity: 2 },
+              { type: 'wardrobe', quantity: 1 },
+            ],
+          },
+        },
+
+        scenario3: {
+          ...base,
+          serviceType: 'office',
+          propertySize: null,
+          officeSize: 'medium',
+          furnitureOnly: null,
+          fromAddress: {
+            formatted: 'Unit 4, Aztec West, Bristol, BS32 4SQ',
+            postcode: 'BS32 4SQ',
+            lat: 51.531,
+            lng: -2.547,
+          },
+          toAddress: {
+            formatted: '10 Temple Way, Bristol, BS2 0BY',
+            postcode: 'BS2 0BY',
+            lat: 51.451,
+            lng: -2.583,
+          },
+          distances: {
+            depotToFrom: 10,
+            fromToTo: 10,
+            toToDepot: 8,
+            driveTimeHours: 0.8,
+            customerDistance: 10,
+            customerDriveMinutes: 22,
+          },
+        },
+
+        scenario4: {
+          ...base,
+          serviceType: 'home',
+          propertySize: null,
+          officeSize: null,
+          furnitureOnly: {
+            itemCount: 5,
+            needs2Person: true,
+            over40kg: true,
+            specialistItems: ['piano'],
+          },
+          fromAddress: {
+            formatted: '200 Gloucester Road, Bristol, BS7 8NU',
+            postcode: 'BS7 8NU',
+            lat: 51.480,
+            lng: -2.587,
+          },
+          toAddress: {
+            formatted: '77 High Street, Cheltenham, GL50 1DX',
+            postcode: 'GL50 1DX',
+            lat: 51.900,
+            lng: -2.074,
+          },
+          distances: {
+            depotToFrom: 7,
+            fromToTo: 45,
+            toToDepot: 40,
+            driveTimeHours: 2.2,
+            customerDistance: 45,
+            customerDriveMinutes: 65,
+          },
+        },
+      };
+
+      (window as any).load = function(key: string) {
+        localStorage.setItem(KEY, JSON.stringify(scenarios[key as keyof typeof scenarios]));
+        window.location.href = '/instantquote/your-quote/';
+      };
+    </script>
+  </body>
+</html>

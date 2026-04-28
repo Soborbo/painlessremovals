@@ -1,0 +1,9 @@
+# Append these lines to public/_redirects in the painless-calculator
+# repo (https://github.com/Soborbo/painless-calculator) once the
+# main Worker is live on painlessremovals.com.
+#
+# Order matters: specific rules first, catch-all last.
+
+/calculator/* https://painlessremovals.com/instantquote/:splat 301
+/your-quote https://painlessremovals.com/instantquote/your-quote/ 301
+/* https://painlessremovals.com/:splat 301

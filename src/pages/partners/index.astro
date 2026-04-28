@@ -699,6 +699,17 @@ const pageSchema = [serviceSchema, faqSchema];
           .then(function(res) { return res.json(); })
           .then(function(data) {
             if (data.success) {
+              // Analytics-only event (NOT a conversion).
+              var eventId = (window.crypto && window.crypto.randomUUID)
+                ? window.crypto.randomUUID()
+                : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                event: 'form_submission',
+                event_id: eventId,
+                form_name: 'partner_register',
+                form_source: 'partners-page',
+              });
               window.location.href = '/partners/thank-you/';
             } else {
               errorDiv.textContent = data.error || 'Something went wrong. Please try again or call us directly.';

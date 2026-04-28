@@ -1,11 +1,13 @@
 # ============================================
-# PAINLESS REMOVALS — CLOUDFLARE PAGES REDIRECTS
-# Updated: 2026-03-20
+# PAINLESS REMOVALS — CLOUDFLARE WORKERS STATIC ASSETS REDIRECTS
+# Updated: 2026-04-27 (migrated from Pages to Workers)
 #
-# IMPORTANT: CF Pages silently drops rules beyond ~60 static.
-# Only wildcard/splat rules belong here (edge-level).
-# All static 1:1 redirects live in src/data/redirects.ts
-# and are built into HTML redirect pages by Astro.
+# Workers Static Assets only accepts RELATIVE URLs here. Absolute URL
+# redirects (e.g. www → non-www) must be handled by a Cloudflare zone
+# Bulk Redirect rule or a Worker route, NOT in this file.
+#
+# All static 1:1 redirects live in src/data/redirects.ts and are
+# built into HTML redirect pages by Astro.
 # ============================================
 
 # ── Date archive splats → packing guide ─────────────────────
@@ -21,9 +23,6 @@
 
 # ── Review sub-pages → reviews hub ──────────────────────────
 /reviews/:slug  /reviews/  301
-
-# ── WWW → non-www canonical redirect ─────────────────────────
-https://www.painlessremovals.com/*  https://painlessremovals.com/:splat  301
 
 # ── WordPress feed patterns → homepage ──────────────────────
 /*/feed  /  301
