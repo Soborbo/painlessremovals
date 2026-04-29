@@ -180,8 +180,15 @@ export function setUserDataOnDOM(data: UserData): void {
   // At-rest persistence is gated on ad_storage consent. Without it,
   // PII still lives on the DOM for as long as the page is open (so
   // the immediate Meta CAPI mirror works), but we do NOT write it to
-  // localStorage where it would survive into future sessions.
-  if (!adStorageGranted()) return;
+  // localStorage where it would survive into future sessions. If
+  // there's a previously-stored blob (consent was granted earlier and
+  // is now revoked), purge it so revocation is honored at-rest.
+  if (!adStorageGranted()) {
+    if (typeof localStorage !== 'undefined') {
+      try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
+    }
+    return;
+  }
 
   if (typeof localStorage !== 'undefined') {
     try {
@@ -224,9 +231,18 @@ function readUserDataFromStorage(): UserData {
  * Called from `boot.ts` on every page-load so the hidden DOM element
  * is repopulated before `resumeQuoteTimer()` runs (which may
  * immediately fire a late conversion + CAPI mirror).
+ *
+ * Re-checks `adStorageGranted` so a user who revoked consent doesn't
+ * keep getting their previously-stored PII pushed back into the DOM.
  */
 export function restoreUserDataFromStorage(): void {
   if (typeof document === 'undefined') return;
+  if (!adStorageGranted()) {
+    if (typeof localStorage !== 'undefined') {
+      try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
+    }
+    return;
+  }
   const data = readUserDataFromStorage();
   if (Object.keys(data).length === 0) return;
   writeUserDataToDOMElement(data);

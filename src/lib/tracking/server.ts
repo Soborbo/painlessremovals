@@ -136,12 +136,18 @@ export async function sendMetaCapi(
 
   const transformed = events.map((evt) => {
     const ud = evt.user_data || {};
-    const phone = ud.phone_number ? normalizePhoneE164(ud.phone_number, countryCode) : undefined;
+    // Meta CAPI expects phone hashed as digits-only (no leading `+`),
+    // per the spec at developers.facebook.com/docs/marketing-api/audiences/guides/advanced-matching.
+    // Previously we fed the full E.164 string `+447700...` into SHA-256
+    // and Meta's hash of `447700...` never matched ours, collapsing
+    // browser+CAPI dedup match quality.
+    const phoneE164 = ud.phone_number ? normalizePhoneE164(ud.phone_number, countryCode) : undefined;
+    const phoneForHash = phoneE164 ? phoneE164.replace(/^\+/, '') : undefined;
     // Hash each PII field exactly once. Earlier code called hash(...)
     // twice per field (once in the conditional, once in the value),
     // burning CPU and complicating diffs. Cache the result locally.
     const em = hash(ud.email);
-    const ph = hash(phone);
+    const ph = hash(phoneForHash);
     const fn = hash(ud.first_name);
     const ln = hash(ud.last_name);
     const ct = hash(ud.city);

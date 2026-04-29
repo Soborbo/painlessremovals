@@ -18,8 +18,7 @@
  * BroadcastChannel.
  */
 
-import { clearUserDataOnDOM } from './tracking';
-import { trackEvent } from './tracking';
+import { clearUserDataOnDOM, trackEvent } from './tracking';
 import { mirrorMetaCapi } from './meta-mirror';
 import { generateUUID } from './uuid';
 import {
@@ -182,6 +181,16 @@ export function getActiveQuoteState(): QuoteState | null {
  * Marks the active quote as upgraded — i.e. its conversion has been
  * counted by a higher-intent event already, so the late-fire timer
  * should not fire `quote_calculator_conversion` for it.
+ *
+ * IMPORTANT: this used to also `clearUserDataOnDOM()` synchronously,
+ * but every caller pattern is `markQuoteUpgraded() → mirrorMetaCapi()`,
+ * and `mirrorMetaCapi`'s body reads the hidden DOM element
+ * synchronously before its first `await`. The wipe blew away PII before
+ * the mirror could read it, sending empty `user_data` to Meta and
+ * collapsing match quality. The wipe is now deferred to the natural
+ * lifecycle: storage TTL expiry inside `setUserDataOnDOM`, calculator
+ * restart, or `fireQuoteConversionIfStillActive` (which fires the
+ * mirror first, then wipes inline).
  */
 export function markQuoteUpgraded(): void {
   const state = readState();
@@ -190,10 +199,6 @@ export function markQuoteUpgraded(): void {
   writeState(state);
   clearPendingTimer();
   broadcast('upgraded');
-  // Caller already read PII off the hidden DOM element synchronously
-  // before this function was invoked (see global-listeners.ts), so it's
-  // safe to wipe — keeps PII at-rest exposure as short as possible.
-  clearUserDataOnDOM();
 }
 
 export function markViewContentFired(): void {
@@ -223,8 +228,10 @@ function fireQuoteConversionIfStillActive(isLate: boolean): void {
 
   deleteState();
   clearPendingTimer();
-  // mirrorMetaCapi reads from the DOM synchronously above, so wiping
-  // is safe and shrinks the at-rest PII window.
+  // mirrorMetaCapi reads from the DOM synchronously above (its body
+  // executes up to the first `await` in the same tick), so by the time
+  // we get here the user_data has already been read. Wiping shrinks
+  // at-rest PII exposure for the next page load.
   clearUserDataOnDOM();
 }
 

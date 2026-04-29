@@ -30,6 +30,7 @@ import { checkRateLimit } from '@/lib/features/security/rate-limit';
 import { sendMetaCapi, type MetaCapiEvent } from '@/lib/tracking/server';
 import { DEFAULT_COUNTRY } from '@/lib/tracking/config';
 import { isAllowedOrigin } from '@/lib/forms/utils';
+import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 
 export const prerender = false;
 
@@ -44,8 +45,11 @@ const ISO_4217_RE = /^[A-Z]{3}$/;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // _fbp: fb.<subdomain_index>.<ms>.<rand>  — e.g. fb.1.1700000000000.1234567890
 const FBP_RE = /^fb\.[0-9]\.[0-9]{10,}\.[0-9]+$/;
-// _fbc: fb.<subdomain_index>.<ms>.<click_id>  — Meta accepts arbitrary id; loose check.
-const FBC_RE = /^fb\.[0-9]\.[0-9]{10,}\.[A-Za-z0-9_-]+$/;
+// _fbc: fb.<subdomain_index>.<ms>.<click_id>. Newer Meta click IDs can
+// include `.`, `:`, and other punctuation, so we accept any non-empty
+// trailing segment up to a length cap rather than constraining the
+// charset (the prefix `fb.<n>.<ms>.` is still tightly checked).
+const FBC_RE = /^fb\.[0-9]\.[0-9]{10,}\..{1,512}$/;
 
 const MAX_EMAIL_LEN = 320;
 const MAX_NAME_LEN = 100;
@@ -73,11 +77,14 @@ function isPlainObject(v: unknown): v is Record<string, unknown> {
   return !!v && typeof v === 'object' && !Array.isArray(v);
 }
 
-function clampEventTime(input: unknown): number {
+function clampEventTime(input: unknown): number | null {
   const now = Math.floor(Date.now() / 1000);
   if (typeof input !== 'number' || !Number.isFinite(input)) return now;
-  if (input < now - EVENT_TIME_MIN_AGE_S) return now;
-  if (input > now + EVENT_TIME_FUTURE_S) return now;
+  // Out-of-window event times are signal-poisoning candidates (a
+  // hostile client can shift attribution time). Reject rather than
+  // silently clamping.
+  if (input < now - EVENT_TIME_MIN_AGE_S) return null;
+  if (input > now + EVENT_TIME_FUTURE_S) return null;
   return Math.floor(input);
 }
 
@@ -116,6 +123,11 @@ function checkInMemoryRateLimit(ip: string): boolean {
   return true;
 }
 
+// Apex and www are both legitimate origins for our site. Either one is
+// accepted in `event_source_url` (path is preserved); the canonical
+// host is the apex.
+const ACCEPTED_HOSTS = new Set(['painlessremovals.com', 'www.painlessremovals.com']);
+
 function pickEventSourceUrl(input: unknown, referer: string | null): string {
   // Pin to our own origin. If the client sent something off-domain or
   // empty, fall back to the Referer header (also enforced to our origin).
@@ -123,7 +135,9 @@ function pickEventSourceUrl(input: unknown, referer: string | null): string {
     if (typeof candidate !== 'string') continue;
     try {
       const u = new URL(candidate);
-      if (u.origin === SITE_ORIGIN) return u.toString().slice(0, 2000);
+      if (u.protocol === 'https:' && ACCEPTED_HOSTS.has(u.host)) {
+        return u.toString().slice(0, 2000);
+      }
     } catch {
       // not a URL
     }
@@ -203,6 +217,23 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: 'event_id invalid' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
+    // Replay protection. Without this, a captured (event_name, event_id)
+    // pair could be replayed to poison Smart Bidding signals. KV is
+    // eventually consistent so this is best-effort, but combined with
+    // the per-IP rate limit it's enough to make replay attacks
+    // unattractive.
+    const seenKv = safeKV(env, 'RATE_LIMITER');
+    if (seenKv) {
+      const seenKey = `capi_seen:${body.event_name}:${body.event_id}`;
+      const seen = await kvGet<string>(seenKv, seenKey);
+      if (seen) {
+        return new Response(null, { status: 204, headers: corsHeaders(origin) });
+      }
+      // Stake the claim immediately so a near-simultaneous replay loses.
+      // 25h TTL covers the EVENT_TIME_MIN_AGE_S window plus a margin.
+      await kvPut(seenKv, seenKey, '1', { expirationTtl: 90_000 });
+    }
+
     // Consent re-check (defense in depth — client already gated, but
     // we don't trust the client). Refuse to forward if ads consent is
     // not granted.
@@ -244,10 +275,15 @@ export const POST: APIRoute = async (context) => {
     if (ua) userData.client_user_agent = ua;
     if (ip) userData.client_ip_address = ip;
 
+    const eventTime = clampEventTime(body.event_time);
+    if (eventTime === null) {
+      return new Response(JSON.stringify({ error: 'event_time out of range' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+
     const event: MetaCapiEvent = {
       event_name: body.event_name,
       event_id: body.event_id,
-      event_time: clampEventTime(body.event_time),
+      event_time: eventTime,
       action_source: 'website',
       user_data: userData,
       custom_data: pickCustomData(body.custom_data),
