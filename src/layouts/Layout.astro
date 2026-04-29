@@ -479,6 +479,11 @@ const localBusinessSchema = {
         var spacer = document.getElementById('header-spacer');
         var stickyCta = document.getElementById('sticky-cta');
         var servicesNav = document.getElementById('services-nav');
+        // Pages that override the Layout's <slot name="header"> (e.g.
+        // layout-calculator) won't have these elements. Bail early
+        // rather than throwing on null.offsetHeight, which would also
+        // block any subsequent inline scripts in the head.
+        if (!header || !spacer || !stickyCta || !servicesNav) return;
         var lastScrollY = 0;
         var ticking = false;
 
@@ -706,10 +711,18 @@ const localBusinessSchema = {
           <a href={`mailto:${siteConfig.company.contact.email}`} class="text-gray-400 no-underline hover:text-white transition-colors">{siteConfig.company.contact.email}</a>
         </div>
 
-        <!-- Copyright -->
+        <!-- Copyright. The year is set client-side so a static build
+             that runs in late December doesn't show last year's copyright
+             after the calendar rolls over without a fresh deploy. -->
         <div class="mt-4 text-sm text-gray-400 text-center">
-          &copy; {new Date().getFullYear()} {siteConfig.company.name}. All rights reserved.
+          &copy; <span data-current-year>{new Date().getFullYear()}</span> {siteConfig.company.name}. All rights reserved.
         </div>
+        <script is:inline>
+          (function () {
+            var el = document.querySelector('[data-current-year]');
+            if (el) el.textContent = String(new Date().getFullYear());
+          })();
+        </script>
       </div>
     </footer>
   </slot>

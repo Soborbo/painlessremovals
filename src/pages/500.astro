@@ -1,46 +1,27 @@
 ---
-/**
- * 500 INTERNAL SERVER ERROR PAGE
- */
-
-import '@/styles/calculator.css';
-import { Button } from '@/components/ui/button';
+import Layout from '@/layouts/Layout.astro';
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Internal server error" />
-    <title>500 - Server Error | Calculator Boilerplate</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body class="min-h-screen bg-background antialiased flex items-center justify-center">
-    <div class="container mx-auto px-4">
-      <div class="max-w-md mx-auto text-center">
-        <!-- 500 Illustration -->
-        <div class="text-9xl font-bold text-destructive/20 mb-8">500</div>
-
-        <h1 class="text-4xl font-bold mb-4">Server Error</h1>
-
-        <p class="text-xl text-muted-foreground mb-8">
-          Oops! Something went wrong on our end. We're working to fix it. Please try again later.
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/">
-            <Button size="lg" className="w-full sm:w-auto"> ← Back to Home </Button>
-          </a>
-          <button onclick="window.location.reload()">
-            <Button size="lg" variant="outline" className="w-full sm:w-auto"> Try Again </Button>
-          </button>
-        </div>
-
-        <p class="text-sm text-muted-foreground mt-8">
-          If the problem persists, please contact hello@painlessremovals.com
-        </p>
+<Layout
+  title="Server error — Painless Removals"
+  description="Something went wrong on our end. Please try again or contact us directly."
+  noindex
+>
+  <main class="min-h-[60vh] flex items-center justify-center px-4 py-16">
+    <div class="max-w-md mx-auto text-center">
+      <div class="text-7xl font-bold text-primary-200 mb-6">500</div>
+      <h1 class="text-3xl font-bold text-primary-700 mb-4">Server error</h1>
+      <p class="text-lg text-gray-700 mb-8">
+        Something went wrong on our end. Please try again, or reach us directly &mdash;
+        we'll always answer the phone.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/" class="btn btn-primary">← Back to home</a>
+        <a href="tel:01172870082" class="btn btn-secondary">Call 0117 287 0082</a>
       </div>
+      <p class="text-sm text-gray-500 mt-8">
+        If the problem persists, email <a href="mailto:hello@painlessremovals.com" class="underline">hello@painlessremovals.com</a>.
+      </p>
     </div>
-  </body>
-</html>
+  </main>
+</Layout>

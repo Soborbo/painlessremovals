@@ -127,7 +127,7 @@
     font-family: 'Fraunces', Georgia, serif;
     font-weight: 600;
     line-height: 1.25;
-    color: #006eb7;
+    color: var(--color-primary-600, #3b6587);
   }
 
   .text-white h1, .text-white h2, .text-white h3,

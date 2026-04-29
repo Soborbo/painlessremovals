@@ -38,7 +38,7 @@ const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": title,
-  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton#person` },
+  "author": { "@id": `${siteConfig.brand.domain}/about/jay-newton/#person` },
   "publisher": { "@id": `${siteConfig.brand.domain}/#business` },
   "datePublished": "2022-01-20",
   "dateModified": "2026-03-18",
@@ -102,7 +102,7 @@ const schema = [articleSchema, faqSchema];
         </p>
 
         <div class="flex flex-col gap-2 mb-5 items-center">
-          <a href="/instantquote" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+          <a href="/instantquote/" class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
             GET YOUR FREE QUOTE
           </a>
           <p class="text-warm-gray text-sm">Free, no obligation, under 47 seconds</p>
@@ -396,7 +396,7 @@ const schema = [articleSchema, faqSchema];
 
             <div class="border-t border-dashed border-gray-200 mt-5 pt-4">
               <a
-                href="/instantquote"
+                href="/instantquote/"
                 class="block w-full bg-orange-600 hover:bg-orange-700 text-white text-center font-bold text-[13px] uppercase tracking-wide py-2.5 rounded-lg no-underline transition-all duration-300 hover:-translate-y-0.5 hover:text-white"
               >
                 Get Your Free Quote &rarr;

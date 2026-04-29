@@ -26,7 +26,10 @@ if (step === 'step-01') {
 const stepConfig = getStepById(step || '');
 
 if (!stepConfig) {
-  return Astro.redirect('/404/');
+  // Return a real 404 instead of a 301 → 404 hop. Astro renders the
+  // prerendered 404.astro automatically when the response status is 404.
+  Astro.response.status = 404;
+  return new Response(null, { status: 404 });
 }
 
 // Step 12 now lives at /instantquote/your-quote/

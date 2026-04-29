@@ -24,7 +24,7 @@ const pageSchema = {
   "@type": "WebPage",
   "name": pageTitle,
   "description": pageDescription,
-  "url": `${siteConfig.brand.domain}/affiliate-form`,
+  "url": `${siteConfig.brand.domain}/affiliate-form/`,
   "isPartOf": ref.business(),
 };
 ---
@@ -262,8 +262,7 @@ const pageSchema = {
               if (window.turnstile) { window.turnstile.reset(); }
             }
           })
-          .catch(function(err) {
-            console.error('Affiliate form error:', err);
+          .catch(function() {
             window.showToast('Connection error — please check your internet and try again, or call us on ' + PHONE + '.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'SUBMIT REFERRAL';

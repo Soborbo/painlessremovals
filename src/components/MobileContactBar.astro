@@ -60,9 +60,12 @@ const phone = siteConfig.company.contact.phone.replace(/\s/g, '');
     var bar = document.getElementById('mobile-contact-bar');
     if (!bar) return;
 
-    var excluded = ['/contact', '/contact/', '/contact/thank-you', '/contact/thank-you/', '/vehicle-check', '/vehicle-check/', '/partner-register', '/partner-register/', '/terms-conditions', '/terms-conditions/'];
+    var excluded = ['/contact', '/contact/', '/contact/thank-you', '/contact/thank-you/', '/vehicle-check', '/vehicle-check/', '/terms-conditions', '/terms-conditions/'];
     var path = window.location.pathname;
-    if (excluded.indexOf(path) !== -1) {
+    // Hide on the entire calculator flow — the bar would slide up over
+    // the calculator's bottom Next/Back buttons on mobile, which is the
+    // worst possible UX during the conversion-critical step transitions.
+    if (excluded.indexOf(path) !== -1 || path.indexOf('/instantquote/') === 0) {
       bar.remove();
       return;
     }

@@ -14,13 +14,13 @@ interface Props {
   alt: string;
   loading?: 'eager' | 'lazy';
   fetchpriority?: 'high' | 'low' | 'auto';
-  decoding?: 'async' | 'auto';
+  decoding?: 'sync' | 'async' | 'auto';
   class?: string;
   style?: string;
   sizes?: string; // override pattern default
   /**
    * Mark this image as the LCP candidate.
-   * Shorthand for `loading="eager" fetchpriority="high"`.
+   * Shorthand for `loading="eager" fetchpriority="high" decoding="sync"`.
    * Pair with `getLcpPreload()` in the page's <Layout preload={...}> for matching responsive preload.
    */
   lcp?: boolean;
@@ -32,64 +32,95 @@ const {
   alt,
   loading,
   fetchpriority,
-  decoding = 'async',
+  decoding,
   class: className,
   style,
   sizes: sizesOverride,
   lcp,
 } = Astro.props;
 
-// `lcp` shorthand → eager + high priority (explicit props win)
+// `lcp` shorthand → eager + high priority + sync decoding (explicit props win).
+// Sync decoding avoids LCP flicker on slow CPUs.
 const resolvedLoading = loading ?? (lcp ? 'eager' : undefined);
 const resolvedFetchpriority = fetchpriority ?? (lcp ? 'high' : undefined);
+const resolvedDecoding = decoding ?? (lcp ? 'sync' : 'async');
 
 const patternDef = patterns[pattern];
-if (!patternDef) {
-  throw new Error(`OptimizedPicture: unknown pattern "${pattern}". Valid: ${Object.keys(patterns).join(', ')}`);
-}
-const { widths, sizes: patternSizes } = patternDef;
-const sizes = sizesOverride ?? patternSizes;
-const meta = (imageData as Record<string, { width: number; height: number; format: string }>)[name];
+const meta = patternDef
+  ? (imageData as Record<string, { width: number; height: number; format: string }>)[name]
+  : undefined;
 
-if (!meta) {
-  throw new Error(`OptimizedPicture: no metadata for "${name}". Run "npm run images" first.`);
+// In dev, throw so typos surface immediately; in prod, render a 1x1
+// transparent fallback so a single missing image can't take down a
+// whole prerendered page.
+const isDev = import.meta.env.DEV;
+if (!patternDef) {
+  if (isDev) throw new Error(`OptimizedPicture: unknown pattern "${pattern}". Valid: ${Object.keys(patterns).join(', ')}`);
+  // eslint-disable-next-line no-console
+  console.warn(`OptimizedPicture: unknown pattern "${pattern}", rendering placeholder`);
 }
+if (patternDef && !meta) {
+  if (isDev) throw new Error(`OptimizedPicture: no metadata for "${name}". Run "npm run images" first.`);
+  // eslint-disable-next-line no-console
+  console.warn(`OptimizedPicture: no metadata for "${name}", rendering placeholder`);
+}
+
+const PLACEHOLDER_SVG = "data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%201%201'%2F%3E";
+const renderPlaceholder = !patternDef || !meta;
+
+const { widths, sizes: patternSizes } = patternDef ?? { widths: [1] as readonly number[], sizes: '1px' };
+const sizes = sizesOverride ?? patternSizes;
 
 // Only include widths that exist (not upscaled)
-let availableWidths = widths.filter((w) => w <= meta.width);
+let availableWidths = meta ? widths.filter((w) => w <= meta.width) : [widths[0]];
 // Guard: if image is smaller than all pattern widths, use the smallest
 if (availableWidths.length === 0) {
   availableWidths = [widths[0]];
 }
 // Use the largest ALL_WIDTHS value ≤ image width — this is what the script generates as the .jpg/.png fallback
-const fallbackWidth = [...ALL_WIDTHS].reverse().find((w) => w <= meta.width) ?? ALL_WIDTHS[0];
-const fallbackExt = meta.format;
+const fallbackWidth = meta
+  ? ([...ALL_WIDTHS].reverse().find((w) => w <= meta.width) ?? ALL_WIDTHS[0])
+  : ALL_WIDTHS[0];
+const fallbackExt = meta?.format ?? 'jpg';
 // Cap declared dimensions to actual max output (prevents mismatch for >2560px sources)
-const aspectRatio = meta.height / meta.width;
-const declaredWidth = Math.min(meta.width, fallbackWidth);
+const aspectRatio = meta ? meta.height / meta.width : 1;
+const declaredWidth = meta ? Math.min(meta.width, fallbackWidth) : 1;
 const declaredHeight = Math.round(declaredWidth * aspectRatio);
 ---
 
-<picture>
-  <source
-    type="image/avif"
-    srcset={availableWidths.map((w) => `/img/${name}-${w}w.avif ${w}w`).join(', ')}
-    sizes={sizes}
-  />
-  <source
-    type="image/webp"
-    srcset={availableWidths.map((w) => `/img/${name}-${w}w.webp ${w}w`).join(', ')}
-    sizes={sizes}
-  />
+{renderPlaceholder ? (
   <img
-    src={`/img/${name}-${fallbackWidth}w.${fallbackExt}`}
-    width={declaredWidth}
-    height={declaredHeight}
+    src={PLACEHOLDER_SVG}
     alt={alt}
-    loading={resolvedLoading}
-    fetchpriority={resolvedFetchpriority}
-    decoding={decoding}
+    loading="lazy"
+    decoding="async"
+    width="1"
+    height="1"
     class={className}
     style={style}
   />
-</picture>
+) : (
+  <picture>
+    <source
+      type="image/avif"
+      srcset={availableWidths.map((w) => `/img/${name}-${w}w.avif ${w}w`).join(', ')}
+      sizes={sizes}
+    />
+    <source
+      type="image/webp"
+      srcset={availableWidths.map((w) => `/img/${name}-${w}w.webp ${w}w`).join(', ')}
+      sizes={sizes}
+    />
+    <img
+      src={`/img/${name}-${fallbackWidth}w.${fallbackExt}`}
+      width={declaredWidth}
+      height={declaredHeight}
+      alt={alt}
+      loading={resolvedLoading}
+      fetchpriority={resolvedFetchpriority}
+      decoding={resolvedDecoding}
+      class={className}
+      style={style}
+    />
+  </picture>
+)}

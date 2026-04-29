@@ -26,3 +26,4 @@
 
 # ── WordPress feed patterns → homepage ──────────────────────
 /*/feed  /  301
+/*/feed/  /  301

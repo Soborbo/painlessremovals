@@ -16,6 +16,7 @@ const staticRedirects = Object.fromEntries(
 // Pages marked noindex — must not appear in sitemap
 const noindexPages = [
   '/affiliate-form/',
+  '/affiliate-form/thank-you/',
   '/concierge-service/',
   '/contact/thank-you/',
   '/house-and-waste-clearance/thank-you/',
@@ -23,8 +24,10 @@ const noindexPages = [
   '/later-life-moves/',
   '/man-with-a-van-near-bristol/',
   '/partners/home-staging/',
+  '/partners/knight-frank/',
   '/partners/relocation-agents/',
   '/partners/solicitors/',
+  '/partners/thank-you/',
   '/student-removals-bristol/',
   '/vehicle-check/',
   // Calculator routes — noindex
@@ -44,8 +47,12 @@ const noindexPages = [
   '/instantquote/thank-you/',
   '/instantquote/simple-callback/',
   '/instantquote/thank-you-callback/',
-  '/instantquote/dev-preview/',
 ];
+
+// Build a Set of normalized pathnames for stricter matching than
+// `endsWith` — that matched by suffix, so a future `/foo/contact/` would
+// have been silently excluded.
+const noindexSet = new Set(noindexPages);
 
 export default defineConfig({
   site: 'https://painlessremovals.com',
@@ -68,11 +75,18 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
-      filter: (page) =>
-        !noindexPages.some((p) => page.endsWith(p)),
+      filter: (page) => {
+        try { return !noindexSet.has(new URL(page).pathname); }
+        catch { return true; }
+      },
       serialize(item) {
         const path = new URL(item.url).pathname;
-        item.lastmod = lastmod[path] ?? new Date().toISOString();
+        // Only set lastmod if we have a tracked value. Falling back to
+        // `new Date().toISOString()` made every page report a fresh
+        // lastmod every build, which Google penalises as a low-trust
+        // crawl signal.
+        const known = lastmod[path];
+        if (known) item.lastmod = known;
         return item;
       },
     }),

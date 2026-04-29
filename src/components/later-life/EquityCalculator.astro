@@ -704,7 +704,6 @@ import { siteConfig } from '@/config/site.config';
         }),
       });
       if (!res.ok) {
-        console.error('Calculator callback failed:', res.status);
         if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Request a Free Callback'; }
         callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
         return;
@@ -714,8 +713,9 @@ import { siteConfig } from '@/config/site.config';
       if (callbackMsg) {
         callbackMsg.textContent = `Thank you, ${name}. We will call you ${bestTime === 'morning' ? 'in the morning' : bestTime === 'afternoon' ? 'this afternoon' : 'this evening'}.`;
       }
-    } catch (err) {
-      console.error('Calculator callback error:', err);
+    } catch {
+      // Network failure — surface via the form's inline error UI;
+      // initGlobalCatcher already records unhandled errors.
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Request a Free Callback'; }
       callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
     }

@@ -309,7 +309,9 @@ const phone = siteConfig.company.contact.phone;
       }
 
       try {
-        const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
+        const res = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`, {
+          signal: AbortSignal.timeout(8000),
+        });
         const data = await res.json() as { status: number; result: { latitude: number; longitude: number } | null };
 
         if (data.status !== 200 || !data.result) {
@@ -345,11 +347,15 @@ const phone = siteConfig.company.contact.phone;
         postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-green-700';
         postcodeResult.style.display = 'block';
       } catch {
+        // Includes AbortSignal.timeout (network stall) — without this
+        // the button used to wedge at "..." indefinitely.
         postcodeResult.textContent = 'Could not look up postcode. Please try again.';
         postcodeResult.className = 'calc-postcode-result text-xs mt-2 text-red-600';
         postcodeResult.style.display = 'block';
         mileageCost = 0;
         postcodeValue = '';
+      } finally {
+        postcodeBtn.textContent = 'Check';
       }
 
       postcodeBtn.textContent = 'Check';
