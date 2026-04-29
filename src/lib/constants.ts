@@ -30,9 +30,6 @@ export const TIMING = {
 // ===================
 
 export const STORAGE = {
-  /** localStorage key for calculator state */
-  CALCULATOR_STATE_KEY: 'painless-calculator-state',
-
   /** Days until localStorage state expires */
   STATE_EXPIRY_DAYS: 7,
 
@@ -83,10 +80,18 @@ export const UI = {
 // PACKING SIZE THRESHOLDS
 // ===================
 
+// Mirrors `CALCULATOR_CONFIG.packing.{size}.cubesMax` (calculator-config
+// imports this file, so we can't import the config back here without a
+// cycle). The boundaries MUST match the config: getExtrasCost uses
+// these values to pick a packing price tier, and ResultPage uses the
+// same boundaries to label the displayed breakdown line. Previously the
+// values diverged (500/1000/1750 here vs 750/1350/2000 in the config),
+// causing breakdown lines that didn't match the charged total in the
+// 501-750 and 1001-1350 cube windows.
 export const PACKING_SIZE_THRESHOLDS = {
-  SMALL_MAX: 500,
-  MEDIUM_MAX: 1000,
-  LARGE_MAX: 1750,
+  SMALL_MAX: 750,
+  MEDIUM_MAX: 1350,
+  LARGE_MAX: 2000,
 } as const;
 
 // ===================
@@ -96,7 +101,9 @@ export const PACKING_SIZE_THRESHOLDS = {
 export type PackingSizeCategory = 'small' | 'medium' | 'large' | 'xl';
 
 /**
- * Get packing size category based on cubes
+ * Get packing size category based on cubes. Single source of truth for
+ * both billing (`getExtrasCost`) and display (`ResultPage`'s breakdown
+ * label) so the breakdown line price always matches the total.
  */
 export function getPackingSizeCategory(cubes: number): PackingSizeCategory {
   if (cubes <= PACKING_SIZE_THRESHOLDS.SMALL_MAX) return 'small';

@@ -563,7 +563,14 @@ export const quoteResult = computed(calculatorStore, (state): QuoteResult | null
         distances: state.distances,
       });
 
-      // Adapt to QuoteResult shape
+      // Adapt to QuoteResult shape. Clamp marginedTotal to 0 — when
+      // mileage + disposal + access surcharges exceed the gross total
+      // the unconstrained subtraction goes negative and downstream
+      // breakdown computation (`crewCost * marginRatio`) explodes to
+      // NaN once `controllableCost` is zero.
+      const marginedTotalRaw = clearanceResult.totalPrice
+        - clearanceResult.breakdown.mileageCost
+        - clearanceResult.breakdown.disposalCost;
       return {
         totalPrice: clearanceResult.totalPrice,
         men: 0,
@@ -587,7 +594,7 @@ export const quoteResult = computed(calculatorStore, (state): QuoteResult | null
           controllableCost: 0,
           surchargeCost: 0,
           marginMultiplier: 1,
-          marginedTotal: clearanceResult.totalPrice - clearanceResult.breakdown.mileageCost - clearanceResult.breakdown.disposalCost,
+          marginedTotal: Math.max(0, marginedTotalRaw),
           margin: 0,
           mileageCost: clearanceResult.breakdown.mileageCost,
           accommodationCost: 0,
@@ -867,20 +874,35 @@ export function goToStep(step: number, navigate: boolean = true) {
 
 /**
  * Set service type (Step 1)
+ *
+ * Resets every field that's collected in a service-specific step so a
+ * partial answer set from the prior service can't leak into pricing
+ * for the new one. The previous version only cleared a subset and
+ * left e.g. `complications` / `extras` carrying over, which produced
+ * silently-wrong office quotes after a Home → Office switch.
  */
 export function setServiceType(type: ServiceType) {
   calculatorStore.setKey('serviceType', type);
 
-  // Reset related fields when changing service type
+  // Service-specific Step 2 / Step 3 answers
   calculatorStore.setKey('propertySize', null);
   calculatorStore.setKey('officeSize', null);
   calculatorStore.setKey('furnitureOnly', null);
 
-  // Reset answers from steps that may be skipped in the new flow.
-  // Without this, e.g. a Home → Office switch leaves a stale Key Wait
-  // Waiver charge on the office quote (Step 9 isn't shown for office).
+  // Answers from steps that may be skipped in the new flow.
   calculatorStore.setKey('propertyChain', null);
   calculatorStore.setKey('keyWaitWaiver', null);
+  calculatorStore.setKey('complications', null);
+  calculatorStore.setKey('selectedDate', null);
+  calculatorStore.setKey('dateFlexibility', null);
+  calculatorStore.setKey('useManualOverride', false);
+  calculatorStore.setKey('manualMen', null);
+  calculatorStore.setKey('manualVans', null);
+
+  // Reset extras + clearance to fresh empty containers (object identity
+  // matters — `setKey('extras', {})` would not match the typed shape).
+  calculatorStore.setKey('extras', { gateway: [], disassemblyItems: [], assembly: [] });
+  calculatorStore.setKey('clearance', { disposalItems: [], accessDifficulties: [] });
 
   saveState();
 }

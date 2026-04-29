@@ -29,9 +29,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
 
-// Validation patterns
-const PHONE_REGEX = /^(?:(?:\+44)|(?:0))(?:\d\s?){9,10}$/;
+// Validation patterns. The phone regex matches the server-side schema
+// in `core/validations/schemas.ts` AFTER stripping whitespace — both
+// sides accept the same set of normalized values, so a string that
+// passes here will also pass server-side validation.
+const PHONE_REGEX = /^(?:\+44|0)\d{9,10}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const stripPhone = (s: string) => s.replace(/[\s\-()]/g, '');
 
 interface FormErrors {
   firstName?: string;
@@ -83,7 +87,7 @@ export function Step11Contact() {
     // Phone
     if (!phone.trim()) {
       newErrors.phone = 'Please enter your phone number';
-    } else if (!PHONE_REGEX.test(phone.replace(/\s/g, ''))) {
+    } else if (!PHONE_REGEX.test(stripPhone(phone))) {
       newErrors.phone = 'Please enter a valid UK phone number';
     }
 

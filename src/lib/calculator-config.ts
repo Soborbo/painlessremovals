@@ -189,7 +189,10 @@ export const CALCULATOR_CONFIG = {
     bankHoliday: 0.35, // +35% on crew cost
   },
 
-  // England & Wales bank holidays
+  // England & Wales bank holidays. Extended through 2030 — the
+  // surcharge logic returns false (no surcharge) for any date not in
+  // this list, so undershooting the calendar silently undercharges
+  // bank-holiday moves. Source: gov.uk/bank-holidays.
   bankHolidays: [
     // 2026
     '2026-01-01', '2026-04-03', '2026-04-06', '2026-05-04',
@@ -197,6 +200,15 @@ export const CALCULATOR_CONFIG = {
     // 2027
     '2027-01-01', '2027-03-26', '2027-03-29', '2027-05-03',
     '2027-05-31', '2027-08-30', '2027-12-27', '2027-12-28',
+    // 2028
+    '2028-01-03', '2028-04-14', '2028-04-17', '2028-05-01',
+    '2028-05-29', '2028-08-28', '2028-12-25', '2028-12-26',
+    // 2029
+    '2029-01-01', '2029-03-30', '2029-04-02', '2029-05-07',
+    '2029-05-28', '2029-08-27', '2029-12-25', '2029-12-26',
+    // 2030
+    '2030-01-01', '2030-04-19', '2030-04-22', '2030-05-06',
+    '2030-05-27', '2030-08-26', '2030-12-25', '2030-12-26',
   ],
 
   // ===================
