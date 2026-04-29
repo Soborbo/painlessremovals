@@ -13,6 +13,7 @@
  */
 
 import Layout from '@/layouts/Layout.astro';
+import PartnerClearanceSection from '@/components/partners/PartnerClearanceSection.astro';
 import { siteConfig } from '@/config/site.config';
 
 const pageTitle = 'Knight Frank Bristol × Painless Removals';
@@ -70,12 +71,12 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
             </div>
           </div>
         </div>
-
-        <aside class="kf-hero-cobrand" aria-label="Prepared for Knight Frank">
-          <span class="kf-eyebrow-tiny">Prepared for</span>
-          <img src="/img/knight-frank/knight-frank-logo.svg" alt="Knight Frank" class="kf-cobrand-logo" />
-        </aside>
       </div>
+
+      <aside class="kf-hero-cobrand" aria-label="Prepared for Knight Frank">
+        <span class="kf-eyebrow-tiny">Prepared for</span>
+        <img src="/img/knight-frank/knight-frank-logo.svg" alt="Knight Frank" class="kf-cobrand-logo" />
+      </aside>
     </section>
 
     <!-- ============================================================
@@ -244,6 +245,11 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+         CLEARANCE
+    ============================================================ -->
+    <PartnerClearanceSection callbackHref="#callback" />
 
     <!-- ============================================================
          WHY + HOW
@@ -551,8 +557,12 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     background:
       radial-gradient(120% 80% at 20% 20%, rgba(212, 168, 75, 0.18) 0%, rgba(212, 168, 75, 0) 55%),
       linear-gradient(145deg, var(--kf-petrol-deep) 0%, var(--kf-petrol-mid) 45%, var(--kf-petrol) 100%);
-    min-height: 100vh;
-    min-height: 100svh;
+    /* Cap hero to the visible viewport (minus the fixed 104px nav stack
+       on desktop) so the cobrand at bottom-right never slips below the
+       fold. Floor at 540px for tiny windows. */
+    height: calc(100svh - 104px);
+    min-height: 540px;
+    max-height: 760px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -584,24 +594,22 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    padding: clamp(40px, 6vh, 80px) 28px clamp(40px, 6vh, 90px);
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 48px;
-    align-items: end;
+    padding: clamp(32px, 5vh, 64px) 28px clamp(80px, 8vh, 110px);
   }
   .kf-hero-copy { max-width: 720px; }
   .kf-hero-cobrand {
+    position: absolute;
+    z-index: 3;
+    right: 28px;
+    bottom: 28px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
-    padding: 22px 28px;
+    gap: 12px;
+    padding: 18px 24px;
     border-left: 2px solid var(--kf-gold);
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(2px);
-    position: relative;
-    z-index: 3;
   }
   .kf-eyebrow-tiny {
     color: var(--kf-gold);
@@ -611,7 +619,7 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     font-weight: 600;
   }
   .kf-cobrand-logo {
-    height: 36px;
+    height: 30px;
     width: auto;
     filter: brightness(0) invert(1) brightness(0.96);
   }
@@ -633,9 +641,9 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     background: var(--kf-gold);
   }
   .kf-h1 {
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     font-family: var(--kf-serif);
-    font-size: clamp(40px, 6vw, 76px);
+    font-size: clamp(40px, 5.4vw, 68px);
     line-height: 1.04;
     font-weight: 400;
     letter-spacing: -0.02em;
@@ -655,13 +663,13 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     letter-spacing: 0.22em;
     font-size: 12px;
     color: rgba(245, 230, 200, 0.85);
-    margin-bottom: 22px;
+    margin-bottom: 14px;
   }
   .kf-hero-lead {
-    margin: 0 0 32px;
+    margin: 0 0 22px;
     max-width: 560px;
-    font-size: 17px;
-    line-height: 1.65;
+    font-size: 16px;
+    line-height: 1.6;
     color: rgba(250, 247, 242, 0.9);
   }
   .kf-hero-cta {
@@ -669,7 +677,7 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     flex-wrap: wrap;
     gap: 22px;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 24px;
   }
   .kf-btn {
     display: inline-flex;
@@ -711,9 +719,9 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
 
   .kf-hero-stats {
     display: flex;
-    gap: 28px;
+    gap: 18px;
     align-items: center;
-    padding-top: 28px;
+    padding-top: 18px;
     border-top: 1px solid rgba(212, 168, 75, 0.24);
     max-width: 620px;
     flex-wrap: wrap;
@@ -1453,14 +1461,30 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     .kf-callback-card { padding: 40px 32px; }
   }
 
-  @media (max-width: 720px) {
-    .kf-hero-inner {
-      padding: clamp(28px, 5vh, 56px) 22px clamp(28px, 5vh, 64px);
-      grid-template-columns: 1fr;
-      gap: 24px;
-      align-items: start;
+  @media (max-width: 1023px) {
+    /* Below desktop: drop cobrand from absolute bottom-right (would
+       overlap the headline) and inline it below the stats. Tablet has a
+       64px header, mobile 48px — natural hero height with svh floor. */
+    .kf-hero {
+      height: auto;
+      max-height: none;
+      min-height: calc(100svh - 64px);
     }
-    .kf-hero-cobrand { align-self: start; }
+    .kf-hero-cobrand {
+      position: static;
+      align-self: flex-end;
+      margin-top: 28px;
+    }
+    .kf-hero-inner { padding-bottom: clamp(36px, 5vh, 64px); }
+  }
+
+  @media (max-width: 767px) {
+    .kf-hero { min-height: calc(100svh - 48px); }
+    .kf-cobrand-logo { height: 26px; }
+    .kf-hero-cobrand { align-self: stretch; padding: 14px 18px; }
+    .kf-hero-inner {
+      padding: clamp(24px, 5vh, 48px) 22px clamp(24px, 5vh, 56px);
+    }
     .kf-hero-cta { flex-direction: column; align-items: flex-start; gap: 16px; }
     .kf-btn { width: 100%; }
     .kf-hero-stats { gap: 18px; }
