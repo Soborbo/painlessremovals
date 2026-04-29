@@ -99,6 +99,10 @@ export const redirectMap = new Map<string, string>([
   ['/instantquote/self-survey-video-upload', '/send-survey-video/'],
   ['/upload', '/send-survey-video/'],
 
+  // ── Pages that escaped the calculator path → top-level ──────
+  ['/instantquote/vehicle-check', '/vehicle-check/'],
+  ['/instantquote/affiliate-form', '/affiliate-form/'],
+
   // ── New page redirects ─────────────────────────────────────
   ['/self-survey', '/free-home-survey/'],
   ['/home-removal-checklist-in-2025', '/moving-house-checklist/'],
