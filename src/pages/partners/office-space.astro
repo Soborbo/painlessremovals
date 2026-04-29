@@ -1,0 +1,1653 @@
+---
+/**
+ * Partners: Office Space, Landlords & Operators.
+ *
+ * Targeted at commercial landlords, property managers, office building
+ * operators and coworking-space operators, i.e. organisations whose
+ * TENANTS occasionally need to move. Positions Painless as a trusted
+ * mover the landlord can recommend, with site-specific protocols, named
+ * account contact, and full insurance.
+ *
+ * Sister page to /partners/office-space/ which is for the moving
+ * company itself. Same visual system (qs-* classes), different audience
+ * and copy.
+ *
+ * Form posts to /api/partner-register/ with businessType: 'other' and
+ * form_source: 'partners-office-space'.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+import { ref, breadcrumbs } from '@/utils/schema';
+import { getLcpPreload } from '@/utils/lcp-preload';
+
+const pageTitle = 'Office Move Partner for Bristol Landlords & Operators';
+const pageDescription = 'Bristol\'s trusted office relocation specialists for commercial landlords, property managers and coworking operators. A reliable mover you can recommend to your tenants, with site-specific protocols, named account contact, and full insurance. Trusted since 1978.';
+const pagePath = '/partners/office-space/';
+const heroImagePath = '/img/office-removals/office-removals-team-assembling-furniture-bristol-1200w.webp';
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const PHONE_DISPLAY = siteConfig.company.contact.phone;
+const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
+const EMAIL = 'hello@painlessremovals.com';
+const ADDRESS = '290–294 Southmead Rd, Bristol BS10 5EN';
+const SITE_DOMAIN = 'painlessremovals.com';
+
+// LCP preload for the hero image (mobile stacks full-width, desktop is 50/50)
+const heroPreload = getLcpPreload(
+  'office-removals/office-removals-team-assembling-furniture-bristol',
+  'HALF',
+);
+
+// Schema: Service (the partnership offering) + BreadcrumbList.
+// References the canonical /#business entity from Layout.astro.
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${siteConfig.brand.domain}${pagePath}#service`,
+  'name': 'Office Relocation Partner for Bristol Landlords & Operators',
+  'description': pageDescription,
+  'serviceType': 'Office Relocation Partnership',
+  'url': `${siteConfig.brand.domain}${pagePath}`,
+  'provider': ref.business(),
+  'areaServed': [
+    { '@type': 'City', 'name': 'Bristol' },
+    { '@type': 'AdministrativeArea', 'name': 'South West England' },
+  ],
+  'audience': {
+    '@type': 'BusinessAudience',
+    'audienceType': 'Commercial landlords, property managers and coworking-space operators',
+  },
+  'image': `${siteConfig.brand.domain}${heroImagePath}`,
+  'hasOfferCatalog': {
+    '@type': 'OfferCatalog',
+    'name': 'Tenant Office Move Service Levels',
+    'itemListElement': [
+      {
+        '@type': 'Offer',
+        'itemOffered': {
+          '@type': 'Service',
+          'name': 'Essentials — You Pack, We Move',
+          'description': 'Tenant packs their own office. We load, transport and unload at the new address.',
+        },
+      },
+      {
+        '@type': 'Offer',
+        'itemOffered': {
+          '@type': 'Service',
+          'name': 'Assisted — Move + Extras',
+          'description': 'Boxes and packing materials supplied. Furniture disassembly and reassembly included where needed.',
+        },
+      },
+      {
+        '@type': 'Offer',
+        'itemOffered': {
+          '@type': 'Service',
+          'name': 'Full Service — We Do Everything',
+          'description': 'Our crew packs, wraps, moves and sets up the new office.',
+        },
+      },
+    ],
+  },
+};
+
+const breadcrumbSchema = breadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Trade Partners', path: '/partners/' },
+  { name: 'Office Space Landlords' },
+]);
+
+const pageSchema = [serviceSchema, breadcrumbSchema];
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  schema={pageSchema}
+  ogImage={heroImagePath}
+  preload={heroPreload}
+>
+
+  <main class="qs">
+
+    <!-- HERO: 50/50 split, text left, image right -->
+    <section class="qs-hero">
+      <div class="qs-hero-text">
+        <div class="qs-hero-badge">For Landlords, Property Managers &amp; Coworking Operators</div>
+        <h1 class="qs-hero-h1">A Move Partner for <span>Your Building</span></h1>
+        <p class="qs-hero-sub">A reliable mover you can recommend to your tenants. One that already knows your building.</p>
+        <div class="qs-hero-actions">
+          <a href="#callback" class="qs-btn-orange qs-btn-hero">Arrange a site visit</a>
+          <a href={`tel:${PHONE_TEL}`} class="qs-hero-phone">{PHONE_DISPLAY}</a>
+        </div>
+      </div>
+      <div class="qs-hero-media">
+        <OptimizedPicture
+          name="office-removals/office-removals-team-assembling-furniture-bristol"
+          pattern="HALF"
+          alt="Painless Removals team assembling office furniture in Bristol"
+          lcp
+        />
+      </div>
+    </section>
+
+    <!-- TRUST BAR -->
+    <div class="qs-trust-bar">
+      <div class="qs-trust-item">
+        <div class="qs-trust-icon">✓</div>
+        Fully Insured, {'£'}15k per van
+      </div>
+      <div class="qs-trust-item">
+        <div class="qs-trust-icon">✓</div>
+        Move Assured Accredited
+      </div>
+      <div class="qs-trust-item">
+        <div class="qs-trust-icon">✓</div>
+        GDPR Compliant
+      </div>
+      <div class="qs-trust-item">
+        <div class="qs-trust-icon">✓</div>
+        Weekend &amp; Out-of-Hours
+      </div>
+    </div>
+
+    <!-- TWO COLUMNS -->
+    <div class="qs-columns">
+      <div class="qs-col">
+        <div class="qs-col-title">What We Move for Your Tenants</div>
+        <p>Furniture, desks, chairs, IT equipment, sensitive files and hard drives with full GDPR-compliant chain of custody. We also handle artwork, fragile and high-value items with specialist care. All packing materials supplied, with full setup and placement at the new address.</p>
+      </div>
+      <div class="qs-col">
+        <div class="qs-col-title">We Look After the Building Too</div>
+        <p>A considerate, briefed crew that protects communal areas, follows your house rules, and keeps disruption to other occupants to a minimum. We treat your building the way we'd want one of ours treated.</p>
+      </div>
+    </div>
+
+    <!-- LOCAL KNOWLEDGE -->
+    <div class="qs-local">
+      <div class="qs-local-inner">
+        <div class="qs-local-head">
+          <div class="qs-local-eyebrow">Site-Specific Move Protocols</div>
+          <h2 class="qs-local-h2">We Visit Your Building Before Anyone Books a Move.</h2>
+          <p class="qs-local-lead">
+            Every building has its quirks. We come on-site for a free walk-around so that
+            when one of your tenants needs to move, we already know how the place works,
+            and we can quote them accurately on the first call.
+          </p>
+        </div>
+        <div class="qs-local-grid">
+          <div class="qs-local-item">
+            <div class="qs-local-icon">↕</div>
+            <h3>Stairs &amp; Lift Realities</h3>
+            <p>How tight the stairwell turns, what the lift actually fits, and whether the goods lift is shared or scheduled.</p>
+          </div>
+          <div class="qs-local-item">
+            <div class="qs-local-icon">⏱</div>
+            <h3>Best Hours, Quietest Hours</h3>
+            <p>The times of day that work best for parking and lift access, and that cause the least disruption to your other occupants.</p>
+          </div>
+          <div class="qs-local-item">
+            <div class="qs-local-icon">🅿</div>
+            <h3>Where the Vans Actually Fit</h3>
+            <p>Loading bays, on-street windows, restricted hours. We work out the routing once, on your terms, not on move day.</p>
+          </div>
+          <div class="qs-local-item">
+            <div class="qs-local-icon">⚙</div>
+            <h3>Building Management Liaison</h3>
+            <p>We coordinate directly with your facilities team, follow your contractor protocols, and turn up with the paperwork they expect.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVICE TIERS -->
+    <div class="qs-tiers-section">
+      <div class="qs-tiers-title">Three Service Levels for Your Tenants</div>
+      <p class="qs-tiers-sub">Same crew, same standards. A tier to match every tenant's budget and time pressure.</p>
+      <div class="qs-tiers">
+        <div class="qs-tier">
+          <div class="qs-tier-img-wrap">
+            <OptimizedPicture
+              name="office-removals/office-mover-carrying-boxes-bristol"
+              pattern="THIRD"
+              alt="Painless Removals mover carrying boxes from a Bristol office"
+              loading="lazy"
+              class="qs-tier-img"
+            />
+          </div>
+          <div class="qs-tier-body">
+            <div class="qs-tier-label">Essentials</div>
+            <div class="qs-tier-name">You Pack, We Move</div>
+            <p class="qs-tier-desc">Your tenant packs their own office. We load, transport and unload at the new address. The basics, done properly.</p>
+          </div>
+        </div>
+
+        <div class="qs-tier qs-tier-featured">
+          <div class="qs-tier-img-wrap">
+            <OptimizedPicture
+              name="knight-frank/painless-removals-office-packing"
+              pattern="THIRD"
+              alt="Painless Removals crew packing an office for a move"
+              loading="lazy"
+              class="qs-tier-img qs-tier-img-bc"
+            />
+          </div>
+          <div class="qs-tier-popular">Most Popular</div>
+          <div class="qs-tier-body">
+            <div class="qs-tier-label">Assisted</div>
+            <div class="qs-tier-name">Move + Extras</div>
+            <p class="qs-tier-desc">Everything in Essentials, plus all boxes and packing materials supplied. Furniture disassembly and reassembly included where needed.</p>
+          </div>
+        </div>
+
+        <div class="qs-tier">
+          <div class="qs-tier-img-wrap">
+            <OptimizedPicture
+              name="office-removals/office-removals-team-assembling-furniture-bristol"
+              pattern="THIRD"
+              alt="Painless Removals team assembling office furniture in Bristol"
+              loading="lazy"
+              class="qs-tier-img"
+            />
+          </div>
+          <div class="qs-tier-body">
+            <div class="qs-tier-label">Full Service</div>
+            <div class="qs-tier-name">We Do Everything</div>
+            <p class="qs-tier-desc">Our crew packs, wraps, moves and sets up the new office. Your tenant arrives ready to work from day one.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BEYOND THE MOVE -->
+    <div class="qs-extras">
+      <div class="qs-extras-inner">
+        <div class="qs-extras-title">Beyond the Move</div>
+        <p class="qs-extras-sub">Things tenants ask for, that we already do in-house.</p>
+        <div class="qs-extras-grid">
+          <div class="qs-extras-item">
+            <div class="qs-extras-img-wrap">
+              <OptimizedPicture
+                name="home-removals/Bristol-furniture-disassembly-service"
+                pattern="THIRD"
+                alt="Painless Removals crew disassembling furniture for transport"
+                loading="lazy"
+                class="qs-extras-img qs-extras-img-bc"
+              />
+            </div>
+            <div class="qs-extras-body">
+              <div class="qs-extras-head">Disassembly &amp; Reassembly</div>
+              <p>Desks, partitions, modular storage and bench seating taken apart and rebuilt by our crew, covered under our standard insurance, not a separate sub-contractor's.</p>
+            </div>
+          </div>
+          <div class="qs-extras-item">
+            <div class="qs-extras-img-wrap">
+              <OptimizedPicture
+                name="storage/painless-removals-storage-more-door"
+                pattern="THIRD"
+                alt="Painless Removals storage facility entrance"
+                loading="lazy"
+                class="qs-extras-img"
+              />
+            </div>
+            <div class="qs-extras-body">
+              <div class="qs-extras-head">Storage</div>
+              <p>Our own storage facility for short-term gaps between leases or longer-term overflow: furniture, archives, IT equipment, all kept on inventory.</p>
+            </div>
+          </div>
+          <div class="qs-extras-item">
+            <div class="qs-extras-img-wrap">
+              <OptimizedPicture
+                name="cleaning/cleaning-service"
+                pattern="THIRD"
+                alt="Painless Removals end-of-tenancy cleaning team"
+                loading="lazy"
+                class="qs-extras-img qs-extras-img-tl"
+              />
+            </div>
+            <div class="qs-extras-body">
+              <div class="qs-extras-head">End-of-Tenancy Cleaning</div>
+              <p>Where dilapidations need a clean handover, we can arrange the post-move clean. One team, one invoice, one less moving part for your tenant.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRUSTED PARTNER / SINGLE POC -->
+    <div class="qs-poc">
+      <div class="qs-poc-inner">
+        <div class="qs-poc-photo-col">
+          <OptimizedPicture
+            name="about/team/Tom"
+            pattern="LOGO"
+            alt="Tom, Painless Removals account manager"
+            loading="lazy"
+            class="qs-poc-photo"
+          />
+          <div class="qs-poc-photo-name">Tom</div>
+          <div class="qs-poc-photo-role">Your named account contact</div>
+        </div>
+        <div class="qs-poc-text-col">
+          <div class="qs-poc-eyebrow">Working Together</div>
+          <h2 class="qs-poc-h2">One Direct Line. Someone Who Knows Your Building.</h2>
+          <p class="qs-poc-lead">
+            As a trusted partner, your team gets a named account contact, the same
+            person every time, who knows the specifics of your building, your house rules
+            and your tenants' history with us. Not an inbox, not a rota.
+          </p>
+          <ul class="qs-poc-list">
+            <li><strong>One named contact</strong> for your facilities or property management team, reachable directly, not via switchboard.</li>
+            <li><strong>Building-specific briefing notes</strong> kept on file so any crew arriving on-site already knows your protocols.</li>
+            <li><strong>Tailored arrangements where it makes sense.</strong> Once we know your portfolio, we're happy to explore bespoke terms that work for your building specifically.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="qs-steps-section">
+      <div class="qs-steps-title">How It Works</div>
+      <div class="qs-steps">
+        <div class="qs-step">
+          <div class="qs-step-number">1</div>
+          <h3>We Visit Your Building</h3>
+          <ul>
+            <li>Free, no-obligation walk-around</li>
+            <li>We learn the access, lifts &amp; quirks</li>
+            <li>You walk us through your house rules</li>
+            <li>Building briefing kept on file</li>
+          </ul>
+        </div>
+        <div class="qs-step">
+          <div class="qs-step-number">2</div>
+          <h3>We're Ready When You Need Us</h3>
+          <ul>
+            <li>Tenant calls us, we already know the building</li>
+            <li>Accurate fixed quote on the first call</li>
+            <li>Direct line for your facilities team</li>
+            <li>Live coordination on move day</li>
+          </ul>
+        </div>
+        <div class="qs-step">
+          <div class="qs-step-number">3</div>
+          <h3>Move Day</h3>
+          <ul>
+            <li>Crew arrives briefed and equipped</li>
+            <li>Building protected; neighbours respected</li>
+            <li>Move completed on schedule</li>
+            <li>You're kept informed end-to-end</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- JAY QUOTE -->
+    <div class="qs-jay-section">
+      <OptimizedPicture
+        name="about/team/Jay"
+        pattern="ICON"
+        alt="Jay Newton, Director of Painless Removals"
+        loading="lazy"
+        class="qs-jay-photo"
+      />
+      <div class="qs-jay-text">
+        <div class="qs-jay-quote">We're happy to come and walk your building in person. No obligation, no hard sell. Once we've seen it, every quote we give your tenants is based on what we've actually seen, not what we've assumed. That's why our numbers hold.</div>
+        <div class="qs-jay-name">Jay Newton, Director, Painless Removals</div>
+      </div>
+    </div>
+
+    <!-- CALLBACK FORM -->
+    <section class="qs-callback" id="callback">
+      <div class="qs-callback-inner">
+        <div class="qs-form-eyebrow">Become a partner building</div>
+        <h2 class="qs-form-h2">Let's walk your building.</h2>
+        <p class="qs-form-lead">
+          Leave your details and we'll be in touch as soon as possible to arrange a
+          free, no-commitment site visit at a time that suits you.
+        </p>
+
+        <div id="qs-form-success" class="qs-form-success" hidden>
+          <div class="qs-success-mark">{'✓'}</div>
+          <h3>Thank you. We have your details.</h3>
+          <p>You'll hear from us shortly. If it's urgent, please call <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>.</p>
+        </div>
+
+        <form id="qs-form" class="qs-form" novalidate data-phone={PHONE_DISPLAY}>
+          <div class="qs-honeypot" aria-hidden="true">
+            <label for="qs-website">Leave this blank</label>
+            <input type="text" id="qs-website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="qs-field-row">
+            <div class="qs-field">
+              <label for="qs-name">Your name <span class="qs-req">*</span></label>
+              <input type="text" id="qs-name" name="name" required autocomplete="name" placeholder="e.g. Sarah Hughes" />
+            </div>
+            <div class="qs-field">
+              <label for="qs-company">Company <span class="qs-req">*</span></label>
+              <input type="text" id="qs-company" name="companyName" required autocomplete="organization" placeholder="e.g. Hughes Property Group" />
+            </div>
+          </div>
+
+          <div class="qs-field-row">
+            <div class="qs-field">
+              <label for="qs-phone">Phone <span class="qs-req">*</span></label>
+              <input type="tel" id="qs-phone" name="phone" required autocomplete="tel" placeholder="07… or 0117…" />
+            </div>
+            <div class="qs-field">
+              <label for="qs-email">Email <span class="qs-req">*</span></label>
+              <input type="email" id="qs-email" name="email" required autocomplete="email" placeholder="you@example.com" />
+            </div>
+          </div>
+
+          <label class="qs-consent">
+            <input type="checkbox" id="qs-consent" name="gdprConsent" required />
+            <span>I'm happy for Painless Removals to contact me about a partnership for my building. <span class="qs-req">*</span></span>
+          </label>
+
+          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
+
+          <div id="qs-form-error" class="qs-form-error" hidden></div>
+
+          <button type="submit" id="qs-submit" class="qs-btn-orange">Arrange my site visit</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- CTA FOOTER: single-column closing CTA -->
+    <div class="qs-cta-footer">
+      <div class="qs-cta-inner">
+        <h2 class="qs-cta-heading">Book Your Free Site Visit Today</h2>
+        <p class="qs-cta-tag">No obligation, just a walk-around at your convenience.</p>
+        <a href={`tel:${PHONE_TEL}`} class="qs-cta-phone">{PHONE_DISPLAY}</a>
+        <a href="#callback" class="qs-btn-orange qs-cta-btn">Arrange my site visit</a>
+        <div class="qs-cta-details">
+          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          <span class="qs-cta-dot">·</span>
+          <span>{ADDRESS}</span>
+        </div>
+        <div class="qs-cta-web">{SITE_DOMAIN}</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Cloudflare Turnstile -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- Form submission -->
+  <script is:inline>
+    (function () {
+      var form = document.getElementById('qs-form');
+      if (!form) return;
+
+      var PHONE = (form.dataset.phone || '0117 287 0082');
+      var errorEl = document.getElementById('qs-form-error');
+      var submitBtn = document.getElementById('qs-submit');
+      var successEl = document.getElementById('qs-form-success');
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+        if (window.showToast) window.showToast(msg, 'error');
+      }
+      function clearError() {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearError();
+
+        var name = form.querySelector('#qs-name').value.trim();
+        var companyName = form.querySelector('#qs-company').value.trim();
+        var phone = form.querySelector('#qs-phone').value.trim();
+        var email = form.querySelector('#qs-email').value.trim();
+        var gdprConsent = form.querySelector('#qs-consent').checked;
+        var honeypot = form.querySelector('#qs-website').value;
+
+        if (!name) { showError('Please enter your name.'); return; }
+        if (!companyName) { showError('Please enter your company name.'); return; }
+        if (!phone) { showError('Please enter a phone number we can reach you on.'); return; }
+        if (!email) { showError('Please enter your email address.'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('That email address doesn\'t look right. Please double-check it.'); return; }
+        if (!gdprConsent) { showError('Please tick the consent box so we know you\'re happy for us to be in touch.'); return; }
+
+        var turnstileToken = '';
+        var tsInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (tsInput) turnstileToken = tsInput.value;
+        if (!turnstileToken) { showError('Please complete the security check before submitting.'); return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+
+        fetch('/api/partner-register/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            companyName: companyName,
+            email: email,
+            phone: phone,
+            businessType: 'other',
+            honeypot: honeypot,
+            turnstileToken: turnstileToken,
+          }),
+        })
+          .then(function (res) {
+            return res.json().catch(function () { throw new Error('Server returned ' + res.status); });
+          })
+          .then(function (data) {
+            if (data && data.success) {
+              var eventId = (window.crypto && window.crypto.randomUUID)
+                ? window.crypto.randomUUID()
+                : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                event: 'form_submission',
+                event_id: eventId,
+                form_name: 'partner_register_office_space',
+                form_source: 'partners-office-space',
+              });
+
+              form.hidden = true;
+              successEl.hidden = false;
+              successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              showError((data && data.error) || ('Something went wrong. Please try again or call us on ' + PHONE + '.'));
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Arrange my site visit';
+              if (window.turnstile) window.turnstile.reset();
+            }
+          })
+          .catch(function () {
+            showError('Connection error. Please check your internet and try again, or call us on ' + PHONE + '.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Arrange my site visit';
+          });
+      });
+    })();
+  </script>
+
+</Layout>
+
+<style is:global>
+  /* ==============================================================
+     Office Space: Landlords & Operators.
+     Reuses the qs-* design system. Hero is now a 50/50 grid like
+     other landing pages. Adds image cards in extras section, Tom
+     photo in POC panel, single-column closing CTA. Micro-interactions
+     throughout via transforms, transitions and entrance keyframes.
+
+     Note: is:global is needed because OptimizedPicture renders <img>
+     elements from a sub-component, and scoped styles wouldn't reach
+     them. The qs-* namespace prevents leakage to other pages.
+  ============================================================== */
+  .qs {
+    --qs-navy: #1a3a5c;
+    --qs-navy-deep: #152e4a;
+    --qs-orange: #e8632b;
+    --qs-orange-dark: #cf5520;
+    --qs-gold: #f5a623;
+    --qs-bg-soft: #f0f4f8;
+    --qs-bg-warm: #fef7f2;
+    --qs-line: #dde3ea;
+    --qs-text: #1a1a2e;
+    --qs-text-mute: #4a5568;
+    --qs-paper: #ffffff;
+    --qs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    background: var(--qs-paper);
+    color: var(--qs-text);
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.55;
+  }
+
+  /* OptimizedPicture renders a <picture><source><source><img></picture>.
+     display: contents lets the inner <img> inherit the layout role
+     of <picture>, so existing styles/positioning/flex on the <img>
+     keep working unchanged. */
+  .qs picture { display: contents; }
+
+  /* ── ENTRANCE KEYFRAMES ── */
+  @keyframes qs-fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes qs-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes qs-pulse-soft {
+    0%, 100% { box-shadow: 0 10px 24px rgba(232, 99, 43, 0.32); }
+    50%      { box-shadow: 0 12px 28px rgba(232, 99, 43, 0.45); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .qs *, .qs *::before, .qs *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* ── HERO: 50/50 grid, sized so hero + trust bar fits the viewport
+     fold below the site header. --header-h is set dynamically by
+     Layout.astro to header + services-nav height (fallback 104px).
+     64px is the trust bar's natural height (padding + content). ── */
+  .qs-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch;
+    min-height: clamp(420px, calc(100dvh - var(--header-h, 104px) - 64px), 720px);
+    background: linear-gradient(135deg, var(--qs-navy) 0%, var(--qs-navy-deep) 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+  .qs-hero-text {
+    padding: clamp(28px, 5vh, 56px) clamp(24px, 5vw, 64px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: 0;
+    width: 100%;
+    animation: qs-fade-up 0.7s var(--qs-ease) both;
+  }
+  .qs-hero-badge {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(245, 166, 35, 0.14);
+    color: var(--qs-gold);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 7px 14px;
+    border-left: 3px solid var(--qs-gold);
+    border-radius: 0 4px 4px 0;
+  }
+  .qs-hero-h1 {
+    font-size: clamp(28px, 4.2vw, 44px);
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.5px;
+    color: #fff;
+    margin: 0;
+    text-wrap: balance;
+    max-width: 16ch;
+  }
+  .qs-hero-h1 span {
+    color: var(--qs-gold);
+    position: relative;
+    display: inline-block;
+  }
+  .qs-hero-h1 span::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -4px;
+    height: 3px;
+    background: var(--qs-orange);
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: qs-grow-line 0.9s var(--qs-ease) 0.6s forwards;
+  }
+  @keyframes qs-grow-line {
+    to { transform: scaleX(1); }
+  }
+  .qs-hero-sub {
+    font-size: clamp(15px, 1.6vw, 18px);
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+    line-height: 1.55;
+    animation: qs-fade-up 0.7s var(--qs-ease) 0.15s both;
+  }
+  .qs-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-top: 8px;
+    animation: qs-fade-up 0.7s var(--qs-ease) 0.3s both;
+  }
+  .qs-btn-hero {
+    box-shadow: 0 12px 28px rgba(232, 99, 43, 0.4);
+  }
+  .qs-hero-phone {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+    transition: color 0.2s var(--qs-ease), border-color 0.2s var(--qs-ease);
+  }
+  .qs-hero-phone:hover {
+    color: var(--qs-gold);
+    border-bottom-color: var(--qs-gold);
+  }
+  .qs-hero-media {
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+  }
+  .qs-hero-media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.8s var(--qs-ease);
+  }
+  .qs-hero-media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(26, 58, 92, 0.25) 0%, transparent 30%);
+    pointer-events: none;
+  }
+  .qs-hero:hover .qs-hero-media img {
+    transform: scale(1.02);
+  }
+
+  /* ── TRUST BAR ── */
+  .qs-trust-bar {
+    background: var(--qs-bg-soft);
+    border-bottom: 1px solid var(--qs-line);
+    padding: 18px clamp(20px, 4vw, 48px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(16px, 4vw, 36px);
+    flex-wrap: wrap;
+  }
+  .qs-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #34495e;
+    transition: color 0.2s var(--qs-ease), transform 0.2s var(--qs-ease);
+  }
+  .qs-trust-item:hover {
+    color: var(--qs-navy);
+    transform: translateY(-1px);
+  }
+  .qs-trust-icon {
+    width: 22px;
+    height: 22px;
+    background: var(--qs-navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    flex-shrink: 0;
+    transition: background 0.25s var(--qs-ease), transform 0.25s var(--qs-ease);
+  }
+  .qs-trust-item:hover .qs-trust-icon {
+    background: var(--qs-orange);
+    transform: rotate(360deg) scale(1.05);
+  }
+
+  /* ── TWO COLUMNS ── */
+  .qs-columns {
+    display: flex;
+    gap: clamp(24px, 4vw, 48px);
+    padding: clamp(40px, 6vh, 64px) clamp(20px, 4vw, 48px);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .qs-col { flex: 1; }
+  .qs-col-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2.5px solid var(--qs-orange);
+    display: inline-block;
+    transition: padding-right 0.3s var(--qs-ease);
+  }
+  .qs-col:hover .qs-col-title {
+    padding-right: 14px;
+  }
+  .qs-col p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--qs-text-mute);
+    margin: 0;
+  }
+
+  /* ── LOCAL KNOWLEDGE ── */
+  .qs-local {
+    background: var(--qs-bg-soft);
+    border-top: 1px solid var(--qs-line);
+    border-bottom: 1px solid var(--qs-line);
+    padding: clamp(48px, 8vh, 72px) clamp(20px, 4vw, 48px);
+  }
+  .qs-local-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .qs-local-head {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .qs-local-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--qs-orange);
+    margin-bottom: 8px;
+  }
+  .qs-local-h2 {
+    font-size: clamp(24px, 3vw, 30px);
+    font-weight: 800;
+    color: var(--qs-navy);
+    margin: 0 0 12px;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+  .qs-local-lead {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--qs-text-mute);
+    margin: 0 auto;
+    max-width: 760px;
+  }
+  .qs-local-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .qs-local-item {
+    background: var(--qs-paper);
+    border: 1px solid var(--qs-line);
+    border-left: 3px solid var(--qs-orange);
+    border-radius: 6px;
+    padding: 22px 22px;
+    transition: transform 0.3s var(--qs-ease), box-shadow 0.3s var(--qs-ease), border-left-width 0.3s var(--qs-ease);
+  }
+  .qs-local-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(26, 58, 92, 0.10);
+    border-left-width: 6px;
+  }
+  .qs-local-icon {
+    font-size: 26px;
+    color: var(--qs-orange);
+    margin-bottom: 8px;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.4s var(--qs-ease);
+  }
+  .qs-local-item:hover .qs-local-icon {
+    transform: scale(1.15) rotate(-6deg);
+  }
+  .qs-local-item h3 {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    margin: 0 0 6px;
+    letter-spacing: 0.2px;
+  }
+  .qs-local-item p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--qs-text-mute);
+    margin: 0;
+  }
+
+  /* ── SERVICE TIERS ── */
+  .qs-tiers-section {
+    padding: clamp(48px, 8vh, 72px) clamp(20px, 4vw, 48px) 0;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .qs-tiers-title {
+    text-align: center;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .qs-tiers-sub {
+    text-align: center;
+    font-size: 15px;
+    color: var(--qs-text-mute);
+    margin: 0 auto 32px;
+    max-width: 640px;
+  }
+  .qs-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-bottom: clamp(40px, 6vh, 56px);
+  }
+  .qs-tier {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e0e6ed;
+    background: var(--qs-paper);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.35s var(--qs-ease), box-shadow 0.35s var(--qs-ease), border-color 0.3s var(--qs-ease);
+  }
+  .qs-tier:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 44px rgba(26, 58, 92, 0.14);
+    border-color: var(--qs-orange);
+  }
+  .qs-tier-featured {
+    border: 2px solid var(--qs-orange);
+  }
+  .qs-tier-featured .qs-tier-body {
+    background: var(--qs-bg-warm);
+  }
+  .qs-tier-img-wrap {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+  }
+  .qs-tier-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s var(--qs-ease);
+  }
+  .qs-tier-img-bc { object-position: center bottom; }
+  .qs-tier:hover .qs-tier-img {
+    transform: scale(1.06);
+  }
+  .qs-tier-body {
+    padding: 18px 20px 22px;
+    flex: 1;
+  }
+  .qs-tier-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    color: var(--qs-orange);
+    margin-bottom: 6px;
+  }
+  .qs-tier-name {
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    margin-bottom: 10px;
+  }
+  .qs-tier-desc {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--qs-text-mute);
+    margin: 0;
+  }
+  .qs-tier-popular {
+    position: absolute;
+    top: 158px;
+    right: 14px;
+    background: var(--qs-orange);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 10px rgba(232, 99, 43, 0.3);
+    z-index: 2;
+  }
+
+  /* ── EXTRAS / BEYOND THE MOVE ── */
+  .qs-extras {
+    background: var(--qs-bg-warm);
+    padding: clamp(48px, 8vh, 72px) clamp(20px, 4vw, 48px);
+    border-top: 1px solid var(--qs-line);
+    border-bottom: 1px solid var(--qs-line);
+  }
+  .qs-extras-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .qs-extras-title {
+    text-align: center;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .qs-extras-sub {
+    text-align: center;
+    font-size: 15px;
+    color: var(--qs-text-mute);
+    margin: 0 auto 28px;
+    max-width: 640px;
+  }
+  .qs-extras-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .qs-extras-item {
+    background: var(--qs-paper);
+    border: 1px solid var(--qs-line);
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.35s var(--qs-ease), box-shadow 0.35s var(--qs-ease);
+  }
+  .qs-extras-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(26, 58, 92, 0.12);
+  }
+  .qs-extras-img-wrap {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    position: relative;
+  }
+  .qs-extras-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s var(--qs-ease);
+  }
+  .qs-extras-img-tl { object-position: left top; }
+  .qs-extras-img-bc { object-position: center bottom; }
+  .qs-extras-item:hover .qs-extras-img {
+    transform: scale(1.06);
+  }
+  .qs-extras-body {
+    padding: 20px 22px 22px;
+    flex: 1;
+  }
+  .qs-extras-head {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--qs-orange);
+    display: inline-block;
+    transition: padding-right 0.3s var(--qs-ease);
+  }
+  .qs-extras-item:hover .qs-extras-head {
+    padding-right: 12px;
+  }
+  .qs-extras-body p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--qs-text-mute);
+    margin: 0;
+  }
+
+  /* ── SINGLE POINT OF CONTACT (with Tom photo) ── */
+  .qs-poc {
+    padding: clamp(48px, 8vh, 72px) clamp(20px, 4vw, 48px);
+  }
+  .qs-poc-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, var(--qs-navy) 0%, var(--qs-navy-deep) 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: clamp(28px, 5vh, 44px);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: clamp(24px, 4vw, 40px);
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 18px 48px rgba(21, 46, 74, 0.22);
+  }
+  .qs-poc-inner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--qs-orange);
+  }
+  .qs-poc-photo-col {
+    text-align: center;
+  }
+  .qs-poc-photo {
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--qs-gold);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s var(--qs-ease), border-color 0.3s var(--qs-ease);
+    display: block;
+    margin: 0 auto 12px;
+  }
+  .qs-poc-inner:hover .qs-poc-photo {
+    transform: scale(1.04) rotate(-1deg);
+    border-color: var(--qs-orange);
+  }
+  .qs-poc-photo-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 2px;
+  }
+  .qs-poc-photo-role {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    color: var(--qs-gold);
+  }
+  .qs-poc-text-col { min-width: 0; }
+  .qs-poc-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--qs-gold);
+    margin-bottom: 8px;
+  }
+  .qs-poc-h2 {
+    font-size: clamp(22px, 2.6vw, 28px);
+    font-weight: 800;
+    margin: 0 0 14px;
+    color: #fff;
+    letter-spacing: -0.2px;
+    line-height: 1.25;
+  }
+  .qs-poc-lead {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0 0 22px;
+  }
+  .qs-poc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .qs-poc-list li {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.92);
+    padding-left: 26px;
+    position: relative;
+    transition: padding-left 0.25s var(--qs-ease);
+  }
+  .qs-poc-list li:hover {
+    padding-left: 30px;
+  }
+  .qs-poc-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--qs-orange);
+    font-weight: 800;
+    font-size: 16px;
+    transition: transform 0.25s var(--qs-ease);
+  }
+  .qs-poc-list li:hover::before {
+    transform: scale(1.2);
+  }
+  .qs-poc-list strong {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .qs-steps-section {
+    padding: clamp(40px, 6vh, 56px) clamp(20px, 4vw, 48px);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .qs-steps-title {
+    text-align: center;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--qs-navy);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .qs-steps-title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: var(--qs-orange);
+    margin: 12px auto 0;
+  }
+  .qs-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: flex-start;
+    position: relative;
+  }
+  .qs-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 12px;
+    position: relative;
+    transition: transform 0.3s var(--qs-ease);
+  }
+  .qs-step:hover {
+    transform: translateY(-4px);
+  }
+  .qs-step-number {
+    width: 56px;
+    height: 56px;
+    background: var(--qs-orange);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0 auto 18px;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 8px 20px rgba(232, 99, 43, 0.32);
+    transition: transform 0.3s var(--qs-ease), box-shadow 0.3s var(--qs-ease);
+  }
+  .qs-step:hover .qs-step-number {
+    transform: scale(1.08);
+    box-shadow: 0 12px 26px rgba(232, 99, 43, 0.5);
+  }
+  .qs-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: calc(50% + 36px);
+    width: calc(100% - 60px);
+    height: 2px;
+    background: var(--qs-orange);
+    opacity: 0.45;
+    z-index: 1;
+  }
+  .qs-step h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: var(--qs-navy);
+  }
+  .qs-step ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    display: inline-block;
+  }
+  .qs-step li {
+    font-size: 13.5px;
+    line-height: 1.55;
+    padding: 4px 0 4px 22px;
+    position: relative;
+    color: var(--qs-text-mute);
+  }
+  .qs-step li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    color: var(--qs-orange);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* ── JAY QUOTE ── */
+  .qs-jay-section {
+    background: var(--qs-bg-soft);
+    border-top: 1px solid var(--qs-line);
+    border-bottom: 1px solid var(--qs-line);
+    padding: 28px clamp(20px, 4vw, 48px);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .qs-jay-photo {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center top;
+    border: 3px solid var(--qs-orange);
+    flex-shrink: 0;
+    transition: transform 0.4s var(--qs-ease), border-color 0.3s var(--qs-ease);
+  }
+  .qs-jay-section:hover .qs-jay-photo {
+    transform: scale(1.06) rotate(-2deg);
+    border-color: var(--qs-gold);
+  }
+  .qs-jay-text { flex: 1; min-width: 0; }
+  .qs-jay-quote {
+    font-size: 17px;
+    font-style: italic;
+    color: var(--qs-navy);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .qs-jay-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--qs-orange);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  /* ── CALLBACK FORM ── */
+  .qs-callback {
+    background: var(--qs-paper);
+    padding: clamp(48px, 8vh, 80px) clamp(20px, 4vw, 48px);
+  }
+  .qs-callback-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    background: var(--qs-bg-soft);
+    border: 1px solid var(--qs-line);
+    border-radius: 8px;
+    padding: clamp(28px, 5vh, 44px);
+    transition: box-shadow 0.3s var(--qs-ease);
+  }
+  .qs-callback-inner:focus-within {
+    box-shadow: 0 14px 36px rgba(26, 58, 92, 0.10);
+  }
+  .qs-form-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--qs-orange);
+    margin-bottom: 8px;
+  }
+  .qs-form-h2 {
+    font-size: 26px;
+    color: var(--qs-navy);
+    margin: 0 0 10px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .qs-form-lead {
+    margin: 0 0 24px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--qs-text-mute);
+  }
+  .qs-form { display: flex; flex-direction: column; gap: 16px; }
+  .qs-honeypot { position: absolute; left: -9999px; }
+  .qs-field { display: flex; flex-direction: column; gap: 6px; }
+  .qs-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .qs-field label {
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--qs-navy);
+  }
+  .qs-req { color: var(--qs-orange); }
+  .qs-field input {
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--qs-text);
+    background: #fff;
+    border: 1px solid var(--qs-line);
+    border-radius: 5px;
+    padding: 11px 14px;
+    transition: border-color 0.2s var(--qs-ease), box-shadow 0.2s var(--qs-ease), transform 0.2s var(--qs-ease);
+  }
+  .qs-field input:hover {
+    border-color: #b8c4d0;
+  }
+  .qs-field input:focus {
+    outline: none;
+    border-color: var(--qs-navy);
+    box-shadow: 0 0 0 3px rgba(26, 58, 92, 0.12);
+  }
+  .qs-consent {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--qs-text-mute);
+  }
+  .qs-consent input { flex: 0 0 auto; }
+  .qs-form-error {
+    background: #FDECEA;
+    border: 1px solid #E8B6B0;
+    color: #8A2B1E;
+    padding: 10px 14px;
+    border-radius: 5px;
+    font-size: 14px;
+    animation: qs-fade-in 0.3s var(--qs-ease);
+  }
+  .qs-btn-orange {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    background: var(--qs-orange);
+    color: #fff;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    border-radius: 5px;
+    box-shadow: 0 10px 24px rgba(232, 99, 43, 0.32);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s var(--qs-ease), transform 0.2s var(--qs-ease), box-shadow 0.2s var(--qs-ease);
+  }
+  .qs-btn-orange::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
+    transition: left 0.6s var(--qs-ease);
+  }
+  .qs-btn-orange:hover {
+    background: var(--qs-orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(232, 99, 43, 0.42);
+  }
+  .qs-btn-orange:hover::before {
+    left: 100%;
+  }
+  .qs-btn-orange:active {
+    transform: translateY(0);
+  }
+  .qs-btn-orange:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+  .qs-form-success {
+    text-align: center;
+    padding: 16px 8px;
+    animation: qs-fade-up 0.5s var(--qs-ease);
+  }
+  .qs-success-mark {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--qs-navy);
+    color: var(--qs-orange);
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .qs-form-success h3 {
+    color: var(--qs-navy);
+    font-size: 19px;
+    margin: 0 0 8px;
+    font-weight: 800;
+  }
+  .qs-form-success p { margin: 0; color: var(--qs-text-mute); font-size: 14px; }
+  .qs-form-success a {
+    color: var(--qs-navy);
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid var(--qs-orange);
+  }
+
+  /* ── CTA FOOTER: single-column closing CTA ── */
+  .qs-cta-footer {
+    background: linear-gradient(135deg, var(--qs-navy) 0%, var(--qs-navy-deep) 100%);
+    color: #fff;
+    padding: clamp(48px, 8vh, 80px) clamp(20px, 4vw, 48px);
+    text-align: center;
+  }
+  .qs-cta-inner {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .qs-cta-heading {
+    font-size: clamp(24px, 3vw, 32px);
+    font-weight: 800;
+    margin: 0;
+    color: #fff;
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+  }
+  .qs-cta-tag {
+    margin: 0;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.82);
+    line-height: 1.5;
+  }
+  .qs-cta-phone {
+    display: inline-block;
+    font-size: clamp(28px, 3.6vw, 38px);
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    color: #fff;
+    text-decoration: none;
+    line-height: 1.1;
+    margin-top: 6px;
+    transition: color 0.2s var(--qs-ease), transform 0.2s var(--qs-ease);
+  }
+  .qs-cta-phone:hover {
+    color: var(--qs-gold);
+    transform: scale(1.03);
+  }
+  .qs-cta-btn {
+    margin-top: 4px;
+    animation: qs-pulse-soft 2.6s var(--qs-ease) infinite;
+  }
+  .qs-cta-details {
+    margin-top: 10px;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.6;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  .qs-cta-details a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(245, 166, 35, 0.4);
+    transition: color 0.2s var(--qs-ease), border-color 0.2s var(--qs-ease);
+  }
+  .qs-cta-details a:hover {
+    color: var(--qs-gold);
+    border-bottom-color: var(--qs-gold);
+  }
+  .qs-cta-dot {
+    color: rgba(245, 166, 35, 0.7);
+    font-weight: 700;
+  }
+  .qs-cta-web {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--qs-gold);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 980px) {
+    .qs-hero { grid-template-columns: 1fr; min-height: auto; }
+    .qs-hero-media { order: -1; min-height: 240px; height: 38vh; }
+    .qs-hero-text { padding: clamp(24px, 5vh, 40px) clamp(20px, 5vw, 36px); max-width: none; margin: 0; }
+    .qs-tiers { grid-template-columns: 1fr; }
+    .qs-tier-popular { top: 158px; }
+    .qs-steps { grid-template-columns: 1fr; gap: 32px; }
+    .qs-step:not(:last-child)::after { display: none; }
+    .qs-extras-grid { grid-template-columns: 1fr; }
+    .qs-local-grid { grid-template-columns: 1fr; }
+    .qs-poc-inner { grid-template-columns: 1fr; text-align: center; }
+    .qs-poc-photo-col { order: 2; }
+    .qs-poc-text-col { order: 1; }
+    .qs-poc-photo { margin-left: auto; margin-right: auto; }
+  }
+  @media (max-width: 720px) {
+    .qs-hero-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+    .qs-hero-phone { text-align: center; }
+    .qs-columns { flex-direction: column; gap: 28px; }
+    .qs-jay-section { flex-direction: column; text-align: center; }
+    .qs-field-row { grid-template-columns: 1fr; }
+    /* USP / trust bar: 2-column grid so the ✓ icons of "GDPR Compliant"
+       and "Weekend & Out-of-Hours" line up under the items above them. */
+    .qs-trust-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 18px;
+      row-gap: 12px;
+      justify-items: start;
+      padding-left: clamp(16px, 6vw, 36px);
+      padding-right: clamp(16px, 6vw, 36px);
+    }
+  }
+</style>
