@@ -1,5 +1,5 @@
 name = 'painlessremovals-worker'
-compatibility_date = "2025-12-01"
+compatibility_date = "2026-04-15"
 compatibility_flags = ["nodejs_compat"]
 
 # Dashboard is the source of truth for plain env vars and secrets.
@@ -35,9 +35,10 @@ id = "ce6ead73cf464a6888d567bb96d68b27"
 binding = "RATE_LIMITER"
 id = "b9ceca436b2d44e0a9d4dca42b998da8"
 
-[[kv_namespaces]]
-binding = "SESSIONS"
-id = "cfc7e5916f054125922731a9ddbce29a"
+# SESSIONS removed: it was provisioned for a server-side calculator quote
+# state that never shipped. Quote state lives in client sessionStorage; no
+# code reads `env.SESSIONS`. Delete the namespace via:
+#   wrangler kv namespace delete --namespace-id=cfc7e5916f054125922731a9ddbce29a
 
 # Plain env vars and secrets are managed in the Cloudflare dashboard
 # (Workers > painlessremovals-worker > Settings > Variables and Secrets).

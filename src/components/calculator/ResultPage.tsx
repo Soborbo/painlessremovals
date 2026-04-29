@@ -21,10 +21,12 @@ import {
   clearState,
   initializeStore,
   initialState,
+  type CalculatorState,
 } from '@/lib/calculator-store';
-import { decodeQuoteState, buildQuoteUrl } from '@/lib/quote-url';
+import { encodeQuoteState } from '@/lib/quote-url';
 import { calculateQuote, type QuoteResult } from '@/lib/calculator-logic';
 import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
+import { getPackingSizeCategory } from '@/lib/constants';
 import { CONFIG } from '@/lib/config';
 import { toast, ToastContainer } from '@/components/ui/toast';
 import { REVIEW_STATS } from '@/lib/review-config';
@@ -63,7 +65,7 @@ function getExtrasBreakdown(state: ReturnType<typeof calculatorStore.get>, cubes
   if (extras.packingTier) {
     const tierConfig = CALCULATOR_CONFIG.packingTiers[extras.packingTier as keyof typeof CALCULATOR_CONFIG.packingTiers];
     if (tierConfig && tierConfig.priceBySize) {
-      const sizeCategory = cubes <= 750 ? 'small' : cubes <= 1350 ? 'medium' : cubes <= 2000 ? 'large' : 'xl';
+      const sizeCategory = getPackingSizeCategory(cubes);
       const price = tierConfig.priceBySize[sizeCategory as keyof typeof tierConfig.priceBySize];
       items.push({ label: `Packing — ${tierConfig.label}`, price });
     }
@@ -333,24 +335,47 @@ export function ResultPage() {
   // Initialize store
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const encoded = params.get('q');
+    const token = params.get('q');
 
-    if (encoded) {
-      const decoded = decodeQuoteState(encoded);
-      if (decoded) {
-        calculatorStore.set({ ...initialState, ...decoded });
-        hasSubmittedRef.current = true;
-      } else {
-        initializeStore();
-      }
-    } else {
-      initializeStore();
-      // Always allow submission for fresh calculator flow — previous quote_submitted
-      // flag must not block a new quote from being saved + emailed + synced to CRM.
-      localStorage.removeItem('quote_submitted');
-      setShowLoadingScreen(true);
+    if (token) {
+      // `?q=` payloads are HMAC-signed by the server. Verify before
+      // hydrating the calculator — a forged token must not be able to
+      // pre-populate state with attacker-chosen pricing or trigger any
+      // submit/conversion flow.
+      let cancelled = false;
+      hasSubmittedRef.current = true; // never auto-submit shared quotes
+      void (async () => {
+        try {
+          const res = await fetch('/api/quote-url/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token }),
+            signal: AbortSignal.timeout(8000),
+          });
+          if (!res.ok) throw new Error(`verify status ${res.status}`);
+          const body = await res.json() as { valid?: boolean; state?: Partial<CalculatorState> };
+          if (cancelled) return;
+          if (body.valid && body.state) {
+            calculatorStore.set({ ...initialState, ...body.state });
+          } else {
+            // Forged or stale token — drop the param and fall back to
+            // the user's own session state.
+            initializeStore();
+          }
+        } catch {
+          if (!cancelled) initializeStore();
+        } finally {
+          if (!cancelled) setStoreReady(true);
+        }
+      })();
+      return () => { cancelled = true; };
     }
 
+    initializeStore();
+    // Submission dedup is enforced server-side by a fingerprint over
+    // the validated payload (see save-quote.ts in-flight sentinel),
+    // so no client-side flag is needed.
+    setShowLoadingScreen(true);
     setStoreReady(true);
   }, []);
 
@@ -362,9 +387,16 @@ export function ResultPage() {
     setSubmissionStatus('submitting');
     setErrorMessage(null);
 
+    // Generated up-front so both the initial attempt and the retry
+    // share one dedup key with the matching client-side conversion.
+    const eventId = generateUUID();
+
     try {
       const submissionData = getSubmissionData();
-      const quoteUrl = buildQuoteUrl(state, window.location.origin);
+      // Encoded quote payload (no signature). The server signs it with
+      // its own HMAC secret and assembles the public-facing share URL
+      // — we never sign anything client-side.
+      const quoteUrlPayload = encodeQuoteState(state);
 
       // Read attribution from localStorage (set during loading screen)
       let attribution: string | undefined;
@@ -382,10 +414,8 @@ export function ResultPage() {
         ? { ...submissionData, attribution }
         : submissionData;
 
-      // Generate event_id up-front so the server-side GA4 MP mirror
-      // and the eventual client-side conversion event share one
-      // dedup key.
-      const eventId = generateUUID();
+      // (eventId was generated above the try block so the retry path
+      // can reuse it.)
 
       const apiData = {
         data: dataWithAttribution,
@@ -400,7 +430,7 @@ export function ResultPage() {
         utm_medium: state.utmMedium || undefined,
         utm_campaign: state.utmCampaign || undefined,
         gclid: state.gclid || undefined,
-        quoteUrl,
+        quoteUrlPayload,
         event_id: eventId,
       };
 
@@ -466,7 +496,6 @@ export function ResultPage() {
         markViewContentFired();
       }
 
-      localStorage.setItem('quote_submitted', 'true');
       setSubmissionStatus('success');
     } catch (error) {
       trackError('MOVE-QUOTE-001', error, { phase: 'submit-quote' }, 'ResultPage');
@@ -478,6 +507,10 @@ export function ResultPage() {
       setTimeout(async () => {
         try {
           const submissionData = getSubmissionData();
+          // Reuse the same event_id from the original attempt so the
+          // server-side GA4 MP mirror dedupes against the browser's
+          // (eventually-fired) conversion event. Without this the
+          // retry produced a fresh id and broke BigQuery joins.
           const apiData = {
             data: submissionData,
             totalPrice: quote.totalPrice,
@@ -487,6 +520,7 @@ export function ResultPage() {
             email: state.contact?.email,
             phone: state.contact?.phone,
             language: 'en' as const,
+            event_id: eventId,
           };
 
           const retryResponse = await fetch('/api/save-quote', {
@@ -496,7 +530,6 @@ export function ResultPage() {
           });
 
           if (retryResponse.ok) {
-            localStorage.setItem('quote_submitted', 'true');
             setSubmissionStatus('success');
             setErrorMessage(null);
           }

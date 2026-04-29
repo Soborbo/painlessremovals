@@ -7,8 +7,10 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { logger } from '@/lib/utils/logger';
+import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
@@ -32,13 +34,20 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(chunks.join(''));
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
+  const { request } = context;
   try {
-    // Origin check
-    const origin = request.headers.get('origin') || '';
-    if (origin && !isAllowedOrigin(origin)) return json({ error: 'Forbidden.' }, 403);
+    if (!requireAllowedOrigin(request)) return json({ error: 'Forbidden.' }, 403);
 
-    const formData = await request.formData();
+    const rateLimitOk = await checkRateLimit(context);
+    if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
+
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return json({ error: 'Invalid request body.' }, 400);
+    }
     const name = (formData.get('name') as string || '').trim();
     const phone = (formData.get('phone') as string || '').trim();
     const email = (formData.get('email') as string || '').trim();
@@ -100,7 +109,7 @@ export const POST: APIRoute = async ({ request }) => {
           <div style="background: #ffffff; padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
             <table style="width: 100%; border-collapse: collapse;">
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; width: 120px; vertical-align: top;">Name</td><td style="padding: 8px 0;">${escapeHtml(name)}</td></tr>
-              <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td></tr>
+              <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}">${escapeHtml(phone)}</a></td></tr>
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Email</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Position</td><td style="padding: 8px 0;">${escapeHtml(position)}</td></tr>
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Driving Licence</td><td style="padding: 8px 0;">${escapeHtml(licence)}</td></tr>
@@ -124,8 +133,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!resendRes.ok) {
-      const err = await resendRes.text();
-      logger.error('Jobs', 'Resend send failed', { error: err });
+      logger.error('Jobs', 'Resend send failed', { status: resendRes.status });
       return json({ error: `Failed to send your application. Please try again or call us on ${PHONE}.` }, 500);
     }
 
@@ -152,11 +160,16 @@ export const POST: APIRoute = async ({ request }) => {
         </div>`,
     };
 
-    fetch('https://api.resend.com/emails', {
+    // Confirmation email — must outlive the response. Without waitUntil
+    // the Worker runtime cancels in-flight fetches when the response is
+    // flushed, so this previously dropped silently under load.
+    const confirmationFetch = fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(confirmationPayload),
     }).catch((err) => logger.error('Jobs', 'Confirmation email failed', { error: err instanceof Error ? err.message : String(err) }));
+    const cfContext = (context as unknown as { locals?: { runtime?: { waitUntil: (p: Promise<unknown>) => void } } }).locals?.runtime;
+    if (cfContext?.waitUntil) cfContext.waitUntil(confirmationFetch);
 
     return json({ success: true });
   } catch (err) {

@@ -177,10 +177,11 @@ export function getRuntimeConfig(env: Cloudflare.Env) {
     auth: {
       ...CONFIG.auth,
       providers: {
+        // Google OAuth was scaffolded but `features.auth = false` keeps
+        // the entire auth subsystem off. The env vars
+        // (GOOGLE_CLIENT_ID/SECRET) are not provisioned in the dashboard.
         google: {
           enabled: CONFIG.auth.providers.google.enabled,
-          clientId: env.GOOGLE_CLIENT_ID,
-          clientSecret: env.GOOGLE_CLIENT_SECRET,
         },
         magicLink: {
           enabled: CONFIG.auth.providers.magicLink.enabled,

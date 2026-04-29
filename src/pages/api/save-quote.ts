@@ -26,6 +26,8 @@ import {
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
 import { getCORSHeaders } from '@/lib/utils/cors';
+import { requireAllowedOrigin } from '@/lib/forms/utils';
+import { buildSignedQuoteUrl } from '@/lib/quote-url-server';
 import { createErrorResponse, formatError, generateErrorId } from '@/lib/utils/error';
 import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
@@ -51,6 +53,13 @@ export const POST: APIRoute = async (context) => {
 
   logger.info('API', 'Save quote request received');
 
+  if (!requireAllowedOrigin(context.request)) {
+    return new Response(JSON.stringify({ success: false, error: 'Forbidden', errorId }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
+
   // Payload size check
   const payloadOk = await checkPayloadSize(context);
   if (!payloadOk) {
@@ -62,6 +71,10 @@ export const POST: APIRoute = async (context) => {
   if (!rateLimitOk) {
     return createRateLimitResponse(errorId, corsHeaders);
   }
+
+  // Hoisted so the catch handler can clear the in-flight sentinel on
+  // failure; otherwise a dead request blocks retries for 60s.
+  let dedupCleanupKey: string | null = null;
 
   try {
     const body = await context.request.json();
@@ -82,10 +95,29 @@ export const POST: APIRoute = async (context) => {
     // processed seconds ago (double-click, refresh, React StrictMode
     // double-fire), return the cached response instead of firing a
     // second set of emails and a second CRM lead.
+    //
+    // Two-phase write: stamp an in-flight sentinel BEFORE doing any work
+    // so a near-simultaneous second request sees it and bails. The
+    // sentinel is replaced with the real response body once the work
+    // completes. Read-modify-write is still racy across colos (KV is
+    // eventually consistent), so this is best-effort — but markedly
+    // better than the previous fire-and-forget post-write where two
+    // requests would both miss the cache.
     const dedupKv = safeKV(env, 'RATE_LIMITER');
     const dedupKey = `save_quote_dedup:${fingerprint}`;
+    const INFLIGHT_SENTINEL = '__inflight__';
     if (dedupKv) {
       const cached = await kvGet<string>(dedupKv, dedupKey);
+      if (cached === INFLIGHT_SENTINEL) {
+        // Another request is already processing this exact payload.
+        // Tell the client we accepted it; the real work is in flight
+        // elsewhere and will email/CRM-sync.
+        logger.info('API', 'Concurrent save-quote in flight, returning 202', { fingerprint });
+        return new Response(JSON.stringify({ success: true, deferred: true }), {
+          status: 202,
+          headers: { 'Content-Type': 'application/json', 'X-Idempotent-Replay': 'inflight', ...corsHeaders },
+        });
+      }
       if (cached) {
         logger.info('API', 'Returning cached save-quote response for duplicate request', { fingerprint });
         return new Response(cached, {
@@ -97,6 +129,10 @@ export const POST: APIRoute = async (context) => {
           },
         });
       }
+      // Stake the in-flight claim before doing any side-effect work.
+      // Awaited so the next read sees it.
+      await kvPut(dedupKv, dedupKey, INFLIGHT_SENTINEL, { expirationTtl: SAVE_QUOTE_DEDUP_TTL_SECONDS });
+      dedupCleanupKey = dedupKey;
     }
 
     // Get enrichment data
@@ -112,6 +148,17 @@ export const POST: APIRoute = async (context) => {
     const randomPart = crypto.randomUUID().replace(/-/g, '').slice(0, 4).toUpperCase();
     const quoteId = `${fingerprint.slice(0, 4).toUpperCase()}${randomPart}`;
 
+    // Build a server-signed shareable quote URL. The client used to
+    // assemble this with no signature; an attacker could craft an
+    // arbitrary `?q=` URL and load it into a victim's calculator. With
+    // server-side HMAC the token is unforgeable. Falls back to null if
+    // no QUOTE_URL_SECRET / IP_HASH_SALT is provisioned (in which case
+    // the email's "view your quote" link is simply omitted).
+    const siteOrigin = env.SITE_URL || 'https://painlessremovals.com';
+    const signedQuoteUrl = validated.quoteUrlPayload
+      ? buildSignedQuoteUrl(validated.quoteUrlPayload, siteOrigin, env)
+      : null;
+
     // Construct quote object for email templates + CRM
     const quote = {
       id: quoteId,
@@ -125,7 +172,7 @@ export const POST: APIRoute = async (context) => {
       device: deviceInfo.type,
       calculatorData: validated.data,
       breakdown: validated.breakdown,
-      quoteUrl: validated.quoteUrl || null,
+      quoteUrl: signedQuoteUrl,
       createdAt: new Date().toISOString(),
     };
 
@@ -241,14 +288,20 @@ export const POST: APIRoute = async (context) => {
       quoteId: quote.id,
       message: 'Quote saved successfully',
       crmSynced,
+      quoteUrl: signedQuoteUrl,
       ...(warnings.length > 0 && { warnings }),
     });
 
-    // Cache the response under the fingerprint so duplicate submissions
-    // within the dedup window get the same reply. We fire-and-forget the
-    // KV write to avoid adding latency to the happy-path response.
+    // Replace the in-flight sentinel with the real response. Use
+    // waitUntil so the cache write doesn't block the response, but is
+    // also not cancelled when the response flushes.
     if (dedupKv) {
-      void kvPut(dedupKv, dedupKey, responseBody, { expirationTtl: SAVE_QUOTE_DEDUP_TTL_SECONDS });
+      const cachePut = kvPut(dedupKv, dedupKey, responseBody, { expirationTtl: SAVE_QUOTE_DEDUP_TTL_SECONDS });
+      if (cfContext?.waitUntil) cfContext.waitUntil(cachePut);
+      else void cachePut;
+      // Sentinel will be replaced by the response body — no need to
+      // clear in the catch.
+      dedupCleanupKey = null;
     }
 
     // Server-side mirror of `quote_calculator_complete` to GA4 MP. This
@@ -299,6 +352,15 @@ export const POST: APIRoute = async (context) => {
     );
   } catch (error) {
     logger.error('API', 'Save quote failed', formatError(error, errorId));
+
+    // If we staked an in-flight claim, clear it so the user's retry can
+    // actually retry instead of seeing a stale 202 deferred for 60s.
+    if (dedupCleanupKey) {
+      try {
+        const cleanupKv = safeKV(env, 'RATE_LIMITER');
+        if (cleanupKv) await cleanupKv.delete(dedupCleanupKey);
+      } catch { /* swallow */ }
+    }
 
     // Handle Zod validation errors
     if (error && typeof error === 'object' && 'issues' in error) {

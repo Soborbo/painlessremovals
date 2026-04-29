@@ -7,9 +7,11 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
 import { logger } from '@/lib/utils/logger';
+import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
@@ -35,12 +37,23 @@ async function sendResend(apiKey: string, payload: Record<string, unknown>): Pro
   return { ok: true };
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
+  const { request } = context;
   try {
-    const origin = request.headers.get('origin') || '';
-    if (origin && !isAllowedOrigin(origin)) return json({ error: 'Forbidden.' }, 403);
+    if (!requireAllowedOrigin(request)) return json({ error: 'Forbidden.' }, 403);
 
-    const body = await request.json() as ClearanceBody;
+    const rateLimitOk = await checkRateLimit(context);
+    if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
+
+    const ctype = request.headers.get('content-type') || '';
+    if (!ctype.includes('application/json')) return json({ error: 'Invalid content type.' }, 415);
+
+    let body: ClearanceBody;
+    try {
+      body = await request.json() as ClearanceBody;
+    } catch {
+      return json({ error: 'Invalid request body.' }, 400);
+    }
     const { name, phone, email, honeypot, turnstileToken, estimate, summary, postcode, event_id } = body;
 
     if (honeypot) return json({ success: true });
@@ -84,7 +97,7 @@ export const POST: APIRoute = async ({ request }) => {
           <div style="background: #ffffff; padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
             <table style="width: 100%; border-collapse: collapse;">
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; width: 120px; vertical-align: top;">Name</td><td style="padding: 8px 0;">${escapeHtml(name)}</td></tr>
-              <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td></tr>
+              <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}">${escapeHtml(phone)}</a></td></tr>
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Email</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
               ${postcode ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Postcode</td><td style="padding: 8px 0;">${escapeHtml(postcode)}</td></tr>` : ''}
               ${estimate ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Estimate</td><td style="padding: 8px 0; font-size: 18px; font-weight: bold;">${escapeHtml(estimate)}</td></tr>` : ''}
@@ -97,7 +110,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!adminResult.ok) {
-      logger.error('ClearanceCallback', 'Resend admin email failed', { error: adminResult.error });
+      logger.error('ClearanceCallback', 'Resend admin email failed');
       return json({ error: `Failed to send your request. Please try again or call us on ${PHONE}.` }, 500);
     }
 
@@ -128,12 +141,15 @@ export const POST: APIRoute = async ({ request }) => {
         </div>`,
     });
 
-    if (!userResult.ok) logger.error('ClearanceCallback', 'Resend user confirmation failed', { error: userResult.error });
+    if (!userResult.ok) logger.error('ClearanceCallback', 'Resend user confirmation failed');
 
     // ──────────────────────────────────────────────────────────────────
     // CONVERSION fire — server-side, only after Turnstile + Resend OK.
     // Browser fires the same event with the same event_id; Meta dedupes.
     // ──────────────────────────────────────────────────────────────────
+    if (!event_id || typeof event_id !== 'string') {
+      logger.warn('ClearanceCallback', 'Missing event_id, skipping conversion fire');
+    }
     if (event_id && typeof event_id === 'string') {
       const fingerprint = event_id.replace(/-/g, '').slice(0, 16);
       const clientId = deriveClientId(fingerprint);

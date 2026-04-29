@@ -68,11 +68,15 @@ calculator re-run (which calls `deleteState()`) doesn't refire Meta
 ViewContent. The flag is set once per browser; clearing localStorage
 manually is the only way to retrigger.
 
-## 10. `readState()` runtime-validates the shape
+## 10. Calculator quote state is client-side only
 
-Schema drift (older deploy added a field, newer dropped one, hostile
-extension wrote junk) does NOT crash. The corrupt blob is dropped and
-state returns to `null`.
+State lives in the browser's `sessionStorage` under
+`painless_calc_state`; the server only sees the full payload when the
+user submits via `/api/save-quote`. There is no server-side
+`readState()` helper and no `SESSIONS` KV namespace — the previous
+binding was removed because no code consumed it. Any future
+abandonment-recovery feature will need to design that storage from
+scratch.
 
 ## 11. CAPI + abandonment endpoints fail closed on Origin
 

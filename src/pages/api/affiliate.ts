@@ -15,21 +15,39 @@ import { env } from 'cloudflare:workers';
 import {
   json,
   escapeHtml,
+  sanitizePhoneForEmail,
   stripNewlines,
   verifyTurnstile,
   sendEmail,
   emailChrome,
   emailFooter,
+  requireAllowedOrigin,
   PHONE,
   FROM_DEFAULT,
 } from '@/lib/forms/utils';
+import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { logger } from '@/lib/utils/logger';
+import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
+  const { request } = context;
   try {
-    const body = (await request.json()) as Record<string, string>;
+    if (!requireAllowedOrigin(request)) return json({ error: 'Forbidden.' }, 403);
+
+    const rateLimitOk = await checkRateLimit(context);
+    if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
+
+    const ctype = request.headers.get('content-type') || '';
+    if (!ctype.includes('application/json')) return json({ error: 'Invalid content type.' }, 415);
+
+    let body: Record<string, string>;
+    try {
+      body = (await request.json()) as Record<string, string>;
+    } catch {
+      return json({ error: 'Invalid request body.' }, 400);
+    }
     const { referringAgent, clientName, clientPhone, clientEmail, gdprConsent, honeypot, turnstileToken } = body;
 
     // 1. Honeypot
@@ -81,7 +99,7 @@ export const POST: APIRoute = async ({ request }) => {
       </tr>
       <tr>
         <td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Client Phone</td>
-        <td style="padding: 8px 0;"><a href="tel:${escapeHtml(clientPhone)}">${escapeHtml(clientPhone)}</a></td>
+        <td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(clientPhone))}">${escapeHtml(clientPhone)}</a></td>
       </tr>
       <tr>
         <td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Client Email</td>
@@ -100,7 +118,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!adminResult.success) {
-      logger.error('Affiliate', 'Resend admin email failed', { error: adminResult.error });
+      logger.error('Affiliate', 'Resend admin email failed');
       return json({ error: `Failed to send the referral. Please try again or call us on ${PHONE}.` }, 500);
     }
 
@@ -150,7 +168,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!clientResult.success) {
-      logger.error('Affiliate', 'Resend client email failed', { error: clientResult.error });
+      logger.error('Affiliate', 'Resend client email failed');
       return json({
         success: true,
         clientName,

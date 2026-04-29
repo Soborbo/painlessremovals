@@ -19,6 +19,7 @@ import {
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
 import { getCORSHeaders } from '@/lib/utils/cors';
+import { requireAllowedOrigin, sanitizePhoneForEmail } from '@/lib/forms/utils';
 import { generateErrorId } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import { trackServerError, buildErrorConfig } from '@/lib/errors/tracker-server';
@@ -177,7 +178,7 @@ function generateCallbackAdminEmail(
         <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 24px;">
           <tr>
             <td style="background-color:#dc3f04;border-radius:8px;text-align:center;">
-              <a href="tel:${escapeHtml(phone)}" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:13px 28px;display:inline-block;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">Call Now: ${escapeHtml(phone)}</a>
+              <a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:13px 28px;display:inline-block;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">Call Now: ${escapeHtml(phone)}</a>
             </td>
           </tr>
         </table>
@@ -213,6 +214,14 @@ export const POST: APIRoute = async (context) => {
   const origin = context.request.headers.get('Origin');
   const corsHeaders = getCORSHeaders(origin);
 
+  // Origin fail-closed.
+  if (!requireAllowedOrigin(context.request)) {
+    return new Response(JSON.stringify({ success: false, error: 'Forbidden' }), {
+      status: 403,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
+
   // Payload size check
   const payloadOk = await checkPayloadSize(context);
   if (!payloadOk) {
@@ -226,8 +235,12 @@ export const POST: APIRoute = async (context) => {
   }
 
   // Build error config once — used by every trackServerError call below.
+  // PUBLIC_SITE_ID is the literal site identifier (matches the value
+  // baked in at build time in astro.config.mjs); it intentionally is NOT
+  // env.SITE_URL — the previous mapping put a URL into the siteId column
+  // of the error sheet, breaking grouping/filtering.
   const errorEnv: Record<string, string | undefined> = {
-    PUBLIC_SITE_ID: env.SITE_URL,
+    PUBLIC_SITE_ID: 'painless-removals',
     CF_PAGES_BRANCH: env.ENVIRONMENT,
     ERROR_SHEETS_ID: env.ERROR_SHEETS_ID,
     GOOGLE_SERVICE_ACCOUNT_EMAIL: env.GOOGLE_SERVICE_ACCOUNT_EMAIL,

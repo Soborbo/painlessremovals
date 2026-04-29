@@ -1,8 +1,19 @@
 /**
  * RATE LIMITING
  *
- * Uses Cloudflare KV
- * Hash-based key (IP + UserAgent) for better granularity
+ * Two-layer best-effort limiter:
+ *
+ *  1. In-memory token bucket per Worker isolate — atomic, fast, but
+ *     doesn't share state across isolates or colos. Catches burst
+ *     traffic from a single hot path.
+ *  2. KV-backed sliding window — shared across all isolates and colos,
+ *     but read-modify-write is racy and KV is eventually consistent.
+ *     Catches sustained abuse.
+ *
+ * Both fail open on backing-store errors so legitimate form submissions
+ * are never blocked by infrastructure faults.
+ *
+ * Hash-based key (IP + UserAgent) for better granularity.
  */
 
 import { CONFIG } from '@/lib/config';
@@ -11,6 +22,30 @@ import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 import { logger } from '@/lib/utils/logger';
 import type { APIContext } from 'astro';
 import { env as cfEnv } from 'cloudflare:workers';
+
+// In-memory bucket: { key -> array of timestamps within the window }.
+// Bounded to MAX_BUCKETS by periodic GC; pre-isolate, atomic.
+const memBuckets = new Map<string, number[]>();
+const MAX_BUCKETS = 10_000;
+
+function checkInMemoryWindow(key: string, windowMs: number, limit: number): boolean {
+  const now = Date.now();
+  const cutoff = now - windowMs;
+  const bucket = memBuckets.get(key) || [];
+  const fresh = bucket.filter((t) => t > cutoff);
+  if (fresh.length >= limit) {
+    memBuckets.set(key, fresh);
+    return false;
+  }
+  fresh.push(now);
+  memBuckets.set(key, fresh);
+  if (memBuckets.size > MAX_BUCKETS) {
+    for (const [k, v] of memBuckets) {
+      if (!v.length || v[v.length - 1]! < cutoff) memBuckets.delete(k);
+    }
+  }
+  return true;
+}
 
 /**
  * Check rate limit
@@ -48,6 +83,13 @@ export async function checkRateLimit(context: APIContext): Promise<boolean> {
   const keyHash = generateRateLimitKey(ip, userAgent);
   const env = CONFIG.debug ? 'dev' : 'prod';
   const key = `rate_limit:${env}:${keyHash}`;
+
+  // Layer 1: in-memory token bucket. Catches single-isolate burst
+  // traffic atomically without a KV round-trip.
+  if (!checkInMemoryWindow(key, CONFIG.security.rateLimitWindowMs, CONFIG.security.rateLimitRequests)) {
+    logger.warn('RateLimit', 'In-memory limit exceeded', { ip });
+    return false;
+  }
 
   try {
     const current = await kvGet<string>(kv, key);

@@ -7,8 +7,10 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { isAllowedOrigin, escapeHtml, stripNewlines, json } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, stripNewlines, json } from '@/lib/forms/utils';
+import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { logger } from '@/lib/utils/logger';
+import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
@@ -25,12 +27,20 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(chunks.join(''));
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
+  const { request } = context;
   try {
-    const origin = request.headers.get('origin') || '';
-    if (origin && !isAllowedOrigin(origin)) return json({ error: 'Forbidden.' }, 403);
+    if (!requireAllowedOrigin(request)) return json({ error: 'Forbidden.' }, 403);
 
-    const formData = await request.formData();
+    const rateLimitOk = await checkRateLimit(context);
+    if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
+
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return json({ error: 'Invalid request body.' }, 400);
+    }
     const name = (formData.get('name') as string || '').trim();
     const van = (formData.get('van') as string || '').trim();
     const fluids = (formData.get('fluids') as string || '').trim();
@@ -121,7 +131,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!resendRes.ok) {
-      logger.error('VehicleCheck', 'Resend send failed', { error: await resendRes.text() });
+      logger.error('VehicleCheck', 'Resend send failed', { status: resendRes.status });
       return json({ error: 'Failed to send inspection report. Please try again.' }, 500);
     }
 

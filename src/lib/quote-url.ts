@@ -4,12 +4,16 @@
  * Encodes/decodes calculator state for shareable URL links.
  * Only includes quote-relevant fields — contact info excluded for privacy.
  *
- * Usage:
- *   const url = buildQuoteUrl(state, window.location.origin);
- *   // → "https://example.com/your-quote?q=eyJzZXJ2aWNlVHlwZSI6..."
+ * The signed token is a `<base64-payload>.<base64-hmac>` pair. Signing
+ * happens server-side only (server holds the secret). Client builds an
+ * unsigned encoded payload and POSTs it to `/api/quote-url/verify` to
+ * load a shared quote, or receives a signed URL from `/api/save-quote`
+ * to put in share buttons / customer emails.
  *
- *   const decoded = decodeQuoteState(urlParam);
- *   // → Partial<CalculatorState> ready to load into the store
+ * The unsigned encoded form is also sent to the server in the
+ * save-quote payload so the server can re-sign it under its own secret
+ * — i.e. we trust the SHAPE of the encoded payload through `safeParse`,
+ * never the implied identity.
  */
 
 import type { CalculatorState } from './calculator-store';
@@ -49,11 +53,23 @@ export function encodeQuoteState(state: CalculatorState): string {
   const json = JSON.stringify(partial);
   // TextEncoder handles non-ASCII (e.g. accented address chars) before base64
   const bytes = new TextEncoder().encode(json);
-  const binary = String.fromCharCode(...bytes);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 8192) {
+    const chunk = bytes.subarray(i, Math.min(i + 8192, bytes.length));
+    binary += String.fromCharCode(...chunk);
+  }
   // URL-safe base64 (no +, /, or = characters)
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
+/**
+ * Decode WITHOUT signature verification. The result is trusted only as
+ * far as `safeParse` allows — the caller MUST gate any state-changing
+ * action (auto-submit, conversion fire) on a separate signature check.
+ *
+ * Used server-side after HMAC verification, and as a defensive shape
+ * check for tokens that have already been verified.
+ */
 export function decodeQuoteState(encoded: string): Partial<CalculatorState> | null {
   try {
     // Restore standard base64 from URL-safe variant, add padding
@@ -72,8 +88,15 @@ export function decodeQuoteState(encoded: string): Partial<CalculatorState> | nu
   }
 }
 
-export function buildQuoteUrl(state: CalculatorState, origin?: string): string {
-  const encoded = encodeQuoteState(state);
-  const base = origin ?? (typeof window !== 'undefined' ? window.location.origin : '');
-  return `${base}/your-quote?q=${encoded}`;
+/**
+ * Token format: `<urlsafe-base64-payload>.<urlsafe-base64-hmac>`.
+ * Two-part split is sufficient — neither half contains '.' because
+ * urlsafe base64 strips '+', '/', and '=' to '-', '_', '' respectively.
+ */
+export function splitQuoteToken(token: string): { payload: string; sig: string } | null {
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+  const [payload, sig] = parts;
+  if (!payload || !sig) return null;
+  return { payload, sig };
 }

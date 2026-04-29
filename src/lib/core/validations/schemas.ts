@@ -122,40 +122,18 @@ export const saveQuoteSchema = z.object({
   utm_content: z.string().max(100).optional(),
   gclid: z.string().max(200).optional(),
 
-  // Quote URL (for email link-back) — must be from allowed origins
-  quoteUrl: z.url().max(2000)
-    .refine(
-      (u) => {
-        try {
-          const host = new URL(u).hostname;
-          return host === 'localhost' || host.endsWith('painlessremovals.com');
-        } catch { return false; }
-      },
-      'URL must be from an allowed origin'
-    ).optional(),
+  // Quote URL payload (for email link-back). The CLIENT sends the
+  // urlsafe-base64 encoded payload only; the SERVER signs it with
+  // HMAC and assembles the full URL. This keeps the secret server-side
+  // and prevents a hostile client from crafting a URL that points off-
+  // domain or with arbitrary content.
+  quoteUrlPayload: z.string().max(4096).regex(/^[A-Za-z0-9_-]+$/, 'Invalid encoded payload').optional(),
 
   // Tracking — the client-side `event_id` for the quote conversion.
   // Optional: if present, the server-side GA4 MP mirror tags its event
   // with the same id so downstream BigQuery joins can correlate
   // browser + server hits for the same conversion.
   event_id: z.string().max(200).optional(),
-});
-
-/**
- * Calculate schema (for calculation endpoint)
- */
-export const calculateSchema = z.object({
-  step: z.string().min(1).max(50),
-  data: z.record(z.string(), boundedUnknown()),
-  language: languageSchema.default('en'),
-});
-
-/**
- * Validate step schema (for step validation)
- */
-export const validateStepSchema = z.object({
-  step: z.string().min(1).max(50),
-  data: z.record(z.string(), boundedUnknown()),
 });
 
 /**
@@ -207,8 +185,6 @@ export const uuidSchema = z.uuid();
 
 // Type exports
 export type SaveQuoteInput = z.infer<typeof saveQuoteSchema>;
-export type CalculateInput = z.infer<typeof calculateSchema>;
-export type ValidateStepInput = z.infer<typeof validateStepSchema>;
 export type SendEmailInput = z.infer<typeof sendEmailSchema>;
 export type ContactFormInput = z.infer<typeof contactFormSchema>;
 export type PaginationInput = z.infer<typeof paginationSchema>;

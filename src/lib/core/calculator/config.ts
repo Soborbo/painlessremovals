@@ -145,7 +145,7 @@ export const CALCULATOR_STEPS: Step[] = [
       es: '¿De dónde te mudas?',
       fr: 'D\'où déménagez-vous?',
     },
-    component: 'Step8FromAddress',
+    component: 'Step8AddressSelection',
   },
   {
     id: 'step-09',

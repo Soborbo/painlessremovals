@@ -22,12 +22,14 @@ export function getCORSHeaders(origin: string | null): Record<string, string> {
   const isAllowed = !!origin && isAllowedOrigin(origin);
 
   if (isAllowed) {
+    // No Access-Control-Allow-Credentials: form endpoints are stateless
+    // (no cookie auth), enabling credentials only widens CSRF surface.
     return {
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Max-Age': '86400',
-      'Access-Control-Allow-Credentials': 'true',
+      'Vary': 'Origin',
     };
   }
 

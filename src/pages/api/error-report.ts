@@ -13,6 +13,7 @@ import { sanitizeContext } from '@/lib/errors/sanitize';
 import { appendToSheet } from '@/lib/errors/sheets';
 import type { Severity } from '@/lib/errors/types';
 import { getCORSHeaders } from '@/lib/utils/cors';
+import { requireAllowedOrigin } from '@/lib/forms/utils';
 import { env } from 'cloudflare:workers';
 
 export const prerender = false;
@@ -56,6 +57,13 @@ export const POST: APIRoute = async ({ request }) => {
       status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+
+  // Origin fail-closed. Error reports are not driven by humans, so a
+  // missing Origin from a real browser is a sign of a non-browser client
+  // — those should not be allowed to drive Sheets quota / alert emails.
+  if (!requireAllowedOrigin(request)) {
+    return json({ ok: false, reason: 'forbidden' }, 403);
+  }
 
   try {
     // --- 1. Body size check ---
@@ -180,7 +188,13 @@ export const POST: APIRoute = async ({ request }) => {
     const alertTo = (env as any).ERROR_EMAIL_TO as string | undefined;
     const resendKey = (env as any).RESEND_API_KEY as string | undefined;
 
-    if (severity === 'CRITICAL' && alertFrom && alertTo && resendKey) {
+    // Client-reported CRITICAL events do NOT trigger alert emails — only
+    // server-detected critical codes (prefix SRV-) are escalated. Without
+    // this gate, a hostile client can spam the alert mailbox by sending
+    // any HTTP-5xx-coded payload (rate-limited at 30/min/IP, but easily
+    // amplified by a botnet).
+    const isServerOriginatedCritical = code.startsWith('SRV-');
+    if (severity === 'CRITICAL' && isServerOriginatedCritical && alertFrom && alertTo && resendKey) {
       const subject = `🚨 [${row.siteId}] ${row.code}: ${row.message.substring(0, 60)}`;
       const html = `
         <div style="font-family:system-ui,sans-serif;max-width:600px;">

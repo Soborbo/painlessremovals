@@ -21,7 +21,6 @@ declare namespace Cloudflare {
 
     // KV Namespaces
     RATE_LIMITER?: KVNamespace;
-    SESSIONS?: KVNamespace;
 
     // Static assets (Workers binding)
     ASSETS: Fetcher;
@@ -43,8 +42,6 @@ declare namespace Cloudflare {
 
     // External APIs
     GOOGLE_MAPS_API_KEY?: string;
-    GOOGLE_CLIENT_ID?: string;
-    GOOGLE_CLIENT_SECRET?: string;
 
     // i-mve
     IMVE_API_URL?: string;

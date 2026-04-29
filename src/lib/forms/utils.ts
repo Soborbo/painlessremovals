@@ -13,14 +13,28 @@ const ALLOWED_ORIGINS = [
   'https://www.painlessremovals.com',
 ];
 
+// Pinned to our own Worker subdomain; the previous regex matched every
+// two-level *.workers.dev host, which let any third-party Worker pass the
+// CORS allowlist. The Worker name is `painlessremovals-worker` (see
+// wrangler.toml) which deploys under `<worker>.<account>.workers.dev`.
+const WORKERS_DEV_RE = /^https:\/\/painlessremovals-worker\.[a-z0-9-]+\.workers\.dev$/;
+const PAGES_DEV_RE = /^https:\/\/[a-z0-9-]+\.painlessremovals2026\.pages\.dev$/;
+
 export function isAllowedOrigin(origin: string): boolean {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
-  // Workers preview URLs: <worker>.<account>.workers.dev (two subdomains).
-  if (/^https:\/\/[a-z0-9-]+\.[a-z0-9-]+\.workers\.dev$/.test(origin)) return true;
-  // Legacy Pages preview URLs (during transition).
-  if (/^https:\/\/[a-z0-9-]+\.painlessremovals2026\.pages\.dev$/.test(origin)) return true;
+  if (WORKERS_DEV_RE.test(origin)) return true;
+  if (PAGES_DEV_RE.test(origin)) return true;
   if (origin === 'https://painlessremovals2026.pages.dev') return true;
   return false;
+}
+
+// Browsers always send Origin on cross-origin POST and on most same-origin
+// POSTs; missing Origin from a real browser is a sign of a non-browser
+// client (curl, server-to-server). All form endpoints fail closed when
+// Origin is absent or not allowlisted.
+export function requireAllowedOrigin(request: Request): boolean {
+  const origin = request.headers.get('origin') || '';
+  return !!origin && isAllowedOrigin(origin);
 }
 
 export function escapeHtml(str: string): string {
@@ -29,7 +43,18 @@ export function escapeHtml(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/'/g, '&#39;')
+    .replace(/`/g, '&#96;')
+    .replace(/=/g, '&#61;');
+}
+
+// Strip everything but digits and a single leading `+` from a phone string.
+// Used when interpolating phone numbers into email HTML so unvalidated
+// characters in the original payload can't escape an attribute.
+export function sanitizePhoneForEmail(str: string): string {
+  const trimmed = String(str).trim();
+  const sign = trimmed.startsWith('+') ? '+' : '';
+  return sign + trimmed.replace(/\D/g, '');
 }
 
 export function stripNewlines(str: string): string {

@@ -7,9 +7,11 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { isAllowedOrigin, escapeHtml, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
 import { logger } from '@/lib/utils/logger';
+import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
@@ -26,15 +28,33 @@ interface ContactBody {
   event_id?: string;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
+  const { request } = context;
   try {
-    // Origin check
-    const origin = request.headers.get('origin') || '';
-    if (origin && !isAllowedOrigin(origin)) {
+    // Origin check — fail closed. Browsers always send Origin on POST;
+    // missing or non-allowlisted Origin → reject.
+    if (!requireAllowedOrigin(request)) {
       return json({ error: 'Forbidden.' }, 403);
     }
 
-    const body = await request.json() as ContactBody;
+    // Per-IP rate limit. INTERNAL_SOURCES bypass Turnstile; the rate limit
+    // ensures lead-magnet endpoints can't be flooded.
+    const rateLimitOk = await checkRateLimit(context);
+    if (!rateLimitOk) {
+      return createRateLimitResponse(generateErrorId());
+    }
+
+    const ctype = request.headers.get('content-type') || '';
+    if (!ctype.includes('application/json')) {
+      return json({ error: 'Invalid content type.' }, 415);
+    }
+
+    let body: ContactBody;
+    try {
+      body = await request.json() as ContactBody;
+    } catch {
+      return json({ error: 'Invalid request body.' }, 400);
+    }
     const { name, phone, email, message, honeypot, turnstileToken, source, event_id } = body;
 
     // Honeypot
@@ -85,7 +105,7 @@ export const POST: APIRoute = async ({ request }) => {
             <div style="background: #ffffff; padding: 24px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
               <table style="width: 100%; border-collapse: collapse;">
                 <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; width: 120px; vertical-align: top;">Name</td><td style="padding: 8px 0;">${escapeHtml(name)}</td></tr>
-                <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td></tr>
+                <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}">${escapeHtml(phone)}</a></td></tr>
                 <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Email</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
                 ${message ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Message</td><td style="padding: 8px 0; white-space: pre-wrap;">${escapeHtml(message)}</td></tr>` : ''}
               </table>
@@ -97,8 +117,10 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!resendRes.ok) {
-      const err = await resendRes.text();
-      logger.error('Contact', 'Resend send failed', { error: err });
+      // Resend echoes parts of the original payload (including PII) on
+      // 4xx responses, so log only the status to avoid leaking user data
+      // into server logs.
+      logger.error('Contact', 'Resend send failed', { status: resendRes.status });
       return json({ error: `Failed to send your message. Please try again or call us on ${PHONE}.` }, 500);
     }
 

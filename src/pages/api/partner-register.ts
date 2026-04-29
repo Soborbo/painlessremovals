@@ -11,15 +11,19 @@ import { env } from 'cloudflare:workers';
 import {
   json,
   escapeHtml,
+  sanitizePhoneForEmail,
   stripNewlines,
   verifyTurnstile,
   sendEmail,
   emailChrome,
   emailFooter,
+  requireAllowedOrigin,
   PHONE,
   FROM_DEFAULT,
 } from '@/lib/forms/utils';
+import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { logger } from '@/lib/utils/logger';
+import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
@@ -33,9 +37,23 @@ const businessTypeLabels: Record<string, string> = {
   'other': 'Other',
 };
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async (context) => {
+  const { request } = context;
   try {
-    const body = (await request.json()) as Record<string, string>;
+    if (!requireAllowedOrigin(request)) return json({ error: 'Forbidden.' }, 403);
+
+    const rateLimitOk = await checkRateLimit(context);
+    if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
+
+    const ctype = request.headers.get('content-type') || '';
+    if (!ctype.includes('application/json')) return json({ error: 'Invalid content type.' }, 415);
+
+    let body: Record<string, string>;
+    try {
+      body = (await request.json()) as Record<string, string>;
+    } catch {
+      return json({ error: 'Invalid request body.' }, 400);
+    }
     const {
       name, companyName, role, businessType, estimatedReferrals,
       whatMatters, email, phone, preferredContact, honeypot, turnstileToken,
@@ -101,7 +119,7 @@ export const POST: APIRoute = async ({ request }) => {
       </tr>` : ''}
       <tr>
         <td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td>
-        <td style="padding: 8px 0;"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td>
+        <td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}">${escapeHtml(phone)}</a></td>
       </tr>
       <tr>
         <td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Email</td>
@@ -131,7 +149,7 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     if (!result.success) {
-      logger.error('PartnerRegister', 'Resend send failed', { error: result.error });
+      logger.error('PartnerRegister', 'Resend send failed');
       return json({ error: `Failed to send your registration. Please try again or call us on ${PHONE}.` }, 500);
     }
 

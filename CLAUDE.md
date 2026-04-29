@@ -71,6 +71,7 @@ Conversions fire to Google Ads + Meta. NOT every form is a conversion:
 | `email_conversion` | yes | Client-side `mailto:` click |
 | `whatsapp_conversion` | yes | Client-side WhatsApp click |
 | `quote_calculator_conversion` | yes | Calculator's existing `markQuoteUpgraded()` flow |
+| `callback_conversion` | yes | Client-side after a calculator callback request — Meta `Lead` event, fired alongside `markQuoteUpgraded()` so the quote conversion isn't double-counted |
 | `form_submission` (jobs/affiliate/partner_register/clearance_callback) | no | Client-side analytics only (clearance_callback also fires the conversion above; the analytics one is for funnel reporting) |
 | `instant_quote_cta_click` | no | Analytics only |
 
@@ -85,8 +86,10 @@ Conversions fire to Google Ads + Meta. NOT every form is a conversion:
   `astro:before-swap` — they don't fire on those pages.
 - Runtime env: `import { env } from 'cloudflare:workers'`. Types live in
   `src/env.d.ts` under `Cloudflare.Env`.
-- KV namespaces available: `SESSION` (Astro built-in, unused but bound),
-  `RATE_LIMITER`, `SESSIONS` (calculator quote state).
+- KV namespaces available: `SESSION` (Astro built-in, unused but bound)
+  and `RATE_LIMITER` (rate limiting + save-quote dedup). The previous
+  `SESSIONS` binding was removed — calculator quote state lives in the
+  client's `sessionStorage`, not server-side KV.
 - Logger: `@/lib/utils/logger` — use `logger.info/warn/error/debug` not
   `console.*` for server-side code.
 - Hashing primitives: `@noble/hashes` (already a dependency).
