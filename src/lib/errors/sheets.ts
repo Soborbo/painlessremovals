@@ -153,12 +153,31 @@ function base64urlFromBuffer(buffer: ArrayBuffer): string {
  * RS256 signing with Web Crypto API (CF Workers native)
  */
 async function signRS256(input: string, pemKey: string): Promise<string> {
-  // PEM → DER
+  // PEM → DER. Secrets pasted via the CF dashboard arrive in many shapes:
+  // real newlines, literal `\n` / `\r\n` escape sequences, surrounding JSON
+  // quotes, BOM, etc. Strip the PEM markers, unescape, then keep only the
+  // base64 alphabet so any stray byte (quotes, backslashes, BOM) is dropped
+  // before atob — atob rejects anything outside [A-Za-z0-9+/=].
   const pemBody = pemKey
+    .replace(/\\r\\n|\\n|\\r/g, '\n')
     .replace(/-----BEGIN (RSA )?PRIVATE KEY-----/g, '')
     .replace(/-----END (RSA )?PRIVATE KEY-----/g, '')
-    .replace(/\s/g, '');
-  const der = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
+    .replace(/[^A-Za-z0-9+/=]/g, '');
+
+  if (!pemBody) {
+    throw new Error('GOOGLE_SERVICE_ACCOUNT_KEY: empty after PEM strip (check secret value)');
+  }
+  if (pemBody.length % 4 !== 0) {
+    throw new Error(`GOOGLE_SERVICE_ACCOUNT_KEY: base64 length ${pemBody.length} not divisible by 4 (truncated or malformed)`);
+  }
+
+  let der: Uint8Array;
+  try {
+    der = Uint8Array.from(atob(pemBody), c => c.charCodeAt(0));
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    throw new Error(`GOOGLE_SERVICE_ACCOUNT_KEY: atob failed (${msg}); first 12 chars="${pemBody.substring(0, 12)}", last 4="${pemBody.substring(pemBody.length - 4)}"`);
+  }
 
   // Import key
   const key = await crypto.subtle.importKey(
