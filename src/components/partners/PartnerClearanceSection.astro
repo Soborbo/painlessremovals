@@ -1,0 +1,314 @@
+---
+/**
+ * Reusable clearance section for partner referral pages.
+ * Drops into the Knight Frank page and the generic estate-agent variant
+ * with no agent-specific copy.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+
+interface Props {
+  /** Anchor to the page's callback form (defaults to "#callback"). */
+  callbackHref?: string;
+}
+
+const { callbackHref = '#callback' } = Astro.props;
+const PHONE_DISPLAY = siteConfig.company.contact.phone;
+const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
+---
+
+<section class="pclr">
+  <div class="pclr-inner">
+
+    <div class="pclr-media">
+      <OptimizedPicture
+        name="house-clearance/Bristol-clearance-service-2"
+        pattern="HALF"
+        alt="Painless Removals clearing a Bristol property — sorted, donated, recycled responsibly."
+        loading="lazy"
+        class="pclr-img"
+      />
+      <div class="pclr-media-tag">
+        <span class="pclr-tag-dot" aria-hidden="true"></span>
+        Sorted, donated, recycled — landfill last
+      </div>
+    </div>
+
+    <div class="pclr-copy">
+      <div class="pclr-eyebrow">Beyond the move</div>
+      <h2 class="pclr-h2">
+        House clearances,<br />
+        <em>handled the same way.</em>
+      </h2>
+      <p class="pclr-lead">
+        For empty homes, probate sales, and the more difficult moments —
+        we clear a property quickly, responsibly, and with respect for
+        the people involved. From a single room to a full house, we
+        can take care of everything inside.
+      </p>
+
+      <ul class="pclr-points">
+        <li>
+          <span class="pclr-bullet" aria-hidden="true"></span>
+          <div class="pclr-point-body">
+            <span class="pclr-point-title">Fast &amp; reliable</span>
+            <span class="pclr-point-text">Most clearances completed in a day. Tight deadlines absorbed without drama.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pclr-bullet" aria-hidden="true"></span>
+          <div class="pclr-point-body">
+            <span class="pclr-point-title">Green &amp; responsible</span>
+            <span class="pclr-point-text">Anything reusable is sorted, donated to local charities, or properly recycled. Landfill is the last resort.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pclr-bullet" aria-hidden="true"></span>
+          <div class="pclr-point-body">
+            <span class="pclr-point-title">Discreet &amp; sensitive</span>
+            <span class="pclr-point-text">Probate, bereavement, downsizing — handled quietly, on your timeline, with care for what we find.</span>
+          </div>
+        </li>
+        <li>
+          <span class="pclr-bullet" aria-hidden="true"></span>
+          <div class="pclr-point-body">
+            <span class="pclr-point-title">Hands-off if you need</span>
+            <span class="pclr-point-text">We can run the full clearance without anyone on site. Hand us a key, we hand it back when the property is empty and clean.</span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="pclr-cta">
+        <a href={callbackHref} class="pclr-btn pclr-btn-orange">Request a clearance callback</a>
+        <a href={`tel:${PHONE_TEL}`} class="pclr-btn-text">
+          Or speak to us — {PHONE_DISPLAY}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .pclr {
+    --pclr-petrol: #0E3C54;
+    --pclr-petrol-deep: #0A2F41;
+    --pclr-orange: #F16B21;
+    --pclr-orange-dark: #D85818;
+    --pclr-gold: #D4A84B;
+    --pclr-gold-light: #F5E6C8;
+    --pclr-cream: #FAF7F2;
+    --pclr-paper: #FFFFFF;
+    --pclr-ink: #1B2A38;
+    --pclr-muted: #5C6470;
+    --pclr-line: #E0D6C4;
+    --pclr-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --pclr-sans: 'DM Sans', system-ui, sans-serif;
+
+    background: var(--pclr-cream);
+    color: var(--pclr-ink);
+    font-family: var(--pclr-sans);
+    border-top: 1px solid var(--pclr-line);
+    border-bottom: 1px solid var(--pclr-line);
+  }
+
+  .pclr-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 90px 28px;
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: 64px;
+    align-items: center;
+  }
+
+  /* ---- Media ---- */
+  .pclr-media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--pclr-petrol);
+    box-shadow: 0 30px 70px rgba(14, 60, 84, 0.18);
+  }
+  .pclr-media :global(.pclr-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.96);
+  }
+  .pclr-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(14, 60, 84, 0) 55%, rgba(14, 60, 84, 0.55) 100%);
+    pointer-events: none;
+  }
+  .pclr-media-tag {
+    position: absolute;
+    left: 22px;
+    bottom: 22px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(10, 47, 65, 0.85);
+    backdrop-filter: blur(4px);
+    color: var(--pclr-gold-light);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+    border-left: 2px solid var(--pclr-gold);
+  }
+  .pclr-tag-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pclr-orange);
+    box-shadow: 0 0 0 3px rgba(241, 107, 33, 0.25);
+  }
+
+  /* ---- Copy ---- */
+  .pclr-eyebrow {
+    color: var(--pclr-orange);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pclr-eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 1px;
+    background: var(--pclr-orange);
+  }
+  .pclr-h2 {
+    font-family: var(--pclr-serif);
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.06;
+    font-weight: 400;
+    color: var(--pclr-petrol);
+    margin: 0 0 18px;
+    letter-spacing: -0.02em;
+  }
+  .pclr-h2 em {
+    font-style: italic;
+    color: var(--pclr-orange);
+    font-weight: 400;
+  }
+  .pclr-lead {
+    color: var(--pclr-muted);
+    font-size: 17px;
+    line-height: 1.7;
+    margin: 0 0 28px;
+    max-width: 540px;
+  }
+
+  .pclr-points {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 32px;
+    display: grid;
+    gap: 14px;
+  }
+  .pclr-points li {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--pclr-line);
+  }
+  .pclr-points li:last-child { border-bottom: 0; }
+  .pclr-bullet {
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    margin-top: 9px;
+    background: var(--pclr-gold);
+    transform: rotate(45deg);
+  }
+  .pclr-point-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .pclr-point-title {
+    font-family: var(--pclr-serif);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--pclr-petrol);
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .pclr-point-text {
+    display: block;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--pclr-muted);
+  }
+
+  .pclr-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    align-items: center;
+  }
+  .pclr-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 28px;
+    font-family: var(--pclr-sans);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+  .pclr-btn-orange {
+    background: var(--pclr-orange);
+    color: var(--pclr-cream);
+    box-shadow: 0 12px 28px rgba(241, 107, 33, 0.32);
+  }
+  .pclr-btn-orange:hover {
+    background: var(--pclr-orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(241, 107, 33, 0.42);
+  }
+  .pclr-btn-text {
+    font-size: 14px;
+    color: var(--pclr-petrol);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid var(--pclr-gold);
+    padding-bottom: 2px;
+  }
+  .pclr-btn-text:hover { color: var(--pclr-orange); border-bottom-color: var(--pclr-orange); }
+
+  @media (max-width: 1080px) {
+    .pclr-inner {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      padding: 64px 28px;
+    }
+    .pclr-media { aspect-ratio: 16 / 10; }
+    .pclr-h2 { font-size: clamp(26px, 5vw, 38px); }
+  }
+
+  @media (max-width: 720px) {
+    .pclr-inner { padding: 56px 22px; }
+    .pclr-cta { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .pclr-btn { width: 100%; }
+    .pclr-media-tag { left: 14px; bottom: 14px; font-size: 10.5px; padding: 8px 12px; }
+  }
+</style>
