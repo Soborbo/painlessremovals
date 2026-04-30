@@ -7,9 +7,12 @@
  *
  * Visual template mirrors the agent-referral / Knight Frank design
  * language (kf-* class system) — premium petrol-blue + gold serif
- * aesthetic, tier cards, callback form. Content rewritten for the
- * care sector: "we know when bingo is", free walkthrough, autism
- * link, our-own-storage operator benefit, admin tail support.
+ * aesthetic, tier cards, callback form. Content for the care sector:
+ * "we know when bingo is", free walkthrough, our-own-storage operator
+ * benefit, admin tail support. Deliberately avoids any claim of
+ * specialist clinical training (dementia / autism / mental health) —
+ * we say "experience working in care environments" and "calm,
+ * respectful, structured approach" only.
  */
 
 import Layout from '@/layouts/Layout.astro';
@@ -18,7 +21,7 @@ import { siteConfig } from '@/config/site.config';
 import { service, faqPage, breadcrumbs, areas } from '@/utils/schema';
 
 const pageTitle = 'Care Home & Supported Living Removals Bristol | Painless Removals';
-const pageDescription = 'A sector-trained removals service for Bristol’s care homes, nursing homes, and housing-association schemes. Free site walkthrough, hand-picked crews, our own storage, and a single point of contact who answers the phone.';
+const pageDescription = 'A removals service for Bristol’s care homes, nursing homes, and housing-association schemes. Free site walkthrough, hand-picked crews, our own storage, and a single point of contact who answers the phone.';
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 const PHONE_DISPLAY = siteConfig.company.contact.phone;
@@ -39,8 +42,8 @@ const faqs = [
     answer: 'Yes. Anyone we send into a regulated environment has been vetted and briefed on the home, the resident and the day before they arrive.',
   },
   {
-    question: 'How do you handle residents with dementia, autism, or other additional needs?',
-    answer: 'With more time, more preparation, and a smaller, calmer crew. We have specific experience moving autistic adults and older residents with cognitive impairment — written timelines in advance, smaller working space, family or key worker driving the pace.',
+    question: 'How do you handle moves for residents who need a calmer pace?',
+    answer: 'With more time, more preparation, a smaller, quieter crew. We take our cue from the family or care team — written timelines in advance, a smaller working space, the people who know the resident driving the pace.',
   },
   {
     question: 'Can you take items into storage?',
@@ -106,7 +109,7 @@ const pageSchema = [
             We know<br />
             <em>When bingo is</em><span class="kf-period">.</span>
           </h1>
-          <div class="kf-hero-kicker">Sector-Trained &middot; Bristol-Based &middot; Established 1978</div>
+          <div class="kf-hero-kicker">Bristol-Based &middot; Free Walkthrough &middot; Hand-Picked Crews</div>
           <p class="kf-hero-lead">
             Before the removal, we walk the building so we know what to
             expect: where the lift is, when programmes run, when we&rsquo;d
@@ -329,22 +332,17 @@ const pageSchema = [
     </section>
 
     <!-- ============================================================
-         SPECIALIST BAND — vulnerable residents / autism link
+         BAND — calm, respectful, structured approach
     ============================================================ -->
     <section class="kf-specialist">
       <div class="kf-specialist-inner">
         <div>
           <div class="kf-band-label">For the resident, not just the room</div>
-          <h3 class="kf-specialist-h3">Specialist handling for <em>dementia, autism &amp; vulnerable adults.</em></h3>
+          <h3 class="kf-specialist-h3">A <em>calm, respectful, structured</em> approach.</h3>
         </div>
         <div>
           <p class="kf-specialist-p">
-            Moving is one of the most stressful things a person can go through, and for a vulnerable adult that stress is amplified. We treat that as the central problem to solve, not a side note. Written timelines in advance, smaller crews, leaving the safe room intact until the last possible moment, and setting the new space up first so it already feels lived-in when the resident arrives.
-          </p>
-          <p class="kf-specialist-p" style="margin-top: 14px;">
-            <a href="/home-removals-with-autism/" class="kf-specialist-link">
-              See how we adapt our service for autistic residents &rarr;
-            </a>
+            Moving is one of the most stressful things a person can go through &mdash; for an older resident, that stress is amplified. We&rsquo;ve worked in care environments for years, so we&rsquo;ve learned to take our cue from the people who know the resident best. Written timelines agreed in advance, a smaller, quieter crew, leaving the familiar room intact until the last possible moment, setting the new space up first so it already feels lived-in when the resident arrives.
           </p>
         </div>
       </div>
@@ -433,7 +431,7 @@ const pageSchema = [
           </div>
           <div class="kf-jay-body">
             <div class="kf-jay-mark">"</div>
-            <p>You&rsquo;re letting people into the place where vulnerable adults live. That&rsquo;s a bigger trust than carrying a sofa. We hire for the second part &mdash; the lifting, we can teach.</p>
+            <p>You&rsquo;re letting people into someone&rsquo;s home. That&rsquo;s a bigger trust than carrying a sofa. That&rsquo;s what we hire for &mdash; the lifting, we can teach.</p>
             <cite>Jay Newton &mdash; Director, Painless Removals</cite>
           </div>
         </div>

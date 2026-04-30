@@ -34,6 +34,11 @@ const EMAIL = 'hello@painlessremovals.com';
 const ADDRESS = '290–294 Southmead Rd, Bristol BS10 5EN';
 const SITE_DOMAIN = 'painlessremovals.com';
 
+// Richard's direct mobile for the named-contact section on this page
+// only. Other pages keep using the main company phone (PHONE_DISPLAY).
+const RICHARD_MOBILE_DISPLAY = '07838 159742';
+const RICHARD_MOBILE_TEL = '+447838159742';
+
 // LCP preload for the hero image (mobile stacks full-width, desktop is 50/50)
 const heroPreload = getLcpPreload(
   'office-removals/office-removals-team-assembling-furniture-bristol',
@@ -320,22 +325,25 @@ const pageSchema = [serviceSchema, breadcrumbSchema];
       <div class="qs-poc-inner">
         <div class="qs-poc-photo-col">
           <OptimizedPicture
-            name="about/team/Tom"
+            name="about/team/Richard"
             pattern="LOGO"
-            alt="Tom, Painless Removals account manager"
+            alt="Richard, Business Development & Partnerships, Painless Removals"
             loading="lazy"
             class="qs-poc-photo"
           />
-          <div class="qs-poc-photo-name">Tom</div>
-          <div class="qs-poc-photo-role">Your named account contact</div>
+          <div class="qs-poc-photo-name">Richard</div>
+          <div class="qs-poc-photo-role">Business Development &amp; Partnerships</div>
+          <a href={`tel:${RICHARD_MOBILE_TEL}`} class="qs-poc-photo-mobile">{RICHARD_MOBILE_DISPLAY}</a>
         </div>
         <div class="qs-poc-text-col">
           <div class="qs-poc-eyebrow">Working Together</div>
           <h2 class="qs-poc-h2">One Direct Line. Someone Who Knows Your Building.</h2>
           <p class="qs-poc-lead">
-            As a trusted partner, your team gets a named account contact, the same
-            person every time, who knows the specifics of your building, your house rules
-            and your tenants' history with us. Not an inbox, not a rota.
+            As a trusted partner, your team gets a direct line to me &mdash; the
+            same person every time, who knows the specifics of your building,
+            your house rules and your tenants&rsquo; history with us. I&rsquo;ll be
+            the one engaging with your team and on-site when it matters. Not an
+            inbox, not a rota.
           </p>
           <ul class="qs-poc-list">
             <li><strong>One named contact</strong> for your facilities or property management team, reachable directly, not via switchboard.</li>
@@ -1163,6 +1171,22 @@ const pageSchema = [serviceSchema, breadcrumbSchema];
     text-transform: uppercase;
     letter-spacing: 1.3px;
     color: var(--qs-gold);
+  }
+  .qs-poc-photo-mobile {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid rgba(245, 166, 35, 0.6);
+    padding-bottom: 2px;
+    transition: color 0.2s var(--qs-ease), border-color 0.2s var(--qs-ease);
+  }
+  .qs-poc-photo-mobile:hover {
+    color: var(--qs-orange);
+    border-bottom-color: var(--qs-orange);
   }
   .qs-poc-text-col { min-width: 0; }
   .qs-poc-eyebrow {
