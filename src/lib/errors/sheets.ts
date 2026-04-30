@@ -182,7 +182,7 @@ async function signRS256(input: string, pemKey: string): Promise<string> {
   // Import key
   const key = await crypto.subtle.importKey(
     'pkcs8',
-    der.buffer,
+    der,
     { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
     false,
     ['sign'],
