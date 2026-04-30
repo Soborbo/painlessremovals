@@ -1,0 +1,1816 @@
+---
+/**
+ * Care Home & Supported Living Removals — sector landing page.
+ *
+ * Sendable to managers and operators of assisted living, care homes,
+ * nursing homes, housing-association supported-living schemes.
+ *
+ * Visual template mirrors the agent-referral / Knight Frank design
+ * language (kf-* class system) — premium petrol-blue + gold serif
+ * aesthetic, tier cards, callback form. Content rewritten for the
+ * care sector: "we know when bingo is", free walkthrough, autism
+ * link, our-own-storage operator benefit, admin tail support.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { siteConfig } from '@/config/site.config';
+import { service, faqPage, breadcrumbs, areas } from '@/utils/schema';
+
+const pageTitle = 'Care Home & Supported Living Removals Bristol | Painless Removals';
+const pageDescription = 'A sector-trained removals service for Bristol’s care homes, nursing homes, and housing-association schemes. Free site walkthrough, hand-picked crews, our own storage, and a single point of contact who answers the phone.';
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const PHONE_DISPLAY = siteConfig.company.contact.phone;
+const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
+
+// Hero / og:image — JPG fallback for broadest social-platform compatibility (FB/LinkedIn/X all parse JPG cleanly).
+const heroImagePath = '/img/later-life/Bristol-care-home-community-2560w.jpg';
+const heroImageUrl = `${siteConfig.brand.domain}${heroImagePath}`;
+const heroImageCaption = 'Older residents in the dining room of a Bristol care home — Painless Removals helps clients move into and between care homes, nursing homes, and supported-living schemes.';
+
+const faqs = [
+  {
+    question: 'How quickly can you start working with our home?',
+    answer: 'For a single resident, often within a few days of the walkthrough. For larger pieces of work — a wing decant, a refurbishment, or a scheme-wide programme — we recommend a few weeks of lead time. The walkthrough itself is free and we can usually do it within the week.',
+  },
+  {
+    question: 'Do your crews have DBS checks?',
+    answer: 'Yes. Anyone we send into a regulated environment has been vetted and briefed on the home, the resident and the day before they arrive.',
+  },
+  {
+    question: 'How do you handle residents with dementia, autism, or other additional needs?',
+    answer: 'With more time, more preparation, and a smaller, calmer crew. We have specific experience moving autistic adults and older residents with cognitive impairment — written timelines in advance, smaller working space, family or key worker driving the pace.',
+  },
+  {
+    question: 'Can you take items into storage?',
+    answer: 'Yes. We run our own storage — not self-storage. The family does not have to find a unit and you get the room back faster.',
+  },
+];
+
+const heroImageSchema = {
+  "@context": "https://schema.org",
+  "@type": "ImageObject",
+  "@id": `${siteConfig.brand.domain}/care-home-removals/#hero-image`,
+  "url": heroImageUrl,
+  "contentUrl": heroImageUrl,
+  "width": 5168,
+  "height": 3420,
+  "encodingFormat": "image/jpeg",
+  "name": "Painless Removals — Care Home & Supported Living Removals in Bristol",
+  "caption": heroImageCaption,
+  "description": heroImageCaption,
+  "representativeOfPage": true,
+};
+
+const pageSchema = [
+  service({
+    name: 'Care Home & Supported Living Removals Bristol',
+    description: pageDescription,
+    serviceType: 'Care Home Removals',
+    url: '/care-home-removals/',
+    areaServed: areas.bristol,
+    image: heroImagePath,
+  }),
+  heroImageSchema,
+  faqPage(faqs),
+  breadcrumbs([
+    { name: 'Home', path: '/' },
+    { name: 'Care Home & Supported Living Removals' },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage={heroImagePath}>
+
+  <main class="kf">
+
+    <!-- ============================================================
+         HERO
+    ============================================================ -->
+    <section class="kf-hero">
+      <div class="kf-hero-image" aria-hidden="true">
+        <OptimizedPicture
+          name="later-life/Bristol-care-home-community"
+          pattern="HALF"
+          alt={heroImageCaption}
+          loading="eager"
+          fetchpriority="high"
+          class="kf-hero-image-img"
+        />
+      </div>
+      <div class="kf-hero-inner">
+        <div class="kf-hero-copy">
+          <div class="kf-eyebrow">For Care Homes &amp; Supported Living</div>
+          <h1 class="kf-h1">
+            We know<br />
+            <em>When bingo is</em><span class="kf-period">.</span>
+          </h1>
+          <div class="kf-hero-kicker">Sector-Trained &middot; Bristol-Based &middot; Established 1978</div>
+          <p class="kf-hero-lead">
+            Before the removal, we walk the building so we know what to
+            expect: where the lift is, when programmes run, when we&rsquo;d
+            disturb least.
+            <em>That&rsquo;s what makes our moves genuinely painless for everyone.</em>
+          </p>
+
+          <div class="kf-hero-cta">
+            <a href="#callback" class="kf-btn kf-btn-orange">Book a free walk-through</a>
+            <a href={`tel:${PHONE_TEL}`} class="kf-btn-text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              Or call {PHONE_DISPLAY}
+            </a>
+          </div>
+
+          <div class="kf-hero-stats">
+            <div class="kf-stat">
+              <span class="kf-stat-num">1978</span>
+              <span class="kf-stat-label">Established</span>
+            </div>
+            <div class="kf-stat-divider"></div>
+            <div class="kf-stat">
+              <span class="kf-stat-num">2,000+</span>
+              <span class="kf-stat-label">Moves led by Jay personally</span>
+            </div>
+            <div class="kf-stat-divider"></div>
+            <div class="kf-stat">
+              <span class="kf-stat-num">{siteConfig.company.rating.value}{'★'}</span>
+              <span class="kf-stat-label">{siteConfig.company.rating.count} Google reviews</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         TRUST STRIP
+    ============================================================ -->
+    <section class="kf-trust">
+      <div class="kf-trust-inner">
+        <div class="kf-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div>
+            <div class="kf-trust-title">DBS-Checked Crews</div>
+            <div class="kf-trust-text">Vetted, uniformed, briefed before they arrive</div>
+          </div>
+        </div>
+        <div class="kf-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 2 3 5v6c0 5 3.8 9.4 9 11 5.2-1.6 9-6 9-11V5l-9-3z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div>
+            <div class="kf-trust-title">Fully Insured</div>
+            <div class="kf-trust-text">{'£'}15k per van &middot; Move Assured accredited</div>
+          </div>
+        </div>
+        <div class="kf-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h6"/><path d="m15 17 2 2 4-4"/></svg>
+          <div>
+            <div class="kf-trust-title">One Phone, Always Answered</div>
+            <div class="kf-trust-text">A single named contact, start to finish</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         INTRODUCTION — Jay portrait + the framing piece
+    ============================================================ -->
+    <section class="kf-section kf-intro">
+      <div class="kf-wide kf-intro-grid">
+        <figure class="kf-intro-portrait">
+          <OptimizedPicture
+            name="about/team/Jay"
+            pattern="HALF"
+            alt="Jay Newton, Director, Painless Removals"
+            loading="lazy"
+            class="kf-intro-portrait-img"
+          />
+          <figcaption>
+            <strong>Jay Newton</strong>
+            <span>Director &middot; Painless Removals</span>
+          </figcaption>
+        </figure>
+
+        <div class="kf-intro-copy">
+          <div class="kf-eyebrow">The free walkthrough</div>
+          <h2 class="kf-h2">
+            We learn the <em>rhythm of the home</em>.
+          </h2>
+          <p class="kf-intro-p">
+            On a free walkthrough we walk the building with your team. Yes, we look at lift access,
+            corridor widths and floor surfaces &mdash; the basics. But we also learn the rhythm of
+            the home: when meals are served, when the activity room is busy, when residents tend to
+            nap, where the route from the lift to the room passes the lounge, and at what time of
+            day that lounge is full.
+          </p>
+          <p class="kf-intro-p">
+            That&rsquo;s how a move stops being a disturbance. The point isn&rsquo;t just to get
+            furniture from A to B without a scratch &mdash; it&rsquo;s to do it without unsettling
+            the people who live in the building. <em>That&rsquo;s a different brief, and it&rsquo;s
+            the one we work to.</em>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         THREE TIERS
+    ============================================================ -->
+    <section class="kf-section kf-tiers-section">
+      <div class="kf-wide">
+        <div class="kf-section-head">
+          <div>
+            <div class="kf-eyebrow">Three Levels of Service</div>
+            <h2 class="kf-h2">The right level of care<br />for <em>every care home move.</em></h2>
+          </div>
+          <div class="kf-section-head-note">
+            Every package includes a dedicated Move Manager, a fixed quote on survey,
+            and full protection of the property at both ends.
+          </div>
+        </div>
+
+        <div class="kf-tiers">
+
+          <!-- Tier 1: Painless Removal -->
+          <article class="kf-tier">
+            <div class="kf-tier-image">
+              <OptimizedPicture
+                name="home-removals/Bristol-home-removals-service-2"
+                pattern="THIRD"
+                alt="Painless Removals crew loading a home removals van in Bristol"
+                loading="lazy"
+                class="kf-tier-image-img"
+              />
+            </div>
+            <div class="kf-tier-body">
+              <div class="kf-tier-label">Level One</div>
+              <h3 class="kf-tier-h3">Painless <em>Removal</em></h3>
+              <p class="kf-tier-lead">
+                The resident&rsquo;s belongings are packed by family or staff. We handle everything from the room onward, properly, carefully, on time.
+              </p>
+              <ul class="kf-tier-list">
+                <li>Dedicated Move Manager &amp; trusted in-house crew</li>
+                <li>Loading, transport &amp; unloading by our own team</li>
+                <li>Furniture disassembly &amp; reassembly included</li>
+                <li>Sofa covers, mattress protectors, picture &amp; TV bags as standard</li>
+                <li>{'£'}15,000 Goods-in-Transit cover per van</li>
+              </ul>
+              <div class="kf-tier-foot">
+                <strong>Ideal for</strong>
+                A move where the family or care team is comfortable packing personal items and just needs an experienced, uniformed crew on the day.
+              </div>
+            </div>
+          </article>
+
+          <!-- Tier 2: Painless Packing (featured) -->
+          <article class="kf-tier kf-tier-featured">
+            <div class="kf-tier-ribbon">Most Requested</div>
+            <div class="kf-tier-image">
+              <OptimizedPicture
+                name="packing/home-packing-service"
+                pattern="THIRD"
+                alt="Painless Removals professional packing service for a care home move"
+                loading="lazy"
+                class="kf-tier-image-img"
+              />
+            </div>
+            <div class="kf-tier-body">
+              <div class="kf-tier-label">Level Two</div>
+              <h3 class="kf-tier-h3">Painless <em>Packing</em></h3>
+              <p class="kf-tier-lead">
+                We pack, we move, we unpack. The resident arrives to a familiar, ordered room, not a stack of boxes for someone else to deal with.
+              </p>
+              <ul class="kf-tier-list">
+                <li>Everything in Painless Removal</li>
+                <li>Full professional packing: fragile, wardrobe, kitchen, personal items</li>
+                <li>Specialist handling for photos, frames, ornaments &amp; keepsakes</li>
+                <li>Unpack &amp; placement at the new address</li>
+                <li>Packed items covered under transit insurance</li>
+              </ul>
+              <div class="kf-tier-foot">
+                <strong>Ideal for</strong>
+                Family at distance, busy care teams, or when the resident needs a gentler, slower transition without the stress of packing.
+              </div>
+            </div>
+          </article>
+
+          <!-- Tier 3: Painless Concierge -->
+          <article class="kf-tier">
+            <div class="kf-tier-image">
+              <OptimizedPicture
+                name="concierge/Concierge-service-Painless-Removals"
+                pattern="THIRD"
+                alt="Painless Removals concierge service coordinating a care home move"
+                loading="lazy"
+                class="kf-tier-image-img"
+              />
+            </div>
+            <div class="kf-tier-body">
+              <div class="kf-tier-label">Level Three</div>
+              <h3 class="kf-tier-h3">Painless <em>Concierge</em></h3>
+              <p class="kf-tier-lead">
+                Our full white-glove service with a concierge built in. The family or care team only has to walk the resident through the door.
+              </p>
+              <ul class="kf-tier-list">
+                <li>Everything in Painless Packing</li>
+                <li>Concierge: address changes, post redirection &amp; supplier handover</li>
+                <li>Utilities, broadband and deliveries coordinated for the new address</li>
+                <li>Storage in our own warehouse for items that don&rsquo;t fit yet</li>
+                <li>Single named contact across family, care team and any third parties</li>
+              </ul>
+              <div class="kf-tier-foot">
+                <strong>Ideal for</strong>
+                Families coordinating from another part of the country, complex personal effects, or moves where the admin tail would otherwise fall on the home.
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SPECIALIST BAND — vulnerable residents / autism link
+    ============================================================ -->
+    <section class="kf-specialist">
+      <div class="kf-specialist-inner">
+        <div>
+          <div class="kf-band-label">For the resident, not just the room</div>
+          <h3 class="kf-specialist-h3">Specialist handling for <em>dementia, autism &amp; vulnerable adults.</em></h3>
+        </div>
+        <div>
+          <p class="kf-specialist-p">
+            Moving is one of the most stressful things a person can go through, and for a vulnerable adult that stress is amplified. We treat that as the central problem to solve, not a side note. Written timelines in advance, smaller crews, leaving the safe room intact until the last possible moment, and setting the new space up first so it already feels lived-in when the resident arrives.
+          </p>
+          <p class="kf-specialist-p" style="margin-top: 14px;">
+            <a href="/home-removals-with-autism/" class="kf-specialist-link">
+              See how we adapt our service for autistic residents &rarr;
+            </a>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         WHY (testimonials) + HOW (steps)
+    ============================================================ -->
+    <section class="kf-bottom-grid">
+
+      <div class="kf-why">
+        <h2 class="kf-h2">What they <em>say</em><br />about working with us.</h2>
+        <div class="kf-gold-hair"></div>
+
+        <blockquote class="kf-quote">
+          <p>"I'm disabled as I had a stroke last year so I decided to get movers for my move and they were absolutely great. <mark>They literally did everything, packed my whole flat</mark> and were lovely guys! I just sat on the sofa and did some work while they packed away my whole flat. Really great movers, lovely people, cannot recommend enough."</p>
+          <footer class="kf-quote-foot">
+            <span class="kf-quote-photo kf-quote-photo-mono" aria-hidden="true">★</span>
+            <cite>Jeremy Vize &middot; Google review</cite>
+          </footer>
+        </blockquote>
+
+        <blockquote class="kf-quote">
+          <p>"We went for the full packing and removal package when we moved. <mark>The whole process was painless</mark> from start to finish and the team was exceptionally friendly, efficient, and helpful from start to finish. Would strongly recommend their service to anyone."</p>
+          <footer class="kf-quote-foot">
+            <img src="/images/reviews/caspian-johnson.avif" alt="Caspian Johnson" class="kf-quote-photo" width="36" height="36" loading="lazy" />
+            <cite>Caspian Johnson &middot; Trustpilot review</cite>
+          </footer>
+        </blockquote>
+
+        <blockquote class="kf-quote">
+          <p>"Painless Removals have been brilliant, couldn't recommend them more. They helped us move in Bristol and then helped us organise a cross-country move. Both were done on a tight timeline and at a good price. The guys who moved us were <mark>very kind and efficient</mark> &mdash; Thanks again!"</p>
+          <footer class="kf-quote-foot">
+            <img src="/images/reviews/laura-carnegie-brown.avif" alt="Laura Carnegie-Brown" class="kf-quote-photo" width="36" height="36" loading="lazy" />
+            <cite>Laura Carnegie-Brown &middot; Google review</cite>
+          </footer>
+        </blockquote>
+
+        <div class="kf-reviews-badge">
+          <div class="kf-stars">{'★★★★★'}</div>
+          <div>
+            <div class="kf-score">{siteConfig.company.rating.value} / 5</div>
+            <div class="kf-score-meta">{siteConfig.company.rating.count} verified Google reviews</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kf-how">
+        <div class="kf-how-head">
+          <h2 class="kf-h2">How we make it <em>painless</em><br />for everyone.</h2>
+          <div class="kf-gold-hair"></div>
+        </div>
+
+        <div class="kf-steps">
+          <div class="kf-step">
+            <div class="kf-step-num">1</div>
+            <div class="kf-step-title">Walk-Through</div>
+            <p>We visit the care home or facility, and we visit the resident at their current address too. Free, no pressure. We meet your team, learn the building and the day.</p>
+          </div>
+          <div class="kf-step">
+            <div class="kf-step-num">2</div>
+            <div class="kf-step-title">Plan Together</div>
+            <p>We walk through the timing, the route, and the layout at the other end with the resident or family. Briefed crew before they arrive.</p>
+          </div>
+          <div class="kf-step">
+            <div class="kf-step-num">3</div>
+            <div class="kf-step-title">The Move</div>
+            <p>Calm, quiet, careful. Floors and door frames protected. The resident is never rushed.</p>
+          </div>
+          <div class="kf-step">
+            <div class="kf-step-num">4</div>
+            <div class="kf-step-title">Finish Properly</div>
+            <p>We don&rsquo;t leave until everything is where it should be. Admin tail handled where needed: post, utilities, address changes, storage collected, the room ready to hand back.</p>
+          </div>
+        </div>
+
+        <div class="kf-jay">
+          <div class="kf-jay-avatar">
+            <OptimizedPicture
+              name="about/team/Jay-Newton"
+              pattern="ICON"
+              alt="Jay Newton, Director, Painless Removals"
+              loading="lazy"
+              class="kf-jay-avatar-img"
+            />
+          </div>
+          <div class="kf-jay-body">
+            <div class="kf-jay-mark">"</div>
+            <p>You&rsquo;re letting people into the place where vulnerable adults live. That&rsquo;s a bigger trust than carrying a sofa. We hire for the second part &mdash; the lifting, we can teach.</p>
+            <cite>Jay Newton &mdash; Director, Painless Removals</cite>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         OPERATOR BENEFITS BAND — storage + admin
+    ============================================================ -->
+    <section class="kf-section kf-benefits-section">
+      <div class="kf-wide">
+        <div class="kf-section-head kf-section-head--center">
+          <div>
+            <div class="kf-eyebrow kf-eyebrow-center-style">For the home, as well as the resident</div>
+            <h2 class="kf-h2 kf-h2-center">We take the risk and stress <em>off your desk.</em></h2>
+          </div>
+        </div>
+
+        <div class="kf-benefits-grid">
+          <article class="kf-benefit">
+            <div class="kf-benefit-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M3 11h18"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </div>
+            <h3 class="kf-benefit-h3">Our Own Storage &mdash; Not Self-Storage</h3>
+            <p>The family doesn&rsquo;t need to find a unit, sign a contract or arrange a haul. We collect, transport and store &mdash; one team, one chain of custody. Your room comes back into circulation as soon as the resident has moved, not when the family is ready to decide.</p>
+          </article>
+
+          <article class="kf-benefit">
+            <div class="kf-benefit-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+            </div>
+            <h3 class="kf-benefit-h3">A Phone That Always Gets Answered</h3>
+            <p>One named contact, one number. If something needs adjusting in the moment, we adjust. You shouldn&rsquo;t have to project-manage your removals firm &mdash; not while you have a building to run.</p>
+          </article>
+
+          <article class="kf-benefit">
+            <div class="kf-benefit-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h4"/></svg>
+            </div>
+            <h3 class="kf-benefit-h3">The Admin Tail, Handled</h3>
+            <p>Post redirection, telephone disconnection, broadband, utilities, council tax, GP, bank, pension. We work the checklist with the family &mdash; or instead of them. For an older resident the list is overwhelming; for us it&rsquo;s a checklist we&rsquo;ve done hundreds of times.</p>
+          </article>
+
+          <article class="kf-benefit">
+            <div class="kf-benefit-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="m17 11 2 2 4-4"/></svg>
+            </div>
+            <h3 class="kf-benefit-h3">Crews Chosen for Character</h3>
+            <p>Calm, quiet voices in shared corridors. Politeness as the default, with residents and with your team. Not just lifters &mdash; the kind of people you&rsquo;d be happy to introduce to a resident in their own room.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CALLBACK FORM
+    ============================================================ -->
+    <section class="kf-callback" id="callback">
+      <div class="kf-narrow">
+        <div class="kf-callback-card">
+          <div class="kf-callback-head">
+            <div class="kf-eyebrow">Book a free walk-through</div>
+            <h2 class="kf-h2">Tell us about your home.<br /><em>We&rsquo;ll come and listen.</em></h2>
+            <p class="kf-callback-lead">
+              Free, friendly, no obligation. We come to you, meet your team, and learn the building.
+              Then we plan around it &mdash; not the other way around.
+              Mon&ndash;Fri 9am&ndash;5pm; weekends on request.
+            </p>
+          </div>
+
+          <!-- Success state (hidden by default) -->
+          <div id="kf-form-success" class="kf-form-success" hidden>
+            <div class="kf-success-mark">{'✓'}</div>
+            <h3 class="kf-h3">Thank you &mdash; we have your details.</h3>
+            <p>We&rsquo;ll be in touch within one working day to arrange a walk-through. If it&rsquo;s urgent, please call <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>.</p>
+          </div>
+
+          <form id="kf-form" class="kf-form" novalidate data-phone={PHONE_DISPLAY}>
+            <!-- Honeypot -->
+            <div class="kf-honeypot" aria-hidden="true">
+              <label for="kf-website">Leave this blank</label>
+              <input type="text" id="kf-website" name="website" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="kf-field">
+              <label for="kf-name">Your name <span class="kf-req">*</span></label>
+              <input type="text" id="kf-name" name="contactName" required autocomplete="name" placeholder="e.g. Sarah Mitchell" />
+            </div>
+
+            <div class="kf-field">
+              <label for="kf-org">Home or organisation <span class="kf-req">*</span></label>
+              <input type="text" id="kf-org" name="orgName" required autocomplete="organization" placeholder="e.g. Stoke Lodge Care Home" />
+            </div>
+
+            <div class="kf-field-row">
+              <div class="kf-field">
+                <label for="kf-phone">Phone <span class="kf-req">*</span></label>
+                <input type="tel" id="kf-phone" name="contactPhone" required autocomplete="tel" placeholder="07… or 0117…" />
+              </div>
+              <div class="kf-field">
+                <label for="kf-email">Email <span class="kf-req">*</span></label>
+                <input type="email" id="kf-email" name="contactEmail" required autocomplete="email" placeholder="you@example.com" />
+              </div>
+            </div>
+
+            <div class="kf-field">
+              <label for="kf-message">Anything we should know? <span class="kf-optional">(optional)</span></label>
+              <textarea id="kf-message" name="message" rows="3" placeholder="A new admission, a wing decant, a particular resident — whatever you&rsquo;d like us to come prepared for."></textarea>
+            </div>
+
+            <label class="kf-consent">
+              <input type="checkbox" id="kf-consent" name="gdprConsent" required />
+              <span>
+                I&rsquo;m happy for Painless Removals to contact me about a walk-through.
+                <span class="kf-req">*</span>
+              </span>
+            </label>
+
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
+
+            <div id="kf-form-error" class="kf-form-error" hidden></div>
+
+            <div class="kf-form-cta">
+              <button type="submit" id="kf-submit" class="kf-btn kf-btn-orange kf-btn-wide">Book my walk-through</button>
+              <p class="kf-form-or">
+                Or speak to us now on <a href={`tel:${PHONE_TEL}`}>{PHONE_DISPLAY}</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FINAL BANNER
+    ============================================================ -->
+    <section class="kf-banner">
+      <div class="kf-banner-diamond" aria-hidden="true"></div>
+      <h3 class="kf-banner-h3">Painless for the resident. <em>Painless for the home.</em></h3>
+      <p class="kf-banner-p">
+        That&rsquo;s the whole point. We come to you, we listen, we plan around the building &mdash;
+        and we treat your residents as if they were our own family.
+      </p>
+      <a href={`tel:${PHONE_TEL}`} class="kf-banner-cta">
+        <span>Speak to us today</span>
+        <span class="kf-banner-cta-num">{PHONE_DISPLAY}</span>
+      </a>
+    </section>
+
+  </main>
+
+  <!-- Cloudflare Turnstile -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <!-- Form submission -->
+  <script is:inline>
+    (function () {
+      var form = document.getElementById('kf-form');
+      if (!form) return;
+
+      var PHONE = (form.dataset.phone || '0117 287 0082');
+      var errorEl = document.getElementById('kf-form-error');
+      var submitBtn = document.getElementById('kf-submit');
+      var successEl = document.getElementById('kf-form-success');
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+        if (window.showToast) window.showToast(msg, 'error');
+      }
+
+      function clearError() {
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearError();
+
+        var contactName = form.querySelector('#kf-name').value.trim();
+        var orgName = form.querySelector('#kf-org').value.trim();
+        var contactPhone = form.querySelector('#kf-phone').value.trim();
+        var contactEmail = form.querySelector('#kf-email').value.trim();
+        var messageVal = form.querySelector('#kf-message').value.trim();
+        var gdprConsent = form.querySelector('#kf-consent').checked;
+        var honeypot = form.querySelector('#kf-website').value;
+
+        if (!contactName) { showError('Please enter your name.'); return; }
+        if (!orgName) { showError('Please tell us the name of your home or organisation.'); return; }
+        if (!contactPhone) { showError('Please enter a phone number we can reach you on.'); return; }
+        if (!contactEmail) { showError('Please enter your email address.'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) { showError('That email address doesn\'t look right — please double-check it.'); return; }
+        if (!gdprConsent) { showError('Please tick the consent box so we know you\'re happy for us to be in touch.'); return; }
+
+        var turnstileToken = '';
+        var tsInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (tsInput) turnstileToken = tsInput.value;
+        if (!turnstileToken) { showError('Please complete the security check before submitting.'); return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+
+        // Compose a single message body for the contact endpoint, since the
+        // generic /api/contact/ doesn't take a separate "organisation" field.
+        var combinedMessage = 'Care home walkthrough request.\nOrganisation: ' + orgName +
+          (messageVal ? ('\n\n' + messageVal) : '');
+
+        fetch('/api/contact/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: contactName,
+            phone: contactPhone,
+            email: contactEmail,
+            message: combinedMessage,
+            honeypot: honeypot,
+            turnstileToken: turnstileToken,
+            source: 'care-home-removals',
+          }),
+        })
+          .then(function (res) {
+            return res.json().catch(function () { throw new Error('Server returned ' + res.status); });
+          })
+          .then(function (data) {
+            if (data && data.success) {
+              var eventId = (window.crypto && window.crypto.randomUUID)
+                ? window.crypto.randomUUID()
+                : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                event: 'form_submission',
+                event_id: eventId,
+                form_name: 'care_home_walkthrough',
+                form_source: 'care-home-removals',
+              });
+
+              form.hidden = true;
+              successEl.hidden = false;
+              successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+              showError((data && data.error) || ('Something went wrong. Please try again or call us on ' + PHONE + '.'));
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Book my walk-through';
+              if (window.turnstile) window.turnstile.reset();
+            }
+          })
+          .catch(function () {
+            showError('Connection error — please check your internet and try again, or call us on ' + PHONE + '.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Book my walk-through';
+          });
+      });
+    })();
+  </script>
+
+</Layout>
+
+<style>
+  /* ==============================================================
+     Care Home Removals — uses the agent-referral / Knight Frank
+     premium aesthetic. kf-* prefix retained for parity so the page
+     reads to maintainers as "the same template family".
+  ============================================================== */
+  .kf {
+    --kf-petrol: #0E3C54;
+    --kf-petrol-deep: #0A2F41;
+    --kf-petrol-mid: #165978;
+    --kf-orange: #F16B21;
+    --kf-orange-dark: #D85818;
+    --kf-gold: #D4A84B;
+    --kf-gold-soft: #C8A05C;
+    --kf-gold-light: #F5E6C8;
+    --kf-cream: #FAF7F2;
+    --kf-cream-deep: #F2ECE0;
+    --kf-paper: #FFFFFF;
+    --kf-ink: #1B2A38;
+    --kf-muted: #5C6470;
+    --kf-line: #E0D6C4;
+
+    --kf-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --kf-sans: 'DM Sans', system-ui, sans-serif;
+
+    background: var(--kf-cream);
+    color: var(--kf-ink);
+    font-family: var(--kf-sans);
+    line-height: 1.55;
+  }
+
+  /* ---- HERO ---- */
+  .kf-hero {
+    position: relative;
+    overflow: hidden;
+    color: var(--kf-cream);
+    background:
+      radial-gradient(120% 80% at 20% 20%, rgba(212, 168, 75, 0.18) 0%, rgba(212, 168, 75, 0) 55%),
+      linear-gradient(145deg, var(--kf-petrol-deep) 0%, var(--kf-petrol-mid) 45%, var(--kf-petrol) 100%);
+    height: calc(100svh - 104px);
+    min-height: 540px;
+    max-height: 760px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .kf-hero::before {
+    content: "1978";
+    position: absolute;
+    right: -30px;
+    top: 30px;
+    font-family: var(--kf-serif);
+    font-weight: 500;
+    font-size: clamp(180px, 24vw, 360px);
+    line-height: 0.8;
+    color: rgba(212, 168, 75, 0.07);
+    letter-spacing: -0.04em;
+    pointer-events: none;
+  }
+  .kf-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 4px 4px;
+    pointer-events: none;
+  }
+  .kf-hero-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: clamp(32px, 5vh, 64px) 28px clamp(40px, 5vh, 64px);
+  }
+  .kf-hero-image {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .kf-hero-image :global(.kf-hero-image-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+  }
+  .kf-hero-copy {
+    max-width: min(620px, 55%);
+  }
+  .kf-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--kf-gold);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 22px;
+  }
+  .kf-eyebrow::before {
+    content: "";
+    width: 32px;
+    height: 1px;
+    background: var(--kf-gold);
+  }
+  .kf-h1 {
+    margin: 0 0 14px;
+    font-family: var(--kf-serif);
+    font-size: clamp(40px, 5.4vw, 68px);
+    line-height: 1.04;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--kf-cream);
+  }
+  .kf-h1 em {
+    font-style: italic;
+    color: var(--kf-gold);
+    font-weight: 400;
+  }
+  .kf-h1 .kf-period {
+    color: var(--kf-orange);
+    font-style: normal;
+  }
+  .kf-hero-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 12px;
+    color: rgba(245, 230, 200, 0.85);
+    margin-bottom: 14px;
+  }
+  .kf-hero-lead {
+    margin: 0 0 22px;
+    max-width: 560px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(250, 247, 242, 0.9);
+  }
+  .kf-hero-lead em {
+    font-style: italic;
+    color: var(--kf-gold);
+    font-family: var(--kf-serif);
+  }
+  .kf-hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .kf-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 30px;
+    font-family: var(--kf-sans);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    cursor: pointer;
+    border: 0;
+  }
+  .kf-btn-orange {
+    background: var(--kf-orange);
+    color: var(--kf-cream);
+    box-shadow: 0 12px 28px rgba(241, 107, 33, 0.35);
+  }
+  .kf-btn-orange:hover {
+    background: var(--kf-orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(241, 107, 33, 0.45);
+  }
+  .kf-btn-wide { width: 100%; }
+  .kf-btn-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--kf-gold-light);
+    font-size: 14px;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+  }
+  .kf-btn-text:hover { color: var(--kf-gold); }
+  .kf-btn-text svg { width: 18px; height: 18px; color: var(--kf-gold); }
+
+  .kf-hero-stats {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding-top: 18px;
+    border-top: 1px solid rgba(212, 168, 75, 0.24);
+    max-width: 620px;
+    flex-wrap: wrap;
+  }
+  .kf-stat { display: flex; flex-direction: column; gap: 2px; }
+  .kf-stat-num {
+    font-family: var(--kf-serif);
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--kf-gold);
+    line-height: 1;
+  }
+  .kf-stat-label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(245, 230, 200, 0.8);
+  }
+  .kf-stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(212, 168, 75, 0.3);
+  }
+
+  /* ---- TRUST STRIP ---- */
+  .kf-trust {
+    background: var(--kf-petrol-deep);
+    color: var(--kf-cream);
+    border-top: 1px solid rgba(212, 168, 75, 0.2);
+    border-bottom: 1px solid rgba(212, 168, 75, 0.2);
+  }
+  .kf-trust-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 22px 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    justify-items: start;
+  }
+  .kf-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .kf-trust-item svg {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    color: var(--kf-gold);
+  }
+  .kf-trust-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--kf-gold-light);
+    margin-bottom: 2px;
+  }
+  .kf-trust-text {
+    font-size: 13px;
+    color: rgba(250, 247, 242, 0.85);
+  }
+
+  /* ---- SECTIONS ---- */
+  .kf-section { padding: 90px 28px; }
+  .kf-narrow { max-width: 760px; margin: 0 auto; }
+  .kf-wide { max-width: 1280px; margin: 0 auto; }
+  .kf-h2 {
+    font-family: var(--kf-serif);
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.06;
+    font-weight: 400;
+    color: var(--kf-petrol);
+    margin: 0 0 12px;
+    letter-spacing: -0.02em;
+  }
+  .kf-h2 em {
+    font-style: italic;
+    color: var(--kf-orange);
+    font-weight: 400;
+  }
+  .kf-h3 {
+    font-family: var(--kf-serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--kf-petrol);
+    margin: 0 0 8px;
+  }
+
+  .kf-intro { background: var(--kf-paper); }
+  .kf-intro-grid {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 720px);
+    gap: 56px;
+    align-items: center;
+    justify-content: center;
+  }
+  .kf-intro-portrait {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 240px;
+  }
+  .kf-intro-portrait :global(.kf-intro-portrait-img) {
+    width: 240px;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 18px 44px rgba(14, 60, 84, 0.14);
+    border-bottom: 3px solid var(--kf-gold);
+  }
+  .kf-intro-portrait figcaption {
+    padding-left: 12px;
+    border-left: 2px solid var(--kf-gold);
+    color: var(--kf-petrol);
+    font-family: var(--kf-sans);
+  }
+  .kf-intro-portrait figcaption strong {
+    display: block;
+    font-family: var(--kf-serif);
+    font-weight: 500;
+    font-size: 18px;
+    color: var(--kf-petrol);
+    margin-bottom: 2px;
+    letter-spacing: -0.01em;
+  }
+  .kf-intro-portrait figcaption span {
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--kf-muted);
+    font-weight: 600;
+  }
+  .kf-intro-copy .kf-eyebrow {
+    color: var(--kf-orange);
+    margin-bottom: 18px;
+  }
+  .kf-intro-copy .kf-eyebrow::before { background: var(--kf-orange); }
+  .kf-intro-copy .kf-h2 { margin-bottom: 22px; }
+  .kf-intro-p {
+    color: var(--kf-muted);
+    font-size: 17px;
+    line-height: 1.7;
+    margin: 0 0 14px;
+    max-width: 720px;
+  }
+  .kf-intro-p:last-child { margin-bottom: 0; }
+  .kf-intro-p em {
+    font-style: italic;
+    color: var(--kf-orange);
+    font-family: var(--kf-serif);
+  }
+
+  /* ---- TIERS ---- */
+  .kf-tiers-section {
+    background: var(--kf-cream);
+    border-top: 1px solid var(--kf-line);
+    border-bottom: 1px solid var(--kf-line);
+  }
+  .kf-section-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 36px;
+    align-items: end;
+    margin-bottom: 48px;
+  }
+  .kf-section-head--center {
+    grid-template-columns: 1fr;
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .kf-section-head--center .kf-eyebrow,
+  .kf-section-head--center .kf-h2 { justify-content: center; }
+  .kf-h2-center { text-align: center; }
+  .kf-eyebrow-center-style { justify-content: center; }
+  .kf-eyebrow-center-style::before {
+    width: 24px;
+  }
+  .kf-section-head-note {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--kf-muted);
+    max-width: 320px;
+    font-style: italic;
+    text-align: right;
+    padding-right: 22px;
+    border-right: 1px solid var(--kf-gold);
+  }
+  .kf-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .kf-tier {
+    background: var(--kf-paper);
+    border: 1px solid var(--kf-line);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .kf-tier:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 60px rgba(14, 60, 84, 0.12);
+  }
+  .kf-tier-featured {
+    border: 1.5px solid var(--kf-orange);
+    background: linear-gradient(180deg, #FFFBF6 0%, #FFFFFF 100%);
+    box-shadow: 0 22px 56px rgba(241, 107, 33, 0.16);
+    transform: translateY(-8px);
+  }
+  .kf-tier-featured:hover { transform: translateY(-12px); }
+  .kf-tier-image {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--kf-petrol);
+  }
+  .kf-tier-image :global(.kf-tier-image-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(0.96);
+    transition: transform 0.5s ease;
+  }
+  .kf-tier:hover .kf-tier-image :global(.kf-tier-image-img) { transform: scale(1.04); }
+  .kf-tier-image::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(14, 60, 84, 0) 50%, rgba(14, 60, 84, 0.25) 100%);
+    pointer-events: none;
+  }
+  .kf-tier-ribbon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    background: var(--kf-orange);
+    color: var(--kf-cream);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    box-shadow: 0 4px 12px rgba(14, 60, 84, 0.3);
+  }
+  .kf-tier-body {
+    padding: 30px 32px 34px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  .kf-tier-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--kf-gold-soft);
+    margin-bottom: 10px;
+  }
+  .kf-tier-featured .kf-tier-label { color: var(--kf-orange); }
+  .kf-tier-h3 {
+    font-family: var(--kf-serif);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--kf-petrol);
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  .kf-tier-h3 em {
+    font-style: italic;
+    color: var(--kf-orange);
+  }
+  .kf-tier-lead {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--kf-muted);
+    margin: 0 0 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--kf-line);
+  }
+  .kf-tier-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 22px;
+    flex: 1;
+  }
+  .kf-tier-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 0;
+    color: var(--kf-ink);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .kf-tier-list li::before {
+    content: "";
+    flex: 0 0 14px;
+    width: 14px;
+    height: 1px;
+    background: var(--kf-gold);
+    margin-top: 0.7em;
+  }
+  .kf-tier-foot {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px dashed var(--kf-line);
+    font-size: 12.5px;
+    color: var(--kf-muted);
+    line-height: 1.5;
+  }
+  .kf-tier-foot strong {
+    display: block;
+    color: var(--kf-petrol);
+    font-family: var(--kf-serif);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .kf-tier-featured .kf-tier-foot strong { color: var(--kf-orange); }
+
+  /* ---- SPECIALIST BAND ---- */
+  .kf-specialist {
+    background: var(--kf-petrol-deep);
+    color: var(--kf-cream);
+    padding: 60px 28px;
+    border-top: 3px solid var(--kf-gold);
+    position: relative;
+    overflow: hidden;
+  }
+  .kf-specialist::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(80% 50% at 80% 100%, rgba(212, 168, 75, 0.08), transparent);
+    pointer-events: none;
+  }
+  .kf-specialist-inner {
+    position: relative;
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 0.9fr) 1.7fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .kf-band-label {
+    color: var(--kf-gold);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .kf-specialist-h3 {
+    font-family: var(--kf-serif);
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 400;
+    color: var(--kf-cream);
+    margin: 0;
+  }
+  .kf-specialist-h3 em {
+    color: var(--kf-gold);
+    font-style: italic;
+  }
+  .kf-specialist-p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: rgba(250, 247, 242, 0.86);
+    margin: 0;
+  }
+  .kf-specialist-link {
+    display: inline-block;
+    color: var(--kf-gold);
+    font-family: var(--kf-sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--kf-gold);
+    padding-bottom: 1px;
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .kf-specialist-link:hover {
+    color: var(--kf-gold-light);
+    border-color: var(--kf-gold-light);
+  }
+  .kf-specialist-items {
+    display: flex;
+    flex-direction: column;
+  }
+  .kf-specialist-items div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(212, 168, 75, 0.18);
+    color: rgba(250, 247, 242, 0.94);
+    white-space: nowrap;
+  }
+  .kf-specialist-items div:last-child { border-bottom: 0; }
+  .kf-specialist-items div::before {
+    content: "";
+    flex: 0 0 10px;
+    width: 10px;
+    height: 1px;
+    background: var(--kf-gold);
+  }
+
+  /* ---- WHY + HOW ---- */
+  .kf-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    background: var(--kf-paper);
+    border-top: 1px solid var(--kf-line);
+  }
+  .kf-why {
+    padding: 80px 56px;
+    border-right: 1px solid var(--kf-line);
+    display: flex;
+    flex-direction: column;
+  }
+  .kf-how {
+    padding: 80px 56px;
+    background: var(--kf-cream);
+    display: flex;
+    flex-direction: column;
+  }
+  .kf-gold-hair {
+    width: 56px;
+    height: 2px;
+    background: var(--kf-gold);
+    margin: 18px 0 28px;
+  }
+  .kf-quote {
+    border-left: 3px solid var(--kf-gold);
+    padding: 4px 0 4px 20px;
+    margin: 0 0 24px;
+  }
+  .kf-quote-foot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .kf-quote-photo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--kf-gold);
+    background: var(--kf-petrol);
+    display: block;
+    flex: 0 0 36px;
+  }
+  /* Mono star glyph variant — same 36×36 footprint as photo, used when no portrait is available */
+  .kf-quote-photo-mono {
+    color: var(--kf-gold);
+    display: grid;
+    place-items: center;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .kf-quote p {
+    font-family: var(--kf-serif);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--kf-petrol);
+    margin: 0 0 10px;
+  }
+  .kf-quote cite {
+    font-style: normal;
+    font-family: var(--kf-sans);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--kf-orange);
+    font-weight: 600;
+  }
+  .kf-reviews-badge {
+    margin-top: auto;
+    padding: 18px 22px;
+    background: var(--kf-cream);
+    border: 1px solid var(--kf-line);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .kf-stars {
+    color: var(--kf-gold);
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  .kf-score {
+    font-family: var(--kf-serif);
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--kf-petrol);
+    line-height: 1;
+  }
+  .kf-score-meta {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--kf-muted);
+    margin-top: 4px;
+  }
+  .kf-how-head { margin-bottom: 12px; }
+  .kf-steps {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px 32px;
+    margin: 24px 0 36px;
+  }
+  .kf-step-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--kf-paper);
+    border: 1.5px solid var(--kf-gold);
+    color: var(--kf-orange);
+    display: grid;
+    place-items: center;
+    font-family: var(--kf-serif);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .kf-step-title {
+    font-family: var(--kf-serif);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--kf-petrol);
+    margin-bottom: 6px;
+  }
+  .kf-step p {
+    margin: 0;
+    color: var(--kf-muted);
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+  .kf-jay {
+    background: var(--kf-paper);
+    border: 1px solid var(--kf-line);
+    padding: 30px 32px;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    align-items: start;
+    position: relative;
+  }
+  .kf-jay-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid var(--kf-gold);
+    overflow: hidden;
+    background: var(--kf-petrol);
+  }
+  .kf-jay-avatar :global(.kf-jay-avatar-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .kf-jay-mark {
+    position: absolute;
+    top: 12px;
+    right: 22px;
+    font-family: var(--kf-serif);
+    font-size: 80px;
+    line-height: 1;
+    color: var(--kf-gold);
+    opacity: 0.22;
+  }
+  .kf-jay-body p {
+    font-family: var(--kf-serif);
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--kf-petrol);
+    margin: 0 0 12px;
+  }
+  .kf-jay-body cite {
+    font-style: normal;
+    font-family: var(--kf-sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--kf-orange);
+    font-weight: 700;
+  }
+
+  /* ---- OPERATOR BENEFITS BAND ---- */
+  .kf-benefits-section { background: var(--kf-paper); }
+  .kf-benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+  .kf-benefit {
+    background: var(--kf-cream);
+    border: 1px solid var(--kf-line);
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .kf-benefit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(14, 60, 84, 0.08);
+  }
+  .kf-benefit-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--kf-orange);
+    margin-bottom: 18px;
+    display: grid;
+    place-items: center;
+    background: rgba(241, 107, 33, 0.08);
+    border-radius: 4px;
+  }
+  .kf-benefit-icon svg { width: 26px; height: 26px; }
+  .kf-benefit-h3 {
+    font-family: var(--kf-serif);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--kf-petrol);
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  .kf-benefit p {
+    margin: 0;
+    color: var(--kf-muted);
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+
+  /* ---- CALLBACK FORM ---- */
+  .kf-callback {
+    background: var(--kf-cream-deep);
+    padding: 90px 28px;
+    border-top: 1px solid var(--kf-line);
+  }
+  .kf-callback-card {
+    background: var(--kf-paper);
+    border: 1px solid var(--kf-line);
+    box-shadow: 0 30px 80px rgba(14, 60, 84, 0.10);
+    padding: 56px 56px 52px;
+    position: relative;
+  }
+  .kf-callback-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 32px;
+    bottom: 32px;
+    width: 3px;
+    background: linear-gradient(to bottom, transparent, var(--kf-gold) 18%, var(--kf-gold) 82%, transparent);
+    opacity: 0.6;
+  }
+  .kf-callback-head { margin-bottom: 36px; }
+  .kf-callback-head .kf-eyebrow { color: var(--kf-orange); margin-bottom: 16px; }
+  .kf-callback-head .kf-eyebrow::before { background: var(--kf-orange); }
+  .kf-callback-lead {
+    color: var(--kf-muted);
+    font-size: 16px;
+    line-height: 1.65;
+    margin: 14px 0 0;
+  }
+
+  .kf-form { display: flex; flex-direction: column; gap: 22px; }
+  .kf-honeypot { position: absolute; left: -9999px; }
+  .kf-field { display: flex; flex-direction: column; gap: 8px; }
+  .kf-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  .kf-field label {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--kf-petrol);
+  }
+  .kf-req { color: var(--kf-orange); }
+  .kf-optional {
+    font-weight: 400;
+    color: var(--kf-muted);
+    text-transform: none;
+    letter-spacing: 0.02em;
+    font-size: 11px;
+  }
+  .kf-field input,
+  .kf-field textarea {
+    font-family: var(--kf-sans);
+    font-size: 16px;
+    color: var(--kf-ink);
+    background: var(--kf-cream);
+    border: 1px solid var(--kf-line);
+    border-radius: 0;
+    padding: 14px 16px;
+    transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  }
+  .kf-field input:focus,
+  .kf-field textarea:focus {
+    outline: none;
+    background: var(--kf-paper);
+    border-color: var(--kf-petrol);
+    box-shadow: 0 0 0 3px rgba(14, 60, 84, 0.12);
+  }
+  .kf-field textarea { resize: vertical; min-height: 90px; }
+  .kf-consent {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--kf-muted);
+  }
+  .kf-consent input { flex: 0 0 auto; }
+  .kf-form-error {
+    background: #FDECEA;
+    border: 1px solid #E8B6B0;
+    color: #8A2B1E;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .kf-form-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-top: 6px;
+  }
+  .kf-form-or {
+    margin: 0;
+    font-size: 13px;
+    color: var(--kf-muted);
+  }
+  .kf-form-or a {
+    color: var(--kf-petrol);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--kf-gold);
+  }
+
+  .kf-form-success {
+    text-align: center;
+    padding: 24px 8px;
+  }
+  .kf-success-mark {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: var(--kf-petrol);
+    color: var(--kf-gold);
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .kf-form-success p {
+    color: var(--kf-muted);
+    font-size: 15px;
+    margin: 6px 0 0;
+  }
+  .kf-form-success a {
+    color: var(--kf-petrol);
+    font-weight: 600;
+    border-bottom: 1px solid var(--kf-gold);
+    text-decoration: none;
+  }
+
+  /* ---- FINAL BANNER ---- */
+  .kf-banner {
+    background: var(--kf-petrol-deep);
+    color: var(--kf-cream);
+    text-align: center;
+    padding: 80px 28px 84px;
+    position: relative;
+    border-top: 3px solid var(--kf-gold);
+  }
+  .kf-banner-diamond {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 60px;
+    height: 60px;
+    background: var(--kf-petrol-deep);
+    border: 1px solid var(--kf-gold);
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .kf-banner-h3 {
+    font-family: var(--kf-serif);
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.15;
+    font-weight: 400;
+    margin: 0 0 18px;
+    color: var(--kf-cream);
+    letter-spacing: -0.01em;
+  }
+  .kf-banner-h3 em {
+    font-style: italic;
+    color: var(--kf-gold);
+  }
+  .kf-banner-p {
+    margin: 0 auto 32px;
+    max-width: 980px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(250, 247, 242, 0.85);
+  }
+  .kf-banner-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 32px;
+    background: var(--kf-orange);
+    color: var(--kf-cream);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 12px 28px rgba(241, 107, 33, 0.35);
+  }
+  .kf-banner-cta:hover {
+    background: var(--kf-orange-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(241, 107, 33, 0.45);
+  }
+  .kf-banner-cta-num {
+    font-family: var(--kf-serif);
+    font-size: 22px;
+    letter-spacing: 0.02em;
+    text-transform: none;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+  ============================================================ */
+  @media (max-width: 1080px) {
+    .kf-intro-grid { grid-template-columns: 1fr; gap: 32px; }
+    .kf-intro-portrait { order: 2; max-width: 240px; margin: 0 auto; }
+    .kf-intro-copy { order: 1; }
+    .kf-tiers { grid-template-columns: 1fr; gap: 28px; }
+    .kf-tier-featured { transform: none; }
+    .kf-tier-featured:hover { transform: translateY(-4px); }
+    .kf-bottom-grid { grid-template-columns: 1fr; }
+    .kf-why { border-right: 0; border-bottom: 1px solid var(--kf-line); padding: 60px 36px; }
+    .kf-how { padding: 60px 36px; }
+    .kf-specialist-inner { grid-template-columns: 1fr; gap: 28px; }
+    .kf-trust-inner { grid-template-columns: 1fr; gap: 18px; }
+    .kf-section-head { grid-template-columns: 1fr; gap: 18px; }
+    .kf-section-head-note { text-align: left; border-right: 0; border-left: 1px solid var(--kf-gold); padding: 0 0 0 22px; max-width: none; }
+    .kf-benefits-grid { grid-template-columns: 1fr; gap: 22px; }
+    .kf-section { padding: 64px 28px; }
+    .kf-callback { padding: 64px 24px; }
+    .kf-callback-card { padding: 40px 32px; }
+  }
+
+  @media (max-width: 1023px) {
+    .kf-hero {
+      height: auto;
+      max-height: none;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .kf-hero-image {
+      position: static;
+      width: 100%;
+      height: clamp(220px, 36vh, 320px);
+    }
+    .kf-hero-image::before { display: none; }
+    .kf-hero-copy { max-width: 100%; }
+    .kf-hero-inner { padding-top: clamp(28px, 4vh, 56px); padding-bottom: clamp(36px, 5vh, 64px); }
+  }
+
+  @media (max-width: 767px) {
+    .kf-hero { min-height: calc(100svh - 48px); }
+    .kf-hero-inner {
+      padding: clamp(24px, 5vh, 48px) 22px clamp(24px, 5vh, 56px);
+    }
+    .kf-hero-cta { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .kf-btn { width: 100%; }
+    .kf-hero-stats { gap: 18px; }
+    .kf-stat-divider { display: none; }
+    .kf-trust-inner { padding: 22px 22px; }
+    .kf-section { padding: 56px 22px; }
+    .kf-tier-body { padding: 24px 24px 28px; }
+    .kf-why, .kf-how { padding: 48px 24px; }
+    .kf-specialist { padding: 48px 22px; }
+    .kf-jay { grid-template-columns: 60px 1fr; gap: 18px; padding: 24px; }
+    .kf-jay-avatar { width: 60px; height: 60px; }
+    .kf-jay-mark { display: none; }
+    .kf-steps { grid-template-columns: 1fr; gap: 22px; }
+    .kf-callback { padding: 56px 18px; }
+    .kf-callback-card { padding: 32px 22px; }
+    .kf-field-row { grid-template-columns: 1fr; gap: 22px; }
+    .kf-banner { padding: 60px 22px 64px; }
+    .kf-banner-cta { flex-direction: column; gap: 6px; padding: 16px 22px; }
+  }
+</style>

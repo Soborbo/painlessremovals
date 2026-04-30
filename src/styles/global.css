@@ -115,12 +115,15 @@
     font-size: 17px;
     line-height: 1.65;
     color: #2D2D2D;
-    overflow-x: hidden;
+    /* `clip` instead of `hidden` — both stop horizontal scrollbars, but `clip`
+       does not create a scroll container, so descendant `position: sticky`
+       continues to work. `hidden` silently breaks every sticky on the site. */
+    overflow-x: clip;
     /* scroll-behavior: set via prefers-reduced-motion media query below */
   }
 
   body {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -128,6 +131,13 @@
     font-weight: 600;
     line-height: 1.25;
     color: var(--color-primary-600, #3b6587);
+    /* Distribute lines evenly so headings never end on an orphan word */
+    text-wrap: balance;
+  }
+
+  /* Avoid single-word last lines (widows) in body copy on supporting browsers */
+  p {
+    text-wrap: pretty;
   }
 
   .text-white h1, .text-white h2, .text-white h3,

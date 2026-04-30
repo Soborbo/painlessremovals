@@ -21,25 +21,11 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
 <section class="pclr">
   <div class="pclr-inner">
 
-    <div class="pclr-media">
-      <OptimizedPicture
-        name="house-clearance/Bristol-clearance-service-2"
-        pattern="HALF"
-        alt="Painless Removals clearing a Bristol property — sorted, donated, recycled responsibly."
-        loading="lazy"
-        class="pclr-img"
-      />
-      <div class="pclr-media-tag">
-        <span class="pclr-tag-dot" aria-hidden="true"></span>
-        Sorted, donated, recycled — landfill last
-      </div>
-    </div>
-
-    <div class="pclr-copy">
+    <header class="pclr-header">
       <div class="pclr-eyebrow">Beyond the move</div>
       <h2 class="pclr-h2">
-        House clearances,<br />
-        <em>handled the same way.</em>
+        House clearances —<br />
+        <em>thoughtful, kind, responsibly green.</em>
       </h2>
       <p class="pclr-lead">
         For empty homes, probate sales, and the more difficult moments —
@@ -47,6 +33,22 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
         the people involved. From a single room to a full house, we
         can take care of everything inside.
       </p>
+    </header>
+
+    <div class="pclr-body">
+      <div class="pclr-media">
+        <OptimizedPicture
+          name="house-clearance/Bristol-clearance-service-2"
+          pattern="HALF"
+          alt="Painless Removals clearing a Bristol property — sorted, donated, recycled responsibly."
+          loading="lazy"
+          class="pclr-img"
+        />
+        <div class="pclr-media-tag">
+          <span class="pclr-tag-dot" aria-hidden="true"></span>
+          Sorted, donated, recycled — landfill last
+        </div>
+      </div>
 
       <ul class="pclr-points">
         <li>
@@ -78,13 +80,13 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
           </div>
         </li>
       </ul>
+    </div>
 
-      <div class="pclr-cta">
-        <a href={callbackHref} class="pclr-btn pclr-btn-orange">Request a clearance callback</a>
-        <a href={`tel:${PHONE_TEL}`} class="pclr-btn-text">
-          Or speak to us — {PHONE_DISPLAY}
-        </a>
-      </div>
+    <div class="pclr-cta">
+      <a href={callbackHref} class="pclr-btn pclr-btn-orange">Request a clearance callback</a>
+      <a href={`tel:${PHONE_TEL}`} class="pclr-btn-text">
+        Or speak to us — {PHONE_DISPLAY}
+      </a>
     </div>
 
   </div>
@@ -114,22 +116,35 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
   }
 
   .pclr-inner {
-    max-width: 1280px;
+    max-width: 1080px;
     margin: 0 auto;
-    padding: 90px 28px;
+    padding: 60px 28px;
     display: grid;
-    grid-template-columns: 1fr 1.05fr;
-    gap: 64px;
+    gap: 32px;
+  }
+
+  /* ---- Header ---- */
+  .pclr-header {
+    max-width: 680px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* ---- Body (image + bullets) ---- */
+  .pclr-body {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 40px;
     align-items: center;
   }
 
   /* ---- Media ---- */
   .pclr-media {
     position: relative;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 2;
     overflow: hidden;
     background: var(--pclr-petrol);
-    box-shadow: 0 30px 70px rgba(14, 60, 84, 0.18);
+    box-shadow: 0 18px 44px rgba(14, 60, 84, 0.14);
   }
   .pclr-media :global(.pclr-img) {
     width: 100%;
@@ -191,12 +206,12 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
   }
   .pclr-h2 {
     font-family: var(--pclr-serif);
-    font-size: clamp(28px, 3.4vw, 46px);
-    line-height: 1.06;
+    font-size: clamp(22px, 2.6vw, 34px);
+    line-height: 1.1;
     font-weight: 400;
     color: var(--pclr-petrol);
-    margin: 0 0 18px;
-    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    letter-spacing: -0.015em;
   }
   .pclr-h2 em {
     font-style: italic;
@@ -205,32 +220,32 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
   }
   .pclr-lead {
     color: var(--pclr-muted);
-    font-size: 17px;
-    line-height: 1.7;
-    margin: 0 0 28px;
-    max-width: 540px;
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 0 auto;
+    max-width: 600px;
   }
 
   .pclr-points {
     list-style: none;
     padding: 0;
-    margin: 0 0 32px;
+    margin: 0;
     display: grid;
-    gap: 14px;
+    gap: 8px;
   }
   .pclr-points li {
     display: flex;
     align-items: flex-start;
-    gap: 16px;
-    padding: 12px 0;
+    gap: 14px;
+    padding: 8px 0;
     border-bottom: 1px solid var(--pclr-line);
   }
   .pclr-points li:last-child { border-bottom: 0; }
   .pclr-bullet {
-    flex: 0 0 8px;
-    width: 8px;
-    height: 8px;
-    margin-top: 9px;
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    margin-top: 8px;
     background: var(--pclr-gold);
     transform: rotate(45deg);
   }
@@ -240,36 +255,36 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
   }
   .pclr-point-title {
     font-family: var(--pclr-serif);
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--pclr-petrol);
     display: block;
-    margin-bottom: 4px;
-    letter-spacing: -0.01em;
+    margin-bottom: 2px;
+    letter-spacing: -0.005em;
   }
   .pclr-point-text {
     display: block;
-    font-size: 14.5px;
-    line-height: 1.55;
+    font-size: 13.5px;
+    line-height: 1.5;
     color: var(--pclr-muted);
   }
 
   .pclr-cta {
     display: flex;
-    flex-wrap: wrap;
-    gap: 22px;
+    flex-direction: column;
     align-items: center;
+    gap: 16px;
   }
   .pclr-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 16px 28px;
+    padding: 13px 24px;
     font-family: var(--pclr-sans);
     font-weight: 700;
-    font-size: 13px;
-    letter-spacing: 0.18em;
+    font-size: 12px;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     text-decoration: none;
     border-radius: 2px;
@@ -297,18 +312,20 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
 
   @media (max-width: 1080px) {
     .pclr-inner {
-      grid-template-columns: 1fr;
       gap: 40px;
       padding: 64px 28px;
     }
-    .pclr-media { aspect-ratio: 16 / 10; }
+    .pclr-body {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .pclr-media { aspect-ratio: 16 / 10; max-width: 640px; margin: 0 auto; width: 100%; }
     .pclr-h2 { font-size: clamp(26px, 5vw, 38px); }
   }
 
   @media (max-width: 720px) {
     .pclr-inner { padding: 56px 22px; }
-    .pclr-cta { flex-direction: column; align-items: flex-start; gap: 14px; }
-    .pclr-btn { width: 100%; }
+    .pclr-btn { width: 100%; max-width: 360px; }
     .pclr-media-tag { left: 14px; bottom: 14px; font-size: 10.5px; padding: 8px 12px; }
   }
 </style>

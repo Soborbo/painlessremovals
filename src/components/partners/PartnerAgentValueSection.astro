@@ -1,0 +1,268 @@
+---
+/**
+ * "For partner agents" section — appears on the agent-referral and KF
+ * client-facing landing pages. Speaks to the *agent* if they happen to
+ * be reading the page they're sharing. Surfaces the four headline
+ * partnership USPs in a compact strip and links through to the full
+ * agent partnership page for detail.
+ *
+ * The four USPs are kept in sync with the cards on /partners/estate-agents/.
+ */
+
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+---
+
+<section class="pagsec">
+  <div class="pagsec-inner">
+
+    <header class="pagsec-head">
+      <div class="pagsec-eyebrow">For partner agents</div>
+      <h2 class="pagsec-h2">
+        Sharing this with a client? <em>Here&rsquo;s what&rsquo;s in it for you.</em>
+      </h2>
+      <p class="pagsec-lead">
+        Painless was built for chains, exchanges, and the unpredictable shape
+        of a property completion. Estate agents who refer to us get more than
+        a removal partner. They get a tool that protects the sale and the
+        client experience.
+      </p>
+    </header>
+
+    <ul class="pagsec-grid">
+      <li class="pagsec-card-with-image">
+        <div class="pagsec-image">
+          <OptimizedPicture
+            name="partners/estate-agent-referral-fee-dashboard"
+            pattern="QUARTER"
+            alt="Estate agent referral dashboard showing completed moves and referral fees earned"
+            class="pagsec-img"
+          />
+        </div>
+        <div class="pagsec-card-body">
+          <div class="pagsec-num">01</div>
+          <h3>Referral Fee</h3>
+          <p>Paid monthly on every completed move. Full reporting shows which referrals converted. NTS-compliant disclosure documentation provided.</p>
+        </div>
+      </li>
+      <li class="pagsec-card-with-image">
+        <div class="pagsec-image">
+          <OptimizedPicture
+            name="homepage/packing-video-guide"
+            pattern="QUARTER"
+            alt="Painless Removals professional packing guide demonstrated by Jay Newton"
+            class="pagsec-img"
+          />
+        </div>
+        <div class="pagsec-card-body">
+          <div class="pagsec-num">02</div>
+          <h3>Professional Packing Guide</h3>
+          <p>We give your client our full professional packing guide, the same room-by-room playbook our crews use, branded for you to share at viewings or completion.</p>
+        </div>
+      </li>
+      <li class="pagsec-card-with-image">
+        <div class="pagsec-image">
+          <OptimizedPicture
+            name="partners/estate-agent-nts-compliance-disclosure-pack"
+            pattern="QUARTER"
+            alt="NTS-compliant disclosure pack and referral-arrangement documents for estate agents"
+            class="pagsec-img"
+          />
+        </div>
+        <div class="pagsec-card-body">
+          <div class="pagsec-num">03</div>
+          <h3>Compliance Done for You</h3>
+          <p>Pre-written NTS disclosure text and pro-forma documents so your referral arrangement is compliant from day one. We hand you the paperwork ready to use.</p>
+        </div>
+      </li>
+      <li class="pagsec-card-with-image">
+        <div class="pagsec-image">
+          <OptimizedPicture
+            name="partners/estate-agent-branded-referral-page"
+            pattern="QUARTER"
+            alt="Branded estate-agent referral page on a laptop, with a client callback request form"
+            class="pagsec-img"
+          />
+        </div>
+        <div class="pagsec-card-body">
+          <div class="pagsec-num">04</div>
+          <h3>Branded Referral Page</h3>
+          <p>Your own affiliate page where you can submit client referrals directly. Tracked to your agency, instant notification to our team, auto-intro email to your client.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="pagsec-cta">
+      <a href="/partners/estate-agents/" class="pagsec-link">
+        See the full agent partnership
+        <span class="pagsec-arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .pagsec {
+    --pag-petrol: #0E3C54;
+    --pag-petrol-deep: #0A2F41;
+    --pag-orange: #F16B21;
+    --pag-orange-dark: #D85818;
+    --pag-gold: #D4A84B;
+    --pag-gold-light: #F5E6C8;
+    --pag-cream: #FAF7F2;
+    --pag-cream-deep: #F2ECE0;
+    --pag-paper: #FFFFFF;
+    --pag-ink: #1B2A38;
+    --pag-muted: #5C6470;
+    --pag-line: #E0D6C4;
+    --pag-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+    --pag-sans: 'DM Sans', system-ui, sans-serif;
+
+    /* Dark petrol background — strong visual break from any cream/paper section above */
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(241, 107, 33, 0.08), transparent 60%),
+      radial-gradient(80% 60% at 0% 100%, rgba(212, 168, 75, 0.10), transparent 60%),
+      var(--pag-petrol);
+    color: #EAF1F6;
+    font-family: var(--pag-sans);
+    border-top: 4px solid var(--pag-gold);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  .pagsec-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 72px 28px;
+  }
+
+  .pagsec-head {
+    max-width: 720px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  .pagsec-eyebrow {
+    color: var(--pag-gold);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .pagsec-h2 {
+    font-family: var(--pag-serif);
+    font-size: clamp(24px, 2.8vw, 36px);
+    line-height: 1.2;
+    font-weight: 400;
+    color: #FFFFFF;
+    margin: 0 0 16px;
+    letter-spacing: -0.015em;
+  }
+  .pagsec-h2 em {
+    font-style: italic;
+    color: var(--pag-orange);
+    font-weight: 400;
+  }
+  .pagsec-lead {
+    color: rgba(234, 241, 246, 0.78);
+    font-size: 15px;
+    line-height: 1.65;
+    margin: 0 auto;
+    max-width: 640px;
+  }
+
+  .pagsec-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 36px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  .pagsec-grid li {
+    background: var(--pag-paper);
+    color: var(--pag-ink);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 22px 22px 24px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .pagsec-card-with-image {
+    padding: 0 !important;
+    overflow: hidden;
+  }
+  .pagsec-image {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--pag-cream-deep);
+  }
+  :global(.pagsec-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .pagsec-card-body {
+    padding: 18px 22px 22px;
+  }
+  .pagsec-num {
+    font-family: var(--pag-serif);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: var(--pag-gold);
+    margin-bottom: 12px;
+  }
+  .pagsec-grid h3 {
+    font-family: var(--pag-serif);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--pag-petrol);
+    margin: 0 0 10px;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  .pagsec-grid p {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pag-muted);
+    margin: 0;
+  }
+
+  .pagsec-cta {
+    text-align: center;
+  }
+  .pagsec-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF;
+    font-family: var(--pag-sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--pag-gold);
+    transition: color 0.18s ease, border-color 0.18s ease;
+  }
+  .pagsec-link:hover { color: var(--pag-orange); border-bottom-color: var(--pag-orange); }
+  .pagsec-arrow {
+    transition: transform 0.18s ease;
+  }
+  .pagsec-link:hover .pagsec-arrow { transform: translateX(3px); }
+
+  @media (max-width: 1080px) {
+    .pagsec-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .pagsec-inner { padding: 56px 22px; }
+    .pagsec-grid { grid-template-columns: 1fr; gap: 14px; }
+    .pagsec-grid li { padding: 20px 22px 22px; }
+    .pagsec-card-with-image { padding: 0 !important; }
+    .pagsec-card-body { padding: 18px 22px 22px; }
+  }
+</style>

@@ -1224,9 +1224,9 @@
     "height": 4128,
     "format": "jpg"
   },
-  "later-life/later-life-moves": {
-    "width": 1920,
-    "height": 1440,
+  "later-life/Bristol-care-home-community": {
+    "width": 5168,
+    "height": 3420,
     "format": "jpg"
   },
   "logos/aim-logo": {
@@ -1400,6 +1400,21 @@
     "format": "png"
   },
   "partners/elder-removal": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/estate-agent-branded-referral-page": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/estate-agent-nts-compliance-disclosure-pack": {
+    "width": 1536,
+    "height": 1024,
+    "format": "png"
+  },
+  "partners/estate-agent-referral-fee-dashboard": {
     "width": 1536,
     "height": 1024,
     "format": "png"

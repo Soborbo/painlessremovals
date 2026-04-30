@@ -13,7 +13,9 @@
  */
 
 import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
 import PartnerClearanceSection from '@/components/partners/PartnerClearanceSection.astro';
+import PartnerAgentValueSection from '@/components/partners/PartnerAgentValueSection.astro';
 import { siteConfig } from '@/config/site.config';
 
 const pageTitle = 'Knight Frank Bristol × Painless Removals';
@@ -39,11 +41,11 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
             Your move.<br />
             <em>Handled</em><span class="kf-period">.</span> Painlessly<span class="kf-period">.</span>
           </h1>
-          <div class="kf-hero-kicker">Discreet · Careful · Independent since 1978</div>
+          <div class="kf-hero-kicker">Reliable · Careful · Established 1978</div>
           <p class="kf-hero-lead">
-            For Knight Frank Bristol clients who value their homes, their time,
-            and a move that is handled with the same care as the sale itself
-            — from first box to the last picture back on the wall.
+            Every move in the chain gets its own full day — so you get our
+            full attention, start to finish.
+            <em>Done the way it should be done, since 1978.</em>
           </p>
 
           <div class="kf-hero-cta">
@@ -57,7 +59,7 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
           <div class="kf-hero-stats">
             <div class="kf-stat">
               <span class="kf-stat-num">1978</span>
-              <span class="kf-stat-label">Independent since</span>
+              <span class="kf-stat-label">Established</span>
             </div>
             <div class="kf-stat-divider"></div>
             <div class="kf-stat">
@@ -240,8 +242,6 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
           <div>Antique furniture</div>
           <div>Grand &amp; upright pianos</div>
           <div>Wine cellars</div>
-          <div>Georgian &amp; listed homes</div>
-          <div>Narrow access &amp; cranes</div>
         </div>
       </div>
     </section>
@@ -261,18 +261,27 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
         <div class="kf-gold-hair"></div>
 
         <blockquote class="kf-quote">
-          <p>"They did what it says on the tin — made the whole process very painless. Friendly, efficient, the whole experience was effortless."</p>
-          <cite>Ellen J. · Clifton, BS8</cite>
+          <p>"We had a nightmare of an exchange and completion. I could only confirm the moving date the evening before, which for us was very stressful — but Jay was so wonderfully adaptable. I couldn't have chosen a better removal company."</p>
+          <footer class="kf-quote-foot">
+            <img src="/images/reviews/michelle-hayes.avif" alt="Michelle Hayes" class="kf-quote-photo" width="36" height="36" loading="lazy" />
+            <cite>Michelle Hayes &middot; Trustpilot review</cite>
+          </footer>
         </blockquote>
 
         <blockquote class="kf-quote">
-          <p>"Prompt and professional from the initial quote through to the end of the removal. We went for the full packing package — painless from start to finish."</p>
-          <cite>James &amp; Victoria W. · Redland, BS6</cite>
+          <p>"The level of communication was fantastic. We had the full packing service — unbelievable how quickly and efficiently they packed and labelled everything. On moving day, everything was back in the right room without any fuss, and the furniture was remade. All done by 5pm."</p>
+          <footer class="kf-quote-foot">
+            <img src="/images/reviews/james-collard.avif" alt="James Collard" class="kf-quote-photo" width="36" height="36" loading="lazy" />
+            <cite>James Collard &middot; Google review</cite>
+          </footer>
         </blockquote>
 
         <blockquote class="kf-quote">
-          <p>"Couldn't recommend them more. Very kind, very efficient. They go above and beyond."</p>
-          <cite>Charles H. · Sneyd Park, BS9</cite>
+          <p>"They were prompt and professional from the initial quote through to the end of the removal process. The whole experience was effortless. I wouldn't hesitate to use Painless Removals again."</p>
+          <footer class="kf-quote-foot">
+            <img src="/images/reviews/john-jones.avif" alt="Dr. John Jones" class="kf-quote-photo" width="36" height="36" loading="lazy" />
+            <cite>Dr. John Jones &middot; Google review</cite>
+          </footer>
         </blockquote>
 
         <div class="kf-reviews-badge">
@@ -315,12 +324,18 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
 
         <div class="kf-jay">
           <div class="kf-jay-avatar">
-            <img src="/img/knight-frank/jay-newton.webp" alt="Jay Newton, Director, Painless Removals" />
+            <OptimizedPicture
+              name="about/team/Tom"
+              pattern="ICON"
+              alt="Tom, Customer Relationships at Painless Removals"
+              loading="lazy"
+              class="kf-jay-avatar-img"
+            />
           </div>
           <div class="kf-jay-body">
             <div class="kf-jay-mark">"</div>
-            <p>The move stays firmly in our hands, so you can think about everything else moving day involves, and trust us with the rest.</p>
-            <cite>Jay Newton — Director, Painless Removals</cite>
+            <p>It's part of who we are: we don't just move people's things from one address to another — we lift the weight of moving day off their shoulders entirely. That's what painless actually means around here.</p>
+            <cite>Tom — Customer Relationships, Painless Removals</cite>
           </div>
         </div>
       </div>
@@ -334,7 +349,7 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
         <div class="kf-callback-card">
           <div class="kf-callback-head">
             <div class="kf-eyebrow">Request a callback</div>
-            <h2 class="kf-h2">Knight Frank introduced you. <em>We'll take it from here.</em></h2>
+            <h2 class="kf-h2">Knight Frank introduced you.<br /><em>We'll take it from here.</em></h2>
             <p class="kf-callback-lead">
               Leave your details below and we'll be in touch as soon as
               possible to arrange a home survey at a time that suits you.
@@ -396,6 +411,11 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
         </div>
       </div>
     </section>
+
+    <!-- ============================================================
+         FOR PARTNER AGENTS
+    ============================================================ -->
+    <PartnerAgentValueSection />
 
     <!-- ============================================================
          FINAL BANNER
@@ -672,6 +692,11 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     line-height: 1.6;
     color: rgba(250, 247, 242, 0.9);
   }
+  .kf-hero-lead em {
+    font-style: italic;
+    color: var(--kf-gold);
+    font-family: var(--kf-serif);
+  }
   .kf-hero-cta {
     display: flex;
     flex-wrap: wrap;
@@ -839,6 +864,85 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
   }
 
   .kf-intro { background: var(--kf-paper); }
+  .kf-intro-quote {
+    position: relative;
+    margin: 40px auto 0;
+    max-width: 720px;
+    padding: 36px 40px 32px;
+    background: var(--kf-cream);
+    border: 1px solid var(--kf-line);
+    box-shadow: 0 24px 60px rgba(14, 60, 84, 0.08);
+  }
+  .kf-intro-quote-mark {
+    position: absolute;
+    top: -8px;
+    left: 24px;
+    font-family: var(--kf-serif);
+    font-size: 130px;
+    line-height: 1;
+    color: var(--kf-gold);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .kf-intro-quote p {
+    position: relative;
+    z-index: 1;
+    font-family: var(--kf-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 21px;
+    line-height: 1.55;
+    color: var(--kf-petrol);
+    margin: 0 0 28px;
+    letter-spacing: -0.005em;
+  }
+  .kf-intro-quote p em {
+    font-style: italic;
+    color: var(--kf-orange);
+    font-family: var(--kf-serif);
+  }
+  .kf-intro-quote footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--kf-line);
+  }
+  .kf-intro-quote-avatar {
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    border-radius: 50%;
+    border: 2px solid var(--kf-gold);
+    overflow: hidden;
+    background: var(--kf-petrol);
+  }
+  .kf-intro-quote-avatar :global(.kf-intro-quote-avatar-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .kf-intro-quote cite {
+    font-style: normal;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .kf-intro-quote cite strong {
+    font-family: var(--kf-serif);
+    font-weight: 500;
+    font-size: 17px;
+    color: var(--kf-petrol);
+    letter-spacing: -0.01em;
+  }
+  .kf-intro-quote cite span {
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--kf-muted);
+    font-weight: 600;
+  }
 
   /* ---- TIERS ---- */
   .kf-tiers-section {
@@ -1054,27 +1158,27 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     margin: 0;
   }
   .kf-specialist-items {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px 22px;
+    display: flex;
+    flex-direction: column;
   }
   .kf-specialist-items div {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
     font-size: 13px;
     letter-spacing: 0.04em;
     padding: 10px 0;
     border-bottom: 1px solid rgba(212, 168, 75, 0.18);
     color: rgba(250, 247, 242, 0.94);
+    white-space: nowrap;
   }
+  .kf-specialist-items div:last-child { border-bottom: 0; }
   .kf-specialist-items div::before {
     content: "";
     flex: 0 0 10px;
     width: 10px;
     height: 1px;
     background: var(--kf-gold);
-    margin-top: 0.7em;
   }
 
   /* ---- WHY + HOW ---- */
@@ -1106,6 +1210,27 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
     border-left: 3px solid var(--kf-gold);
     padding: 4px 0 4px 20px;
     margin: 0 0 24px;
+  }
+  .kf-quote p mark {
+    background: rgba(212, 168, 75, 0.22);
+    color: inherit;
+    padding: 0 2px;
+  }
+  .kf-quote-foot {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .kf-quote-photo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--kf-gold);
+    background: var(--kf-petrol);
+    display: block;
+    flex: 0 0 36px;
   }
   .kf-quote p {
     font-family: var(--kf-serif);
@@ -1446,6 +1571,8 @@ const PHONE_TEL = PHONE_DISPLAY.replace(/\s/g, '');
      RESPONSIVE
   ============================================================ */
   @media (max-width: 1080px) {
+    .kf-intro-quote { padding: 32px 28px 28px; }
+    .kf-intro-quote p { font-size: 19px; }
     .kf-tiers { grid-template-columns: 1fr; gap: 28px; }
     .kf-tier-featured { transform: none; }
     .kf-tier-featured:hover { transform: translateY(-4px); }
