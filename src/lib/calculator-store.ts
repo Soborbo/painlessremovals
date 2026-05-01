@@ -20,6 +20,7 @@ import {
 } from './calculator-logic';
 import { CALCULATOR_CONFIG } from './calculator-config';
 import { trackError } from '@/lib/errors/tracker';
+import { generateUUID } from '@/lib/tracking/uuid';
 import type {
   PropertySize,
   OfficeSize,
@@ -668,7 +669,7 @@ export const quoteResult = computed(calculatorStore, (state): QuoteResult | null
 
 /**
  * Parse step number from URL pathname
- * e.g., /calculator/step-01 → 1, /calculator/step-10a → 10.1
+ * e.g., /instantquote/step-01 → 1, /instantquote/step-10a → 10.1
  */
 function getStepFromUrl(): number | null {
   if (typeof window === 'undefined') return null;
@@ -678,7 +679,9 @@ function getStepFromUrl(): number | null {
   // Special case: step-5b maps to 5.5 (date picker sub-step)
   if (path.includes('step-5b')) return 5.5;
 
-  const match = path.match(/\/calculator\/step-(\d+)([a-d])?/);
+  // Calculator currently lives under /instantquote/. Accept the legacy
+  // /calculator/ path too in case anything still links that way.
+  const match = path.match(/\/(?:instantquote|calculator)\/step-(\d+)([a-d])?/);
 
   if (!match) return null;
 
@@ -750,7 +753,9 @@ export function initializeStore() {
       calculatorStore.setKey('utmMedium', params.get('utm_medium'));
       calculatorStore.setKey('utmCampaign', params.get('utm_campaign'));
       calculatorStore.setKey('landingPage', window.location.pathname);
-      calculatorStore.setKey('sessionId', crypto.randomUUID());
+      // generateUUID falls back to getRandomValues / Math.random when
+      // crypto.randomUUID is missing — iOS Safari only got it in 15.4.
+      calculatorStore.setKey('sessionId', generateUUID());
       calculatorStore.setKey('startedAt', new Date().toISOString());
     }
 
@@ -819,14 +824,25 @@ function navigateToStep(step: number) {
 
 /**
  * Go to next step in the flow (respects applicable steps)
+ *
+ * If currentStep isn't in the applicable list (e.g. user landed on a step
+ * that doesn't apply to their service type, or service type changed
+ * mid-flow), advance to the first applicable step strictly greater than
+ * currentStep. Without this fallback, Continue silently does nothing.
  */
 export function nextStep() {
   const current = calculatorStore.get().currentStep;
   const steps = applicableSteps.get();
   const currentIndex = steps.indexOf(current);
 
+  let nextStepNum: number | undefined;
   if (currentIndex >= 0 && currentIndex < steps.length - 1) {
-    const nextStepNum = steps[currentIndex + 1]!;
+    nextStepNum = steps[currentIndex + 1];
+  } else if (currentIndex === -1) {
+    nextStepNum = steps.find(s => s > current);
+  }
+
+  if (nextStepNum !== undefined) {
     calculatorStore.setKey('currentStep', nextStepNum);
     saveState();
     navigateToStep(nextStepNum);
@@ -841,8 +857,15 @@ export function prevStep() {
   const steps = applicableSteps.get();
   const currentIndex = steps.indexOf(current);
 
+  let prevStepNum: number | undefined;
   if (currentIndex > 0) {
-    const prevStepNum = steps[currentIndex - 1]!;
+    prevStepNum = steps[currentIndex - 1];
+  } else if (currentIndex === -1) {
+    const earlier = steps.filter(s => s < current);
+    prevStepNum = earlier[earlier.length - 1];
+  }
+
+  if (prevStepNum !== undefined) {
     calculatorStore.setKey('currentStep', prevStepNum);
     saveState();
     navigateToStep(prevStepNum);
