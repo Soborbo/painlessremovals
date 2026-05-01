@@ -72,8 +72,14 @@ export function Step6Complications() {
   const [selected, setSelected] = useState<Complication[]>(
     state.complications || []
   );
+  // Default-enable "No complications" on fresh visits so Continue is never
+  // a dead button. Matches Step3ClearanceAccess. Returning users with picks
+  // get noneSelected=false because complications.length > 0.
   const [noneSelected, setNoneSelected] = useState(
-    state.complications !== null && state.complications !== undefined && state.complications.length === 0
+    (state.complications === null ||
+      state.complications === undefined ||
+      state.complications.length === 0) &&
+    state.currentStep >= 6
   );
 
   // Cleanup timeout on unmount
