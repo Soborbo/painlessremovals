@@ -88,6 +88,7 @@ export interface ServerTrackerConfig {
   env: 'production' | 'preview' | 'development';
   // Google Sheets API
   sheetsId?: string | undefined;
+  sheetsTab?: string | undefined;
   serviceAccountEmail?: string | undefined;
   serviceAccountKey?: string | undefined;
   // Email alerts

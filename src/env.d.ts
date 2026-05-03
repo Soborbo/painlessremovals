@@ -35,6 +35,7 @@ declare namespace Cloudflare {
 
     // Error tracking
     ERROR_SHEETS_ID?: string;
+    ERROR_SHEETS_TAB?: string;
     GOOGLE_SERVICE_ACCOUNT_EMAIL?: string;
     GOOGLE_SERVICE_ACCOUNT_KEY?: string;
     ERROR_EMAIL_TO?: string;

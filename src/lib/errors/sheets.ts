@@ -26,6 +26,11 @@ export async function appendToSheet(
     return { ok: false, error: 'missing_config' };
   }
 
+  // Google A1 notation: wrap sheet name in single quotes (escaping any
+  // embedded single quote by doubling) so names with spaces or special
+  // chars are accepted. URL-encode the whole quoted token afterwards.
+  const quotedSheet = `'${sheetName.replace(/'/g, "''")}'`;
+
   try {
     // 1. JWT token generalas
     const token = await getAccessToken(serviceAccountEmail, serviceAccountKey);
@@ -55,7 +60,7 @@ export async function appendToSheet(
       row.ip ?? '',
     ];
 
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(sheetName)}!A:U:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(`${quotedSheet}!A:U`)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
 
     const resp = await fetch(url, {
       method: 'POST',
