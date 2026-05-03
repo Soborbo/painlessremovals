@@ -168,13 +168,14 @@ export const POST: APIRoute = async ({ request }) => {
 
     // --- 8. Log to Google Sheets (API v4) ---
     const sheetsId = (env as any).ERROR_SHEETS_ID as string | undefined;
+    const sheetsTab = (env as any).ERROR_SHEETS_TAB as string | undefined;
     const saEmail = (env as any).GOOGLE_SERVICE_ACCOUNT_EMAIL as string | undefined;
     const saKey = (env as any).GOOGLE_SERVICE_ACCOUNT_KEY as string | undefined;
 
     if (sheetsId && saEmail && saKey && severity !== 'INFO') {
       try {
         const result = await appendToSheet(
-          { spreadsheetId: sheetsId, serviceAccountEmail: saEmail, serviceAccountKey: saKey },
+          { spreadsheetId: sheetsId, serviceAccountEmail: saEmail, serviceAccountKey: saKey, sheetName: sheetsTab },
           row,
         );
         if (!result.ok) console.error('SHEETS_APPEND_FAILED', result.status, result.error);

@@ -59,6 +59,7 @@ export async function trackServerError(
           spreadsheetId: config.sheetsId,
           serviceAccountEmail: config.serviceAccountEmail,
           serviceAccountKey: config.serviceAccountKey,
+          sheetName: config.sheetsTab,
         },
         row,
       );
@@ -117,6 +118,7 @@ export function buildErrorConfig(env: Record<string, string | undefined>): Serve
        : env.CF_PAGES_BRANCH ? 'preview'
        : 'development',
     sheetsId: env.ERROR_SHEETS_ID || undefined,
+    sheetsTab: env.ERROR_SHEETS_TAB || undefined,
     serviceAccountEmail: env.GOOGLE_SERVICE_ACCOUNT_EMAIL || undefined,
     serviceAccountKey: env.GOOGLE_SERVICE_ACCOUNT_KEY || undefined,
     alertEmailTo: env.ERROR_EMAIL_TO || undefined,
