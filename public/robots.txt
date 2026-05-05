@@ -1,17 +1,22 @@
 User-agent: *
 Allow: /
+Disallow: /vehicle-check/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /vehicle-check/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /vehicle-check/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /vehicle-check/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /vehicle-check/
 
 Sitemap: https://painlessremovals.com/sitemap-index.xml
 Sitemap: https://painlessremovals.com/video-sitemap.xml
