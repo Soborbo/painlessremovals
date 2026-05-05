@@ -22,29 +22,50 @@ if (step === 'step-01') {
   return Astro.redirect('/instantquote/', 301);
 }
 
+// Step 12 now lives at /instantquote/your-quote/
+if (step === 'step-12') {
+  return Astro.redirect('/instantquote/your-quote/', 301);
+}
+
 // Validate step
 const stepConfig = getStepById(step || '');
 
+// Invalid step → render a branded 404 within layout-calculator (which
+// embeds GTM). Returning Response(null, { status: 404 }) here used to
+// emit an empty body, leaving the URL "Not tagged" in Google Ads.
 if (!stepConfig) {
-  // Return a real 404 instead of a 301 → 404 hop. Astro renders the
-  // prerendered 404.astro automatically when the response status is 404.
   Astro.response.status = 404;
-  return new Response(null, { status: 404 });
 }
 
-// Step 12 now lives at /instantquote/your-quote/
-if (step === 'step-12') {
-  return Astro.redirect('/instantquote/your-quote/');
-}
-
-// Get step order for progress
-const stepOrder = stepConfig.order;
+const stepOrder = stepConfig?.order ?? 1;
 ---
 
-<LayoutCalculator
-  title={stepConfig.title.en}
-  description={stepConfig.description?.en}
-  currentStep={stepOrder}
->
-  <CalculatorStepRenderer client:load stepId={step!} />
-</LayoutCalculator>
+{stepConfig ? (
+  <LayoutCalculator
+    title={stepConfig.title.en}
+    description={stepConfig.description?.en}
+    currentStep={stepOrder}
+  >
+    <CalculatorStepRenderer client:load stepId={step!} />
+  </LayoutCalculator>
+) : (
+  <LayoutCalculator
+    title="Page not found"
+    description="The calculator step you requested does not exist."
+    hideProgressBar={true}
+  >
+    <div class="text-center py-16">
+      <p class="text-6xl font-bold text-muted-foreground mb-4">404</p>
+      <h1 class="text-2xl md:text-3xl font-semibold mb-4">Page not found</h1>
+      <p class="text-muted-foreground mb-8 max-w-md mx-auto">
+        Sorry, this calculator step does not exist or has been moved.
+      </p>
+      <a
+        href="/instantquote/"
+        class="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-md font-medium hover:opacity-90 transition-opacity"
+      >
+        Start a new quote
+      </a>
+    </div>
+  </LayoutCalculator>
+)}

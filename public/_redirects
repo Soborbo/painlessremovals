@@ -1,13 +1,16 @@
 # ============================================
 # PAINLESS REMOVALS — CLOUDFLARE WORKERS STATIC ASSETS REDIRECTS
-# Updated: 2026-04-27 (migrated from Pages to Workers)
+# Updated: 2026-05-05
 #
 # Workers Static Assets only accepts RELATIVE URLs here. Absolute URL
 # redirects (e.g. www → non-www) must be handled by a Cloudflare zone
 # Bulk Redirect rule or a Worker route, NOT in this file.
 #
-# All static 1:1 redirects live in src/data/redirects.ts and are
-# built into HTML redirect pages by Astro.
+# Static 1:1 redirects live in src/data/redirects.ts; the
+# @astrojs/cloudflare adapter appends each entry to this file at build
+# time as a proper HTTP 301 redirect. Splats / wildcards stay here in
+# the source file because the Astro `redirects` config doesn't accept
+# `:splat` patterns.
 # ============================================
 
 # ── Date archive splats → packing guide ─────────────────────
@@ -27,3 +30,13 @@
 # ── WordPress feed patterns → homepage ──────────────────────
 /*/feed  /  301
 /*/feed/  /  301
+
+# ── Legacy /calculator/* paths from the old standalone calc subdomain ─
+# Specific step-12 → quote result mapping must come before the wildcard.
+# Anything else under /calculator/ falls through to the matching step on
+# /instantquote/ (e.g. /calculator/step-04 → /instantquote/step-04).
+/calculator/step-12  /instantquote/your-quote/  301
+/calculator/step-12/  /instantquote/your-quote/  301
+/calculator/your-quote  /instantquote/your-quote/  301
+/calculator/your-quote/  /instantquote/your-quote/  301
+/calculator/*  /instantquote/:splat  301
