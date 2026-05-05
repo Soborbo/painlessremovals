@@ -3,15 +3,11 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import cloudflare from '@astrojs/cloudflare';
 import react from '@astrojs/react';
-import { redirectMap } from './src/data/redirects.ts';
 import { lastmod } from './src/data/lastmod.ts';
 
-const staticRedirects = Object.fromEntries(
-  [...redirectMap].map(([from, to]) => {
-    const key = from.endsWith('/') ? from : `${from}/`;
-    return [key, { status: 301, destination: to }];
-  }),
-);
+// 1:1 legacy URL redirects live in a Cloudflare zone Bulk Redirect List
+// (managed via the dashboard, not in this repo). Splat / wildcard
+// patterns stay in public/_redirects. See public/_redirects header.
 
 // Pages marked noindex — must not appear in sitemap
 const noindexPages = [
@@ -68,10 +64,6 @@ export default defineConfig({
   adapter: cloudflare({
     platformProxy: { enabled: true },
   }),
-  redirects: {
-    '/senior-removals-bristol/': '/later-life-moves/',
-    ...staticRedirects,
-  },
   integrations: [
     react(),
     sitemap({
