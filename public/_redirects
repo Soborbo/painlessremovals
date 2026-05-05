@@ -30,13 +30,3 @@
 # ── WordPress feed patterns → homepage ──────────────────────
 /*/feed  /  301
 /*/feed/  /  301
-
-# ── Legacy /calculator/* paths from the old standalone calc subdomain ─
-# Specific step-12 → quote result mapping must come before the wildcard.
-# Anything else under /calculator/ falls through to the matching step on
-# /instantquote/ (e.g. /calculator/step-04 → /instantquote/step-04).
-/calculator/step-12  /instantquote/your-quote/  301
-/calculator/step-12/  /instantquote/your-quote/  301
-/calculator/your-quote  /instantquote/your-quote/  301
-/calculator/your-quote/  /instantquote/your-quote/  301
-/calculator/*  /instantquote/:splat  301

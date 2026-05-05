@@ -126,19 +126,6 @@ export const redirectMap = new Map<string, string>([
   ['/calculation-result-free-kitchen-packing', '/removal-cost-calculator/'],
   ['/calculation-result-man-van', '/removal-cost-calculator/'],
 
-  // ── Old in-flow result paths inside /instantquote/ ────────
-  // These show up in Google Ads as "Not tagged" because they fall into
-  // [step].astro and used to return an empty 404 body. Redirect to the
-  // current quote result page instead.
-  ['/instantquote/calculation-result', '/instantquote/your-quote/'],
-  ['/instantquote/result', '/instantquote/your-quote/'],
-  ['/instantquote/404', '/instantquote/'],
-
-  // ── Old /your-quote root → calculator quote result ──────
-  // Mirrors the legacy redirect from calc.painlessremovals.com.
-  // /calculator/* is handled at the edge in public/_redirects.
-  ['/your-quote', '/instantquote/your-quote/'],
-
   // ── Old form confirmation pages → contact ─────────────────
   ['/clearancecallback', '/house-and-waste-clearance/'],
   ['/working-on-quote', '/removal-cost-calculator/'],
