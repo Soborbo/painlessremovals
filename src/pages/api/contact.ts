@@ -157,8 +157,13 @@ export const POST: APIRoute = async (context) => {
         { userAgent, ipOverride: ipAddress },
       ).catch(() => { /* best-effort */ });
 
+      // Meta CAPI uses the standard `Contact` event name so Meta's
+      // Smart Bidding optimizes against it and so it dedupes with the
+      // browser-side Pixel fire (GTM tag `Meta Pixel — Contact (form
+      // submit)` fires `Contact` on the `contact_form_submit` trigger
+      // with the same event_id).
       void sendMetaCapi(env, [{
-        event_name: 'contact_form_conversion',
+        event_name: 'Contact',
         event_id,
         event_time: Math.floor(Date.now() / 1000),
         event_source_url: request.headers.get('referer') || `https://painlessremovals.com/contact/`,
