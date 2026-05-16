@@ -185,8 +185,12 @@ export const POST: APIRoute = async (context) => {
         { userAgent, ipOverride: ipAddress },
       ).catch(() => { /* best-effort */ });
 
+      // Meta CAPI uses the standard `Lead` event name so Smart Bidding
+      // optimizes against it. Browser-side fires `Lead` with the same
+      // event_id via the v2 GTM tag `Meta Pixel — Lead (clearance
+      // callback)`, so Meta dedupes on (event_name='Lead', event_id).
       void sendMetaCapi(env, [{
-        event_name: 'clearance_callback_conversion',
+        event_name: 'Lead',
         event_id,
         event_time: Math.floor(Date.now() / 1000),
         event_source_url: request.headers.get('referer') || `https://painlessremovals.com/house-and-waste-clearance/`,

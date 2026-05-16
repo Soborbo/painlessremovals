@@ -28,7 +28,14 @@ const gtmId = env.GTM_ID || import.meta.env.GTM_ID || '';
     functionality_storage: 'denied',
     personalization_storage: 'denied',
     security_storage: 'granted',
-    wait_for_update: 500,
+    // CookieYes is loaded by a GTM tag, so its boot time competes with
+    // every other tag on the Consent Initialization trigger. 500ms is
+    // long enough on a fast desktop connection but routinely too short
+    // on mobile / weak networks — Google then locks in the denied
+    // defaults and the rest of the session attributes to (not set),
+    // poisoning Smart Bidding's learning signal. 2000ms matches the
+    // CookieYes tag's own waitForTime parameter.
+    wait_for_update: 2000,
   });
 </script>
 

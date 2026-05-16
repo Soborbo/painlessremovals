@@ -21,6 +21,7 @@ import {
 import { CALCULATOR_CONFIG } from './calculator-config';
 import { trackError } from '@/lib/errors/tracker';
 import { generateUUID } from '@/lib/tracking/uuid';
+import { markActiveFormsAsHandedOff } from '@/lib/tracking/form-tracking';
 import type {
   PropertySize,
   OfficeSize,
@@ -813,6 +814,10 @@ export function stepNumberToUrl(step: number): string {
  */
 function navigateToStep(step: number) {
   if (typeof window !== 'undefined') {
+    // Mark the calculator form as handed-off so the pagehide fired
+    // during this step transition doesn't beacon `form_abandonment`.
+    // Without this, every step navigation looks like an abandonment.
+    markActiveFormsAsHandedOff();
     // Step 12 (quote/result) now lives at /instantquote/your-quote/
     if (step === 12) {
       window.location.href = '/instantquote/your-quote/';

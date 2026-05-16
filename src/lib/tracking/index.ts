@@ -33,6 +33,7 @@ export {
   trackFormStep,
   trackFormSubmitted,
   registerFormForAbandonment,
+  markActiveFormsAsHandedOff,
 } from './form-tracking';
 
 export { initGlobalListeners } from './global-listeners';

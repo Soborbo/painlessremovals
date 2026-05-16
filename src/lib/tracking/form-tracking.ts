@@ -80,6 +80,22 @@ export function trackFormSubmitted(formId: string): void {
   if (state) state.submitted = true;
 }
 
+/**
+ * Marks every currently-tracked form as "handed off" so the next
+ * `pagehide` / `visibilitychange` won't fire `form_abandonment` for
+ * them.
+ *
+ * Use this at the start of an intentional intra-funnel navigation
+ * (e.g. moving between steps of the multi-page calculator). Each step
+ * is a hard page load, so without this the pagehide fired during the
+ * transition treats the step navigation as an abandonment and beacons
+ * to `/api/track/abandonment`. Result before this fix: GA4 reported
+ * roughly 2× more `form_abandonment` events than `form_start`.
+ */
+export function markActiveFormsAsHandedOff(): void {
+  activeForms.forEach((state) => { state.submitted = true; });
+}
+
 function reportAbandonment(state: FormState): void {
   if (Date.now() - state.startedAt < ABANDONMENT_MIN_DWELL_MS) return;
 
