@@ -162,7 +162,7 @@ ad_personalization: denied
 functionality_storage: denied
 personalization_storage: denied
 security_storage:  granted
-wait_for_update:   500ms
+wait_for_update:   2000ms
 ```
 
 Tag-level consent settings in the GTM container:
