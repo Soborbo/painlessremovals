@@ -7,7 +7,7 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE, checkTurnstileFailOpen } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
 import { logger } from '@/lib/utils/logger';
@@ -67,14 +67,23 @@ export const POST: APIRoute = async (context) => {
       return json({ error: 'Please provide a valid UK phone number.' }, 400);
     }
 
-    // Turnstile — fail-open (skipped entirely for internal forms). A
-    // missing or blocked widget no longer dead-ends the enquiry; the
-    // Origin check + honeypot + per-IP rate limit above are the backstops.
-    // Only an explicit Cloudflare "this is a bot" verdict is rejected.
+    // Turnstile (skip for internal forms)
     const isInternalForm = !!(source && INTERNAL_SOURCES.includes(source));
-    if (!isInternalForm) {
-      const ts = await checkTurnstileFailOpen(turnstileToken, env.TURNSTILE_SECRET_KEY);
-      if (ts === 'blocked') return json({ error: 'Security verification failed. Please try again.' }, 403);
+    if (!turnstileToken && !isInternalForm) {
+      return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
+    }
+    if (turnstileToken) {
+      if (!env.TURNSTILE_SECRET_KEY) {
+        return json({ error: 'Security verification unavailable. Please try again.' }, 500);
+      }
+      const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+      });
+      if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
+      const tsData = await tsRes.json() as { success: boolean };
+      if (!tsData.success) return json({ error: 'Security verification failed. Please try again.' }, 403);
     }
 
     // Send email via Resend REST API

@@ -7,7 +7,7 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE, checkTurnstileFailOpen } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
@@ -81,12 +81,17 @@ export const POST: APIRoute = async (context) => {
       cvAttachment = { filename: fileName, content: arrayBufferToBase64(arrayBuffer) };
     }
 
-    // Turnstile — fail-open. A missing/blocked widget no longer blocks the
-    // application; honeypot + rate limit + Origin checks are the backstops.
-    // Only an explicit Cloudflare bot verdict is rejected.
-    if (await checkTurnstileFailOpen(turnstileToken, env.TURNSTILE_SECRET_KEY) === 'blocked') {
-      return json({ error: 'Security verification failed. Please try again.' }, 403);
-    }
+    // Turnstile
+    if (!turnstileToken) return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
+    if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Security configuration error. Please try again later.' }, 500);
+    const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+    });
+    if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
+    const tsData = await tsRes.json() as { success: boolean };
+    if (!tsData.success) return json({ error: 'Security verification failed. Please try again.' }, 403);
 
     // Send email via Resend REST API
     if (!env.RESEND_API_KEY) return json({ error: `Email service is temporarily unavailable. Please call us on ${PHONE}.` }, 500);

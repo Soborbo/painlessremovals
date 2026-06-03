@@ -455,7 +455,7 @@ const pageSchema = [serviceSchema, breadcrumbSchema];
             <span>I'm happy for Painless Removals to contact me about a partnership for my building. <span class="qs-req">*</span></span>
           </label>
 
-          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en" data-error-callback="PR_tsFailed" data-unsupported-callback="PR_tsFailed" data-timeout-callback="PR_tsFailed"></div>
+          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
 
           <div id="qs-form-error" class="qs-form-error" hidden></div>
 
@@ -524,12 +524,10 @@ const pageSchema = [serviceSchema, breadcrumbSchema];
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('That email address doesn\'t look right. Please double-check it.'); return; }
         if (!gdprConsent) { showError('Please tick the consent box so we know you\'re happy for us to be in touch.'); return; }
 
-        // Turnstile token — fail open when the widget is unavailable on this
-        // device (ad-blockers / private browsing / in-app or unsupported
-        // browsers). Only block while it's still solving.
-        var __ts = window.PR_turnstileToken(form);
-        if (!__ts.proceed) { showError('Please wait a moment for the security check to finish, then submit again.'); return; }
-        var turnstileToken = __ts.token;
+        var turnstileToken = '';
+        var tsInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (tsInput) turnstileToken = tsInput.value;
+        if (!turnstileToken) { showError('Please complete the security check before submitting.'); return; }
 
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending…';
