@@ -12,6 +12,7 @@ import { PictureImg } from '@/components/ui/picture-img';
 import {
   calculatorStore,
   setPackingTier,
+  clearPackingExtra,
   nextStep,
   prevStep,
   type PackingTier,
@@ -131,6 +132,15 @@ export function Step10aPacking() {
     if (!selected) return;
     const tier: PackingTier = selected === 'fragile' ? 'fragile' : 'fullService';
     setPackingTier(tier);
+    nextStep();
+  };
+
+  // The extras gateway is optional, so this sub-step must never force a
+  // paid packing choice. Anyone who opened it but doesn't want packing can
+  // bow out here — we clear any priced tier and drop packing from the
+  // gateway so it leaves the price, quote and emails entirely.
+  const handleNoPacking = () => {
+    clearPackingExtra();
     nextStep();
   };
 
@@ -313,6 +323,19 @@ export function Step10aPacking() {
             );
           })}
         </div>
+      </div>
+
+      {/* No-packing escape — keeps this sub-step skippable, matching the
+          gateway. Without it, Continue stays disabled until a paid tier is
+          picked, which forced packing onto people who didn't want it. */}
+      <div className="text-center">
+        <button
+          type="button"
+          onClick={handleNoPacking}
+          className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground transition-colors"
+        >
+          I don&apos;t need packing — skip this step
+        </button>
       </div>
 
       {/* Navigation */}

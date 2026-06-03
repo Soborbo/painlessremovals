@@ -783,8 +783,14 @@ export function saveState() {
  */
 export function clearState() {
   if (typeof window !== 'undefined') {
-    sessionStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem('quote_submitted');
+    // Storage access throws a SecurityError in privacy-restricted browsers
+    // (Safari "Block All Cookies", some in-app webviews). Guard it so a
+    // calculator reset can't crash the page for those users — matches the
+    // try/catch already wrapping initializeStore() and saveState().
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem('quote_submitted');
+    } catch { /* storage unavailable — nothing to clear */ }
   }
   calculatorStore.set(initialState);
 }
@@ -1118,6 +1124,22 @@ export function toggleExtrasGateway(option: ExtrasGatewayOption) {
 export function setPackingTier(tier: PackingTier) {
   const current = calculatorStore.get().extras;
   calculatorStore.setKey('extras', { ...current, packingTier: tier });
+  saveState();
+}
+
+/**
+ * Clear the packing extra entirely — the "No packing needed" escape on
+ * Step 10a. Drops the priced tier AND removes 'packing' from the gateway
+ * so the sub-step doesn't reappear and nothing packing-related leaks into
+ * the price, quote summary, emails or CRM. Pricing/result/email all gate
+ * on `extras.packingTier`, so unsetting it removes the cost everywhere.
+ */
+export function clearPackingExtra() {
+  const current = calculatorStore.get().extras;
+  const next = { ...current };
+  delete next.packingTier;
+  next.gateway = (current.gateway || []).filter((o) => o !== 'packing');
+  calculatorStore.setKey('extras', next);
   saveState();
 }
 
