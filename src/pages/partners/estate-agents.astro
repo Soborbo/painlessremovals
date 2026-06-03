@@ -589,7 +589,7 @@ const pageSchema = [serviceSchema, faqSchema];
 
           <!-- Cloudflare Turnstile -->
           <div>
-            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en" data-error-callback="PR_tsFailed" data-unsupported-callback="PR_tsFailed" data-timeout-callback="PR_tsFailed"></div>
           </div>
 
           <!-- Error message area -->
@@ -658,17 +658,16 @@ const pageSchema = [serviceSchema, faqSchema];
             return;
           }
 
-          var turnstileResponse = '';
-          var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
-          if (turnstileInput) {
-            turnstileResponse = turnstileInput.value;
-          }
-
-          if (!turnstileResponse) {
-            errorDiv.textContent = 'The security check is still loading. Please wait a moment and try again, or call us on ' + PHONE + '.';
+          // Turnstile token — fail open when the widget is unavailable on
+          // this device (ad-blockers / private browsing / in-app or
+          // unsupported browsers). Only block while it's still solving.
+          var __ts = window.PR_turnstileToken(form);
+          if (!__ts.proceed) {
+            errorDiv.textContent = 'Please wait a moment for the security check to finish, then submit again.';
             errorDiv.classList.remove('hidden');
             return;
           }
+          var turnstileResponse = __ts.token;
 
           submitBtn.disabled = true;
           submitBtn.textContent = 'SUBMITTING...';

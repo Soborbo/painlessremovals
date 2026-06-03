@@ -7,7 +7,7 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { requireAllowedOrigin, escapeHtml, stripNewlines, json } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, stripNewlines, json, checkTurnstileFailOpen } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
@@ -63,17 +63,12 @@ export const POST: APIRoute = async (context) => {
       return json({ error: 'All vehicle condition items must be ticked.' }, 400);
     }
 
-    // Turnstile
-    if (!turnstileToken) return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
-    if (!env.TURNSTILE_SECRET_KEY) return json({ error: 'Security configuration error. Please try again later.' }, 500);
-    const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
-    });
-    if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
-    const tsData = await tsRes.json() as { success: boolean };
-    if (!tsData.success) return json({ error: 'Security verification failed. Please try again.' }, 403);
+    // Turnstile — fail-open. A missing/blocked widget no longer blocks the
+    // submission; honeypot + rate limit + Origin checks are the backstops.
+    // Only an explicit Cloudflare bot verdict is rejected.
+    if (await checkTurnstileFailOpen(turnstileToken, env.TURNSTILE_SECRET_KEY) === 'blocked') {
+      return json({ error: 'Security verification failed. Please try again.' }, 403);
+    }
 
     // Process images
     const MAX_FILE_SIZE = 10 * 1024 * 1024;

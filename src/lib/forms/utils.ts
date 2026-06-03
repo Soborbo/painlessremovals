@@ -79,6 +79,43 @@ export async function verifyTurnstile(token: string, secret: string): Promise<bo
   return data.success;
 }
 
+/**
+ * Fail-open Turnstile gate.
+ *
+ * Cloudflare Turnstile is blocked or unsupported on a meaningful share of
+ * real visitors — ad-blockers, strict private browsing, in-app webviews
+ * (Facebook/Instagram/Gmail), corporate firewalls and older browsers —
+ * where the widget never issues a token. Rejecting those submissions
+ * dead-ends genuine enquiries ("unable to proceed due to a security
+ * error"). So we fail open and lean on the other layers that every form
+ * route already runs: honeypot, per-IP rate limiting, the Origin
+ * allowlist and server-side field validation.
+ *
+ *   - no token / no secret  → 'pass'    (widget unavailable, or misconfig —
+ *                                         neither should block a real user)
+ *   - siteverify success    → 'pass'
+ *   - siteverify says false → 'blocked' (explicit bot verdict — reject)
+ *   - siteverify unreachable→ 'pass'    (don't punish users for a CF outage)
+ */
+export async function checkTurnstileFailOpen(
+  token: string | undefined | null,
+  secret: string | undefined,
+): Promise<'pass' | 'blocked'> {
+  if (!token || !secret) return 'pass';
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret, response: token }),
+    });
+    if (!res.ok) return 'pass';
+    const data = (await res.json()) as { success: boolean };
+    return data.success ? 'pass' : 'blocked';
+  } catch {
+    return 'pass';
+  }
+}
+
 interface SendEmailOptions {
   from: string;
   to: string[];

@@ -17,7 +17,7 @@ import {
   escapeHtml,
   sanitizePhoneForEmail,
   stripNewlines,
-  verifyTurnstile,
+  checkTurnstileFailOpen,
   sendEmail,
   emailChrome,
   emailFooter,
@@ -67,16 +67,10 @@ export const POST: APIRoute = async (context) => {
       return json({ error: 'Please provide a valid UK phone number for the client.' }, 400);
     }
 
-    // 3. Turnstile
-    if (!turnstileToken) {
-      return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
-    }
-    const secret = env.TURNSTILE_SECRET_KEY;
-    if (!secret) {
-      logger.error('Affiliate', 'TURNSTILE_SECRET_KEY is not configured');
-      return json({ error: 'Security configuration error. Please try again later.' }, 500);
-    }
-    if (!(await verifyTurnstile(turnstileToken, secret))) {
+    // 3. Turnstile — fail-open. A missing/blocked widget no longer blocks
+    // the referral; honeypot + rate limit + Origin checks are the
+    // backstops. Only an explicit Cloudflare bot verdict is rejected.
+    if (await checkTurnstileFailOpen(turnstileToken, env.TURNSTILE_SECRET_KEY) === 'blocked') {
       return json({ error: 'Security verification failed. Please try again.' }, 403);
     }
 

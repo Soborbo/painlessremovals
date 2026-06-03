@@ -890,6 +890,30 @@ const localBusinessSchema = {
         });
       });
     };
+
+    // ─── Cloudflare Turnstile — shared fail-open token gate ──────────────
+    // Turnstile is blocked or unsupported on a meaningful share of real
+    // devices (ad-blockers, strict private browsing, Facebook/Instagram
+    // in-app browsers, older browsers). When that happens the widget never
+    // issues a token. Rather than dead-ending the enquiry behind "the
+    // security check is still loading", forms fail open: they submit
+    // without a token and the server falls back to its honeypot + rate
+    // limit + Origin checks. PR_tsFailed is wired to each widget's
+    // error/unsupported/timeout callbacks so we can tell "blocked or
+    // unsupported" apart from "still solving / awaiting interaction".
+    window.PR_tsFailed = function () { window.__prTsFailed = true; return true; };
+    // PR_turnstileToken(form) → { proceed, token }:
+    //   proceed:true,  token:'<value>' → Turnstile issued a token (normal)
+    //   proceed:true,  token:''        → widget unavailable → fail open
+    //   proceed:false                  → widget present and still pending;
+    //                                    caller should ask the user to wait
+    window.PR_turnstileToken = function (form) {
+      var input = form && form.querySelector('[name="cf-turnstile-response"]');
+      var token = input && input.value ? input.value : '';
+      if (token) return { proceed: true, token: token };
+      var unavailable = (typeof window.turnstile === 'undefined') || window.__prTsFailed === true;
+      return unavailable ? { proceed: true, token: '' } : { proceed: false, token: '' };
+    };
   </script>
 
   {/* TRACKING: bootstrap. Resumes quote timer, installs click + scroll listeners. */}
