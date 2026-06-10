@@ -67,6 +67,13 @@ export default defineConfig({
   },
   adapter: cloudflare({
     platformProxy: { enabled: true },
+    // Optimise astro:assets images (e.g. the home-packing-service hero) with
+    // Sharp at build time, emitting static avif/webp into _astro/. Without
+    // this the adapter defaults to 'cloudflare-binding', which defers to a
+    // runtime /_image endpoint backed by the Cloudflare Images product —
+    // a runtime dependency at odds with this site's pre-generated, static
+    // image strategy (OptimizedPicture + public/img).
+    imageService: 'compile',
   }),
   redirects: {
     '/senior-removals-bristol/': '/later-life-moves/',
