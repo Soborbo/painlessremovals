@@ -297,7 +297,7 @@ const faqs = [
 
 // LCP hero preload: mobile uses pattern="FULL" (100vw), desktop uses pattern="HALF" (50vw).
 // Sizes override covers both so the browser picks the right width per breakpoint.
-const heroPreload = getLcpPreload('homepage/painless-removals-team', 'FULL', {
+const heroPreload = getLcpPreload('packing/Bristol-home-packing-service', 'FULL', {
   sizes: '(min-width:1024px) 50vw, 100vw',
 });
 
@@ -339,11 +339,11 @@ const schemas = [
     <!-- Mobile: Image at top -->
     <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
       <OptimizedPicture
-        name="homepage/painless-removals-team"
+        name="packing/Bristol-home-packing-service"
         pattern="FULL"
-        alt="The Painless Removals crew sitting on the back of a removal van on a Bristol residential street"
+        alt="Painless Removals packing team carefully wrapping and packing belongings in a Bristol home"
         lcp
-        class="w-full h-full object-cover object-bottom"
+        class="w-full h-full object-cover"
       />
     </div>
 
@@ -376,9 +376,9 @@ const schemas = [
     <!-- Right: Full-bleed image (desktop only) -->
     <div class="hidden lg:block relative overflow-hidden">
       <OptimizedPicture
-        name="homepage/painless-removals-team"
+        name="packing/Bristol-home-packing-service"
         pattern="HALF"
-        alt="The Painless Removals crew sitting on the back of a removal van on a Bristol residential street"
+        alt="Painless Removals packing team carefully wrapping and packing belongings in a Bristol home"
         lcp
         class="absolute inset-0 w-full h-full object-cover"
       />

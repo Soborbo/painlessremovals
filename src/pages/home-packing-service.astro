@@ -8,6 +8,8 @@
  */
 
 import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import { Picture, getImage } from 'astro:assets';
+import homePackingHero from '@/assets/images/packing/home-packing-service.jpg';
 import Layout from '@/layouts/Layout.astro';
 import UspBar from '@/components/UspBar.astro';
 import AccreditationLogos from '@/components/AccreditationLogos.astro';
@@ -241,9 +243,29 @@ const pageSchema = [
     { name: "Packing Service" },
   ]),
 ];
+
+// Hero image handled by astro:assets. Source lives in src/assets so Astro
+// optimises it at build time (Sharp) into hashed avif/webp variants.
+const HERO_WIDTHS = [480, 640, 750, 828, 1080, 1200, 1920, 2048];
+const HERO_SIZES = '(min-width:1024px) 50vw, 100vw';
+
+// Responsive AVIF preload matching the <Picture> below, so the browser
+// preloads the same width it ends up rendering for the LCP hero.
+const heroAvif = await getImage({
+  src: homePackingHero,
+  format: 'avif',
+  widths: HERO_WIDTHS,
+  sizes: HERO_SIZES,
+});
+const heroPreload = {
+  href: heroAvif.src,
+  imagesrcset: heroAvif.srcSet.attribute,
+  imagesizes: HERO_SIZES,
+  type: 'image/avif',
+};
 ---
 
-<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/packing/Bristol-home-packing-service-1200w.webp" preloadImage="/img/packing/Bristol-home-packing-service-750w.avif">
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/img/packing/Bristol-home-packing-service-1200w.webp" preload={heroPreload}>
 
   <!-- ============================================
        SECTION 1: HERO
@@ -251,12 +273,15 @@ const pageSchema = [
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
     <!-- Mobile: Image at top -->
     <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
-      <OptimizedPicture
-        name="packing/Bristol-home-packing-service"
-        pattern="FULL"
+      <Picture
+        src={homePackingHero}
+        formats={['avif', 'webp']}
+        widths={HERO_WIDTHS}
+        sizes={HERO_SIZES}
         alt="Professional home packing service in Bristol - trained specialists carefully packing belongings"
         loading="eager"
         fetchpriority="high"
+        decoding="sync"
         class="w-full h-full object-cover"
       />
     </div>
@@ -289,12 +314,15 @@ const pageSchema = [
 
     <!-- Right: Full-bleed image (desktop only) -->
     <div class="hidden lg:block relative overflow-hidden">
-      <OptimizedPicture
-        name="packing/Bristol-home-packing-service"
-        pattern="FULL"
+      <Picture
+        src={homePackingHero}
+        formats={['avif', 'webp']}
+        widths={HERO_WIDTHS}
+        sizes={HERO_SIZES}
         alt="Professional home packing service in Bristol - trained specialists carefully packing belongings"
         loading="eager"
         fetchpriority="high"
+        decoding="sync"
         class="absolute inset-0 w-full h-full object-cover"
       />
     </div>

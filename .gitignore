@@ -26,7 +26,13 @@ scripts/.image-cache.json
 # Reference materials (not part of website)
 references/
 whatsapp-photo share/
-src/assets/images/
+# Source images for the optimize-images pipeline (only the public/img/
+# derivatives ship). Kept out of git EXCEPT sources imported directly via
+# astro:assets, which must be committed for the build to resolve them.
+src/assets/images/*
+!src/assets/images/packing/
+src/assets/images/packing/*
+!src/assets/images/packing/home-packing-service.jpg
 website/
 wireframe-area-page.html
 claudeskills-main/
