@@ -28,8 +28,8 @@ const rating = siteConfig.company.rating.value;
       />
       <div class="flex-1">
         <div class="flex items-center justify-between">
-          <span id="google-rating" class="text-xl font-bold text-gray-800 tabular-nums" data-target={rating}>1.0</span>
-          <span class="text-yellow-400 text-xs">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="text-xl font-bold text-gray-800 tabular-nums">{rating}</span>
+          <span class="text-yellow-400 text-xs" role="img" aria-label={`${rating} out of 5 stars`}>&#9733;&#9733;&#9733;&#9733;&#9733;</span>
         </div>
         <p class="text-[10px] text-gray-600">Google reviews</p>
       </div>
@@ -85,28 +85,3 @@ const rating = siteConfig.company.rating.value;
     </div>
   </div>
 </div>
-
-<script>
-  const el = document.getElementById('google-rating');
-  if (el) {
-    const target = parseFloat(el.dataset.target || '4.9');
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      el.textContent = target.toFixed(1);
-    } else {
-      const from = 1;
-      const duration = 1500;
-      const start = performance.now();
-
-      function tick(now: number) {
-        const t = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - t, 3);
-        const val = from + eased * (target - from);
-        el!.textContent = val.toFixed(1);
-        if (t < 1) requestAnimationFrame(tick);
-      }
-
-      requestAnimationFrame(tick);
-    }
-  }
-</script>
