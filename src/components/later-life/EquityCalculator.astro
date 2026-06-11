@@ -449,6 +449,8 @@ import { siteConfig } from '@/config/site.config';
 </style>
 
 <script>
+  import { pushLeadToCRM } from '@/lib/crm/push-lead';
+
   // ===== Calculator State =====
   const state = {
     currentValue: 380000,
@@ -708,6 +710,12 @@ import { siteConfig } from '@/config/site.config';
         callbackForm.querySelector<HTMLElement>('.calc-form-error')?.classList.remove('hidden');
         return;
       }
+      // Mirror the callback request to the CRM (signed server-side). Fire-and-
+      // forget — the success UI below is not blocked on CRM delivery.
+      void pushLeadToCRM('callback', {
+        customer: { full_name: name, email, phone },
+        message: `[Later Life Moves Calculator Callback]\nBest time: ${bestTime}\nCurrent home: ${fmt(state.currentValue)}\nNew home: ${fmt(state.newValue)}\nNote: ${note || 'None'}`,
+      });
       callbackForm.classList.add('hidden');
       callbackSuccess?.classList.remove('hidden');
       if (callbackMsg) {

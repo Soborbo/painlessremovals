@@ -9,6 +9,12 @@ dist/
 .env.*
 !.env.example
 
+# Wrangler local secrets (used by `wrangler dev`). The committed example
+# `.dev.vars.example` documents the required keys without real values.
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
 # OS
 Thumbs.db
 Desktop.ini

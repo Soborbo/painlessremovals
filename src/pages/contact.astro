@@ -500,6 +500,14 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
           })
           .then(function(data) {
             if (data.success) {
+              // Mirror the lead to the CRM (signed server-side). Fire-and-
+              // forget with the SAME event_id so a resend is idempotent;
+              // never block the contact form's success UX on CRM delivery.
+              if (window.PR_pushLead) {
+                window.PR_pushLead('contact', {
+                  customer: { full_name: name, email: email, phone: phone },
+                }, eventId);
+              }
               window.dataLayer = window.dataLayer || [];
               // Analytics: form_submission for the contact form.
               window.dataLayer.push({

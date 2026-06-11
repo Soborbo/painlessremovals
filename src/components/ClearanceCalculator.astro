@@ -572,6 +572,25 @@ const phone = siteConfig.company.contact.phone;
           return;
         }
 
+        // Mirror the clearance callback to the CRM (signed server-side).
+        // The CRM stamps kind=clearance_callback itself. Fire-and-forget,
+        // reusing the same event_id for idempotent resends.
+        const pushLead = (window as unknown as {
+          PR_pushLead?: (s: string, p: Record<string, unknown>, id?: string) => void;
+        }).PR_pushLead;
+        if (pushLead) {
+          pushLead('clearance-callback', {
+            customer: {
+              full_name: name,
+              email,
+              phone,
+              ...(postcodeValue ? { postcode: postcodeValue } : {}),
+            },
+            ...(postcodeValue ? { property_postcode: postcodeValue } : {}),
+            message: getSummary().slice(0, 2000),
+          }, eventId);
+        }
+
         const dataLayer = ((window as unknown as { dataLayer: Array<Record<string, unknown>> }).dataLayer ??= []);
         // Analytics: form_submission for funnel reporting.
         dataLayer.push({

@@ -33,6 +33,7 @@ import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 import { logger } from '@/lib/utils/logger';
 import { deriveClientId, sendGA4MP } from '@/lib/tracking/server';
+import { deliverQuoteLead } from '@/lib/crm/server';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
@@ -239,6 +240,33 @@ export const POST: APIRoute = async (context) => {
           phone: validated.phone ?? null,
         });
       }
+    }
+
+    // Painless-CRM signed webhook mirror. Runs alongside i-mve (both are CRM
+    // syncs) but delivery + retry is backgrounded via ctx.waitUntil so it
+    // never holds up the response. This is the single chokepoint for the
+    // calculator quote lead — Step12 and the /your-quote ResultPage both POST
+    // here, so the lead is pushed once regardless of which surface saved it.
+    {
+      const data = validated.data as Record<string, unknown>;
+      const fromAddr = data.fromAddress as { postcode?: string } | undefined;
+      const toAddr = data.toAddress as { postcode?: string } | undefined;
+      const distances = data.distances as { customerDistance?: number; fromToTo?: number } | undefined;
+      const complications = Array.isArray(data.complications)
+        ? (data.complications as unknown[]).map(String)
+        : [];
+      deliverQuoteLead(env, context.locals?.runtime?.ctx, {
+        fullName: validated.name,
+        email: validated.email,
+        phone: validated.phone,
+        postcode: fromAddr?.postcode || toAddr?.postcode,
+        sizeCode:
+          (data.propertySize as string) || (data.officeSize as string) || (data.serviceType as string),
+        distanceMiles: distances?.customerDistance ?? distances?.fromToTo,
+        complications,
+        totalPence: Math.round(validated.totalPrice * 100),
+        eventId: validated.event_id,
+      });
     }
 
     // Emails stay on the background track — if Resend hiccups, the quote

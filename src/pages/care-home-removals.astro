@@ -661,6 +661,13 @@ const pageSchema = [
               var eventId = (window.crypto && window.crypto.randomUUID)
                 ? window.crypto.randomUUID()
                 : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              // Mirror the lead to the CRM (signed server-side). Fire-and-forget.
+              if (window.PR_pushLead) {
+                window.PR_pushLead('contact', {
+                  customer: { full_name: contactName, email: contactEmail, phone: contactPhone },
+                  message: combinedMessage,
+                }, eventId);
+              }
               window.dataLayer = window.dataLayer || [];
               window.dataLayer.push({
                 event: 'form_submission',
