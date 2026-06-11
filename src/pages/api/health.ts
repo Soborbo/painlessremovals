@@ -6,23 +6,12 @@
  */
 
 import { CONFIG } from '@/lib/config';
+import { isValidAdminToken } from '@/lib/utils/admin-auth';
 import { logger } from '@/lib/utils/logger';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
 export const prerender = false;
-
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  const encoder = new TextEncoder();
-  const ab = encoder.encode(a);
-  const bb = encoder.encode(b);
-  let result = 0;
-  for (let i = 0; i < ab.length; i++) {
-    result |= (ab[i] as number) ^ (bb[i] as number);
-  }
-  return result === 0;
-}
 
 export const GET: APIRoute = async ({ request }) => {
   logger.debug('API', 'Health check requested');
@@ -47,13 +36,7 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   // Validate the token against a known secret (constant-time comparison)
-  const expectedToken = env.HEALTH_CHECK_TOKEN;
-  const expected = `Bearer ${expectedToken || ''}`;
-  const isValidToken = expectedToken
-    && healthToken.length === expected.length
-    && crypto.subtle !== undefined
-    && timingSafeEqual(healthToken, expected);
-  if (!isValidToken) {
+  if (!isValidAdminToken(healthToken, env.HEALTH_CHECK_TOKEN)) {
     return new Response(JSON.stringify(publicHealth, null, 2), {
       status: 200,
       headers: {

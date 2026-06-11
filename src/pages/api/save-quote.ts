@@ -222,7 +222,8 @@ export const POST: APIRoute = async (context) => {
         const imveResult = await syncQuoteToImve(
           { id: quote.id, name: validated.name ?? null, email: validated.email ?? null, phone: validated.phone ?? null, totalPrice: validated.totalPrice },
           validated.data,
-          runtimeConfig.imve
+          runtimeConfig.imve,
+          dedupKv
         );
         if (!imveResult.success) {
           throw new Error('i-mve sync returned unsuccessful');
@@ -232,8 +233,11 @@ export const POST: APIRoute = async (context) => {
       });
       if (imveOutcome === null) {
         crmSynced = false;
-        warnings.push('CRM sync failed — lead requires manual follow-up');
-        logger.error('i-mve', 'Quote NOT synced after retries — manual follow-up required', {
+        // The failed payload is parked in the i-mve dead-letter queue
+        // (syncQuoteToImve enqueues it); replay via POST /api/imve/recovery
+        // once the endpoint is reachable again.
+        warnings.push('CRM sync failed — lead parked for replay via /api/imve/recovery');
+        logger.error('i-mve', 'Quote NOT synced after retries — parked in dead-letter queue', {
           quoteId: quote.id,
           name: validated.name ?? null,
           email: validated.email ?? null,

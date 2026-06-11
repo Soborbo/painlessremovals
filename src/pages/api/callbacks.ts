@@ -21,6 +21,7 @@ import { syncQuoteToImve } from '@/lib/features/imve';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { getCORSHeaders } from '@/lib/utils/cors';
+import { safeKV } from '@/lib/utils/kv';
 import { requireAllowedOrigin, sanitizePhoneForEmail } from '@/lib/forms/utils';
 import { generateErrorId } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
@@ -358,16 +359,32 @@ export const POST: APIRoute = async (context) => {
       }
     }
 
-    // Sync to i-mve CRM
+    // Sync to i-mve CRM. On failure the mapped payload is parked in the
+    // dead-letter queue (replayable via POST /api/imve/recovery), so the
+    // lead survives i-mve outages.
     if (CONFIG.features.imveSync && runtimeConfig.imve.enabled) {
       try {
         const callbackId = `CB-${Date.now().toString(36).toUpperCase()}`;
-        await syncQuoteToImve(
+        const imveResult = await syncQuoteToImve(
           { id: callbackId, name: contactName ?? null, email: contactEmail ?? null, phone: contactPhone ?? null },
           validated.data || {},
-          runtimeConfig.imve
+          runtimeConfig.imve,
+          safeKV(env, 'RATE_LIMITER')
         );
-        logger.info('i-mve', 'Callback lead synced', { callbackId });
+        if (imveResult.success) {
+          logger.info('i-mve', 'Callback lead synced', { callbackId });
+        } else {
+          logger.error('i-mve', 'Callback lead NOT synced — parked for replay', {
+            callbackId,
+            error: imveResult.error,
+          });
+          await trackServerError(
+            'MOVE-CB-005',
+            new Error(imveResult.error || 'i-mve sync failed'),
+            { errorMessage: imveResult.error || 'i-mve sync failed' },
+            errorConfig,
+          );
+        }
       } catch (imveError) {
         logger.error('i-mve', 'Failed to sync callback lead', { error: imveError });
         await trackServerError(
