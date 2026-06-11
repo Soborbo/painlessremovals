@@ -47,6 +47,19 @@ declare namespace Cloudflare {
     // i-mve
     IMVE_API_URL?: string;
     IMVE_API_KEY?: string;
+
+    // Painless-CRM signed webhooks (SERVER-SIDE ONLY — never PUBLIC_).
+    // CRM_WEBHOOK_SECRET is the shared HMAC secret and MUST be byte-identical
+    // to the CRM's value. Do not expose any of these to the client bundle.
+    CRM_WEBHOOK_SECRET?: string;
+    CRM_BASE_URL?: string;
+    CRM_COMPANY_ID?: string;
+    // Optional: overrides the envelope `source` (defaults to "website").
+    CRM_WEBHOOK_SOURCE?: string;
+    // Optional: pricing version uuid injected into the /quote webhook's
+    // `quote.pricing_version_id`. If unset, the optional quote block is
+    // dropped rather than sent without a valid uuid.
+    CRM_PRICING_VERSION_ID?: string;
   }
 }
 

@@ -237,6 +237,23 @@ const pageSchema = {
               var eventId = (window.crypto && window.crypto.randomUUID)
                 ? window.crypto.randomUUID()
                 : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              // Mirror the referred client as an affiliate-attributed lead
+              // to the CRM. The affiliate_code comes from a ?ref= cookie if
+              // present, else a slug of the referring agent's name. Fire-
+              // and-forget — the success UI below is not blocked on it.
+              if (window.PR_pushLead) {
+                var affCode = (window.PR_getAffiliateCode && window.PR_getAffiliateCode()) || '';
+                if (!affCode && referringAgent) {
+                  affCode = referringAgent.trim().toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+                }
+                window.PR_pushLead('affiliate', {
+                  affiliate_code: affCode || 'website-referral',
+                  customer: { full_name: clientName, email: clientEmail, phone: clientPhone },
+                  message: 'Referred by ' + referringAgent,
+                  attribution: (window.PR_getAttribution && window.PR_getAttribution()) || undefined,
+                }, eventId);
+              }
               window.dataLayer = window.dataLayer || [];
               window.dataLayer.push({
                 event: 'form_submission',

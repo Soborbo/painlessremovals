@@ -708,6 +708,27 @@ const pageSchema = [serviceSchema, faqSchema];
               var eventId = (window.crypto && window.crypto.randomUUID)
                 ? window.crypto.randomUUID()
                 : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              // Mirror the B2B registration to the CRM as a partner record.
+              // Fire-and-forget — the thank-you redirect is not blocked on it.
+              if (window.PR_pushLead) {
+                var partnerType = businessType === 'estate-agent' ? 'estate_agent'
+                  : (businessType === 'other' || !businessType) ? 'other' : 'B2B_partner';
+                var noteParts = [];
+                if (role) noteParts.push('Role: ' + role);
+                if (estimatedReferrals) noteParts.push('Est. referrals/month: ' + estimatedReferrals);
+                if (preferredContact) noteParts.push('Preferred contact: ' + preferredContact);
+                if (whatMatters) noteParts.push(whatMatters);
+                window.PR_pushLead('partner-register', {
+                  partner: {
+                    name: companyName,
+                    type: partnerType,
+                    contact_name: name,
+                    contact_email: email,
+                    contact_phone: phone,
+                    notes: noteParts.join('\n').slice(0, 2000) || undefined,
+                  },
+                }, eventId);
+              }
               window.dataLayer = window.dataLayer || [];
               window.dataLayer.push({
                 event: 'form_submission',

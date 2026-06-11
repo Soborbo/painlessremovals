@@ -15,7 +15,8 @@
 import { resumeQuoteTimer } from './conversion-state';
 import { initGlobalListeners } from './global-listeners';
 import { restoreUserDataFromStorage, setUserDataOnDOM } from './tracking';
-import { captureUTMs } from './utm-capture';
+import { captureUTMs, readAffiliateCode, buildAttribution } from './utm-capture';
+import { pushLeadToCRM } from '@/lib/crm/push-lead';
 
 captureUTMs();
 restoreUserDataFromStorage();
@@ -29,6 +30,19 @@ initGlobalListeners();
 declare global {
   interface Window {
     PR_setUserDataOnDOM?: typeof setUserDataOnDOM;
+    /**
+     * Fire a signed CRM lead from a legacy `is:inline` form script. The
+     * secret stays server-side; this only POSTs to `/api/leads/*`. Call
+     * fire-and-forget — never block the form's success UX on it.
+     */
+    PR_pushLead?: typeof pushLeadToCRM;
+    /** Affiliate `?ref=` code for this session (sessionStorage/cookie). */
+    PR_getAffiliateCode?: typeof readAffiliateCode;
+    /** Captured attribution params for the CRM `attribution` object. */
+    PR_getAttribution?: typeof buildAttribution;
   }
 }
 window.PR_setUserDataOnDOM = setUserDataOnDOM;
+window.PR_pushLead = pushLeadToCRM;
+window.PR_getAffiliateCode = readAffiliateCode;
+window.PR_getAttribution = buildAttribution;

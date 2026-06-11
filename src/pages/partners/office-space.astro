@@ -553,6 +553,19 @@ const pageSchema = [serviceSchema, breadcrumbSchema];
               var eventId = (window.crypto && window.crypto.randomUUID)
                 ? window.crypto.randomUUID()
                 : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+              // Mirror the office-space partner enquiry to the CRM.
+              if (window.PR_pushLead) {
+                window.PR_pushLead('partner-register', {
+                  partner: {
+                    name: companyName,
+                    type: 'other',
+                    contact_name: name,
+                    contact_email: email,
+                    contact_phone: phone,
+                    notes: 'Office-space partner enquiry (site visit requested)',
+                  },
+                }, eventId);
+              }
               window.dataLayer = window.dataLayer || [];
               window.dataLayer.push({
                 event: 'form_submission',

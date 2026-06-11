@@ -111,6 +111,11 @@ export function Step12Quote() {
 
       const result = await response.json() as { quoteId?: string };
 
+      // NOTE: the completed quote is mirrored to the Painless-CRM SERVER-SIDE
+      // from save-quote.ts (the single chokepoint both this step and the
+      // /your-quote ResultPage hit), so it isn't pushed from here — that
+      // avoids a double lead when the quote is saved from two surfaces.
+
       // Push PII to the DOM side-channel for GTM User-Provided Data
       // variable. NEVER through dataLayer.
       if (state.contact) {

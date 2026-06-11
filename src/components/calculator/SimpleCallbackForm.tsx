@@ -281,6 +281,10 @@ export function SimpleCallbackForm() {
 
       if (active) markQuoteUpgraded();
 
+      // NOTE: the callback lead is mirrored to the Painless-CRM SERVER-SIDE
+      // from /api/callbacks (the single chokepoint all calculator callback
+      // forms hit), so it isn't pushed from here.
+
       trackEvent('callback_conversion', {
         event_id: eventId,
         value,

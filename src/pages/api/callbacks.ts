@@ -18,6 +18,8 @@ import {
 } from '@/lib/features/security/payload-limit';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
+import { deliverCallbackLead } from '@/lib/crm/server';
+import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { getCORSHeaders } from '@/lib/utils/cors';
 import { requireAllowedOrigin, sanitizePhoneForEmail } from '@/lib/forms/utils';
 import { generateErrorId } from '@/lib/utils/error';
@@ -375,6 +377,30 @@ export const POST: APIRoute = async (context) => {
           errorConfig,
         );
       }
+    }
+
+    // Painless-CRM signed webhook mirror. This is the single chokepoint for
+    // all calculator callback forms (SimpleCallbackForm + Step12 + ResultPage,
+    // each of which may retry the POST). A content-derived event_id makes the
+    // delivery idempotent, so a client retry that re-POSTs identical data
+    // dedupes on the CRM instead of creating a second lead.
+    {
+      const fp = generateFingerprint({
+        email: contactEmail,
+        phone: contactPhone,
+        reason: validated.callbackReason,
+        data: validated.data,
+      });
+      const dataObj = (validated.data || {}) as Record<string, unknown>;
+      const fromAddr = dataObj.fromAddress as { postcode?: string } | undefined;
+      deliverCallbackLead(env, context.locals?.runtime?.ctx, {
+        fullName: contactName,
+        email: contactEmail,
+        phone: contactPhone,
+        message: validated.callbackReason,
+        propertyPostcode: fromAddr?.postcode,
+        eventId: `cb-${fp.slice(0, 40)}`,
+      });
     }
 
     return new Response(

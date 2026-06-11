@@ -1,0 +1,25 @@
+# Painless-CRM signed webhooks — local `wrangler dev` config.
+#
+# Copy this file to `.dev.vars` and fill in real values. `.dev.vars` is
+# gitignored; NEVER commit real secrets. In production these live in the
+# Cloudflare dashboard (plain vars) / `wrangler secret put` (CRM_WEBHOOK_SECRET).
+#
+# SECURITY: none of these may be exposed to the browser. Do NOT add a PUBLIC_
+# prefix and do NOT read them via import.meta.env in client code. All HMAC
+# signing happens server-side in the Worker (src/lib/crm/signer.ts).
+
+# Shared HMAC secret — 32+ chars. MUST be byte-identical to the CRM's value.
+CRM_WEBHOOK_SECRET="replace-with-32+char-shared-secret-aaaaaaaa"
+
+# CRM base URL — no trailing slash.
+CRM_BASE_URL="https://crm.staging.painless.example"
+
+# CRM tenant uuid — sent as `company_id` in every webhook body.
+CRM_COMPANY_ID="00000000-0000-0000-0000-000000000000"
+
+# Optional — overrides the envelope `source` field (defaults to "website").
+# CRM_WEBHOOK_SOURCE="website"
+
+# Optional — pricing version uuid injected into the /quote webhook's
+# `quote.pricing_version_id`. Leave unset to omit the optional quote block.
+# CRM_PRICING_VERSION_ID="00000000-0000-0000-0000-000000000000"
