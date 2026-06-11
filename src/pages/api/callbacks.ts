@@ -18,7 +18,7 @@ import {
 } from '@/lib/features/security/payload-limit';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
-import { deliverCallbackLead } from '@/lib/crm/server';
+import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { getCORSHeaders } from '@/lib/utils/cors';
 import { requireAllowedOrigin, sanitizePhoneForEmail } from '@/lib/forms/utils';
@@ -393,7 +393,7 @@ export const POST: APIRoute = async (context) => {
       });
       const dataObj = (validated.data || {}) as Record<string, unknown>;
       const fromAddr = dataObj.fromAddress as { postcode?: string } | undefined;
-      deliverCallbackLead(env, context.locals?.runtime?.ctx, {
+      deliverCallbackLead(env, getWaitUntil(context.locals), {
         fullName: contactName,
         email: contactEmail,
         phone: contactPhone,

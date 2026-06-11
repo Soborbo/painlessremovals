@@ -20,18 +20,30 @@ import {
 } from './schemas';
 import { normalizeUKPhoneForCRM } from './format';
 
-interface WaitUntilCtx {
-  waitUntil?: (promise: Promise<unknown>) => void;
-}
-
 interface CRMServerEnv extends CRMClientEnv {
   CRM_PRICING_VERSION_ID?: string;
+}
+
+/** A bound `waitUntil` that keeps the Worker alive through background work. */
+export type WaitUntil = (promise: Promise<unknown>) => void;
+
+/**
+ * Safely extract a `waitUntil` from Astro locals. In Astro 6 the execution
+ * context lives at `locals.cfContext` — `locals.runtime.ctx` was REMOVED and
+ * its getter THROWS, so never touch it. Returns undefined off-Workers.
+ */
+export function getWaitUntil(locals: App.Locals | undefined): WaitUntil | undefined {
+  const cf = (locals as unknown as { cfContext?: { waitUntil?: WaitUntil } } | undefined)?.cfContext;
+  if (cf && typeof cf.waitUntil === 'function') {
+    return cf.waitUntil.bind(cf);
+  }
+  return undefined;
 }
 
 /** Backgrounds a signed CRM delivery; safe no-op when CRM is unconfigured. */
 function deliver(
   env: CRMServerEnv,
-  ctx: WaitUntilCtx | undefined,
+  waitUntil: WaitUntil | undefined,
   surface: 'quote' | 'callback',
   payload: Record<string, unknown>,
   eventId: string,
@@ -60,8 +72,8 @@ function deliver(
       });
     });
 
-  if (ctx?.waitUntil) {
-    ctx.waitUntil(promise as Promise<unknown>);
+  if (waitUntil) {
+    waitUntil(promise as Promise<unknown>);
   } else {
     // No execution context — fire and forget (best-effort, may be cut short).
     void promise;
@@ -87,7 +99,7 @@ export interface QuoteLeadInput {
  */
 export function deliverQuoteLead(
   env: CRMServerEnv,
-  ctx: WaitUntilCtx | undefined,
+  waitUntil: WaitUntil | undefined,
   input: QuoteLeadInput,
 ): void {
   const eventId = input.eventId || newEventId();
@@ -127,7 +139,7 @@ export function deliverQuoteLead(
     });
     return;
   }
-  deliver(env, ctx, 'quote', parsed.data, eventId);
+  deliver(env, waitUntil, 'quote', parsed.data, eventId);
 }
 
 export interface CallbackLeadInput {
@@ -145,7 +157,7 @@ export interface CallbackLeadInput {
  */
 export function deliverCallbackLead(
   env: CRMServerEnv,
-  ctx: WaitUntilCtx | undefined,
+  waitUntil: WaitUntil | undefined,
   input: CallbackLeadInput,
 ): void {
   const eventId = input.eventId || newEventId();
@@ -172,5 +184,5 @@ export function deliverCallbackLead(
     });
     return;
   }
-  deliver(env, ctx, 'callback', parsed.data, eventId);
+  deliver(env, waitUntil, 'callback', parsed.data, eventId);
 }
