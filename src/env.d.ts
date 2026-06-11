@@ -67,7 +67,9 @@ declare namespace App {
   interface Locals {
     runtime: {
       env: Cloudflare.Env;
-      ctx: ExecutionContext;
     };
+    // Astro 6 + @astrojs/cloudflare: the Worker ExecutionContext lives here.
+    // (The old `runtime.ctx` was removed; its getter THROWS — never read it.)
+    cfContext: ExecutionContext;
   }
 }

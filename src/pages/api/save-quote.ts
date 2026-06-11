@@ -33,7 +33,7 @@ import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 import { logger } from '@/lib/utils/logger';
 import { deriveClientId, sendGA4MP } from '@/lib/tracking/server';
-import { deliverQuoteLead } from '@/lib/crm/server';
+import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
@@ -255,7 +255,7 @@ export const POST: APIRoute = async (context) => {
       const complications = Array.isArray(data.complications)
         ? (data.complications as unknown[]).map(String)
         : [];
-      deliverQuoteLead(env, context.locals?.runtime?.ctx, {
+      deliverQuoteLead(env, getWaitUntil(context.locals), {
         fullName: validated.name,
         email: validated.email,
         phone: validated.phone,

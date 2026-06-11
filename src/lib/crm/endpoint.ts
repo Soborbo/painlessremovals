@@ -20,6 +20,7 @@ import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security
 import { generateErrorId } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import { sendToCRM, isCRMConfigured, newEventId } from './client';
+import { getWaitUntil } from './server';
 import { webhookEnvelopeSchema, type WebhookSurface } from './schemas';
 
 /** A client-supplied event_id must satisfy the envelope's 8–120 char bound. */
@@ -123,8 +124,11 @@ export function createLeadHandler<TSchema extends z.ZodType>(
         });
       });
 
-    const waitUntil = context.locals?.runtime?.ctx?.waitUntil;
-    if (typeof waitUntil === 'function') {
+    // Astro 6: the execution context lives at locals.cfContext (locals.
+    // runtime.ctx was removed and its getter throws). getWaitUntil reads it
+    // safely.
+    const waitUntil = getWaitUntil(context.locals);
+    if (waitUntil) {
       waitUntil(delivery as Promise<unknown>);
     } else {
       // No execution context (e.g. local non-worker run) — await inline so
