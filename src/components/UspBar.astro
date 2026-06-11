@@ -28,7 +28,7 @@ const rating = siteConfig.company.rating.value;
       />
       <div class="flex-1">
         <div class="flex items-center justify-between">
-          <span class="text-xl font-bold text-gray-800 tabular-nums">{rating}</span>
+          <span class="text-xl font-bold text-gray-800 tabular-nums js-rating-countup" data-target={rating}>{rating}</span>
           <span class="text-yellow-400 text-xs" role="img" aria-label={`${rating} out of 5 stars`}>&#9733;&#9733;&#9733;&#9733;&#9733;</span>
         </div>
         <p class="text-[10px] text-gray-600">Google reviews</p>
@@ -85,3 +85,27 @@ const rating = siteConfig.company.rating.value;
     </div>
   </div>
 </div>
+
+{/* SEO-safe count-up: the real rating is server-rendered into the span so
+    crawlers and no-JS users always see it. This inline script runs during
+    parse (before the badge paints), resets to the start value with no flash,
+    then counts up. Reduced-motion users keep the static value. */}
+<script is:inline>
+  (function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    document.querySelectorAll('.js-rating-countup:not([data-counted])').forEach(function (el) {
+      el.setAttribute('data-counted', '');
+      var target = parseFloat(el.getAttribute('data-target')) || 4.9;
+      el.textContent = '0.0';
+      var duration = 1200, startTime = null;
+      function tick(now) {
+        if (!startTime) startTime = now;
+        var t = Math.min((now - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = (eased * target).toFixed(1);
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  })();
+</script>

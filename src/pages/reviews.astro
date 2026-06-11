@@ -395,7 +395,7 @@ const googleSvg = `<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="
           <!-- Rating card -->
           <div class="bg-white rounded-2xl shadow-lg p-5 mb-3" id="review-meter" data-rating={siteConfig.company.rating.value}>
             <div class="flex items-center justify-center gap-3 mb-3">
-              <span class="font-heading text-5xl font-bold text-primary-600 leading-none" id="meter-value">0.0</span>
+              <span class="font-heading text-5xl font-bold text-primary-600 leading-none" id="meter-value">{siteConfig.company.rating.value}</span>
               <div class="text-left">
                 <div class="text-yellow-400 text-xl tracking-wider leading-none mb-0.5">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
                 <span class="text-xs font-semibold text-primary-600 uppercase tracking-wide">Aggregate Rating</span>
@@ -408,15 +408,15 @@ const googleSvg = `<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="
 
             <div class="grid grid-cols-3 gap-3 text-center" id="meter-stats">
               <div class="bg-primary-50 rounded-lg py-2.5 px-2">
-                <div class="font-heading font-bold text-primary-600 text-xl" data-count={String(siteConfig.company.rating.count)} data-suffix="">0</div>
+                <div class="font-heading font-bold text-primary-600 text-xl" data-count={String(siteConfig.company.rating.count)} data-suffix="">{siteConfig.company.rating.count}</div>
                 <div class="text-warm-gray text-xs">Total Reviews</div>
               </div>
               <div class="bg-green-50 rounded-lg py-2.5 px-2">
-                <div class="font-heading font-bold text-green-600 text-xl" data-count="117" data-suffix="">0</div>
+                <div class="font-heading font-bold text-green-600 text-xl" data-count="117" data-suffix="">117</div>
                 <div class="text-warm-gray text-xs">Five-Star</div>
               </div>
               <div class="bg-yellow-50 rounded-lg py-2.5 px-2">
-                <div class="font-heading font-bold text-yellow-600 text-xl" data-count="3" data-suffix="">0</div>
+                <div class="font-heading font-bold text-yellow-600 text-xl" data-count="3" data-suffix="">3</div>
                 <div class="text-warm-gray text-xs">Four-Star</div>
               </div>
             </div>
@@ -695,6 +695,22 @@ const googleSvg = `<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="
         animateNumber(counter, parseInt(counter.getAttribute('data-count'), 10), 1800);
       });
     }
+
+    // SEO-safe animation: the real numbers are server-rendered into the HTML,
+    // so crawlers and no-JS users always see them. For motion users we reset to
+    // the start value here — the meter sits below the fold, so this happens
+    // off-screen with no visible flash — then count up when it scrolls into view.
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      var fillRM = document.getElementById('meter-fill');
+      if (fillRM) fillRM.style.width = targetPercent + '%';
+      return;
+    }
+    var ratingInit = document.getElementById('meter-value');
+    if (ratingInit) ratingInit.textContent = '0.0';
+    document.querySelectorAll('#meter-stats [data-count]').forEach(function(counter) {
+      counter.textContent = '0';
+    });
 
     if ('IntersectionObserver' in window) {
       var observer = new IntersectionObserver(function(entries) {
