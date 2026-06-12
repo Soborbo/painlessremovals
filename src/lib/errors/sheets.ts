@@ -187,7 +187,10 @@ async function signRS256(input: string, pemKey: string): Promise<string> {
   // Import key
   const key = await crypto.subtle.importKey(
     'pkcs8',
-    der,
+    // TS 6 types `Uint8Array.from(...)` as `Uint8Array<ArrayBufferLike>`,
+    // which no longer satisfies `BufferSource` (it could be SharedArrayBuffer).
+    // The atob path always yields a real ArrayBuffer at runtime, so cast.
+    der as BufferSource,
     { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
     false,
     ['sign'],
