@@ -1,6 +1,6 @@
 ---
 title: "Dismantling Furniture"
-metaTitle: "How to Dismantle Furniture for Moving — Beds, Tables & Shelves"
+metaTitle: "How to Dismantle Furniture for Moving | Beds & Tables"
 description: "Which furniture to take apart before moving day and how to do it safely. Beds, wardrobes, tables, and shelving — with tips on keeping track of screws and fittings."
 youtubeId: "6j2AavxK9k4"
 durationMinutes: 2

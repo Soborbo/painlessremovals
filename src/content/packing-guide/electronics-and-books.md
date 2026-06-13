@@ -1,6 +1,6 @@
 ---
 title: "Electronics and Books"
-metaTitle: "How to Pack Electronics and Books for Moving — TVs, Computers & Heavy Boxes"
+metaTitle: "How to Pack Electronics & Books for Moving"
 description: "Protect your TV, computer, and game consoles, plus learn the right way to pack heavy books. Cable management, screen protection, weight limits, and backup tips."
 youtubeId: "5dCNyiLZQTk"
 durationMinutes: 4

@@ -1,6 +1,6 @@
 ---
 title: "Planning & Preparation"
-metaTitle: "Planning & Preparation for Moving — Timeline, System & Checklist"
+metaTitle: "Planning & Preparation for Moving | Timeline"
 description: "Everything you need before you pack a single box. A realistic timeline, room-by-room planning system, and the preparation checklist used by Bristol's trusted movers."
 youtubeId: "WbO6Dt26is0"
 durationMinutes: 2

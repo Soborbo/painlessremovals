@@ -1,6 +1,6 @@
 ---
 title: "How to Pack Extra Fragile Items"
-metaTitle: "How to Pack Extra Fragile Items Safely — Mirrors, China & Valuables"
+metaTitle: "How to Pack Fragile Items Safely | Mirrors & China"
 description: "Protect your most valuable and delicate items during a move. Mirrors, china, ornaments, and artwork — packed the way professionals do it."
 youtubeId: "0P3qnjBCCNg"
 durationMinutes: 11

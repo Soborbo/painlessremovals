@@ -1,6 +1,6 @@
 ---
 title: "Key Items"
-metaTitle: "Key Items to Pack for Moving Day — Essentials You Mustn't Forget"
+metaTitle: "Key Items to Pack for Moving Day | Essentials"
 description: "The essential items you need to keep accessible on moving day. Your essentials box, important documents, valuables, and the things most people forget."
 youtubeId: "zTmO-yQtsKQ"
 durationMinutes: 2

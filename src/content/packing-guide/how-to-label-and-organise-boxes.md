@@ -1,6 +1,6 @@
 ---
 title: "How to Label Your Boxes"
-metaTitle: "How to Label Moving Boxes — The System That Makes Unpacking Fast"
+metaTitle: "How to Label Moving Boxes | Fast-Unpack System"
 description: "A simple labelling system that makes unpacking twice as fast. Colour coding, numbering, and inventory tips from movers who unpack homes every week."
 youtubeId: "x8yeFNQ0C5U"
 durationMinutes: 2
