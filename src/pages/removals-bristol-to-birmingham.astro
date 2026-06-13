@@ -239,7 +239,7 @@ const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
 
       <!-- Mobile: Author box -->
       <div class="area-mobile-only py-6">
-        <SidebarAuthorBox />
+        <SidebarAuthorBox linked={false} />
       </div>
 
     </article>
@@ -250,7 +250,7 @@ const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
         <FactBox {...factBoxProps} />
         <ReviewInline {...reviewProps} />
         <RouteMap destination="Birmingham, UK" />
-        <SidebarAuthorBox />
+        <SidebarAuthorBox linked={false} />
         <SidebarCTA />
       </div>
     </aside>

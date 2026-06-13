@@ -6,6 +6,14 @@
 import OptimizedPicture from '@/components/OptimizedPicture.astro';
 import { siteConfig } from '@/config/site.config';
 
+interface Props {
+  /** Render the name as a link to the bio (default true). Pass false on a
+   *  second instance on the same page (e.g. the mobile-inline copy when the
+   *  desktop sidebar already links the bio) so /about/jay-newton/ is linked
+   *  at most once per page. */
+  linked?: boolean;
+}
+const { linked = true } = Astro.props;
 const director = siteConfig.company.director;
 ---
 
@@ -20,9 +28,12 @@ const director = siteConfig.company.director;
       sizes="88px"
       class="w-[88px] h-[88px] rounded-full object-cover mx-auto ring-2 ring-primary-100"
     />
-    <a href="/about/jay-newton/" class="block font-heading font-semibold text-[15px] text-gray-900 no-underline hover:text-primary-700 transition-colors mt-3">{director.name}</a>
+    {linked ? (
+      <a href="/about/jay-newton/" class="block font-heading font-semibold text-[15px] text-gray-900 no-underline hover:text-primary-700 transition-colors mt-3">{director.name}</a>
+    ) : (
+      <span class="block font-heading font-semibold text-[15px] text-gray-900 mt-3">{director.name}</span>
+    )}
     <p class="text-xs text-gray-500 mt-0.5">{director.title}</p>
     <p class="text-[11px] text-gray-400 leading-relaxed mt-2.5 mx-auto max-w-[240px]">Personally overseen 2,000+ Bristol removals. Every area guide is based on real experience.</p>
-    <a href="/about/jay-newton/" class="inline-block text-[11px] text-primary-600 no-underline hover:text-primary-800 font-medium mt-2 transition-colors">About Jay &rarr;</a>
   </div>
 </div>

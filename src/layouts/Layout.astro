@@ -632,7 +632,32 @@ const localBusinessSchema = {
 
           <!-- Resources -->
           <div class="col-span-1">
-            <h3 class="text-white font-semibold mb-4">Resources</h3>
+            <h3 class="text-white font-semibold mb-4">Explore</h3>
+            <div class="space-y-2">
+              <a href="/about/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                About
+              </a>
+              <a href="/pricing/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Pricing
+              </a>
+              <a href="/faq/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                FAQ
+              </a>
+              <a href="/reviews/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Reviews
+              </a>
+              <a href="/areas/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Areas We Cover
+              </a>
+              <a href="/contact/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Contact
+              </a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="col-span-2 md:col-span-1">
+            <h3 class="text-white font-semibold mb-4">More</h3>
             <div class="space-y-2">
               <a href="/moving-advice/" class="block text-gray-300 no-underline hover:text-white transition-colors">
                 Moving Advice
@@ -640,69 +665,24 @@ const localBusinessSchema = {
               <a href="/packing-guide/" class="block text-gray-300 no-underline hover:text-white transition-colors">
                 Packing Guide
               </a>
-              <a href="/moving-house-checklist/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Moving Checklist
+              <a href="/partners/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Partnerships
               </a>
-              <a href="/how-much-does-a-home-removal-company-cost-in-bristol/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Pricing Guide
+              <a href="/jobs/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Jobs
               </a>
-              <a href="/areas/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Areas We Cover
-              </a>
-              <a href="/reviews/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Reviews
-              </a>
-            </div>
-          </div>
-
-          <!-- Quick Links -->
-          <div class="col-span-2 md:col-span-1">
-            <h3 class="text-white font-semibold mb-4">Quick Links</h3>
-            <div class="space-y-2">
               {siteConfig.legal.termsUrl && (
                 <a href={siteConfig.legal.termsUrl} class="block text-gray-300 no-underline hover:text-white transition-colors">
                   Terms & Conditions
                 </a>
               )}
-              <a href="/jobs/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Jobs
-              </a>
-              <a href="/partners/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Partnerships
-              </a>
-              <a href="/affiliate-form/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Affiliate Programme
-              </a>
-              <a href="/vehicle-check/" class="block text-gray-300 no-underline hover:text-white transition-colors">
-                Vehicle Check
+              <a href="/privacy-policy/" class="block text-gray-300 no-underline hover:text-white transition-colors">
+                Privacy Policy
               </a>
             </div>
           </div>
         </div>
 
-        <!-- Popular Areas -->
-        <div class="mt-12 pt-8 border-t border-gray-800">
-          <div class="grid md:grid-cols-[auto_1fr] gap-x-8 gap-y-4 items-start">
-            <h3 class="text-white font-semibold text-sm uppercase tracking-wide whitespace-nowrap">Popular Areas</h3>
-            <div class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-              <a href="/removals-bristol/clifton/" class="text-gray-300 no-underline hover:text-white transition-colors">Clifton</a>
-              <a href="/removals-bristol/bedminster/" class="text-gray-300 no-underline hover:text-white transition-colors">Bedminster</a>
-              <a href="/removals-bristol/redland/" class="text-gray-300 no-underline hover:text-white transition-colors">Redland</a>
-              <a href="/removals-bristol/southville/" class="text-gray-300 no-underline hover:text-white transition-colors">Southville</a>
-              <a href="/removals-bristol/cotham/" class="text-gray-300 no-underline hover:text-white transition-colors">Cotham</a>
-              <a href="/removals-bristol/montpelier/" class="text-gray-300 no-underline hover:text-white transition-colors">Montpelier</a>
-              <a href="/removals-bristol/bishopston/" class="text-gray-300 no-underline hover:text-white transition-colors">Bishopston</a>
-              <a href="/removals-bristol/fishponds/" class="text-gray-300 no-underline hover:text-white transition-colors">Fishponds</a>
-              <a href="/removals-bath/" class="text-gray-300 no-underline hover:text-white transition-colors">Bath</a>
-              <a href="/removals-weston-super-mare/" class="text-gray-300 no-underline hover:text-white transition-colors">Weston-super-Mare</a>
-              <span class="text-gray-600" aria-hidden="true">·</span>
-              <a href="/removals-bristol-to-london/" class="text-gray-300 no-underline hover:text-white transition-colors">Bristol → London</a>
-              <a href="/removals-bristol-to-cardiff/" class="text-gray-300 no-underline hover:text-white transition-colors">Bristol → Cardiff</a>
-              <a href="/removals-bristol-to-birmingham/" class="text-gray-300 no-underline hover:text-white transition-colors">Bristol → Birmingham</a>
-              <a href="/areas/" class="text-white no-underline hover:text-gray-300 transition-colors font-semibold">See all areas →</a>
-            </div>
-          </div>
-        </div>
 
         <!-- NAP + Contact -->
         <div class="mt-12 pt-8 border-t border-gray-800 text-sm text-gray-400 flex flex-wrap justify-center gap-x-6 gap-y-2 text-center">
