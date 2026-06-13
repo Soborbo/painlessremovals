@@ -1,6 +1,6 @@
 ---
 title: "Moving Plants, Pianos, Pets & Hazardous Materials"
-metaTitle: "Moving Plants, Pianos, Pets & Hazardous Materials — Special Items Guide"
+metaTitle: "Moving Plants, Pianos & Pets | Special Items Guide"
 description: "How to handle the items that don't fit in boxes. Plants, pianos, pets, and hazardous materials all need specific preparation before moving day."
 youtubeId: "GHo8NdpuTek"
 durationMinutes: 4

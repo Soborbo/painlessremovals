@@ -69,7 +69,7 @@ const reviewProps = {
   context: 'Google Review',
 };
 
-const title = 'House Removals in Redland, Bristol';
+const title = "Redland Removals | House Moves in Redland";
 const description = `Redland removal experts who know BS6 inside out. School-run gridlock, narrow Victorian hallways, Mon–Fri parking zones — free weekends. Since 1978. ${siteConfig.company.rating.value}★ rated.`;
 
 const serviceSchema = {
@@ -246,7 +246,7 @@ const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
 
   <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
   <div class="area-mobile-only py-6">
-    <SidebarAuthorBox />
+    <SidebarAuthorBox linked={false} />
   </div>
 
 </NeighbourhoodLayout>

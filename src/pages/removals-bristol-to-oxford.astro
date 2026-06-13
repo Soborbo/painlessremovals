@@ -49,7 +49,7 @@ const reviewProps = {
   context: 'Trustpilot Review',
 };
 
-const title = 'Removals Bristol to Oxford — 75 Miles, One Day';
+const title = "Removals Bristol to Oxford | 75 Miles, One Day";
 const description = `House removals from Bristol to Oxford, 75 miles via M4/A34. Same-day moves with full packing & insurance. Rated ${siteConfig.company.rating.value}★ from ${siteConfig.company.rating.count}+ customers.`;
 
 const serviceSchema = {
@@ -239,7 +239,7 @@ const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
 
       <!-- Mobile: Author box -->
       <div class="area-mobile-only py-6">
-        <SidebarAuthorBox />
+        <SidebarAuthorBox linked={false} />
       </div>
 
     </article>
@@ -250,7 +250,7 @@ const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
         <FactBox {...factBoxProps} />
         <ReviewInline {...reviewProps} />
         <RouteMap destination="Oxford, UK" />
-        <SidebarAuthorBox />
+        <SidebarAuthorBox linked={false} />
         <SidebarCTA />
       </div>
     </aside>

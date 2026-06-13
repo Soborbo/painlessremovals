@@ -1,6 +1,6 @@
 ---
 title: "Materials & Equipment"
-metaTitle: "Packing Materials & Equipment — What You Need for Moving"
+metaTitle: "Packing Materials & Equipment | What You Need"
 description: "A complete checklist of every packing material you need for a house move. Box sizes, packing paper, tape, specialist boxes — with quantities for every home size."
 youtubeId: "9F0A50KCOsI"
 durationMinutes: 3

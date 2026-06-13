@@ -1,6 +1,6 @@
 ---
 title: "How to Pack Your Kitchen"
-metaTitle: "How to Pack Your Kitchen for Moving — Step-by-Step Guide"
+metaTitle: "How to Pack Your Kitchen for Moving | Step-by-Step"
 description: "Step-by-step guide to packing your kitchen safely. Plates, glasses, appliances — with a printable checklist from Bristol's trusted movers."
 youtubeId: "srhJ2tZFJEk"
 durationMinutes: 5

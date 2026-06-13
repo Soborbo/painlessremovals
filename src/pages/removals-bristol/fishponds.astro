@@ -69,7 +69,7 @@ const reviewProps = {
   context: 'Google Review',
 };
 
-const title = 'House Removals in Fishponds, Bristol';
+const title = "Fishponds Removals | House Moves in Fishponds";
 const description = `Fishponds removal specialists since 1978. We handle Victorian terraces, 1930s semis, and tight side streets off the A432 — 3 miles from our depot. ${siteConfig.company.rating.value}★ rated.`;
 
 const serviceSchema = {
@@ -256,7 +256,7 @@ const schema = [serviceSchema, articleSchema, faqSchema, breadcrumbs([
 
   <!-- Mobile: Author box (hidden on desktop — sidebar has its own) -->
   <div class="area-mobile-only py-6">
-    <SidebarAuthorBox />
+    <SidebarAuthorBox linked={false} />
   </div>
 
 </NeighbourhoodLayout>

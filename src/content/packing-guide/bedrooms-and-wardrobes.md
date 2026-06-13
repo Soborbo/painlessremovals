@@ -1,6 +1,6 @@
 ---
 title: "Bedrooms & Wardrobes"
-metaTitle: "How to Pack Bedrooms & Wardrobes for Moving — Without Creasing"
+metaTitle: "How to Pack Bedrooms & Wardrobes Without Creasing"
 description: "Keep your clothes crease-free and bedrooms organised during a move. Wardrobe boxes, folding techniques, and shoe packing — from movers who've done it 2,000+ times."
 youtubeId: "RZjZHA_bMo4"
 durationMinutes: 6

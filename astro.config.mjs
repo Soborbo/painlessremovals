@@ -23,6 +23,7 @@ const noindexPages = [
   '/jobs/thank-you/',
   '/later-life-moves/',
   '/man-with-a-van-near-bristol/',
+  '/partners/agent-referral/',
   '/partners/home-staging/',
   '/partners/knight-frank/',
   '/partners/relocation-agents/',
