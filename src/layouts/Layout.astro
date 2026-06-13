@@ -45,11 +45,12 @@ const {
 } = Astro.props;
 
 // Build full title with template
-const fullTitle = title === siteConfig.brand.name
+const fullTitle = title.includes(siteConfig.brand.name)
   ? title
   : siteConfig.seo?.titleTemplate?.replace('%s', title) || title;
 
-const canonicalUrl = canonical || new URL(Astro.url.pathname, siteConfig.brand.domain).toString();
+const _slashedPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+const canonicalUrl = canonical || new URL(_slashedPath, siteConfig.brand.domain).toString();
 
 const resolvedOgImage = ogImage
   ? (ogImage.startsWith('/') ? `${siteConfig.brand.domain}${ogImage}` : ogImage)
