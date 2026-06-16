@@ -15,10 +15,10 @@ import { sendToCRM, isCRMConfigured, newEventId, type CRMClientEnv } from './cli
 import {
   quoteWebhookSchema,
   callbackWebhookSchema,
-  type QuoteWebhookPayload,
   type CallbackWebhookPayload,
 } from './schemas';
 import { normalizeUKPhoneForCRM } from './format';
+import { mapSubmissionToQuotePayload } from './quote-mapper';
 
 interface CRMServerEnv extends CRMClientEnv {
   CRM_PRICING_VERSION_ID?: string;
@@ -85,11 +85,21 @@ export interface QuoteLeadInput {
   email?: string;
   phone?: string;
   postcode?: string;
-  sizeCode?: string;
-  distanceMiles?: number;
-  complications?: string[];
   totalPence?: number;
   eventId?: string;
+  /**
+   * The FULL calculator submission map (`save-quote`'s `validated.data`). The
+   * mapper lifts every entered item out of this into the rich webhook payload,
+   * so nothing the customer entered is dropped on the way to the CRM.
+   */
+  data?: Record<string, unknown>;
+  /** Top-level price breakdown (label → amount) from the save-quote body. */
+  breakdown?: Record<string, number>;
+  /** Top-level tracking from the save-quote body. */
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  gclid?: string;
 }
 
 /**
@@ -103,30 +113,26 @@ export function deliverQuoteLead(
   input: QuoteLeadInput,
 ): void {
   const eventId = input.eventId || newEventId();
-  if (!input.fullName || !input.email || !input.phone || !input.postcode) {
+
+  const payload = mapSubmissionToQuotePayload({
+    fullName: input.fullName,
+    email: input.email,
+    phone: input.phone,
+    postcode: input.postcode,
+    totalPence: input.totalPence,
+    data: input.data,
+    breakdown: input.breakdown,
+    utmSource: input.utmSource,
+    utmMedium: input.utmMedium,
+    utmCampaign: input.utmCampaign,
+    gclid: input.gclid,
+    // The client can't know the CRM pricing-version uuid; inject from env.
+    pricingVersionId: env.CRM_PRICING_VERSION_ID,
+  });
+
+  if (!payload) {
     logger.warn('CRM', 'Skipping quote lead — incomplete customer/postcode', { eventId });
     return;
-  }
-
-  const payload: QuoteWebhookPayload = {
-    customer: {
-      full_name: input.fullName.slice(0, 160),
-      email: input.email,
-      phone: normalizeUKPhoneForCRM(input.phone),
-      postcode: input.postcode,
-    },
-  };
-
-  // Only attach the optional quote block when we have a pricing version uuid
-  // (the CRM requires a uuid there or nothing).
-  if (env.CRM_PRICING_VERSION_ID && typeof input.totalPence === 'number') {
-    payload.quote = {
-      pricing_version_id: env.CRM_PRICING_VERSION_ID,
-      size_code: (input.sizeCode || 'custom').slice(0, 40),
-      distance_miles: Math.max(0, input.distanceMiles ?? 0),
-      complications: input.complications ?? [],
-      total_pence: Math.max(0, Math.round(input.totalPence)),
-    };
   }
 
   // Validate before sending so a builder bug fails fast in logs, not silently

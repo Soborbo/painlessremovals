@@ -56,12 +56,95 @@ export const contactDetailsWithPostcodeSchema = contactDetailsSchema.extend({
 });
 
 export const addressSchema = z.object({
-  line1: z.string().min(1, 'line1 required').max(160),
+  // The calculator captures a single Google-formatted string + postcode rather
+  // than structured line1/city, so `line1`/`city` are optional and `formatted`
+  // carries the full string. The CRM derives line1/city defensively on insert.
+  formatted: z.string().max(300).optional(),
+  line1: z.string().min(1).max(160).optional(),
   line2: z.string().max(160).optional(),
-  city: z.string().min(1, 'city required').max(80),
+  city: z.string().min(1).max(80).optional(),
   postcode: postcodeField,
+  // Optional access metadata captured by the calculator. All additive — older
+  // payloads that omit these still validate. Maps to CRM job_addresses columns.
+  floor: z.number().int().min(-2).max(100).optional(),
+  has_lift: z.boolean().optional(),
+  property_type: z.string().max(40).optional(),
+  access_notes: z.string().max(2000).optional(),
 });
 export type Address = z.infer<typeof addressSchema>;
+
+// ---------------------------------------------------------------------------
+// Rich intake blocks (all OPTIONAL, additive) — carry the full calculator
+// state to the CRM so no entered item is lost. Kept byte-aligned with the
+// CRM's IncomingQuoteSchema in painless-crm/src/lib/webhooks/quote.ts.
+// ---------------------------------------------------------------------------
+
+/** Depth-bounded JSON value, so freeform blocks (extras) can't DoS via nesting. */
+const boundedJson = (depth = 4): z.ZodType<unknown> =>
+  depth <= 0
+    ? z.union([z.string().max(2000), z.number(), z.boolean(), z.null()])
+    : z.union([
+        z.string().max(2000),
+        z.number(),
+        z.boolean(),
+        z.null(),
+        z.array(z.lazy(() => boundedJson(depth - 1))).max(200),
+        z.record(z.string().max(80), z.lazy(() => boundedJson(depth - 1))),
+      ]);
+
+export const moveDetailsSchema = z.object({
+  date: z.string().max(40).optional(),
+  flexibility: z.enum(['fixed', 'flexible', 'unknown']).optional(),
+});
+
+export const serviceMetaSchema = z.object({
+  type: z.enum(['home', 'office', 'clearance']).optional(),
+  property_size: z.string().max(40).optional(),
+  office_size: z.string().max(40).optional(),
+  slider_position: z.string().max(40).optional(),
+});
+
+export const resourcesSchema = z.object({
+  men: z.number().int().min(0).max(100).optional(),
+  vans: z.number().int().min(0).max(100).optional(),
+  cubic_ft: z.number().min(0).optional(),
+  service_duration_hours: z.number().min(0).optional(),
+  manual_override: z.boolean().optional(),
+});
+
+export const flagsSchema = z.object({
+  property_chain: z.boolean().optional(),
+  key_wait_waiver: z.boolean().optional(),
+});
+
+export const consentSchema = z.object({
+  gdpr: z.boolean().optional(),
+  marketing: z.boolean().optional(),
+});
+
+/** Line-item breakdown: label → amount (calculator emits a {string: number} map). */
+export const breakdownSchema = z.record(z.string().max(80), z.number());
+
+/** Freeform extras (packing/disassembly/cleaning/storage/assembly/clearance). */
+export const extrasSchema = z.record(z.string().max(80), boundedJson());
+
+/** Marketing attribution carried with the quote (superset of affiliate's). */
+export const intakeAttributionSchema = z.object({
+  source: z.string().max(120).optional(),
+  /**
+   * The post-calculation "how did you find us?" answer (one of the
+   * QuoteLoadingScreen AttributionIds: google|friend|estate_agent|van|social|
+   * returning, or a free string). Distinct from utm_source — this is the
+   * customer's self-reported channel.
+   */
+  heard_about: z.string().max(120).optional(),
+  utm_source: z.string().max(120).optional(),
+  utm_medium: z.string().max(120).optional(),
+  utm_campaign: z.string().max(160).optional(),
+  gclid: z.string().max(200).optional(),
+  landing_page: z.string().max(500).optional(),
+  session_id: z.string().max(120).optional(),
+});
 
 // ---------------------------------------------------------------------------
 // 1) /api/webhooks/quote
@@ -84,6 +167,15 @@ export const quoteWebhookSchema = z.object({
     })
     .optional(),
   quote: quoteDetailsSchema.optional(),
+  // --- Rich intake blocks (all optional, additive) -------------------------
+  move: moveDetailsSchema.optional(),
+  service: serviceMetaSchema.optional(),
+  resources: resourcesSchema.optional(),
+  flags: flagsSchema.optional(),
+  consent: consentSchema.optional(),
+  breakdown: breakdownSchema.optional(),
+  extras: extrasSchema.optional(),
+  attribution: intakeAttributionSchema.optional(),
 });
 export type QuoteWebhookPayload = z.infer<typeof quoteWebhookSchema>;
 

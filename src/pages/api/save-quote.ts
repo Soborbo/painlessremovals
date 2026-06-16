@@ -251,21 +251,22 @@ export const POST: APIRoute = async (context) => {
       const data = validated.data as Record<string, unknown>;
       const fromAddr = data.fromAddress as { postcode?: string } | undefined;
       const toAddr = data.toAddress as { postcode?: string } | undefined;
-      const distances = data.distances as { customerDistance?: number; fromToTo?: number } | undefined;
-      const complications = Array.isArray(data.complications)
-        ? (data.complications as unknown[]).map(String)
-        : [];
+      // Hand the FULL calculator submission to the mapper so every entered
+      // item (addresses, move date, resources, extras, consent, attribution,
+      // line-item breakdown) reaches the CRM — not just the old 4-field summary.
       deliverQuoteLead(env, getWaitUntil(context.locals), {
         fullName: validated.name,
         email: validated.email,
         phone: validated.phone,
         postcode: fromAddr?.postcode || toAddr?.postcode,
-        sizeCode:
-          (data.propertySize as string) || (data.officeSize as string) || (data.serviceType as string),
-        distanceMiles: distances?.customerDistance ?? distances?.fromToTo,
-        complications,
         totalPence: Math.round(validated.totalPrice * 100),
         eventId: validated.event_id,
+        data,
+        breakdown: validated.breakdown,
+        utmSource: validated.utm_source,
+        utmMedium: validated.utm_medium,
+        utmCampaign: validated.utm_campaign,
+        gclid: validated.gclid,
       });
     }
 
