@@ -89,6 +89,38 @@ describe('mapSubmissionToQuotePayload', () => {
     expect(payload?.service?.type).toBe('home');
   });
 
+  it('itemises extras into per-line breakdown when they reconcile, and adds a Total', () => {
+    const payload = mapSubmissionToQuotePayload({
+      ...baseInput,
+      totalPence: 90000,
+      // storage £82 (4w × £41 × 0.5) + assembly £120 (general × 2) = £202
+      data: {
+        ...fullData,
+        extras: { storageSize: 'smallWardrobe', storageWeeks: 4, disassemblyItems: [{ category: 'general', quantity: 2 }] },
+      },
+      breakdown: { crewCost: 800, extrasCost: 202 },
+    });
+    expect(() => quoteWebhookSchema.parse(payload)).not.toThrow();
+    expect(payload?.breakdown?.storage).toBe(82);
+    expect(payload?.breakdown?.assembly).toBe(120);
+    expect(payload?.breakdown?.extrasCost).toBeUndefined();
+    expect(payload?.breakdown?.crewCost).toBe(800);
+    expect(payload?.breakdown?.total).toBe(900); // 90000 pence → £900
+  });
+
+  it('keeps the lumped extras total when the parts do not reconcile', () => {
+    const payload = mapSubmissionToQuotePayload({
+      ...baseInput,
+      data: {
+        ...fullData,
+        extras: { storageSize: 'smallWardrobe', storageWeeks: 4 },
+      },
+      breakdown: { crewCost: 800, extrasCost: 999 },
+    });
+    expect(payload?.breakdown?.extrasCost).toBe(999);
+    expect(payload?.breakdown?.storage).toBeUndefined();
+  });
+
   it('produces a valid minimal payload from a sparse session', () => {
     const payload = mapSubmissionToQuotePayload({
       fullName: 'Jane Doe',
