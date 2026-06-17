@@ -779,6 +779,75 @@ export function getExtrasCost(extras: QuoteInput['extras'], cubes: number): numb
 }
 
 /**
+ * Itemised version of {@link getExtrasCost}: the same per-category amounts, but
+ * returned as a labelled map instead of a single sum. Used only to enrich the
+ * CRM webhook so the office sees a per-extra cost sheet (packing / cleaning /
+ * storage / assembly) rather than one lumped figure. By construction the values
+ * sum to getExtrasCost — a unit test pins them together so the two never drift.
+ * Categories that were not requested are omitted.
+ */
+export function getExtrasBreakdown(
+  extras: QuoteInput['extras'],
+  cubes: number,
+): { packing?: number; cleaning?: number; storage?: number; assembly?: number } {
+  const out: { packing?: number; cleaning?: number; storage?: number; assembly?: number } = {};
+
+  // Packing — new tier system, else legacy
+  if ('packingTier' in extras && extras.packingTier) {
+    const sizeCategory = getPackingSizeCategory(cubes);
+    const tierConfig =
+      CALCULATOR_CONFIG.packingTiers[extras.packingTier as keyof typeof CALCULATOR_CONFIG.packingTiers];
+    if (tierConfig && tierConfig.priceBySize) out.packing = tierConfig.priceBySize[sizeCategory];
+  } else if (extras.packing) {
+    out.packing = CALCULATOR_CONFIG.packing[extras.packing].total;
+  }
+
+  // Cleaning
+  if ('cleaningRooms' in extras && extras.cleaningRooms && extras.cleaningRooms > 0) {
+    const roomKey = Math.max(1, Math.min(extras.cleaningRooms, 6)) as 1 | 2 | 3 | 4 | 5 | 6;
+    const basePrice = CALCULATOR_CONFIG.cleaning[roomKey]?.price ?? 90;
+    const cleaningType = ('cleaningType' in extras ? extras.cleaningType : 'quick') as keyof typeof CALCULATOR_CONFIG.cleaningTiers;
+    const multiplier = CALCULATOR_CONFIG.cleaningTiers[cleaningType]?.multiplier || 1.0;
+    out.cleaning = Math.round(basePrice * multiplier);
+  }
+
+  // Storage with duration, else legacy
+  if ('storageSize' in extras && extras.storageSize && 'storageWeeks' in extras && extras.storageWeeks) {
+    const sizeConfig =
+      CALCULATOR_CONFIG.storageSizes[extras.storageSize as keyof typeof CALCULATOR_CONFIG.storageSizes];
+    if (sizeConfig) {
+      const weeklyRate = sizeConfig.price;
+      const weeks = extras.storageWeeks as number;
+      const discountedWeeks = Math.min(weeks, 8);
+      const fullPriceWeeks = Math.max(0, weeks - 8);
+      out.storage = discountedWeeks * weeklyRate * 0.5 + fullPriceWeeks * weeklyRate;
+    }
+  } else if (extras.storage) {
+    out.storage = CALCULATOR_CONFIG.storage[extras.storage].price;
+  }
+
+  // Assembly / disassembly items, else legacy. Unknown categories are skipped
+  // (the webhook path may receive malformed data we must not crash on).
+  if ('disassemblyItems' in extras && extras.disassemblyItems && Array.isArray(extras.disassemblyItems)) {
+    let total = 0;
+    for (const item of extras.disassemblyItems as Array<{ category: keyof typeof CALCULATOR_CONFIG.assembly; quantity: number }>) {
+      const cfg = CALCULATOR_CONFIG.assembly[item.category];
+      if (cfg) total += cfg.price * item.quantity;
+    }
+    if (total > 0) out.assembly = total;
+  } else if (extras.assembly && extras.assembly.length > 0) {
+    let total = 0;
+    for (const item of extras.assembly) {
+      const cfg = CALCULATOR_CONFIG.assembly[item.type];
+      if (cfg) total += cfg.price * item.quantity;
+    }
+    if (total > 0) out.assembly = total;
+  }
+
+  return out;
+}
+
+/**
  * Get recommended packing size based on cubes
  */
 export function getRecommendedPackingSize(cubes: number): PackingSize {

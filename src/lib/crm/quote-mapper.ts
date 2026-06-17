@@ -12,6 +12,7 @@
  * the env-injected `pricing_version_id` to the quote block.
  */
 
+import { getExtrasBreakdown } from '@/lib/calculator-logic';
 import { normalizeUKPhoneForCRM } from './format';
 import type { QuoteWebhookPayload } from './schemas';
 
@@ -183,6 +184,31 @@ export function mapSubmissionToQuotePayload(
     for (const [k, v] of Object.entries(breakdown)) {
       if (typeof v === 'number' && Number.isFinite(v)) clean[k.slice(0, 80)] = v;
     }
+
+    // Split the lumped `extrasCost` into per-extra lines (packing / cleaning /
+    // storage / assembly) so the CRM renders a real cost sheet. Only when the
+    // parts reconcile to the lump (±£1) — otherwise keep the lump rather than
+    // surface itemisation that doesn't add up.
+    const cubes = asNumber(calcQuote.cubes) ?? 0;
+    const items = getExtrasBreakdown(
+      (data.extras ?? {}) as Parameters<typeof getExtrasBreakdown>[0],
+      cubes,
+    );
+    const itemSum = Object.values(items).reduce((sum, n) => sum + n, 0);
+    const lump = clean.extrasCost;
+    if (lump !== undefined && itemSum > 0 && Math.abs(itemSum - lump) <= 1) {
+      delete clean.extrasCost;
+      for (const [k, v] of Object.entries(items)) {
+        if (typeof v === 'number' && Number.isFinite(v) && v !== 0) clean[k] = Math.round(v);
+      }
+    }
+
+    // The authoritative customer total (pounds) — gives the cost sheet its Total
+    // line. totalPence is pence (pounds × 100 at the call site).
+    if (typeof input.totalPence === 'number' && Number.isFinite(input.totalPence)) {
+      clean.total = Math.round(input.totalPence / 100);
+    }
+
     if (Object.keys(clean).length > 0) payload.breakdown = clean;
   }
 
