@@ -393,6 +393,22 @@ export const POST: APIRoute = async (context) => {
       });
       const dataObj = (validated.data || {}) as Record<string, unknown>;
       const fromAddr = dataObj.fromAddress as { postcode?: string } | undefined;
+      // Lift the captured gclid/utm out of the calculator state so callback
+      // leads land in the CRM `attributions` table the same way quote leads do.
+      const asStr = (v: unknown) =>
+        typeof v === 'string' && v.length > 0 ? v : undefined;
+      const attributionEntries = {
+        heard_about: asStr(dataObj.attribution),
+        utm_source: asStr(dataObj.utmSource),
+        utm_medium: asStr(dataObj.utmMedium),
+        utm_campaign: asStr(dataObj.utmCampaign),
+        gclid: asStr(dataObj.gclid),
+        landing_page: asStr(dataObj.landingPage),
+        session_id: asStr(dataObj.sessionId),
+      };
+      const attribution = Object.values(attributionEntries).some((v) => v !== undefined)
+        ? attributionEntries
+        : undefined;
       deliverCallbackLead(env, getWaitUntil(context.locals), {
         fullName: contactName,
         email: contactEmail,
@@ -400,6 +416,7 @@ export const POST: APIRoute = async (context) => {
         message: validated.callbackReason,
         propertyPostcode: fromAddr?.postcode,
         eventId: `cb-${fp.slice(0, 40)}`,
+        attribution,
       });
     }
 

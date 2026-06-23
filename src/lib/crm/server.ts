@@ -155,6 +155,8 @@ export interface CallbackLeadInput {
   message?: string;
   propertyPostcode?: string;
   eventId?: string;
+  /** Marketing attribution (gclid/utm/landing) captured on the site. */
+  attribution?: CallbackWebhookPayload['attribution'];
 }
 
 /**
@@ -180,6 +182,7 @@ export function deliverCallbackLead(
     },
     ...(input.propertyPostcode ? { property_postcode: input.propertyPostcode } : {}),
     ...(input.message ? { message: input.message.slice(0, 2000) } : {}),
+    ...(input.attribution ? { attribution: input.attribution } : {}),
   };
 
   const parsed = callbackWebhookSchema.safeParse(payload);

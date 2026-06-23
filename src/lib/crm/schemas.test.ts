@@ -124,6 +124,15 @@ describe('callbackWebhookSchema', () => {
     });
     expect(r.success).toBe(true);
   });
+
+  it('carries marketing attribution (gclid/utm)', () => {
+    const r = callbackWebhookSchema.safeParse({
+      customer: { full_name: 'A B', email: 'a@b.com', phone: '07700900123' },
+      attribution: { utm_source: 'google', utm_medium: 'cpc', gclid: 'abc123' },
+    });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.attribution?.gclid).toBe('abc123');
+  });
 });
 
 describe('affiliateWebhookSchema', () => {
