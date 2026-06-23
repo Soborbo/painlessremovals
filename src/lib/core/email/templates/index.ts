@@ -6,3 +6,4 @@
 
 export { generateQuoteConfirmationEmail } from './customer-confirmation';
 export { generateAdminNotificationEmail } from './admin-notification';
+export { generateCallbackCustomerEmail, generateCallbackAdminEmail } from './callback';

@@ -2,14 +2,184 @@
 /**
  * INSTANT QUOTE — SIMPLE CALLBACK PAGE
  *
- * For customers who want to skip the calculator and just request a callback.
- * Reached from the 4th option on Step 1.
+ * Two roles:
+ *
+ * 1. Standalone callback request (no `ref`): a customer who skipped the
+ *    calculator fills in the two-step form. Reached from the 4th option on
+ *    Step 1.
+ *
+ * 2. Email-click callback (`?ref=<quoteId>`): the "Yes, Call Me to Book a
+ *    Survey" button in the quote confirmation email lands here. We already
+ *    captured the customer's details when the quote was saved (stashed in KV
+ *    under `cb_ref:<quoteId>` by save-quote.ts), so we DON'T ask them for
+ *    anything again — we register the callback server-side, tag it
+ *    `source: 'email_click'` for the CRM, and show the thank-you page.
+ *    If the ref can't be resolved (expired, or a quote emailed before this
+ *    shipped) we fall back to the form.
  */
 
 export const prerender = false;
 
 import LayoutCalculator from '@/components/calculator/layout-calculator.astro';
 import { SimpleCallbackForm } from '@/components/calculator/SimpleCallbackForm';
+import { getRuntimeConfig, CONFIG } from '@/lib/config';
+import { sendEmail } from '@/lib/core/email/sender';
+import { generateCallbackCustomerEmail, generateCallbackAdminEmail } from '@/lib/core/email/templates';
+import { sanitizeSubjectPart } from '@/lib/core/email/templates/helpers';
+import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
+import type { CallbackWebhookPayload } from '@/lib/crm/schemas';
+import { syncQuoteToImve } from '@/lib/features/imve';
+import { safeKV, kvGet, kvPut } from '@/lib/utils/kv';
+import { logger } from '@/lib/utils/logger';
+import { env } from 'cloudflare:workers';
+
+interface CallbackRefRecord {
+  name?: string;
+  email?: string;
+  phone?: string;
+  postcode?: string;
+  attribution?: CallbackWebhookPayload['attribution'];
+}
+
+const EMAIL_CLICK_REASON =
+  'Requested a callback by clicking the "Call Me to Book a Survey" button in the quote email.';
+
+// 60-day window — matches the cb_ref stash TTL in save-quote.ts.
+const HANDLED_TTL_SECONDS = 60 * 24 * 60 * 60;
+
+const ref = Astro.url.searchParams.get('ref');
+// Show the thank-you (redirect) instead of the form when we resolved a ref.
+let emailClickHandled = false;
+
+// The quote id is `${fingerprint.slice(0,4)}${random4}` — 8 uppercase
+// alphanumerics. Be lenient on length but reject anything that isn't a plain
+// id so a junk ref can't drive a KV lookup.
+if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
+  try {
+    const kv = safeKV(env, 'RATE_LIMITER');
+    const raw = kv ? await kvGet<string>(kv, `cb_ref:${ref}`) : null;
+    if (raw) {
+      let rec: CallbackRefRecord | null = null;
+      try {
+        rec = JSON.parse(raw) as CallbackRefRecord;
+      } catch {
+        rec = null;
+      }
+
+      if (rec?.email && rec?.phone) {
+        // We have everything we need — the customer never sees the form.
+        emailClickHandled = true;
+
+        // Idempotency: email scanners (Outlook SafeLinks etc.) and repeat
+        // clicks both re-GET this page. Fire the side-effects (emails + CRM)
+        // only once per ref; later hits still get the thank-you page.
+        const already = kv ? await kvGet<string>(kv, `cb_done:${ref}`) : '1';
+        if (!already) {
+          const waitUntil = getWaitUntil(Astro.locals);
+          if (kv) {
+            const mark = kvPut(kv, `cb_done:${ref}`, '1', { expirationTtl: HANDLED_TTL_SECONDS });
+            if (waitUntil) waitUntil(mark);
+            else await mark;
+          }
+
+          const runtimeConfig = getRuntimeConfig(env);
+          const adminData: Record<string, unknown> = {
+            Source: 'Quote email click',
+            'Quote ref': ref,
+            ...(rec.postcode ? { Postcode: rec.postcode } : {}),
+          };
+
+          // Legacy i-mve CRM sync — parity with the form callback flow so the
+          // lead lands in BOTH CRMs. Backgrounded + best-effort.
+          if (CONFIG.features.imveSync && runtimeConfig.imve.enabled) {
+            const imveWork = syncQuoteToImve(
+              { id: `CB-EMAIL-${ref}`, name: rec.name ?? null, email: rec.email ?? null, phone: rec.phone ?? null },
+              adminData,
+              runtimeConfig.imve,
+            ).catch((imveError) => {
+              logger.error('i-mve', 'Email-click callback i-mve sync failed', { error: imveError });
+            });
+            if (waitUntil) waitUntil(imveWork);
+            else await imveWork;
+          }
+
+          // Both confirmation emails run on the background track so the click
+          // → thank-you redirect stays instant. Failures are best-effort
+          // (logged, not surfaced) — same posture as the form callback flow.
+          const emailWork = (async () => {
+            // Customer "we'll call you back" confirmation.
+            if (rec!.email) {
+              try {
+                await sendEmail(
+                  {
+                    to: rec!.email,
+                    subject: "We'll call you back soon – Painless Removals",
+                    html: generateCallbackCustomerEmail(rec!.name || 'there', EMAIL_CLICK_REASON),
+                    replyTo: CONFIG.calculator.emailSupport,
+                  },
+                  runtimeConfig.email,
+                );
+              } catch (emailError) {
+                logger.error('Email', 'Email-click callback customer email failed', { error: emailError });
+              }
+            }
+            // Admin notification so the team knows to call.
+            if (CONFIG.calculator.emailSupport) {
+              try {
+                const safeNameSuffix = rec!.name ? ` — ${sanitizeSubjectPart(rec!.name)}` : '';
+                await sendEmail(
+                  {
+                    to: CONFIG.calculator.emailSupport,
+                    subject: `⚡ Callback Request (email click)${safeNameSuffix}`,
+                    html: generateCallbackAdminEmail(
+                      { name: rec!.name, email: rec!.email, phone: rec!.phone },
+                      EMAIL_CLICK_REASON,
+                      adminData,
+                    ),
+                  },
+                  runtimeConfig.email,
+                );
+              } catch (emailError) {
+                logger.error('Email', 'Email-click callback admin email failed', { error: emailError });
+              }
+            }
+          })();
+          if (waitUntil) waitUntil(emailWork);
+          else await emailWork;
+
+          // Painless-CRM signed webhook. `source: 'email_click'` is what the
+          // CRM (and its Google Sheets mirror) records so the lead is clearly
+          // attributed to the email click rather than a form fill. The ref-
+          // derived event_id keeps redelivery idempotent on the CRM side too.
+          deliverCallbackLead(env, waitUntil, {
+            fullName: rec.name,
+            email: rec.email,
+            phone: rec.phone,
+            message: EMAIL_CLICK_REASON,
+            propertyPostcode: rec.postcode,
+            eventId: `cb-emailclick-${ref}`,
+            source: 'email_click',
+            attribution: rec.attribution,
+          });
+
+          logger.info('API', 'Email-click callback registered', { ref });
+        }
+      }
+    }
+  } catch (err) {
+    // Never let the email-click path 500 the page — fall back to the form.
+    logger.error('API', 'Email-click callback handling failed', {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+}
+
+if (emailClickHandled) {
+  // `conv=email_click` tells the thank-you page to fire the callback
+  // conversion (Google Ads + Meta). The form flow fires it client-side itself
+  // and redirects without this flag, so there's no double-fire on that path.
+  return Astro.redirect('/instantquote/thank-you-callback/?conv=email_click');
+}
 ---
 
 <LayoutCalculator

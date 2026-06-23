@@ -19,6 +19,15 @@ export function escapeHtml(str: string): string {
 }
 
 /**
+ * Strip CRLF / control characters before interpolating a value into an email
+ * Subject header. Defence in depth against header injection — Resend sanitizes
+ * on its side but we don't want to rely on that alone.
+ */
+export function sanitizeSubjectPart(value: string): string {
+  return value.replace(/[\r\n\t\f\v\0]+/g, ' ').trim().slice(0, 120);
+}
+
+/**
  * Validate and sanitize a URL for use in href attributes
  */
 export function sanitizeUrl(url: string): string {

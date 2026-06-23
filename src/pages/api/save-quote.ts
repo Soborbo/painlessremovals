@@ -268,6 +268,40 @@ export const POST: APIRoute = async (context) => {
         utmCampaign: validated.utm_campaign,
         gclid: validated.gclid,
       });
+
+      // Stash the customer's contact + attribution keyed by quote id, so the
+      // "Yes, Call Me to Book a Survey" link in the confirmation email
+      // (/instantquote/simple-callback/?ref=<quoteId>) can register a callback
+      // WITHOUT asking the customer to re-enter anything. We already have all
+      // their details here — the email link only carries the opaque quote id,
+      // so we keep the PII server-side in KV rather than in the URL.
+      // Only stored when we have enough to fire a callback later (email+phone).
+      if (dedupKv && validated.email && validated.phone) {
+        const asStr = (v: unknown) =>
+          typeof v === 'string' && v.length > 0 ? v : undefined;
+        const cbRecord = {
+          name: validated.name,
+          email: validated.email,
+          phone: validated.phone,
+          postcode: fromAddr?.postcode || toAddr?.postcode,
+          attribution: {
+            heard_about: asStr(data.attribution),
+            utm_source: validated.utm_source,
+            utm_medium: validated.utm_medium,
+            utm_campaign: validated.utm_campaign,
+            gclid: validated.gclid,
+            landing_page: asStr(data.landingPage),
+            session_id: asStr(data.sessionId),
+          },
+        };
+        // 60-day window — matches the realistic quote follow-up horizon.
+        const cbWrite = kvPut(dedupKv, `cb_ref:${quote.id}`, JSON.stringify(cbRecord), {
+          expirationTtl: 60 * 24 * 60 * 60,
+        });
+        const cbWaitUntil = getWaitUntil(context.locals);
+        if (cbWaitUntil) cbWaitUntil(cbWrite);
+        else void cbWrite;
+      }
     }
 
     // Emails stay on the background track — if Resend hiccups, the quote

@@ -187,6 +187,7 @@ export const contactWebhookSchema = z.object({
   customer: contactDetailsSchema,
   message: z.string().max(4000).optional(),
   preferred_contact: z.enum(['email', 'phone', 'whatsapp']).optional(),
+  attribution: intakeAttributionSchema.optional(),
 });
 export type ContactWebhookPayload = z.infer<typeof contactWebhookSchema>;
 
@@ -200,6 +201,7 @@ export const callbackWebhookSchema = z.object({
   preferred_window: z.string().max(120).optional(),
   property_postcode: postcodeField.optional(),
   message: z.string().max(2000).optional(),
+  attribution: intakeAttributionSchema.optional(),
 });
 export type CallbackWebhookPayload = z.infer<typeof callbackWebhookSchema>;
 
