@@ -47,12 +47,13 @@ function deliver(
   surface: 'quote' | 'callback',
   payload: Record<string, unknown>,
   eventId: string,
+  source?: string,
 ): void {
   if (!isCRMConfigured(env)) {
     logger.error('CRM', 'Lead not delivered — CRM not configured', { surface, eventId });
     return;
   }
-  const promise = sendToCRM(env, surface, payload, { eventId })
+  const promise = sendToCRM(env, surface, payload, { eventId, source })
     .then((res) => {
       if (!res.ok) {
         logger.error('CRM', 'Server-side delivery failed', {
@@ -157,6 +158,13 @@ export interface CallbackLeadInput {
   eventId?: string;
   /** Marketing attribution (gclid/utm/landing) captured on the site. */
   attribution?: CallbackWebhookPayload['attribution'];
+  /**
+   * Envelope `source` override. Defaults (in `sendToCRM`) to the env value or
+   * "website". Set to e.g. "email_click" so the CRM (and its Google Sheets
+   * mirror) records that the callback came from a click on the quote email
+   * rather than a form fill.
+   */
+  source?: string;
 }
 
 /**
@@ -193,5 +201,5 @@ export function deliverCallbackLead(
     });
     return;
   }
-  deliver(env, waitUntil, 'callback', parsed.data, eventId);
+  deliver(env, waitUntil, 'callback', parsed.data, eventId, input.source);
 }

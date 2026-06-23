@@ -110,6 +110,35 @@ const assetBase = CONFIG.site.assetBaseUrl;
       </div>
     </main>
 
+    {/*
+      Email-click callback conversion. Only fires when this page was reached
+      from the quote-email link (simple-callback redirects here with
+      ?conv=email_click). The normal form flow fires callback_conversion itself
+      in SimpleCallbackForm and redirects WITHOUT this flag, so it never
+      double-fires here. Per-session guard stops a refresh re-firing.
+    */}
+    <script>
+      import { trackEvent, mirrorMetaCapi, generateUUID } from '@/lib/tracking';
+
+      const isEmailClick = new URLSearchParams(window.location.search).get('conv') === 'email_click';
+      const ONCE_KEY = 'emailclick_callback_conversion_fired';
+
+      if (isEmailClick && !sessionStorage.getItem(ONCE_KEY)) {
+        sessionStorage.setItem(ONCE_KEY, '1');
+        // Same event_id on the dataLayer push and the CAPI mirror so Meta
+        // dedupes the Browser + CAPI pair into one Lead.
+        const eventId = generateUUID();
+        trackEvent('callback_conversion', {
+          event_id: eventId,
+          value: 0,
+          currency: 'GBP',
+          service: 'callback_only',
+          source: 'email_click',
+        });
+        void mirrorMetaCapi('callback_conversion', eventId, { value: 0, currency: 'GBP' });
+      }
+    </script>
+
     <footer class="border-t mt-auto">
       <div class="container mx-auto px-4 py-6">
         <div class="text-center text-sm text-muted-foreground">
