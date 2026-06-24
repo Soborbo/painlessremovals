@@ -295,8 +295,10 @@ const faqs = [
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
 
-// LCP hero preload: mobile uses pattern="FULL" (100vw), desktop uses pattern="HALF" (50vw).
-// Sizes override covers both so the browser picks the right width per breakpoint.
+// LCP hero preload — matches the single hero <picture>: one element, sized
+// 100vw on mobile / 50vw on desktop. The preload `sizes` mirrors the <img>
+// `sizes` exactly so the preload and the rendered source resolve to the same
+// width-stamped file on both breakpoints (no double download).
 const heroPreload = getLcpPreload('packing/Bristol-home-packing-service', 'FULL', {
   sizes: '(min-width:1024px) 50vw, 100vw',
 });
@@ -335,20 +337,9 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION 1: Hero (service-page pattern)
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
-    <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
-      <OptimizedPicture
-        name="packing/Bristol-home-packing-service"
-        pattern="FULL"
-        alt="Painless Removals packing team carefully wrapping and packing belongings in a Bristol home"
-        lcp
-        class="w-full h-full object-cover"
-      />
-    </div>
-
-    <!-- Left: Content area -->
-    <div class="gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
+  <section class="relative flex flex-col lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
+    <!-- Content area — below the image on mobile, left column on desktop -->
+    <div class="order-2 lg:order-1 gradient-hero px-6 py-8 lg:py-10 lg:px-12 xl:px-16 flex flex-col justify-center">
       <div class="max-w-xl mx-auto text-center">
         <h1 class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
           Top-Rated Removal Company in Bristol
@@ -373,14 +364,17 @@ const schemas = [
       </div>
     </div>
 
-    <!-- Right: Full-bleed image (desktop only) -->
-    <div class="hidden lg:block relative overflow-hidden">
+    <!-- Single hero image — full-width band on mobile, right column on desktop.
+         ONE <picture> with sizes covering both breakpoints, so the browser
+         downloads exactly one correctly-sized file (no off-screen duplicate). -->
+    <div class="order-1 lg:order-2 w-full h-[50vh] min-h-[280px] lg:h-auto relative overflow-hidden">
       <OptimizedPicture
         name="packing/Bristol-home-packing-service"
-        pattern="HALF"
+        pattern="FULL"
+        sizes="(min-width:1024px) 50vw, 100vw"
         alt="Painless Removals packing team carefully wrapping and packing belongings in a Bristol home"
         lcp
-        class="absolute inset-0 w-full h-full object-cover"
+        class="w-full h-full object-cover lg:absolute lg:inset-0"
       />
     </div>
   </section>
