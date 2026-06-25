@@ -66,6 +66,12 @@ export default defineConfig({
     // amount, but eliminates 1 RTT on slow networks.
     inlineStylesheets: 'always',
   },
+  // Pin the build-time image service to Sharp explicitly (astro-images v3.1
+  // §cloudflare-adapter-config). Pairs with the adapter's imageService:'compile'
+  // so astro:assets images are optimised by Sharp at build, never at runtime.
+  image: {
+    service: { entrypoint: 'astro/assets/services/sharp' },
+  },
   adapter: cloudflare({
     platformProxy: { enabled: true },
     // Optimise astro:assets images (e.g. the home-packing-service hero) with

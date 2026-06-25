@@ -25,7 +25,8 @@ import { getLcpPreload } from '@/utils/lcp-preload';
 const pageTitle = "Office Move Partner for Bristol Landlords";
 const pageDescription = 'Bristol\'s trusted office relocation specialists for commercial landlords, property managers and coworking operators. A reliable mover you can recommend to your tenants, with site-specific protocols, named account contact, and full insurance. Trusted since 1978.';
 const pagePath = '/partners/office-space/';
-const heroImagePath = '/img/office-removals/office-removals-team-assembling-furniture-bristol-1200w.webp';
+// JPG (1200×630) — used for og:image (social crawlers need JPG, not WebP) and schema image.
+const heroImagePath = '/og/office-removals/office-removals-team-assembling-furniture-bristol-og.jpg';
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 const PHONE_DISPLAY = siteConfig.company.contact.phone;

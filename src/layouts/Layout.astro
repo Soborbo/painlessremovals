@@ -55,6 +55,10 @@ const canonicalUrl = canonical || new URL(_slashedPath, siteConfig.brand.domain)
 const resolvedOgImage = ogImage
   ? (ogImage.startsWith('/') ? `${siteConfig.brand.domain}${ogImage}` : ogImage)
   : `${siteConfig.brand.domain}${siteConfig.brand.ogImageFallback}`;
+// og:image:type must match the actual file — social crawlers (FB/LinkedIn/X)
+// validate it. All per-page OG images are 1200×630 JPG; the default fallback
+// is og-default.png (also 1200×630).
+const resolvedOgType = /\.png$/i.test(resolvedOgImage) ? 'image/png' : 'image/jpeg';
 
 // ── Site-wide MovingCompany entity (canonical @id anchor) ────────────────────
 // This is THE definitive entity. All other pages reference it via @id only.
@@ -274,6 +278,9 @@ const localBusinessSchema = {
   <meta property="og:title" content={fullTitle} />
   <meta property="og:description" content={description} />
   <meta property="og:image" content={resolvedOgImage} />
+  <meta property="og:image:type" content={resolvedOgType} />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta property="og:site_name" content={siteConfig.brand.name} />
   <meta property="og:locale" content="en_GB" />
 
