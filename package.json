@@ -6,8 +6,8 @@
   "scripts": {
     "images": "node scripts/optimize-images.mjs",
     "images:force": "node scripts/optimize-images.mjs --force",
-    "dev": "astro dev",
-    "start": "astro dev",
+    "dev": "astro dev --host",
+    "start": "astro dev --host",
     "build": "astro check && astro build && node scripts/check-sitemap.mjs",
     "build:prod": "astro check && astro build && node scripts/check-sitemap.mjs && wrangler deploy --dry-run --config ./dist/server/wrangler.json",
     "preview": "astro build && wrangler dev --config ./dist/server/wrangler.json",
