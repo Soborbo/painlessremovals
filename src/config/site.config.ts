@@ -85,7 +85,7 @@ export const siteConfig = {
       title: 'Director',
       description: 'Director of Painless Removals since 2019. Has personally overseen 2,000+ home and office relocations across the UK, specialising in long-distance moves, property chain coordination, and complex multi-storey access jobs from Bristol.',
       linkedin: 'https://www.linkedin.com/in/jay-newton-72632223/',
-      image: '/img/about/team/Jay-Newton-800w.jpg',
+      image: '/img/about/team/Jay-Newton-768w.jpg',
     },
 
     // Trust signals

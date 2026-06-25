@@ -752,47 +752,47 @@
   "assessment/checklist-01-film-rooms": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-02-open-cupboards": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-03-under-beds": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-04-garden-shed": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-05-items-staying": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-06-specialist-items": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-07-appliances": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-08-under-covers": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/checklist-09-access-points": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/in-person-home-survey": {
     "width": 5712,
@@ -812,37 +812,37 @@
   "assessment/survey-manager-visit": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/video-assessment": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "assessment/video-survey-hero": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/1.moving-with-autism": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/10.photographing-the-old-room": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/11.visiting-the-old-home": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/12.we-pause-if-needed": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/13.uncertainty-and-unpredictability": {
     "width": 1536,
@@ -852,137 +852,137 @@
   "autism/14.every-person-is-different": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/15.communication-preference": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/16.sensory-awareness": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/17.Communication-Differences": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/18.Predictable-Timing": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/19.pack-gradually": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/2.sensory-overload": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/20.familiar-object": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/21.Jay's note": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/3.disruption-to-routine": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/4.loss-of-safe-space": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/5.previsit-timeline": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/6.quiet-space-preserved": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/7.consistent-crew": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/8.social-story": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "autism/9.comfort-box": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/10.childproofing": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/11.packing-images-for-removal": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/3.moving-with-babies": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/4.moving-with-toddlers": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/5.moving-with-preteens": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/7.survival-box-moving-day": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/8.on-moving-day": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/9.settling-in": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/exploring-new-home": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/hero": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "children/moving-with-teens": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "cleaning/book-your-cleaning": {
     "width": 5733,
@@ -1092,7 +1092,7 @@
   "home-removals/clients/second-step": {
     "width": 400,
     "height": 300,
-    "format": "png"
+    "format": "jpg"
   },
   "homepage/Bristol-moving-service": {
     "width": 2500,
@@ -1212,17 +1212,17 @@
   "key-wait-waiver/hero": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "key-wait-waiver/key-delay": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "key-wait-waiver/our-mistakes": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "knight-frank/painless-removals-office-packing": {
     "width": 6192,
@@ -1412,17 +1412,17 @@
   "partners/estate-agent-branded-referral-page": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "partners/estate-agent-nts-compliance-disclosure-pack": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "partners/estate-agent-referral-fee-dashboard": {
     "width": 1536,
     "height": 1024,
-    "format": "png"
+    "format": "jpg"
   },
   "partners/later-life-removal": {
     "width": 1536,
