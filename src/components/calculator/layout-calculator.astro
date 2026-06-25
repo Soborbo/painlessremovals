@@ -52,6 +52,11 @@ const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY
     <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin />
 
+    {/* Per-page resource hints (image preloads for the current step).
+        Only <link> tags — never scripts — so the GTM/consent ordering below
+        is unaffected. */}
+    <slot name="head" />
+
     <GTMHead />
     {/* Google Maps API for address autocomplete */}
     {googleMapsApiKey && (

@@ -12,6 +12,7 @@ export const prerender = false;
 import LayoutCalculator from '@/components/calculator/layout-calculator.astro';
 import { getStepById } from '@/lib/core/calculator/config';
 import { CalculatorStepRenderer } from '@/components/calculator/CalculatorStepRenderer';
+import { getServerImagePreloadLinks } from '@/lib/calculator-image-preload';
 
 // Get step from URL
 const { step } = Astro.params;
@@ -39,6 +40,11 @@ if (step === 'step-12') {
 
 // Get step order for progress
 const stepOrder = stepConfig.order;
+
+// Preload this step's images in <head> so they download with the HTML
+// instead of waiting for React to hydrate. Only fixed-image-set steps are
+// emitted server-side (branchy steps depend on client-only state).
+const imagePreloads = getServerImagePreloadLinks(step!);
 ---
 
 <LayoutCalculator
@@ -46,5 +52,12 @@ const stepOrder = stepConfig.order;
   description={stepConfig.description?.en}
   currentStep={stepOrder}
 >
+  <Fragment slot="head">
+    {imagePreloads.map((p) => (
+      p.imagesrcset
+        ? <link rel="preload" as="image" imagesrcset={p.imagesrcset} imagesizes={p.imagesizes} type="image/avif" />
+        : <link rel="preload" as="image" href={p.href} type="image/avif" />
+    ))}
+  </Fragment>
   <CalculatorStepRenderer client:load stepId={step!} />
 </LayoutCalculator>

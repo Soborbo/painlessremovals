@@ -13,8 +13,13 @@ export const prerender = false;
 import LayoutCalculator from '@/components/calculator/layout-calculator.astro';
 import { getStepById } from '@/lib/core/calculator/config';
 import { CalculatorStepRenderer } from '@/components/calculator/CalculatorStepRenderer';
+import { getServerImagePreloadLinks } from '@/lib/calculator-image-preload';
 
 const stepConfig = getStepById('step-01')!;
+
+// Preload the service-type cards in <head> so they download with the HTML
+// rather than after React hydration.
+const imagePreloads = getServerImagePreloadLinks('step-01');
 ---
 
 <LayoutCalculator
@@ -22,5 +27,12 @@ const stepConfig = getStepById('step-01')!;
   description={stepConfig.description?.en}
   currentStep={stepConfig.order}
 >
+  <Fragment slot="head">
+    {imagePreloads.map((p) => (
+      p.imagesrcset
+        ? <link rel="preload" as="image" imagesrcset={p.imagesrcset} imagesizes={p.imagesizes} type="image/avif" />
+        : <link rel="preload" as="image" href={p.href} type="image/avif" />
+    ))}
+  </Fragment>
   <CalculatorStepRenderer client:load stepId="step-01" />
 </LayoutCalculator>

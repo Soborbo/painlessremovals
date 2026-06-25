@@ -7,8 +7,9 @@
 
 import * as React from 'react';
 import { useEffect, useLayoutEffect, useCallback, useState, useRef } from 'react';
-import { initializeStore, goToStep, applicableSteps, stepNumberToUrl } from '@/lib/calculator-store';
+import { initializeStore, goToStep, applicableSteps, stepNumberToUrl, calculatorStore } from '@/lib/calculator-store';
 import { trackFormStart, trackFormStep, registerFormForAbandonment } from '@/lib/tracking/form-tracking';
+import { getStepPreloadImages, getRepresentativeAvifUrl } from '@/lib/calculator-image-preload';
 
 const CALCULATOR_FORM_ID = 'instantquote_calculator';
 const CALCULATOR_FORM_NAME = 'instant_quote_calculator';
@@ -161,6 +162,50 @@ export const CalculatorStepRenderer: React.FC<CalculatorStepRendererProps> = ({ 
         link.href = url;
         document.head.appendChild(link);
       }
+    }
+  }, [stepNumber]);
+
+  // Prefetch the NEXT step's IMAGES (not just its HTML) so they're cached
+  // before the user advances — `rel="prefetch"` on the HTML document does
+  // not pull in the images inside it, and the step body renders
+  // client-side only, so nothing warms them otherwise.
+  //
+  // Resource hints only: this never touches the store, navigation, or
+  // tracking, so it cannot affect step/abandonment analytics. Branch is
+  // read from the hydrated store so the correct variant (home/office) is
+  // prefetched. Only the immediate next step is fetched (not +2) to avoid
+  // wasting mobile data on paths the user may not take.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Respect Data Saver / very slow connections.
+    const conn = (navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+    }).connection;
+    if (conn && (conn.saveData || /(^|\b)(slow-)?2g$/.test(conn.effectiveType ?? ''))) return;
+
+    const steps = applicableSteps.get();
+    const currentIndex = steps.indexOf(stepNumber!);
+    if (currentIndex === -1 || currentIndex >= steps.length - 1) return;
+
+    const nextStepNum = steps[currentIndex + 1]!;
+    const serviceType = calculatorStore.get().serviceType;
+    const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+
+    const { manifestKeys, simpleAvifUrls } = getStepPreloadImages(nextStepNum, { serviceType });
+    const urls = [
+      ...manifestKeys.map((key) => getRepresentativeAvifUrl(key, dpr)),
+      ...simpleAvifUrls,
+    ];
+
+    for (const href of urls) {
+      if (document.querySelector(`link[rel="prefetch"][href="${href}"]`)) continue;
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.as = 'image';
+      link.href = href;
+      link.type = 'image/avif';
+      document.head.appendChild(link);
     }
   }, [stepNumber]);
 
