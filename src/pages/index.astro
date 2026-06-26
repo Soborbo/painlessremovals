@@ -443,7 +443,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION: What our Customers say — Reviews Set 1
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="section bg-cream" aria-labelledby="testimonials-heading">
+  <section class="section bg-cream cv-auto" aria-labelledby="testimonials-heading">
     <div class="container-wide">
       <h2 id="testimonials-heading" class="text-center mb-10"><span class="block sm:inline">What our</span> <span class="block sm:inline">Customers say</span></h2>
 
@@ -483,7 +483,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION: Why Customers Trust Us (checkered layout)
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="bg-white" aria-labelledby="trust-heading">
+  <section class="bg-white cv-auto" aria-labelledby="trust-heading">
     <div class="text-center max-w-2xl mx-auto mb-12 px-6 pt-16">
       <h2 id="trust-heading"><span class="block sm:inline">Why customers</span> <span class="block sm:inline">Trust us</span></h2>
       <p class="text-warm-gray mt-4">
@@ -583,7 +583,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION: Services (checkered layout)
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="bg-cream" aria-labelledby="services-heading">
+  <section class="bg-cream cv-auto" aria-labelledby="services-heading">
     <div class="text-center max-w-2xl mx-auto mb-12 px-6 pt-16">
       <h2 id="services-heading">Everything You Need For Your Move</h2>
       <p class="text-warm-gray mt-4">
@@ -661,7 +661,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION: Reviews — Set 2
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="section bg-white" aria-label="More customer reviews">
+  <section class="section bg-white cv-auto" aria-label="More customer reviews">
     <div class="container-wide">
       <p class="text-center text-warm-gray mb-8 text-lg">More from our customers</p>
 
@@ -701,7 +701,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION 11: Service Area (full-bleed 50/50)
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="bg-cream" aria-labelledby="areas-heading">
+  <section class="bg-cream cv-auto" aria-labelledby="areas-heading">
     <div class="grid lg:grid-cols-2">
       <!-- Image (full-bleed, right on desktop) -->
       <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden order-2">
@@ -783,7 +783,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION 12: Find Us — Google Maps + NAP
        ═══════════════════════════════════════════════════════════════════════ -->
-  <section class="section bg-cream" aria-labelledby="find-us-heading">
+  <section class="section bg-cream cv-auto" aria-labelledby="find-us-heading">
     <div class="container-wide">
       <h2 id="find-us-heading" class="text-center mb-10">Find Us</h2>
 
@@ -882,7 +882,7 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION 13: FAQ
        ═══════════════════════════════════════════════════════════════════════ -->
-  <FAQAccordion faqs={faqs} heading="Common Questions About Moving With Us" bgClass="bg-white" />
+  <div class="cv-auto"><FAQAccordion faqs={faqs} heading="Common Questions About Moving With Us" bgClass="bg-white" /></div>
 
   <div class="bg-white text-center pb-12">
     <p class="text-warm-gray mb-4">Still have questions?</p>
@@ -900,14 +900,14 @@ const schemas = [
   <!-- ═══════════════════════════════════════════════════════════════════════════
        SECTION 14: Final CTA
        ═══════════════════════════════════════════════════════════════════════ -->
-  <FinalCTA
+  <div class="cv-auto"><FinalCTA
     heading="Ready to Get Started?"
     description="Get your personalised quote in under a minute — or call us to chat through your move. Whether you're moving next week or next year, we're here to help you plan with confidence."
     bullets={['Full day allocated for chain moves', 'Dedicated move manager', '£15k insurance protection']}
     primaryText="GET YOUR INSTANT QUOTE"
     primaryHref="/instantquote"
     bottomNote="Every item moved by our team is fully insured. If something breaks, we cover it."
-  />
+  /></div>
 
 </Layout>
 

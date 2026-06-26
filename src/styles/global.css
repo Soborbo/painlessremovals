@@ -818,6 +818,16 @@
   }
 }
 
+/* Skip layout/paint of below-the-fold sections until they are scrolled near.
+   Cuts the initial Style & Layout cost (the LCP render-delay driver on mobile)
+   without removing anything from the DOM (still indexed, still in-page-search).
+   `contain-intrinsic-size: auto <est>` remembers the real size after first
+   render, so revisits don't jump; the estimate only applies before first paint. */
+@utility cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+
 /* Smooth scrolling only for users who haven't opted out */
 @media (prefers-reduced-motion: no-preference) {
   html {
