@@ -13,7 +13,8 @@
 
 import { getActiveQuoteState, markQuoteUpgraded } from './conversion-state';
 import { mirrorMetaCapi } from './meta-mirror';
-import { trackEvent } from './tracking';
+import { readUserDataFromDOM, trackEvent } from './tracking';
+import { sendToGateway } from './worker-tracking';
 import { generateUUID } from './uuid';
 
 let installed = false;
@@ -85,6 +86,18 @@ function onDocumentClick(e: Event): void {
     });
     void mirrorMetaCapi(eventName, eventId, {});
   }
+
+  // Server-side gateway dispatch (shadow — inert until PUBLIC_GATEWAY_ENABLED).
+  // Reuses the same event_id as the dataLayer/CAPI fire so the gateway dedups
+  // against the browser pixel. Raw user_data comes from the DOM side-channel;
+  // the gateway hashes it for Meta + Google Ads Enhanced Conversions.
+  void sendToGateway({
+    eventName,
+    eventId,
+    source: active ? 'after_calculator' : 'standalone',
+    ...(active && { value: active.value, currency: active.currency, service: active.service }),
+    userData: readUserDataFromDOM(),
+  });
 }
 
 function installScrollDepthTracking(): void {

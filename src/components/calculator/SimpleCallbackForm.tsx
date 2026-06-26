@@ -23,6 +23,7 @@ import {
   setUserDataOnDOM,
   normalizeUserData,
   mirrorMetaCapi,
+  sendToGateway,
   generateUUID,
   getActiveQuoteState,
   markQuoteUpgraded,
@@ -295,6 +296,18 @@ export function SimpleCallbackForm() {
       void mirrorMetaCapi('callback_conversion', eventId, {
         value,
         currency: 'GBP',
+      });
+
+      // Server-side gateway dispatch (shadow — inert until PUBLIC_GATEWAY_ENABLED).
+      // Same event_id for dedup; sendBeacon survives the redirect below.
+      void sendToGateway({
+        eventName: 'callback_conversion',
+        eventId,
+        value,
+        currency: 'GBP',
+        service,
+        source: active ? 'after_calculator' : 'standalone',
+        userData,
       });
 
       window.location.href = '/instantquote/thank-you-callback/';

@@ -40,6 +40,8 @@ export { initGlobalListeners } from './global-listeners';
 
 export { mirrorMetaCapi } from './meta-mirror';
 
+export { sendToGateway, trackConversion, isGatewayEnabled } from './worker-tracking';
+
 export { generateUUID } from './uuid';
 
 export {

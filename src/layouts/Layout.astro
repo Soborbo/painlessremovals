@@ -44,6 +44,11 @@ const {
   preload,
 } = Astro.props;
 
+// Server-side tracking gateway: when enabled, load the invisible Cloudflare
+// Turnstile widget that mints the token worker-tracking.ts needs. Gated so
+// no extra client JS loads until the gateway is provisioned + flipped on.
+const gatewayEnabled = import.meta.env.PUBLIC_GATEWAY_ENABLED === 'true';
+
 // Build full title with template
 const fullTitle = title.includes(siteConfig.brand.name)
   ? title
@@ -301,10 +306,17 @@ const localBusinessSchema = {
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   )}
 
+  {/* Cloudflare Turnstile — invisible widget for the server-side gateway.
+      Loads only when the gateway is enabled (no extra client JS otherwise). */}
+  {gatewayEnabled && (
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline></script>
+  )}
+
   <slot name="head" />
 </head>
 <body class="bg-warm-white antialiased">
   <GTMBody />
+  {gatewayEnabled && <div id="cf-turnstile-invisible" style="display:none" aria-hidden="true"></div>}
   <!-- Skip navigation -->
   <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-primary-600 focus:text-white focus:px-4 focus:py-2 focus:rounded">Skip to main content</a>
   <!-- Header -->

@@ -18,8 +18,9 @@
  * BroadcastChannel.
  */
 
-import { clearUserDataOnDOM, trackEvent } from './tracking';
+import { clearUserDataOnDOM, readUserDataFromDOM, trackEvent } from './tracking';
 import { mirrorMetaCapi } from './meta-mirror';
+import { sendToGateway } from './worker-tracking';
 import { generateUUID } from './uuid';
 import {
   CURRENCY,
@@ -224,6 +225,18 @@ function fireQuoteConversionIfStillActive(isLate: boolean): void {
   void mirrorMetaCapi('quote_calculator_conversion', state.eventId, {
     value: state.value,
     currency: state.currency,
+  });
+
+  // Server-side gateway dispatch (shadow — inert until PUBLIC_GATEWAY_ENABLED).
+  // Same event_id as above for dedup; read user_data BEFORE the wipe below.
+  void sendToGateway({
+    eventName: 'quote_calculator_conversion',
+    eventId: state.eventId,
+    value: state.value,
+    currency: state.currency,
+    service: state.service,
+    userData: readUserDataFromDOM(),
+    ...(isLate && { source: 'late' }),
   });
 
   deleteState();
