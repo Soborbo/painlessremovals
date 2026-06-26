@@ -19,6 +19,11 @@ declare namespace Cloudflare {
     TURNSTILE_SECRET_KEY: string;
     PUBLIC_TURNSTILE_SITE_KEY: string;
 
+    // Server-side tracking gateway (event-gateway Worker, /api/event/*).
+    // Shadow flag: "true" turns on browser→gateway conversion dispatch.
+    // Keep unset/false until the route + KV config + Ads OAuth are live.
+    PUBLIC_GATEWAY_ENABLED?: string;
+
     // KV Namespaces
     RATE_LIMITER?: KVNamespace;
 
@@ -61,6 +66,12 @@ declare namespace Cloudflare {
     // dropped rather than sent without a valid uuid.
     CRM_PRICING_VERSION_ID?: string;
   }
+}
+
+interface ImportMetaEnv {
+  readonly PUBLIC_TURNSTILE_SITE_KEY: string;
+  /** "true" enables the browser→gateway conversion dispatch (shadow→live). */
+  readonly PUBLIC_GATEWAY_ENABLED?: string;
 }
 
 declare namespace App {
