@@ -157,7 +157,7 @@ describe('sendToGateway — enabled', () => {
 
   it('prefers sendBeacon when available (and does not also fetch)', async () => {
     installTurnstile('tok-xyz');
-    const beacon = vi.fn(() => true);
+    const beacon = vi.fn((_url: string, _data?: BodyInit | null) => true);
     (navigator as any).sendBeacon = beacon;
     const ok = await sendToGateway({ eventName: 'phone_conversion' });
     expect(ok).toBe(true);
