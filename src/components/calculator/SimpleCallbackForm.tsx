@@ -22,8 +22,7 @@ import {
   trackEvent,
   setUserDataOnDOM,
   normalizeUserData,
-  mirrorMetaCapi,
-  sendToGateway,
+  dispatchWorkerConversion,
   generateUUID,
   getActiveQuoteState,
   markQuoteUpgraded,
@@ -288,23 +287,18 @@ export function SimpleCallbackForm() {
 
       trackEvent('callback_conversion', {
         event_id: eventId,
-        value,
-        currency: 'GBP',
+        // Only push a monetary value when there's a real quote behind it —
+        // pushing value:0 while the CAPI leg strips value:0 desyncs the
+        // browser + server event and feeds £0 into Google Ads.
+        ...(active ? { value, currency: 'GBP' } : {}),
         service,
         source: active ? 'after_calculator' : 'standalone',
       });
-      void mirrorMetaCapi('callback_conversion', eventId, {
-        value,
-        currency: 'GBP',
-      });
 
-      // Server-side gateway dispatch (shadow — inert until PUBLIC_GATEWAY_ENABLED).
-      // Same event_id for dedup; sendBeacon survives the redirect below.
-      void sendToGateway({
-        eventName: 'callback_conversion',
-        eventId,
-        value,
-        currency: 'GBP',
+      // Server-side leg: the Soborbo Worker (Meta CAPI), same event_id for
+      // dedup; sendBeacon survives the redirect below.
+      dispatchWorkerConversion('callback_conversion', eventId, {
+        ...(active ? { value, currency: 'GBP' } : {}),
         service,
         source: active ? 'after_calculator' : 'standalone',
         userData,

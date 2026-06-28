@@ -1192,6 +1192,8 @@ const pageSchema = [serviceSchema, faqSchema, howToSchema];
 
 <!-- Lead magnet form -->
 <script>
+  import { getTurnstileToken } from '@/lib/worker-tracking';
+
   const leadForm = document.getElementById('lead-magnet-form') as HTMLFormElement;
   const leadSuccess = document.getElementById('lead-magnet-success');
 
@@ -1202,6 +1204,7 @@ const pageSchema = [serviceSchema, faqSchema, howToSchema];
     if (honeypot) return;
 
     try {
+      const turnstileToken = await getTurnstileToken();
       const res = await fetch('/api/contact/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1212,6 +1215,7 @@ const pageSchema = [serviceSchema, faqSchema, howToSchema];
           message: '[Later Life Moves Lead Magnet] Requested: How to Talk to Your Parents About Downsizing guide',
           honeypot: '',
           source: 'later-life-lead-magnet',
+          turnstileToken,
         }),
       });
       if (!res.ok) console.error('Lead magnet submission failed:', res.status);
@@ -1227,6 +1231,8 @@ const pageSchema = [serviceSchema, faqSchema, howToSchema];
 
 <!-- Final callback form -->
 <script>
+  import { getTurnstileToken } from '@/lib/worker-tracking';
+
   const finalForm = document.getElementById('final-callback-form') as HTMLFormElement;
   const finalSuccess = document.getElementById('final-callback-success');
   const finalMsg = document.getElementById('final-callback-msg');
@@ -1241,6 +1247,7 @@ const pageSchema = [serviceSchema, faqSchema, howToSchema];
     const bestTime = formData.get('bestTime') as string;
 
     try {
+      const turnstileToken = await getTurnstileToken();
       const res = await fetch('/api/contact/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1251,6 +1258,7 @@ const pageSchema = [serviceSchema, faqSchema, howToSchema];
           message: `[Later Life Moves Callback]\nBest time: ${bestTime}\nNote: ${formData.get('note') || 'None'}`,
           honeypot: '',
           source: 'later-life-callback',
+          turnstileToken,
         }),
       });
       if (!res.ok) console.error('Callback submission failed:', res.status);

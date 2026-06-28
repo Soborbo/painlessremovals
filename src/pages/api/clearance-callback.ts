@@ -9,7 +9,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
-import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
+import { sendGA4MP, deriveClientId } from '@/lib/tracking/server';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -71,7 +71,7 @@ export const POST: APIRoute = async (context) => {
       const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+        body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken, remoteip: request.headers.get('cf-connecting-ip') || undefined }),
       });
       if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
       const tsData = await tsRes.json() as { success: boolean };
@@ -154,14 +154,9 @@ export const POST: APIRoute = async (context) => {
       const fingerprint = event_id.replace(/-/g, '').slice(0, 16);
       const clientId = deriveClientId(fingerprint);
       const userAgent = request.headers.get('user-agent') || undefined;
-      const cf = (request as unknown as { cf?: { country?: string } }).cf;
       const ipAddress = request.headers.get('cf-connecting-ip')
         || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
         || undefined;
-
-      const nameParts = name.trim().split(/\s+/);
-      const firstName = nameParts[0];
-      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
 
       // Parse the £ estimate to a numeric value for Smart Bidding signal.
       const estimateValue = (() => {
@@ -170,6 +165,8 @@ export const POST: APIRoute = async (context) => {
         return m ? Number(m[1]) : undefined;
       })();
 
+      // GA4 stays browser-owned + this server-side MP backstop (Model 2: the
+      // event-gateway Worker sends no GA4). Fire-and-forget.
       void sendGA4MP(
         env,
         clientId,
@@ -185,30 +182,10 @@ export const POST: APIRoute = async (context) => {
         { userAgent, ipOverride: ipAddress },
       ).catch(() => { /* best-effort */ });
 
-      // Meta CAPI uses the standard `Lead` event name so Smart Bidding
-      // optimizes against it. Browser-side fires `Lead` with the same
-      // event_id via the v2 GTM tag `Meta Pixel — Lead (clearance
-      // callback)`, so Meta dedupes on (event_name='Lead', event_id).
-      void sendMetaCapi(env, [{
-        event_name: 'Lead',
-        event_id,
-        event_time: Math.floor(Date.now() / 1000),
-        event_source_url: request.headers.get('referer') || `https://painlessremovals.com/house-and-waste-clearance/`,
-        action_source: 'website',
-        user_data: {
-          email,
-          phone_number: phone,
-          first_name: firstName,
-          last_name: lastName,
-          country: cf?.country,
-          client_user_agent: userAgent,
-          client_ip_address: ipAddress,
-        },
-        custom_data: {
-          form_source: 'clearance-calculator',
-          ...(estimateValue !== undefined ? { value: estimateValue, currency: 'GBP' } : {}),
-        },
-      }]).catch(() => { /* best-effort */ });
+      // Meta CAPI `Lead` is now fired by the Soborbo event-gateway Worker
+      // (browser → /api/event/conversion via PR_trackWorkerConversion, same
+      // event_id). The old server-side `sendMetaCapi` here was retired at
+      // cutover to avoid a double Meta `Lead` event.
     }
 
     return json({ success: true, event_id: event_id || null });

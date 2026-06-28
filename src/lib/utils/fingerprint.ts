@@ -9,6 +9,26 @@ import { sha256 } from '@noble/hashes/sha2.js';
 import { bytesToHex } from '@noble/hashes/utils.js';
 
 /**
+ * Recursively sort object keys so that two semantically-identical payloads
+ * serialize to identical JSON regardless of key insertion order — at every
+ * nesting level, not just the top. Arrays keep their order (order is
+ * meaningful); objects are key-sorted.
+ */
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(canonicalize);
+  }
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const key of Object.keys(value as Record<string, unknown>).sort()) {
+      out[key] = canonicalize((value as Record<string, unknown>)[key]);
+    }
+    return out;
+  }
+  return value;
+}
+
+/**
  * Generate SHA-256 hash from data
  * Used for duplicate detection
  */
@@ -18,8 +38,8 @@ export function generateFingerprint(data: unknown): string {
     const hash = sha256(new TextEncoder().encode(json));
     return bytesToHex(hash);
   }
-  // Sort keys for consistent hashing
-  const json = JSON.stringify(data, Object.keys(data as object).sort());
+  // Deep-canonicalize keys (all levels) for order-independent, consistent hashing.
+  const json = JSON.stringify(canonicalize(data));
   const hash = sha256(new TextEncoder().encode(json));
   return bytesToHex(hash);
 }

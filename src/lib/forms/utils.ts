@@ -68,11 +68,14 @@ export function json(data: Record<string, unknown>, status = 200) {
   });
 }
 
-export async function verifyTurnstile(token: string, secret: string): Promise<boolean> {
+export async function verifyTurnstile(token: string, secret: string, remoteip?: string): Promise<boolean> {
   const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ secret, response: token }),
+    // Binding the token to the solver's IP (remoteip) narrows the
+    // token-replay window — a token solved from one IP can't be reused
+    // from another.
+    body: JSON.stringify({ secret, response: token, remoteip: remoteip || undefined }),
   });
   if (!res.ok) return false;
   const data = (await res.json()) as { success: boolean };

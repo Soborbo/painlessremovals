@@ -106,7 +106,11 @@ function reportAbandonment(state: FormState): void {
     time_spent_seconds: Math.round((Date.now() - state.startedAt) / 1000),
     exit_page_path: location.pathname,
     exit_page_title: document.title,
-    exit_page_url: location.href,
+    // origin + pathname ONLY — never location.href. Query strings can carry
+    // PII (prefill links, ?q=/?ref= URLs the calculator builds), and this
+    // value is forwarded verbatim to GA4 MP server-side; the name-based PII
+    // guard can't catch PII hidden inside a URL value.
+    exit_page_url: location.origin + location.pathname,
   };
 
   if (typeof navigator.sendBeacon === 'function') {

@@ -94,7 +94,20 @@ export async function sendToCRM(
   const eventId = options.eventId ?? newEventId();
 
   if (!isCRMConfigured(env)) {
-    logger.error('CRM', 'Not configured — skipping send', { surface });
+    // Total lead loss if this ever happens in production (a misconfigured /
+    // rotated dashboard secret silently drops EVERY CRM lead). Emit a
+    // structured, severity-tagged line so the error pipeline / log alerting
+    // escalates it instead of it sitting unnoticed in the log stream.
+    logger.error('CRM', 'Not configured — skipping send (CRITICAL: leads being dropped)', { surface });
+    console.error(JSON.stringify({
+      __pipeline: 'error',
+      code: 'CRM-CONFIG-001',
+      severity: 'CRITICAL',
+      message: 'CRM webhook not configured — leads are being dropped',
+      source: 'crm/client',
+      context: { surface },
+      ts: new Date().toISOString(),
+    }));
     return { ok: false, error: 'crm_not_configured', retriable: false, eventId, attempts: 0 };
   }
 
@@ -134,9 +147,28 @@ export async function sendToCRM(
       }
 
       if (res.status === 400 || res.status === 401) {
-        // Our bug (bad payload / bad signature / clock skew). Never retry —
-        // a retry would only burn the same error. Log loudly for alerting.
         const text = await res.text().catch(() => '');
+
+        // A 401 caused by clock skew / an expired timestamp is TRANSIENT, not
+        // a permanent bug: every attempt re-signs with a fresh timestamp, so a
+        // retry very likely succeeds. Only a genuine invalid_signature /
+        // invalid_payload is non-retriable. Distinguish by the response body.
+        const lower = text.toLowerCase();
+        const isStale = res.status === 401 && /stale|timestamp|clock|expired/.test(lower);
+
+        if (isStale && attempt < retryDelays.length) {
+          logger.warn('CRM', '401 stale timestamp — re-signing and retrying', {
+            surface,
+            eventId,
+            attempt: attempt + 1,
+            nextDelayMs: retryDelays[attempt],
+          });
+          await sleep(retryDelays[attempt]);
+          continue;
+        }
+
+        // Our bug (bad payload / bad signature) or stale that exhausted
+        // retries. Log loudly for alerting.
         logger.error('CRM', `Non-retriable ${res.status} — log + alert`, {
           surface,
           eventId,
@@ -147,7 +179,7 @@ export async function sendToCRM(
           ok: false,
           status: res.status,
           error: text.slice(0, 500) || `http_${res.status}`,
-          retriable: false,
+          retriable: isStale,
           eventId,
           attempts: attempt + 1,
         };

@@ -42,6 +42,15 @@ export const POST: APIRoute = async (context) => {
     const rateLimitOk = await checkRateLimit(context);
     if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
 
+    // Cap the request body before buffering it into memory. One CV (≤5MB)
+    // plus form fields; allow ~1MB multipart overhead. A real browser sends
+    // an accurate Content-Length, so this rejects oversized/accidental
+    // uploads up front instead of OOMing on request.formData().
+    const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);
+    if (contentLength > MAX_FILE_SIZE + 1024 * 1024) {
+      return json({ error: 'Upload is too large. Maximum CV size is 5 MB.' }, 413);
+    }
+
     let formData: FormData;
     try {
       formData = await request.formData();
@@ -74,7 +83,11 @@ export const POST: APIRoute = async (context) => {
       if (cvFile.size > MAX_FILE_SIZE) return json({ error: 'CV file is too large. Maximum size is 5 MB.' }, 400);
       const fileName = cvFile.name || '';
       const ext = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
-      if (!ALLOWED_EXTENSIONS.includes(ext) || (cvFile.type && !ALLOWED_MIME_TYPES.includes(cvFile.type))) {
+      // Require BOTH an allowed extension AND an allowed declared MIME type.
+      // An empty/absent file.type is no longer waved through — a browser
+      // uploading a genuine CV reliably sets the type, and accepting an
+      // empty type let arbitrary binaries pass under a renamed extension.
+      if (!ALLOWED_EXTENSIONS.includes(ext) || !ALLOWED_MIME_TYPES.includes(cvFile.type)) {
         return json({ error: 'Invalid file type. Please upload a PDF, DOC, DOCX, TXT, RTF, or ODT file.' }, 400);
       }
       const arrayBuffer = await cvFile.arrayBuffer();
@@ -87,7 +100,7 @@ export const POST: APIRoute = async (context) => {
     const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken, remoteip: request.headers.get('cf-connecting-ip') || undefined }),
     });
     if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
     const tsData = await tsRes.json() as { success: boolean };

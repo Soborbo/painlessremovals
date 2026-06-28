@@ -12,9 +12,8 @@
  */
 
 import { getActiveQuoteState, markQuoteUpgraded } from './conversion-state';
-import { mirrorMetaCapi } from './meta-mirror';
 import { readUserDataFromDOM, trackEvent } from './tracking';
-import { sendToGateway } from './worker-tracking';
+import { dispatchWorkerConversion } from './worker-dispatch';
 import { generateUUID } from './uuid';
 
 let installed = false;
@@ -63,7 +62,9 @@ function onDocumentClick(e: Event): void {
 
   const active = getActiveQuoteState();
   const eventId = active ? active.eventId : generateUUID();
+  const source = active ? 'after_calculator' : 'standalone';
 
+  // dataLayer push (browser GA4 / Meta Pixel / Google Ads via GTM) — UNTOUCHED.
   if (active) {
     markQuoteUpgraded();
     trackEvent(eventName, {
@@ -71,30 +72,22 @@ function onDocumentClick(e: Event): void {
       value: active.value,
       currency: active.currency,
       service: active.service,
-      source: 'after_calculator',
+      source,
       ...extras,
-    });
-    void mirrorMetaCapi(eventName, eventId, {
-      value: active.value,
-      currency: active.currency,
     });
   } else {
     trackEvent(eventName, {
       event_id: eventId,
-      source: 'standalone',
+      source,
       ...extras,
     });
-    void mirrorMetaCapi(eventName, eventId, {});
   }
 
-  // Server-side gateway dispatch (shadow — inert until PUBLIC_GATEWAY_ENABLED).
-  // Reuses the same event_id as the dataLayer/CAPI fire so the gateway dedups
-  // against the browser pixel. Raw user_data comes from the DOM side-channel;
-  // the gateway hashes it for Meta + Google Ads Enhanced Conversions.
-  void sendToGateway({
-    eventName,
-    eventId,
-    source: active ? 'after_calculator' : 'standalone',
+  // Server-side leg: the Soborbo Worker (Meta CAPI), same event_id as the
+  // dataLayer push above so Meta dedups browser + server. Raw user_data comes
+  // from the DOM side-channel; the Worker hashes it.
+  dispatchWorkerConversion(eventName, eventId, {
+    source,
     ...(active && { value: active.value, currency: active.currency, service: active.service }),
     userData: readUserDataFromDOM(),
   });

@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-// Isolate the state machine from the network mirror — we assert on the
-// dataLayer push + localStorage state, not on Meta egress.
-vi.mock('./meta-mirror', () => ({ mirrorMetaCapi: vi.fn().mockResolvedValue(undefined) }));
+// Isolate the state machine from the network dispatch — we assert on the
+// dataLayer push + localStorage state, not on the Worker egress.
+vi.mock('./worker-dispatch', () => ({ dispatchWorkerConversion: vi.fn() }));
 
 import {
   resetQuoteState,

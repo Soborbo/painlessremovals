@@ -31,7 +31,13 @@ export function anonymizeIP(ip: string): { raw: string | null; hash: string } {
     return { raw: null, hash: '' };
   }
 
-  const salted = new TextEncoder().encode(salt + ':' + ip);
+  // Truncate the IP to a network prefix BEFORE hashing — IPv4 to /24, IPv6
+  // to /48. Hashing a full address with a single static salt is only
+  // pseudonymisation (the ~4B IPv4 space is brute-forceable if the salt
+  // leaks); dropping host bits makes the value genuinely non-identifying
+  // while still useful as a coarse dedup/geo signal.
+  const truncated = truncateIPForHashing(ip);
+  const salted = new TextEncoder().encode(salt + ':' + truncated);
   const hash = sha256(salted);
   const hashHex = bytesToHex(hash);
 
@@ -42,6 +48,26 @@ export function anonymizeIP(ip: string): { raw: string | null; hash: string } {
     raw: null,
     hash: hashHex,
   };
+}
+
+/**
+ * Reduce an IP to a network prefix so host bits don't end up in the hash.
+ * IPv4 → /24 (zero the last octet); IPv6 → /48 (keep the first 3 hextets).
+ * Falls back to the original string for anything unparseable.
+ */
+function truncateIPForHashing(ip: string): string {
+  const trimmed = ip.trim();
+  // IPv4 (incl. IPv4-mapped suffix handled by the dotted check)
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(trimmed)) {
+    const parts = trimmed.split('.');
+    return `${parts[0]}.${parts[1]}.${parts[2]}.0`;
+  }
+  // IPv6
+  if (trimmed.includes(':')) {
+    const hextets = trimmed.split(':');
+    return `${hextets.slice(0, 3).join(':')}::`;
+  }
+  return trimmed;
 }
 
 /**

@@ -28,6 +28,18 @@ export function sanitizeSubjectPart(value: string): string {
 }
 
 /**
+ * Strip a phone number down to digits and a single leading `+` for safe use
+ * inside a `tel:` href. Stronger than escapeHtml alone — guarantees the value
+ * can't carry markup/attribute-breaking characters even if upstream
+ * validation is ever bypassed.
+ */
+export function sanitizePhoneHref(value: string): string {
+  const trimmed = String(value).trim();
+  const sign = trimmed.startsWith('+') ? '+' : '';
+  return sign + trimmed.replace(/\D/g, '');
+}
+
+/**
  * Validate and sanitize a URL for use in href attributes
  */
 export function sanitizeUrl(url: string): string {

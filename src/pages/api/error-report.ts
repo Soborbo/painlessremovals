@@ -81,7 +81,7 @@ export const POST: APIRoute = async ({ request }) => {
       try {
         const ipKey = `err_rate:${ipHash}`;
         const ipCount = parseInt(await rateLimiter.get(ipKey) || '0');
-        if (ipCount > RATE_LIMIT_PER_IP) {
+        if (ipCount >= RATE_LIMIT_PER_IP) {
           return json({ ok: false, reason: 'rate_limited' }, 429);
         }
         await rateLimiter.put(ipKey, String(ipCount + 1), { expirationTtl: 60 });

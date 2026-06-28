@@ -690,11 +690,17 @@ export function isBankHoliday(dateStr: string): boolean {
 }
 
 /**
- * Check if a date is Saturday
+ * Check if a date is Saturday.
+ *
+ * Anchored at noon UTC and read with getUTCDay so the result is identical on
+ * a UTC Cloudflare Worker and a UK-local browser. The previous
+ * `new Date(dateStr + 'T12:00:00').getDay()` parsed in the RUNTIME timezone,
+ * so server and client could disagree on the weekday for edge dates and apply
+ * the Saturday surcharge inconsistently.
  */
 export function isSaturday(dateStr: string): boolean {
-  const date = new Date(dateStr + 'T12:00:00');
-  return date.getDay() === 6;
+  const date = new Date(dateStr + 'T12:00:00Z');
+  return date.getUTCDay() === 6;
 }
 
 /**
@@ -711,7 +717,28 @@ export function getSurchargeInfo(selectedDate?: string): { type: SurchargeType; 
     return { type: 'saturday', rate: CALCULATOR_CONFIG.surcharges.saturday };
   }
 
+  // Bank holidays are a finite hand-maintained list (Saturdays are computed,
+  // bank holidays can't be). Once a quote date runs past the last known entry,
+  // bank-holiday surcharges silently stop applying — surface that (once) so the
+  // table gets extended before it under-charges in production.
+  warnIfBeyondBankHolidayHorizon(selectedDate);
+
   return { type: null, rate: 0 };
+}
+
+let warnedBankHolidayHorizon = false;
+function warnIfBeyondBankHolidayHorizon(selectedDate: string): void {
+  if (warnedBankHolidayHorizon) return;
+  const list = CALCULATOR_CONFIG.bankHolidays as readonly string[];
+  const last = list[list.length - 1];
+  // ISO date strings compare chronologically under lexicographic `>`.
+  if (last && selectedDate.slice(0, 10) > last) {
+    warnedBankHolidayHorizon = true;
+    console.warn(
+      `[calculator] Quote date ${selectedDate} is beyond the last known bank holiday (${last}); ` +
+      `bank-holiday surcharges will NOT apply. Extend CALCULATOR_CONFIG.bankHolidays.`,
+    );
+  }
 }
 
 // ===================
@@ -754,7 +781,11 @@ export function getExtrasCost(extras: QuoteInput['extras'], cubes: number): numb
       const weeks = extras.storageWeeks as number;
       const discountedWeeks = Math.min(weeks, 8);
       const fullPriceWeeks = Math.max(0, weeks - 8);
-      total += (discountedWeeks * weeklyRate * 0.5) + (fullPriceWeeks * weeklyRate);
+      // Round to whole pounds — the `*0.5` promo can produce a half-pound,
+      // and the ResultPage display + getExtrasBreakdown round too. Rounding
+      // here keeps the charged total, the cost-sheet line, and the displayed
+      // line all identical (no sub-£1 reconciliation drift).
+      total += Math.round((discountedWeeks * weeklyRate * 0.5) + (fullPriceWeeks * weeklyRate));
     }
   }
   // Legacy storage support
@@ -820,7 +851,9 @@ export function getExtrasBreakdown(
       const weeks = extras.storageWeeks as number;
       const discountedWeeks = Math.min(weeks, 8);
       const fullPriceWeeks = Math.max(0, weeks - 8);
-      out.storage = discountedWeeks * weeklyRate * 0.5 + fullPriceWeeks * weeklyRate;
+      // Round identically to getExtrasCost so the per-extra cost sheet still
+      // sums exactly to the lumped extrasCost (the reconciliation test pins this).
+      out.storage = Math.round(discountedWeeks * weeklyRate * 0.5 + fullPriceWeeks * weeklyRate);
     }
   } else if (extras.storage) {
     out.storage = CALCULATOR_CONFIG.storage[extras.storage].price;
@@ -920,6 +953,14 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
   if (input.manualOverride) {
     men = input.manualOverride.men;
     vans = input.manualOverride.vans;
+    // Clamp the override to a physically valid van/crew ratio. The UI enforces
+    // validateVanCrew, but the override comes from client sessionStorage which
+    // a forged state could bypass — without this, an impossible combo (e.g.
+    // 10 movers / 1 van) would be priced verbatim (over-charged crew /
+    // under-charged vans).
+    const { minVansPerCrew, maxCrewPerVan } = CALCULATOR_CONFIG.validation;
+    vans = Math.max(1, vans);
+    men = Math.min(Math.max(men, vans * minVansPerCrew), vans * maxCrewPerVan);
   }
 
   // ===================

@@ -411,7 +411,7 @@ export const PROJECT_CODES: Record<string, ErrorCodeDef> = {
   'MOVE-CB-001':    { severity: 'ERROR',    retryable: false, userImpact: 'blocked',  message: 'Callback request failed (client/top-level)', requiredContext: ['errorMessage'] },
   'MOVE-CB-002':    { severity: 'WARN',     retryable: false, userImpact: 'blocked',  message: 'Callback validation failed (Zod parse)', requiredContext: ['errorMessage', 'fields'] },
   'MOVE-CB-003':    { severity: 'ERROR',    retryable: true,  userImpact: 'degraded', message: 'Callback customer email send failed', requiredContext: ['errorMessage'] },
-  'MOVE-CB-004':    { severity: 'ERROR',    retryable: true,  userImpact: 'none',     message: 'Callback admin email send failed', requiredContext: ['errorMessage'] },
+  'MOVE-CB-004':    { severity: 'CRITICAL', retryable: true,  userImpact: 'none',     message: 'Callback admin email send failed', requiredContext: ['errorMessage'] },
   'MOVE-CB-005':    { severity: 'ERROR',    retryable: true,  userImpact: 'none',     message: 'Callback i-mve CRM sync failed', requiredContext: ['errorMessage'] },
   'MOVE-CB-006':    { severity: 'CRITICAL', retryable: false, userImpact: 'blocked',  message: 'Callback handler top-level exception', requiredContext: ['errorMessage', 'phase'] },
   // Painless Removals — Calculator UI

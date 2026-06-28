@@ -82,7 +82,7 @@ export const POST: APIRoute = async (context) => {
       logger.error('PartnerRegister', 'TURNSTILE_SECRET_KEY is not configured');
       return json({ error: 'Security configuration error. Please try again later.' }, 500);
     }
-    if (!(await verifyTurnstile(turnstileToken, secret))) {
+    if (!(await verifyTurnstile(turnstileToken, secret, request.headers.get('cf-connecting-ip') || undefined))) {
       return json({ error: 'Security verification failed. Please try again.' }, 403);
     }
 

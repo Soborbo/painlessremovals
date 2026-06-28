@@ -9,7 +9,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
-import { sendGA4MP, sendMetaCapi, deriveClientId } from '@/lib/tracking/server';
+import { sendGA4MP, deriveClientId } from '@/lib/tracking/server';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -67,11 +67,17 @@ export const POST: APIRoute = async (context) => {
       return json({ error: 'Please provide a valid UK phone number.' }, 400);
     }
 
-    // Turnstile (skip for internal forms)
+    // Turnstile. Internal lead-magnet/callback forms (later-life pages) may
+    // fall back to a token-less submission if the invisible widget fails to
+    // mint a token — we still accept those so we never lose the lead, but a
+    // token-less request is NOT treated as verified, so it can never fire a
+    // server-side conversion below (otherwise a bot could forge `source` +
+    // `event_id` to poison Google Ads/GA4 conversion data).
     const isInternalForm = !!(source && INTERNAL_SOURCES.includes(source));
     if (!turnstileToken && !isInternalForm) {
       return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
     }
+    let turnstileVerified = false;
     if (turnstileToken) {
       if (!env.TURNSTILE_SECRET_KEY) {
         return json({ error: 'Security verification unavailable. Please try again.' }, 500);
@@ -79,11 +85,16 @@ export const POST: APIRoute = async (context) => {
       const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+        body: JSON.stringify({
+          secret: env.TURNSTILE_SECRET_KEY,
+          response: turnstileToken,
+          remoteip: request.headers.get('cf-connecting-ip') || undefined,
+        }),
       });
       if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
       const tsData = await tsRes.json() as { success: boolean };
       if (!tsData.success) return json({ error: 'Security verification failed. Please try again.' }, 403);
+      turnstileVerified = true;
     }
 
     // Send email via Resend REST API
@@ -127,23 +138,21 @@ export const POST: APIRoute = async (context) => {
     // ──────────────────────────────────────────────────────────────────
     // CONVERSION fire — server-side, only after Turnstile + Resend OK.
     // Browser fires the same event with the same event_id; Meta dedupes.
-    // Skipped if no event_id was provided (e.g. an internal/legacy caller).
+    // Skipped if no event_id was provided (e.g. an internal/legacy caller),
+    // or if Turnstile was not actually verified (token-less internal
+    // fallback) — never let an unverified request count as a conversion.
     // ──────────────────────────────────────────────────────────────────
-    if (event_id && typeof event_id === 'string') {
+    if (turnstileVerified && event_id && typeof event_id === 'string') {
       const fingerprint = event_id.replace(/-/g, '').slice(0, 16);
       const clientId = deriveClientId(fingerprint);
       const userAgent = request.headers.get('user-agent') || undefined;
-      const cf = (request as unknown as { cf?: { country?: string } }).cf;
       const ipAddress = request.headers.get('cf-connecting-ip')
         || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
         || undefined;
 
-      // Split name into first/last for Meta CAPI
-      const nameParts = name.trim().split(/\s+/);
-      const firstName = nameParts[0];
-      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
-
-      // Fire-and-forget: don't block the response on tracking
+      // GA4 stays browser-owned + this server-side MP backstop (Model 2: the
+      // event-gateway Worker sends no GA4). Fire-and-forget — never block the
+      // response on tracking.
       void sendGA4MP(
         env,
         clientId,
@@ -157,30 +166,10 @@ export const POST: APIRoute = async (context) => {
         { userAgent, ipOverride: ipAddress },
       ).catch(() => { /* best-effort */ });
 
-      // Meta CAPI uses the standard `Contact` event name so Meta's
-      // Smart Bidding optimizes against it and so it dedupes with the
-      // browser-side Pixel fire (GTM tag `Meta Pixel — Contact (form
-      // submit)` fires `Contact` on the `contact_form_submit` trigger
-      // with the same event_id).
-      void sendMetaCapi(env, [{
-        event_name: 'Contact',
-        event_id,
-        event_time: Math.floor(Date.now() / 1000),
-        event_source_url: request.headers.get('referer') || `https://painlessremovals.com/contact/`,
-        action_source: 'website',
-        user_data: {
-          email,
-          phone_number: phone,
-          first_name: firstName,
-          last_name: lastName,
-          country: cf?.country,
-          client_user_agent: userAgent,
-          client_ip_address: ipAddress,
-        },
-        custom_data: {
-          form_source: source || 'contact_page',
-        },
-      }]).catch(() => { /* best-effort */ });
+      // Meta CAPI is now fired by the Soborbo event-gateway Worker (browser →
+      // /api/event/conversion via trackConversion, same event_id). The old
+      // server-side `sendMetaCapi` here was retired at cutover to avoid a
+      // double Meta `Contact` event.
     }
 
     return json({ success: true, event_id: event_id || null });

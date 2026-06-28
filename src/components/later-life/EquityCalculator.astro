@@ -450,6 +450,7 @@ import { siteConfig } from '@/config/site.config';
 
 <script>
   import { pushLeadToCRM } from '@/lib/crm/push-lead';
+  import { getTurnstileToken } from '@/lib/worker-tracking';
 
   // ===== Calculator State =====
   const state = {
@@ -693,6 +694,7 @@ import { siteConfig } from '@/config/site.config';
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
 
     try {
+      const turnstileToken = await getTurnstileToken();
       const res = await fetch('/api/contact/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -703,6 +705,7 @@ import { siteConfig } from '@/config/site.config';
           message: `[Later Life Moves Calculator Callback]\nBest time: ${bestTime}\nCurrent home: ${fmt(state.currentValue)}\nNew home: ${fmt(state.newValue)}\nNote: ${note || 'None'}`,
           honeypot: '',
           source: 'later-life-calculator',
+          turnstileToken,
         }),
       });
       if (!res.ok) {

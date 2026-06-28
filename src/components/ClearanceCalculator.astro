@@ -613,13 +613,35 @@ const phone = siteConfig.company.contact.phone;
             window.location.href = '/house-and-waste-clearance/thank-you/';
           };
         })();
+        // Parse the £ estimate to a numeric value so the conversion counts as
+        // a value-bearing Lead — treated the SAME as a completed quote
+        // calculator (GTM fires the same value-bearing Lead/Ads tags on this
+        // event via {{DLV - value}}/{{DLV - currency}}).
+        const estimateNum = Number(String(totalEl.textContent || '').replace(/[^0-9.]/g, ''));
+        const hasEstimate = Number.isFinite(estimateNum) && estimateNum > 0;
         dataLayer.push({
           event: 'clearance_callback_conversion',
           event_id: eventId,
           form_source: 'clearance-calculator',
+          service: 'house_clearance',
+          ...(hasEstimate ? { value: estimateNum, currency: 'GBP' } : {}),
           eventCallback: navigateOnce,
           eventTimeout: 2000,
         });
+        // Server-side leg: the Soborbo event-gateway Worker fires Meta CAPI
+        // `Lead` with the SAME event_id (Meta dedupes against the browser
+        // Pixel above). PII is read from the hidden DOM side-channel set via
+        // PR_setUserDataOnDOM earlier. sendBeacon survives the navigation.
+        const trackWorker = (window as unknown as {
+          PR_trackWorkerConversion?: (name: string, id: string, opts?: Record<string, unknown>) => void;
+        }).PR_trackWorkerConversion;
+        if (trackWorker) {
+          trackWorker('clearance_callback_conversion', eventId, {
+            source: 'clearance-calculator',
+            service: 'house_clearance',
+            ...(hasEstimate ? { value: estimateNum, currency: 'GBP' } : {}),
+          });
+        }
         // Safety net: navigate after 2.5s even if GTM never calls back
         // (e.g. GTM blocked by an extension).
         setTimeout(navigateOnce, 2500);
