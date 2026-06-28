@@ -200,16 +200,28 @@ export async function sendMetaCapi(
 }
 
 /**
- * Creates a stable-ish GA4 `client_id` from a fingerprint. GA4 expects a
- * dot-separated random.timestamp shape but accepts any string; we use the
- * fingerprint hex so two server-side hits for the same quote share an id.
+ * Creates a STABLE GA4 `client_id` from a fingerprint. GA4 expects a
+ * dot-separated `random.timestamp` shape but accepts any string. Both
+ * segments are derived from the fingerprint hex (NOT Date.now), so the same
+ * fingerprint always maps to the same client_id — otherwise the timestamp
+ * suffix changed every second and the same user fragmented into a new GA4
+ * "user"/session on every server-side hit (e.g. each abandonment beacon).
  */
 export function deriveClientId(fingerprint: string): string {
+  if (fingerprint && fingerprint.length >= 16) {
+    const head = parseInt(fingerprint.slice(0, 8), 16);
+    const tail = parseInt(fingerprint.slice(8, 16), 16);
+    if (Number.isFinite(head) && Number.isFinite(tail)) {
+      return `${head}.${tail}`;
+    }
+  }
   if (fingerprint && fingerprint.length >= 8) {
     const head = parseInt(fingerprint.slice(0, 8), 16);
     if (Number.isFinite(head)) {
-      return `${head}.${Math.floor(Date.now() / 1000)}`;
+      return `${head}.${head}`;
     }
   }
+  // No usable fingerprint — fall back to a random id (not stable, but this
+  // path shouldn't be hit for real traffic).
   return `${Math.floor(Math.random() * 1e10)}.${Math.floor(Date.now() / 1000)}`;
 }

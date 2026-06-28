@@ -13,7 +13,7 @@
  * Both fail open on backing-store errors so legitimate form submissions
  * are never blocked by infrastructure faults.
  *
- * Hash-based key (IP + UserAgent) for better granularity.
+ * Hash-based key on IP only (UA is deliberately excluded — see below).
  */
 
 import { CONFIG } from '@/lib/config';
@@ -48,8 +48,15 @@ function checkInMemoryWindow(key: string, windowMs: number, limit: number): bool
 }
 
 /**
- * Check rate limit
- * Fails closed for safety when KV errors occur in production
+ * Check rate limit.
+ *
+ * Intentionally FAILS OPEN on any backing-store error (KV unbound or
+ * throwing). For a lead-gen site, dropping a legitimate form submission
+ * because of an infrastructure fault is worse than briefly losing the
+ * KV abuse layer — the per-isolate in-memory bucket still applies, and
+ * KV is "eventually consistent — fine for form spam control" (not a hard
+ * security boundary). Do not change to fail-closed without revisiting the
+ * never-lose-a-lead policy.
  */
 export async function checkRateLimit(context: APIContext): Promise<boolean> {
   if (!CONFIG.features.rateLimiting) {
@@ -76,11 +83,10 @@ export async function checkRateLimit(context: APIContext): Promise<boolean> {
     return true;
   }
 
-  // Get UserAgent for better granularity
-  const userAgent = request.headers.get('User-Agent') || undefined;
-
-  // Generate hash-based key
-  const keyHash = generateRateLimitKey(ip, userAgent);
+  // Key on IP ONLY. The canonical policy is "N submissions per window per
+  // IP". Folding User-Agent into the key would let a bot widen its keyspace
+  // (a fresh bucket per spoofed UA) and defeat the limit entirely.
+  const keyHash = generateRateLimitKey(ip);
   const env = CONFIG.debug ? 'dev' : 'prod';
   const key = `rate_limit:${env}:${keyHash}`;
 
@@ -91,39 +97,44 @@ export async function checkRateLimit(context: APIContext): Promise<boolean> {
     return false;
   }
 
+  // Fixed-window counter stored as `count:resetAtMs`. The window expiry
+  // (resetAt) is set once on the first request and PRESERVED across
+  // increments — re-deriving the KV TTL from resetAt each time. Refreshing
+  // the TTL on every write (the previous bug) turned this into a rolling
+  // block that never reset for a steadily-active client.
+  const windowMs = CONFIG.security.rateLimitWindowMs;
+  const now = Date.now();
+
   try {
     const current = await kvGet<string>(kv, key);
+    const [countStr, resetStr] = (current ?? '').split(':');
+    const parsedCount = Number.parseInt(countStr ?? '', 10);
+    const parsedReset = Number.parseInt(resetStr ?? '', 10);
 
-    if (!current) {
-      // First request
-      await kvPut(kv, key, '1', {
-        expirationTtl: Math.floor(CONFIG.security.rateLimitWindowMs / 1000),
+    const windowValid =
+      !Number.isNaN(parsedCount) && !Number.isNaN(parsedReset) && parsedReset > now;
+
+    if (!current || !windowValid) {
+      // First request of a fresh window (or unparseable/expired state).
+      const resetAt = now + windowMs;
+      await kvPut(kv, key, `1:${resetAt}`, {
+        expirationTtl: Math.max(1, Math.ceil(windowMs / 1000)),
       });
       return true;
     }
 
-    const count = Number.parseInt(current, 10);
-
-    if (Number.isNaN(count)) {
-      logger.warn('RateLimit', 'Invalid counter, resetting', { key });
-      await kvPut(kv, key, '1', {
-        expirationTtl: Math.floor(CONFIG.security.rateLimitWindowMs / 1000),
-      });
-      return true;
-    }
-
-    if (count >= CONFIG.security.rateLimitRequests) {
+    if (parsedCount >= CONFIG.security.rateLimitRequests) {
       logger.warn('RateLimit', 'Limit exceeded', {
         ip,
-        count,
+        count: parsedCount,
         limit: CONFIG.security.rateLimitRequests,
       });
       return false;
     }
 
-    // Increment
-    await kvPut(kv, key, String(count + 1), {
-      expirationTtl: Math.floor(CONFIG.security.rateLimitWindowMs / 1000),
+    // Increment, preserving the original window expiry.
+    await kvPut(kv, key, `${parsedCount + 1}:${parsedReset}`, {
+      expirationTtl: Math.max(1, Math.ceil((parsedReset - now) / 1000)),
     });
 
     return true;
@@ -144,8 +155,7 @@ export async function getRemainingRequests(context: APIContext): Promise<number>
   if (!kv) return CONFIG.security.rateLimitRequests;
 
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-  const userAgent = request.headers.get('User-Agent') || undefined;
-  const keyHash = generateRateLimitKey(ip, userAgent);
+  const keyHash = generateRateLimitKey(ip);
   const env = CONFIG.debug ? 'dev' : 'prod';
   const key = `rate_limit:${env}:${keyHash}`;
 
@@ -153,7 +163,9 @@ export async function getRemainingRequests(context: APIContext): Promise<number>
     const current = await kvGet<string>(kv, key);
     if (!current) return CONFIG.security.rateLimitRequests;
 
+    // Stored as `count:resetAtMs`; parseInt stops at the colon.
     const count = Number.parseInt(current, 10);
+    if (Number.isNaN(count)) return CONFIG.security.rateLimitRequests;
     return Math.max(0, CONFIG.security.rateLimitRequests - count);
   } catch {
     return CONFIG.security.rateLimitRequests;

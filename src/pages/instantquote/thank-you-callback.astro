@@ -118,15 +118,16 @@ const assetBase = CONFIG.site.assetBaseUrl;
       double-fires here. Per-session guard stops a refresh re-firing.
     */}
     <script>
-      import { trackEvent, mirrorMetaCapi, generateUUID } from '@/lib/tracking';
+      import { trackEvent, dispatchWorkerConversion, generateUUID } from '@/lib/tracking';
 
       const isEmailClick = new URLSearchParams(window.location.search).get('conv') === 'email_click';
       const ONCE_KEY = 'emailclick_callback_conversion_fired';
 
       if (isEmailClick && !sessionStorage.getItem(ONCE_KEY)) {
         sessionStorage.setItem(ONCE_KEY, '1');
-        // Same event_id on the dataLayer push and the CAPI mirror so Meta
-        // dedupes the Browser + CAPI pair into one Lead.
+        // Same event_id on the dataLayer push and the Worker dispatch so Meta
+        // dedupes the Browser Pixel + server CAPI pair into one Lead. No value
+        // (callback has no monetary figure) — the dispatch omits value:0.
         const eventId = generateUUID();
         trackEvent('callback_conversion', {
           event_id: eventId,
@@ -135,7 +136,10 @@ const assetBase = CONFIG.site.assetBaseUrl;
           service: 'callback_only',
           source: 'email_click',
         });
-        void mirrorMetaCapi('callback_conversion', eventId, { value: 0, currency: 'GBP' });
+        dispatchWorkerConversion('callback_conversion', eventId, {
+          service: 'callback_only',
+          source: 'email_click',
+        });
       }
     </script>
 

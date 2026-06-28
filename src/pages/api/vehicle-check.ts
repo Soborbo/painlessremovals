@@ -35,6 +35,17 @@ export const POST: APIRoute = async (context) => {
     const rateLimitOk = await checkRateLimit(context);
     if (!rateLimitOk) return createRateLimitResponse(generateErrorId());
 
+    // Cap the multipart body before buffering it into memory. request.formData()
+    // reads the WHOLE body before the per-file size checks below run, so without
+    // this an attacker (or a genuinely huge submission) can OOM the 128MB Worker
+    // — base64 expansion alone would blow the limit well before 100MB of raw
+    // uploads. 40MB comfortably covers ~10 phone photos.
+    const MAX_TOTAL_UPLOAD = 40 * 1024 * 1024;
+    const contentLength = Number.parseInt(request.headers.get('content-length') || '0', 10);
+    if (contentLength > MAX_TOTAL_UPLOAD) {
+      return json({ error: 'Upload is too large. Please reduce the number or size of photos.' }, 413);
+    }
+
     let formData: FormData;
     try {
       formData = await request.formData();
@@ -69,7 +80,7 @@ export const POST: APIRoute = async (context) => {
     const tsRes = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken }),
+      body: JSON.stringify({ secret: env.TURNSTILE_SECRET_KEY, response: turnstileToken, remoteip: request.headers.get('cf-connecting-ip') || undefined }),
     });
     if (!tsRes.ok) return json({ error: 'Security verification unavailable. Please try again.' }, 502);
     const tsData = await tsRes.json() as { success: boolean };

@@ -38,9 +38,7 @@ export {
 
 export { initGlobalListeners } from './global-listeners';
 
-export { mirrorMetaCapi } from './meta-mirror';
-
-export { sendToGateway, trackConversion, isGatewayEnabled } from './worker-tracking';
+export { dispatchWorkerConversion } from './worker-dispatch';
 
 export { generateUUID } from './uuid';
 

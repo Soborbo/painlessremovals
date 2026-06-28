@@ -35,7 +35,7 @@ import {
   trackEvent,
   setUserDataOnDOM,
   normalizeUserData,
-  mirrorMetaCapi,
+  dispatchWorkerConversion,
   resetQuoteState,
   markViewContentFired,
   hasViewContentFired,
@@ -154,12 +154,15 @@ export function Step12Quote() {
       // Meta ViewContent — only the FIRST completion in this browser, no
       // value (engagement signal only, not optimization input).
       // Reads the dedicated VIEW_CONTENT_FIRED_KEY localStorage flag.
+      // Browser Meta Pixel ViewContent fires from GTM off this dataLayer
+      // push. ViewContent is NOT one of the gateway's canonical conversion
+      // events, so it stays browser-only (no Worker leg) — the Worker only
+      // receives the real Lead/Contact conversions.
       if (!hasViewContentFired()) {
         trackEvent('quote_calculator_first_view', {
           event_id: quoteState.eventId,
           service: state.serviceType || 'removal',
         });
-        void mirrorMetaCapi('quote_calculator_first_view', quoteState.eventId, {});
         markViewContentFired();
       }
 
@@ -214,9 +217,11 @@ export function Step12Quote() {
       source: active ? 'after_calculator' : 'standalone',
       tel_target: tel,
     });
-    void mirrorMetaCapi('phone_conversion', eventId, {
+    dispatchWorkerConversion('phone_conversion', eventId, {
       value: quoteVal,
       currency: 'GBP',
+      service,
+      source: active ? 'after_calculator' : 'standalone',
     });
     window.location.href = `tel:${tel}`;
   };
@@ -256,14 +261,18 @@ export function Step12Quote() {
 
       trackEvent('callback_conversion', {
         event_id: eventId,
-        value: quoteVal,
-        currency: 'GBP',
+        // Only push a monetary value when there's a real quote behind it.
+        // Pushing value:0 here while the CAPI leg strips value:0 desyncs the
+        // browser + server event for the same event_id and feeds £0 into
+        // Google Ads Smart Bidding.
+        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
         source: active ? 'after_calculator' : 'standalone',
       });
-      void mirrorMetaCapi('callback_conversion', eventId, {
-        value: quoteVal,
-        currency: 'GBP',
+      dispatchWorkerConversion('callback_conversion', eventId, {
+        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
+        service,
+        source: active ? 'after_calculator' : 'standalone',
       });
 
       setCallbackStatus('success');

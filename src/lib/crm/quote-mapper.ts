@@ -213,9 +213,26 @@ export function mapSubmissionToQuotePayload(
   }
 
   // --- Extras (packing/disassembly/cleaning/storage/assembly) ---------------
+  // Forward only KNOWN extra keys. `data` is client-supplied (calculator
+  // sessionStorage), so copying it wholesale (Object.assign) would let any
+  // arbitrary field a client injects ride through to the CRM. Pin to the
+  // ExtrasData contract instead.
+  const EXTRA_KEYS = [
+    'gateway',
+    'packingTier',
+    'disassemblyItems',
+    'cleaningRooms',
+    'cleaningType',
+    'storageSize',
+    'storageWeeks',
+    'assembly',
+  ] as const;
   const extrasOut: Record<string, unknown> = {};
   if (data.extras && typeof data.extras === 'object') {
-    Object.assign(extrasOut, data.extras as Record<string, unknown>);
+    const src = data.extras as Record<string, unknown>;
+    for (const k of EXTRA_KEYS) {
+      if (src[k] !== undefined) extrasOut[k] = src[k];
+    }
   }
   if (data.furnitureOnly && typeof data.furnitureOnly === 'object') {
     extrasOut.furnitureOnly = data.furnitureOnly;

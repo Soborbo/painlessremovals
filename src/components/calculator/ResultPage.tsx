@@ -35,7 +35,7 @@ import {
   trackEvent,
   setUserDataOnDOM,
   normalizeUserData,
-  mirrorMetaCapi,
+  dispatchWorkerConversion,
   resetQuoteState,
   markViewContentFired,
   hasViewContentFired,
@@ -484,15 +484,16 @@ export function ResultPage() {
         service: state.serviceType || 'removal',
       });
 
-      // Meta ViewContent — first completion only, no value.
-      // Reads the dedicated VIEW_CONTENT_FIRED_KEY localStorage flag,
-      // which survives quote-state deletion across re-runs.
+      // Meta ViewContent — first completion only, no value. Fires browser-
+      // only from GTM off this dataLayer push; ViewContent is not a canonical
+      // gateway conversion event, so there's no Worker leg. Reads the
+      // dedicated VIEW_CONTENT_FIRED_KEY flag, which survives quote-state
+      // deletion across re-runs.
       if (!hasViewContentFired()) {
         trackEvent('quote_calculator_first_view', {
           event_id: quoteState.eventId,
           service: state.serviceType || 'removal',
         });
-        void mirrorMetaCapi('quote_calculator_first_view', quoteState.eventId, {});
         markViewContentFired();
       }
 
@@ -607,14 +608,17 @@ export function ResultPage() {
 
       trackEvent('callback_conversion', {
         event_id: eventId,
-        value: quoteVal,
-        currency: 'GBP',
+        // Only push a monetary value when there's a real quote behind it —
+        // pushing value:0 while the CAPI leg strips value:0 desyncs the
+        // browser + server event and feeds £0 into Google Ads.
+        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
         source: active ? 'after_calculator' : 'standalone',
       });
-      void mirrorMetaCapi('callback_conversion', eventId, {
-        value: quoteVal,
-        currency: 'GBP',
+      dispatchWorkerConversion('callback_conversion', eventId, {
+        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
+        service,
+        source: active ? 'after_calculator' : 'standalone',
       });
 
       window.location.href = '/instantquote/thank-you/';

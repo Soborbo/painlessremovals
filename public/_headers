@@ -45,3 +45,12 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  # HSTS: site is HTTPS-only behind Cloudflare. 2 years + preload-ready.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  # ── Content-Security-Policy (defence-in-depth vs XSS) ──────────
+  # NOT enforced yet: this is a conversion-critical site and an over-tight
+  # CSP silently breaks GTM/GA4/Meta Pixel/CookieYes/Turnstile (the exact
+  # systems with revenue impact). Promote the Report-Only line below to
+  # `Content-Security-Policy` only after watching reports across every
+  # template. Known origins to allowlist are baked into it already.
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://*.google-analytics.com https://connect.facebook.net https://challenges.cloudflare.com https://cdn-cookieyes.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://connect.facebook.net https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; frame-ancestors 'self'

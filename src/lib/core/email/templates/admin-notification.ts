@@ -9,6 +9,7 @@ import type { Quote } from '@/lib/core/types';
 import { formatPrice } from '@/lib/utils';
 import {
   escapeHtml,
+  sanitizePhoneHref,
   buildSelectionRows,
   buildBreakdownRows,
   sectionHeader,
@@ -72,7 +73,7 @@ export function generateAdminNotificationEmail(quote: Quote, options: AdminEmail
         <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 24px;">
           <tr>
             <td style="background-color:#dc3f04;border-radius:8px;text-align:center;">
-              <a href="tel:${escapeHtml(phone)}" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:13px 28px;display:inline-block;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">&#x1F4DE; Call Client Now: ${escapeHtml(phone)}</a>
+              <a href="tel:${escapeHtml(sanitizePhoneHref(phone))}" style="color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:13px 28px;display:inline-block;font-family:-apple-system,BlinkMacSystemFont,sans-serif;">&#x1F4DE; Call Client Now: ${escapeHtml(phone)}</a>
             </td>
           </tr>
         </table>

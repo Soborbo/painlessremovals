@@ -19,8 +19,7 @@
  */
 
 import { clearUserDataOnDOM, readUserDataFromDOM, trackEvent } from './tracking';
-import { mirrorMetaCapi } from './meta-mirror';
-import { sendToGateway } from './worker-tracking';
+import { dispatchWorkerConversion } from './worker-dispatch';
 import { generateUUID } from './uuid';
 import {
   CURRENCY,
@@ -49,7 +48,9 @@ function getChannel(): BroadcastChannel | null {
     try {
       channel = new BroadcastChannel(QUOTE_STATE_CHANNEL);
       channel.addEventListener('message', (e) => {
-        if (e.data === 'upgraded') clearPendingTimer();
+        // Either another tab consumed the quote (upgrade) or already fired the
+        // late conversion — in both cases this tab must NOT also fire.
+        if (e.data === 'upgraded' || e.data === 'fired') clearPendingTimer();
       });
     } catch {
       channel = null;
@@ -58,8 +59,32 @@ function getChannel(): BroadcastChannel | null {
   return channel;
 }
 
-function broadcast(message: 'upgraded'): void {
+function broadcast(message: 'upgraded' | 'fired'): void {
   getChannel()?.postMessage(message);
+}
+
+// Records the event_id of the quote conversion that has already fired, so a
+// concurrent tab / timer / catch-up reload can't fire a second
+// `quote_calculator_conversion` for the same quote (GA4 + Google Ads dedup on
+// the dataLayer push far more weakly than Meta's event_id-based CAPI dedup).
+const QUOTE_FIRED_KEY = `${QUOTE_STATE_KEY}:fired`;
+
+function hasFired(eventId: string): boolean {
+  if (typeof localStorage === 'undefined') return false;
+  try {
+    return localStorage.getItem(QUOTE_FIRED_KEY) === eventId;
+  } catch {
+    return false;
+  }
+}
+
+function markFired(eventId: string): void {
+  if (typeof localStorage === 'undefined') return;
+  try {
+    localStorage.setItem(QUOTE_FIRED_KEY, eventId);
+  } catch {
+    // ignore
+  }
 }
 
 function clearPendingTimer(): void {
@@ -179,16 +204,31 @@ export function getActiveQuoteState(): QuoteState | null {
 }
 
 /**
+ * True when a quote conversion is still pending — a saved, non-upgraded
+ * state that hasn't fired and is within the upgrade window OR the late
+ * catch-up grace period (i.e. `resumeQuoteTimer` might still fire it on this
+ * page-load). Used to decide whether the hidden PII side-channel needs
+ * rehydrating: if nothing is pending, we don't expose PII on the page at all.
+ */
+export function hasPendingQuoteConversion(): boolean {
+  const state = readState();
+  if (!state || state.upgraded || hasFired(state.eventId)) return false;
+  const elapsed = Date.now() - state.completedAt;
+  return elapsed <= QUOTE_UPGRADE_WINDOW_MS + QUOTE_LATE_CATCHUP_MS;
+}
+
+/**
  * Marks the active quote as upgraded — i.e. its conversion has been
  * counted by a higher-intent event already, so the late-fire timer
  * should not fire `quote_calculator_conversion` for it.
  *
  * IMPORTANT: this used to also `clearUserDataOnDOM()` synchronously,
- * but every caller pattern is `markQuoteUpgraded() → mirrorMetaCapi()`,
- * and `mirrorMetaCapi`'s body reads the hidden DOM element
- * synchronously before its first `await`. The wipe blew away PII before
- * the mirror could read it, sending empty `user_data` to Meta and
- * collapsing match quality. The wipe is now deferred to the natural
+ * but every caller pattern is `markQuoteUpgraded() → dispatchWorkerConversion()`,
+ * and the dispatch reads the hidden DOM element synchronously
+ * (`readUserDataFromDOM()` is evaluated at the call site before egress).
+ * The wipe blew away PII before the dispatch could read it, sending empty
+ * `user_data` to the Worker and collapsing match quality. The wipe is now
+ * deferred to the natural
  * lifecycle: storage TTL expiry inside `setUserDataOnDOM`, calculator
  * restart, or `fireQuoteConversionIfStillActive` (which fires the
  * mirror first, then wipes inline).
@@ -215,6 +255,23 @@ function fireQuoteConversionIfStillActive(isLate: boolean): void {
   const state = readState();
   if (!state || state.upgraded) return;
 
+  // Guard against a double-fire: if this quote's event_id was already fired
+  // (by this tab's timer racing a catch-up reload, or by another tab), bail.
+  if (hasFired(state.eventId)) {
+    deleteState();
+    clearPendingTimer();
+    return;
+  }
+
+  // CLAIM FIRST, then fire. Marking fired + deleting the state + broadcasting
+  // before the actual push shrinks the cross-tab race window to nothing: a
+  // concurrent reader sees either the fired sentinel or an absent state and
+  // bails, so the conversion is emitted exactly once.
+  markFired(state.eventId);
+  deleteState();
+  clearPendingTimer();
+  broadcast('fired');
+
   trackEvent('quote_calculator_conversion', {
     value: state.value,
     currency: state.currency,
@@ -222,29 +279,22 @@ function fireQuoteConversionIfStillActive(isLate: boolean): void {
     event_id: state.eventId,
     ...(isLate ? { late_conversion: true } : {}),
   });
-  void mirrorMetaCapi('quote_calculator_conversion', state.eventId, {
-    value: state.value,
-    currency: state.currency,
-  });
 
-  // Server-side gateway dispatch (shadow — inert until PUBLIC_GATEWAY_ENABLED).
-  // Same event_id as above for dedup; read user_data BEFORE the wipe below.
-  void sendToGateway({
-    eventName: 'quote_calculator_conversion',
-    eventId: state.eventId,
+  // Server-side leg: the Soborbo Worker (Meta CAPI), same event_id as the
+  // dataLayer push above for dedup. Read user_data BEFORE the wipe below.
+  dispatchWorkerConversion('quote_calculator_conversion', state.eventId, {
     value: state.value,
     currency: state.currency,
     service: state.service,
     userData: readUserDataFromDOM(),
-    ...(isLate && { source: 'late' }),
+    ...(isLate ? { source: 'late' } : {}),
   });
 
-  deleteState();
-  clearPendingTimer();
-  // mirrorMetaCapi reads from the DOM synchronously above (its body
-  // executes up to the first `await` in the same tick), so by the time
-  // we get here the user_data has already been read. Wiping shrinks
-  // at-rest PII exposure for the next page load.
+  // State + timer were already cleared in the claim step above.
+  // dispatchWorkerConversion read user_data from the DOM synchronously above
+  // (`readUserDataFromDOM()` is evaluated at the call site before this line),
+  // so by now it's already captured. Wiping shrinks at-rest PII exposure for
+  // the next page load.
   clearUserDataOnDOM();
 }
 
