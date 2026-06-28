@@ -500,11 +500,11 @@ export function Step12Quote() {
                 value={Math.round(b.vansCost * marginRatio)}
               />
 
-              {/* Surcharge (margin included) */}
+              {/* Surcharge — already post-margin, do NOT re-apply marginRatio */}
               {quote.surcharge && quote.surcharge.amount > 0 && (
                 <BreakdownLine
                   label={`${quote.surcharge.type === 'saturday' ? 'Saturday' : 'Bank holiday'} surcharge`}
-                  value={Math.round(b.surchargeCost * marginRatio)}
+                  value={Math.round(b.surchargeCost)}
                 />
               )}
 

@@ -678,6 +678,31 @@ export function getMarginMultiplier(controllableSubtotal: number, oneWayMiles: n
   return tierMargins ? (tierMargins[bracketIdx] ?? 1.50) : 1.50;
 }
 
+/**
+ * Margined controllable total WITH a monotonic floor (#16).
+ *
+ * `price(c) = c × margin(bracket(c))` is a step function, so near a bracket
+ * boundary a *bigger* controllable cost can yield a *lower* price (the higher
+ * bracket's lower multiplier on a marginally larger base). That means a
+ * bigger/harder job could be quoted cheaper than a smaller one.
+ *
+ * This clamps the result up to the maximum price achievable at the top of any
+ * lower bracket, guaranteeing the price is non-decreasing in controllable
+ * cost. It only ever RAISES a price (Math.max), never lowers one — so no
+ * existing quote gets cheaper; only the sub-monotonic "dips" are smoothed.
+ */
+export function getMarginedControllable(controllableCost: number, oneWayMiles: number): number {
+  const direct = controllableCost * getMarginMultiplier(controllableCost, oneWayMiles);
+  const { sizeBrackets } = CALCULATOR_CONFIG.marginMatrix;
+  let floor = 0;
+  for (const b of sizeBrackets) {
+    if (b !== undefined && Number.isFinite(b) && b < controllableCost) {
+      floor = Math.max(floor, b * getMarginMultiplier(b, oneWayMiles));
+    }
+  }
+  return Math.max(direct, floor);
+}
+
 // ===================
 // SURCHARGES (v4.2)
 // ===================
@@ -1059,10 +1084,6 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
   // ===================
 
   const surchargeInfo = getSurchargeInfo(input.selectedDate);
-  const surchargeCost = crewCost * surchargeInfo.rate;
-  const surcharge = surchargeInfo.type
-    ? { type: surchargeInfo.type, amount: surchargeCost }
-    : null;
 
   // ===================
   // 7. KEY WAIT WAIVER
@@ -1082,12 +1103,27 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
   // 9. MARGIN CALCULATION (v4.2)
   // ===================
 
-  // Controllable costs = crew + van + surcharge on crew
-  const controllableCost = crewCost + vansCost + surchargeCost;
+  // Controllable costs = crew + van ONLY. The surcharge is applied AFTER
+  // margin (below), not folded into the margin base — see #15.
+  const controllableCost = crewCost + vansCost;
 
-  // Margin applied ONLY to controllables
-  const marginMultiplier = getMarginMultiplier(controllableCost, oneWayMiles);
-  const marginedTotal = controllableCost * marginMultiplier;
+  // Margin applied to controllables (crew + van), with a monotonic floor so a
+  // bigger job can never be cheaper near a bracket boundary (#16).
+  const marginedTotal = getMarginedControllable(controllableCost, oneWayMiles);
+  // Effective multiplier actually applied (may exceed the raw bracket value
+  // when the monotonic floor kicks in). This is the customer-facing ratio the
+  // displayed crew/van lines reconstruct with.
+  const marginMultiplier = controllableCost > 0 ? marginedTotal / controllableCost : 1;
+
+  // SURCHARGE (Saturday / bank holiday): a true +rate uplift on the
+  // customer-facing (post-margin) crew price — NOT multiplied by the margin
+  // again. e.g. a "+25%" Saturday surcharge is 25% of `crewCost × margin`.
+  const surchargeCost = surchargeInfo.type
+    ? Math.round(crewCost * marginMultiplier * surchargeInfo.rate)
+    : 0;
+  const surcharge = surchargeInfo.type
+    ? { type: surchargeInfo.type, amount: surchargeCost }
+    : null;
 
   // Pass-through costs = mileage + accommodation + key wait + extras (NO margin)
   const passThroughCost = mileageCost + accommodationCost + keyWaitWaiverCost + extrasCost;
@@ -1096,7 +1132,7 @@ export function calculateQuote(input: QuoteInput): QuoteResult {
   // 10. FINAL PRICE
   // ===================
 
-  const totalPrice = roundPrice(marginedTotal + passThroughCost);
+  const totalPrice = roundPrice(marginedTotal + surchargeCost + passThroughCost);
 
   // ===================
   // 11. SERVICE DURATION LABEL
