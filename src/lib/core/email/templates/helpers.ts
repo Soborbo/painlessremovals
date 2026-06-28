@@ -271,7 +271,11 @@ export function buildSelectionRows(data: Record<string, unknown>): string {
 export function buildCustomerPriceSummary(breakdown: Record<string, number>, currency: string): string {
   let html = sectionHeader('Price Summary');
 
-  const removalCost = (breakdown.marginedTotal ?? 0) + (breakdown.mileageCost ?? 0);
+  // marginedTotal is crew+van margined only; the (post-margin) date surcharge
+  // is a separate line in the breakdown, so fold it into the headline removal
+  // figure here or the customer total would under-count it.
+  const removalCost =
+    (breakdown.marginedTotal ?? 0) + (breakdown.surchargeCost ?? 0) + (breakdown.mileageCost ?? 0);
   const accommodationCost = breakdown.accommodationCost ?? 0;
   const keyWaitCost = breakdown.keyWaitWaiverCost ?? 0;
   const extrasCost = breakdown.extrasCost ?? 0;
@@ -297,6 +301,7 @@ export function buildBreakdownRows(breakdown: Record<string, number>, currency: 
     vansCost: 'Van Costs',
     moversCost: 'Movers',
     crewCost: 'Crew',
+    surchargeCost: 'Date Surcharge',
     mileageCost: 'Mileage',
     accommodationCost: 'Accommodation',
     keyWaitWaiverCost: 'Key Wait Waiver',
@@ -306,10 +311,11 @@ export function buildBreakdownRows(breakdown: Record<string, number>, currency: 
     margin: 'Service & Insurance',
   };
 
-  // Internal calculation fields — never show to customer
+  // Internal calculation fields — never show to customer. surchargeCost is now
+  // a real post-margin line item (it used to be folded into the margin), so it
+  // is shown rather than hidden.
   const internalFields = new Set([
     'controllableCost',
-    'surchargeCost',
     'marginMultiplier',
     'marginedTotal',
     'passThroughCost',

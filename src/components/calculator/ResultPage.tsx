@@ -210,10 +210,11 @@ function buildCostBreakdown(quote: QuoteResult, state: ReturnType<typeof calcula
   });
 
   if (b.surchargeCost > 0 && quote.surcharge) {
-    const surchargeWithMargin = Math.round(b.surchargeCost * marginRatio);
+    // surchargeCost is ALREADY the customer-facing, post-margin amount — do
+    // NOT re-apply marginRatio (that would double the margin on the surcharge).
     lines.push({
       label: `${quote.surcharge.type === 'saturday' ? 'Saturday' : 'Bank holiday'} surcharge`,
-      amount: surchargeWithMargin,
+      amount: Math.round(b.surchargeCost),
     });
   }
 
