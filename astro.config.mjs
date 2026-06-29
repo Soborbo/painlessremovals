@@ -112,6 +112,18 @@ export default defineConfig({
         process.env.CF_PAGES_COMMIT_SHA || process.env.WORKERS_CI_COMMIT_SHA || 'local'
       ),
       'import.meta.env.PUBLIC_SITE_ID': JSON.stringify('painless-removals'),
+      // GTM_ID is read by GTMHead/GTMBody. The marketing pages are
+      // statically prerendered, so the Cloudflare *runtime* var never
+      // reaches their HTML — and Astro only auto-exposes PUBLIC_-prefixed
+      // vars to import.meta.env. Bake the (non-secret) container id in at
+      // build time so the GTM loader actually ships on static pages.
+      // Prefers the build env var if present (e.g. per-environment override),
+      // and falls back to the production container id so the loader is never
+      // silently dropped just because the build var wasn't set. The id is
+      // public by design (it appears in every page's HTML).
+      'import.meta.env.GTM_ID': JSON.stringify(
+        process.env.GTM_ID || 'GTM-PXTH5JJK'
+      ),
     },
     build: { sourcemap: 'hidden' },
   },
