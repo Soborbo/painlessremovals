@@ -13,6 +13,27 @@
  */
 import { env } from 'cloudflare:workers';
 const gtmId = env.GTM_ID || import.meta.env.GTM_ID || '';
+// Google Tag Gateway (GTG) — load the container from the first-party path
+// (/<GTG_PATH>/gtm.js, same-origin), which Cloudflare's GTG serves. See
+// docs/google-tag-gateway.md for the full rationale and current status.
+//
+// WHY: Cloudflare's GTG auto-injection does NOT rewrite the gtm.js loader
+// in our Worker-served HTML, so we point it at the first-party path
+// ourselves. This makes the *loader* first-party (harder to ad-block).
+// NOTE: it does NOT by itself make GA4/Ads *measurement* first-party — the
+// /g/collect transport is flipped by GTG activation on Google's side, which
+// is separate. So this is a prerequisite + resilience win, not the whole job.
+//
+// Build-time GTG_PATH (astro.config.mjs). Empty → googletagmanager.com.
+// Runtime guard (gtmOnError): if /<GTG_PATH>/gtm.js ever 404s (e.g. GTG
+// disabled in Cloudflare), re-inject from googletagmanager.com so the
+// container — and ALL tracking — can never silently fail to load.
+// (The <body> noscript stays on googletagmanager.com — GTG 404s ns.html.)
+const gtgPath = (import.meta.env.GTG_PATH || '').trim();
+const gtmBase = gtgPath ? `/${gtgPath}` : 'https://www.googletagmanager.com';
+const gtmOnError = gtgPath
+  ? `j.onerror=function(){var k=d.createElement(s);k.async=true;k.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(k,f);};`
+  : '';
 ---
 
 {/* 1. Consent Mode v2 default — first script in <head> */}
@@ -45,8 +66,8 @@ const gtmId = env.GTM_ID || import.meta.env.GTM_ID || '';
   <script set:html={`
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;${gtmOnError}j.src=
+    '${gtmBase}/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','${gtmId}');
   `} />
 )}
