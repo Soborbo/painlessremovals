@@ -113,12 +113,17 @@ function reportAbandonment(state: FormState): void {
     exit_page_url: location.origin + location.pathname,
   };
 
+  // The beacon (server → GA4 MP) is the PRIMARY path; the dataLayer push
+  // is a FALLBACK for browsers without sendBeacon or when queueing fails.
+  // Never fire both: GA4 does not dedup a browser event against an MP
+  // event, so double-firing inflated form_abandonment ~2× on desktop
+  // (where both paths reliably work).
   if (typeof navigator.sendBeacon === 'function') {
     try {
       const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-      navigator.sendBeacon(ABANDONMENT_BEACON_URL, blob);
+      if (navigator.sendBeacon(ABANDONMENT_BEACON_URL, blob)) return;
     } catch {
-      // ignore — the dataLayer push below is the secondary path
+      // fall through to the dataLayer push
     }
   }
   trackEvent('form_abandonment', payload);

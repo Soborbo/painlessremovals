@@ -32,7 +32,7 @@ import { createErrorResponse, formatError, generateErrorId } from '@/lib/utils/e
 import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 import { logger } from '@/lib/utils/logger';
-import { deriveClientId, sendGA4MP } from '@/lib/tracking/server';
+import { deriveClientId, ga4ClientIdFromRequest, sendGA4MP } from '@/lib/tracking/server';
 import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
@@ -335,10 +335,14 @@ export const POST: APIRoute = async (context) => {
       }) : Promise.resolve(null),
     ]);
 
-    // Use waitUntil if available (Cloudflare Workers) to ensure emails complete after response
-    const cfContext = (context as unknown as { locals?: { runtime?: { waitUntil: (p: Promise<unknown>) => void } } }).locals?.runtime;
-    if (cfContext?.waitUntil) {
-      cfContext.waitUntil(emailTasks);
+    // Use waitUntil if available (Cloudflare Workers) to ensure emails complete
+    // after the response. NOTE: the execution context lives at
+    // `locals.cfContext` (see getWaitUntil) — the old `locals.runtime.waitUntil`
+    // probe never matched, so every "background" promise below actually ran
+    // unprotected and could be cancelled when the response flushed.
+    const waitUntil = getWaitUntil(context.locals);
+    if (waitUntil) {
+      waitUntil(emailTasks);
     } else {
       await emailTasks;
     }
@@ -360,7 +364,7 @@ export const POST: APIRoute = async (context) => {
     // also not cancelled when the response flushes.
     if (dedupKv) {
       const cachePut = kvPut(dedupKv, dedupKey, responseBody, { expirationTtl: SAVE_QUOTE_DEDUP_TTL_SECONDS });
-      if (cfContext?.waitUntil) cfContext.waitUntil(cachePut);
+      if (waitUntil) waitUntil(cachePut);
       else void cachePut;
       // Sentinel will be replaced by the response body — no need to
       // clear in the catch.
@@ -391,14 +395,20 @@ export const POST: APIRoute = async (context) => {
     if (validated.event_id) {
       mirrorParams.event_id = validated.event_id;
     }
-    const ga4Mirror = sendGA4MP(env, deriveClientId(fingerprint), [
+    // Prefer the browser's real GA4 client_id (same-origin POST carries the
+    // `_ga` cookie) so the MP hit attaches to the same GA4 user as the
+    // browser-side dataLayer push instead of minting a phantom user per
+    // fingerprint. Fingerprint-derived id remains the consent-denied /
+    // cookieless fallback.
+    const ga4ClientId = ga4ClientIdFromRequest(context.request) ?? deriveClientId(fingerprint);
+    const ga4Mirror = sendGA4MP(env, ga4ClientId, [
       {
         name: 'quote_calculator_complete',
         params: mirrorParams,
       },
     ]);
-    if (cfContext?.waitUntil) {
-      cfContext.waitUntil(ga4Mirror);
+    if (waitUntil) {
+      waitUntil(ga4Mirror);
     } else {
       void ga4Mirror;
     }

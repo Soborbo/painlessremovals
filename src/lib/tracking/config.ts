@@ -39,17 +39,8 @@ export const USER_DATA_STORAGE_KEY = 'pl_user_data';
 /** Endpoint used by `navigator.sendBeacon()` for abandonment events. */
 export const ABANDONMENT_BEACON_URL = '/api/track/abandonment';
 
-/** Endpoint used by the client to mirror conversion events to Meta CAPI
- *  with a shared `event_id` for browser+server dedup. */
-export const META_CAPI_ENDPOINT = '/api/meta/capi';
-
 /** BroadcastChannel name for cross-tab sync of quote state mutations. */
 export const QUOTE_STATE_CHANNEL = 'pl_quote_state_v1';
-
-/** Meta Graph API version. Pinned (not "latest") so a Meta-side breaking
- *  change can't silently break our CAPI ingestion — bump this deliberately
- *  after testing in Events Manager. */
-export const META_GRAPH_API_VERSION = 'v22.0';
 
 /** localStorage key for the persistent ViewContent-fired flag. Lives in
  *  its OWN key (not inside the quote state blob) so it survives

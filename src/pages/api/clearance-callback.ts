@@ -9,7 +9,8 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
-import { sendGA4MP, deriveClientId } from '@/lib/tracking/server';
+import { sendGA4MP, deriveClientId, ga4ClientIdFromRequest } from '@/lib/tracking/server';
+import { getWaitUntil } from '@/lib/crm/server';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -151,8 +152,11 @@ export const POST: APIRoute = async (context) => {
       logger.warn('ClearanceCallback', 'Missing event_id, skipping conversion fire');
     }
     if (event_id && typeof event_id === 'string') {
+      // Prefer the browser's real GA4 client_id from the `_ga` cookie so
+      // the conversion lands on the same GA4 user as the browser events;
+      // fall back to an event_id-derived stable id when consent-denied.
       const fingerprint = event_id.replace(/-/g, '').slice(0, 16);
-      const clientId = deriveClientId(fingerprint);
+      const clientId = ga4ClientIdFromRequest(request) ?? deriveClientId(fingerprint);
       const userAgent = request.headers.get('user-agent') || undefined;
       const ipAddress = request.headers.get('cf-connecting-ip')
         || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
@@ -165,9 +169,18 @@ export const POST: APIRoute = async (context) => {
         return m ? Number(m[1]) : undefined;
       })();
 
+      // Only the outward half of the postcode (e.g. "BS9") goes to GA4 —
+      // a full UK postcode narrows to a handful of households, which the
+      // site's own PII rules (PII_KEYS) treat as PII. The outward code
+      // keeps the geographic reporting signal without the identifiability.
+      const outwardPostcode = postcode
+        ? String(postcode).trim().split(/\s+/)[0]?.toUpperCase()
+        : undefined;
+
       // GA4 stays browser-owned + this server-side MP backstop (Model 2: the
-      // event-gateway Worker sends no GA4). Fire-and-forget.
-      void sendGA4MP(
+      // event-gateway Worker sends no GA4). Backgrounded via waitUntil so the
+      // Workers runtime doesn't cancel the fetch when the response flushes.
+      const ga4Fire = sendGA4MP(
         env,
         clientId,
         [{
@@ -176,11 +189,14 @@ export const POST: APIRoute = async (context) => {
             form_source: 'clearance-calculator',
             engagement_time_msec: 100,
             ...(estimateValue !== undefined ? { value: estimateValue, currency: 'GBP' } : {}),
-            ...(postcode ? { postcode } : {}),
+            ...(outwardPostcode ? { postcode_area: outwardPostcode } : {}),
           },
         }],
         { userAgent, ipOverride: ipAddress },
       ).catch(() => { /* best-effort */ });
+      const waitUntil = getWaitUntil(context.locals);
+      if (waitUntil) waitUntil(ga4Fire);
+      else void ga4Fire;
 
       // Meta CAPI `Lead` is now fired by the Soborbo event-gateway Worker
       // (browser → /api/event/conversion via PR_trackWorkerConversion, same

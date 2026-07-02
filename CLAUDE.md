@@ -34,13 +34,18 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    intent action (phone/email/whatsapp click, callback form). Don't fire
    `quote_calculator_conversion` directly — `conversion-state.ts` owns it.
 
-4. **Server-side mirrors run from `save-quote.ts`, `/api/meta/capi`, and
-   the contact form (`/api/contact`).** Don't add server-side fires from
-   random places. `save-quote.ts` mirrors `quote_calculator_complete` to
-   GA4 Measurement Protocol; `/api/meta/capi` is the single ingress for
-   client-driven Meta CAPI mirrors; `/api/contact` fires
-   `contact_form_conversion` to both GA4 MP and Meta CAPI on Turnstile +
-   Resend success.
+4. **Server-side legs are split: Meta CAPI goes through the Soborbo
+   event-gateway Worker; GA4 MP backstops fire in-app.** Don't add
+   server-side fires from random places. The client dispatches
+   conversions to `/api/event/conversion` (a Cloudflare zone route to
+   the `event-gateway` Worker, NOT an app route) via
+   `worker-dispatch.ts` → the Worker sends Meta CAPI. In-app GA4 MP
+   backstops: `save-quote.ts` mirrors `quote_calculator_complete`;
+   `/api/contact` fires `contact_form_conversion`;
+   `/api/clearance-callback` fires `clearance_callback_conversion`;
+   `/api/track/abandonment` forwards the abandonment beacon. Always
+   background GA4 MP sends with `getWaitUntil(context.locals)` — a bare
+   `void promise` can be cancelled when the Worker response flushes.
 
 5. **Consent default MUST be the first script in `<head>`, before GTM.**
    `GTMHead.astro` already enforces this. Don't reorder.
@@ -50,14 +55,15 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    `/api/track/abandonment` and forward to GA4 MP server-side. Treat the
    numbers as directional, not exact.
 
-7. **Phone numbers normalize to E.164 before hashing.** `normalizePhoneE164`
-   defaults to GB. Don't push raw user-typed phone strings through Meta
-   CAPI.
+7. **Phone numbers normalize to E.164 before egress.** `normalizePhoneE164`
+   defaults to GB. Don't push raw user-typed phone strings to the
+   event-gateway Worker.
 
-8. **Hashing for Meta CAPI happens server-side.** `setUserDataOnDOM` stores
-   raw values (UPD for Google Ads needs them raw — Google hashes inside the
-   tag). Meta CAPI requires SHA-256 of normalized values; we do that in
-   `server-tracking.ts` using `@noble/hashes`.
+8. **Hashing for Meta CAPI happens in the event-gateway Worker, not in
+   this repo.** `setUserDataOnDOM` stores raw values (UPD for Google Ads
+   needs them raw — Google hashes inside the tag). `worker-dispatch.ts`
+   sends raw normalized values to the gateway, which SHA-256-hashes them
+   before Meta. The old in-app `sendMetaCapi` was removed at cutover.
 
 ## Conversion model
 
