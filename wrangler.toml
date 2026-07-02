@@ -46,12 +46,17 @@ id = "b9ceca436b2d44e0a9d4dca42b998da8"
 #
 # Expected vars (set in dashboard):
 #   Plain text: ENVIRONMENT, SITE_URL, PUBLIC_TURNSTILE_SITE_KEY,
-#     GTM_ID, GA4_MEASUREMENT_ID, META_PIXEL_ID, META_CAPI_TEST_EVENT_CODE,
+#     GTM_ID, GA4_MEASUREMENT_ID,
 #     ERROR_SHEETS_ID, ERROR_SHEETS_TAB, GOOGLE_SERVICE_ACCOUNT_EMAIL, ERROR_EMAIL_TO,
 #     ERROR_ALERT_FROM, IMVE_API_URL
 #   Secrets: RESEND_API_KEY, TURNSTILE_SECRET_KEY, GA4_API_SECRET,
-#     META_CAPI_ACCESS_TOKEN, GOOGLE_MAPS_API_KEY, GOOGLE_SERVICE_ACCOUNT_KEY,
+#     GOOGLE_MAPS_API_KEY, GOOGLE_SERVICE_ACCOUNT_KEY,
 #     IMVE_API_KEY, HEALTH_CHECK_TOKEN, IP_HASH_SALT
+#
+#   META_PIXEL_ID / META_CAPI_ACCESS_TOKEN / META_CAPI_TEST_EVENT_CODE are
+#   NO LONGER read by this app — Meta CAPI moved to the Soborbo
+#   event-gateway Worker (its SITE_CONFIG KV holds the credentials).
+#   If still set on this Worker they are inert; safe to delete.
 #
 # Painless-CRM signed webhooks (SENDER half — see README "CRM webhooks"):
 #   Plain text: CRM_BASE_URL (e.g. https://crm.painless.example, no trailing
@@ -63,10 +68,6 @@ id = "b9ceca436b2d44e0a9d4dca42b998da8"
 #       wrangler secret put CRM_WEBHOOK_SECRET
 #     NEVER expose it to the client (no PUBLIC_ prefix, never in import.meta.env
 #     reaching the browser). All signing happens server-side in the Worker.
-#
-# Note on META_CAPI_TEST_EVENT_CODE: when non-empty, ALL Meta CAPI events go
-# to the Test Events tab in Meta Events Manager and DO NOT count for ad
-# attribution. Keep empty in prod; set to TEST<n> only when debugging.
 
 # Observability — Workers Logs enabled at 100% sampling.
 # Top-level `enabled = false` is the legacy unified flag; we use the per-channel

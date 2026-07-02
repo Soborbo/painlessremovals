@@ -39,6 +39,28 @@ export interface WorkerConversionOptions {
 }
 
 /**
+ * Megvárja, hogy a Turnstile script (async defer a Layout <head>-ből)
+ * betöltődjön. A boot.ts-ből azonnal tüzelő kései quote-konverzió tipikusan
+ * MEGELŐZI a script betöltését — várakozás nélkül a `sendToWorker` token
+ * híján némán eldobta a szerver-leget minden late conversionnél.
+ */
+function waitForTurnstile(timeoutMs = 10_000): Promise<boolean> {
+  if (window.turnstile) return Promise.resolve(true);
+  return new Promise((resolve) => {
+    const deadline = Date.now() + timeoutMs;
+    const iv = setInterval(() => {
+      if (window.turnstile) {
+        clearInterval(iv);
+        resolve(true);
+      } else if (Date.now() > deadline) {
+        clearInterval(iv);
+        resolve(false);
+      }
+    }, 200);
+  });
+}
+
+/**
  * Egy konverzió szerver-oldali elküldése a Workerhez. Tűzz-és-felejts
  * (nem await-elendő) — a `sendToWorker` `sendBeacon`-t használ, ami túléli a
  * navigációt. Ismeretlen `internalEventName` esetén némán kihagyja.
@@ -56,7 +78,9 @@ export function dispatchWorkerConversion(
   // tartozó currency-t), ha nincs valós pénzérték.
   const hasValue = typeof opts.value === 'number' && opts.value > 0;
 
-  void sendToWorker({
+  // A user_data-t SZINKRON olvassuk (a hívó a dispatch után azonnal
+  // törölheti a rejtett DOM side-channelt), a küldés maga aszinkron.
+  const payload = {
     event_name,
     event_id: eventId,
     event_time: Math.floor(Date.now() / 1000),
@@ -64,5 +88,13 @@ export function dispatchWorkerConversion(
     ...(opts.service ? { service: opts.service } : {}),
     ...(opts.source ? { source: opts.source } : {}),
     user_data: opts.userData ?? readUserDataFromDOM(),
-  });
+  };
+
+  void (async () => {
+    if (!(await waitForTurnstile())) {
+      console.warn('[tracking] Turnstile never loaded, dropping server-side dispatch', event_name);
+      return;
+    }
+    await sendToWorker(payload);
+  })();
 }

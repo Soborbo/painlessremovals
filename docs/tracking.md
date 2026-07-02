@@ -15,8 +15,8 @@ bug** — the code lives at `src/lib/tracking/` and `src/pages/api/`.
 | Browser analytics | GA4 (via GTM) | Engagement + conversion events |
 | Browser ads | Google Ads conversions (via GTM) | Smart Bidding signal |
 | Browser social | Meta Pixel (via GTM) | Lead / Contact / ViewContent events |
-| Server analytics | GA4 Measurement Protocol | Backstop for server-known events (quote saved, abandonment) |
-| Server social | Meta Conversions API | Browser+server dedup on shared `event_id` |
+| Server analytics | GA4 Measurement Protocol | Backstop for server-known events (quote saved, abandonment, contact/clearance conversions) |
+| Server social | Meta Conversions API via the **Soborbo event-gateway Worker** (`/api/event/conversion` zone route) | Browser+server dedup on shared `event_id` — see `docs/tracking-worker-rebuild.md` |
 
 ## Source layout
 
@@ -28,15 +28,25 @@ src/lib/tracking/
   conversion-state.ts    # 60-min upgrade window state machine, localStorage-backed
   form-tracking.ts       # form_start / form_step_complete / form_abandonment
   global-listeners.ts    # tel: / mailto: / wa.me click handlers, scroll depth
-  meta-mirror.ts         # client → /api/meta/capi mirror for browser+server dedup
+  worker-dispatch.ts     # conversion dispatch → Soborbo event-gateway Worker (Meta CAPI)
+  utm-capture.ts         # utm_* / gclid / fbclid capture + affiliate ref
   boot.ts                # imported once per page-load to wire everything up
-  server.ts              # GA4 MP + Meta CAPI server-side senders (Cloudflare Worker)
+  server.ts              # GA4 MP server-side sender + client_id helpers
   index.ts               # public barrel — components import from `@/lib/tracking`
+
+src/lib/
+  worker-tracking.ts     # canonical client-lib for the event-gateway Worker
+                         # (Turnstile token, consent, attribution, sendToWorker)
 
 src/pages/api/
   track/abandonment.ts   # sendBeacon target → forwards to GA4 MP
-  meta/capi.ts           # client mirror ingress → forwards to Meta CAPI
   save-quote.ts          # ALSO mirrors quote_calculator_complete to GA4 MP
+  contact.ts             # fires contact_form_conversion to GA4 MP
+  clearance-callback.ts  # fires clearance_callback_conversion to GA4 MP
+
+# NOT an app route: /api/event/conversion is a Cloudflare zone route to the
+# Soborbo `event-gateway` Worker (repo Soborbo/Serverside). It owns the
+# server-side Meta CAPI leg. See docs/tracking-worker-rebuild.md.
 
 src/components/
   GTMHead.astro          # consent default + CookieYes + GTM bootstrap
@@ -136,9 +146,11 @@ and `value`/`currency`. CAPI carries the hashed PII. They share
 
 | Event | Server fires | Why |
 | --- | --- | --- |
-| `quote_calculator_complete` | GA4 MP from `save-quote.ts` | Engagement backstop. Browser dataLayer push can miss (adblock, tab close after submit). |
-| `form_abandonment` | GA4 MP from `/api/track/abandonment` (sendBeacon) | Pagehide-time browser pushes don't reliably reach GTM on mobile. |
-| `quote_calculator_conversion`, `callback_conversion`, `phone_conversion`, `email_conversion`, `whatsapp_conversion`, `quote_calculator_first_view` | Meta CAPI from `/api/meta/capi` | Browser Pixel quality is degraded by iOS/ATT and adblockers. CAPI gives the server-side signal Meta uses to model attribution. |
+| `quote_calculator_complete` | GA4 MP from `save-quote.ts` | Engagement backstop. Browser dataLayer push can miss (adblock, tab close after submit). NOTE: GA4 does NOT dedup browser + MP — when both arrive this event double-counts. The MP hit reuses the browser's `_ga` client_id (same-origin cookie) so at least it lands on the same GA4 user; treat raw counts as inflated and dedup on `event_id` in explorations/BigQuery. |
+| `contact_form_conversion` | GA4 MP from `/api/contact` | Conversion fires only after Turnstile + Resend success — server is authoritative. |
+| `clearance_callback_conversion` | GA4 MP from `/api/clearance-callback` | Same as above. |
+| `form_abandonment` | GA4 MP from `/api/track/abandonment` (sendBeacon) | Pagehide-time browser pushes don't reliably reach GTM on mobile. The client pushes the dataLayer copy ONLY when the beacon fails to queue, so GA4 gets one of the two, not both. |
+| `quote_calculator_conversion`, `callback_conversion`, `clearance_callback_conversion`, `phone_conversion`, `email_conversion`, `whatsapp_conversion`, `contact_form_submit` | Meta CAPI via the Soborbo event-gateway Worker (`/api/event/conversion`, dispatched by `worker-dispatch.ts`) | Browser Pixel quality is degraded by iOS/ATT and adblockers. CAPI gives the server-side signal Meta uses to model attribution. Shared `event_id` dedups browser+server. |
 
 We do NOT mirror Google Ads conversions server-side. The client tag
 already sees `gclid` cookies via Conversion Linker, which is what Ads
@@ -189,9 +201,12 @@ when one is missing.
 | `GTM_ID` | Plaintext | client + server | `GTM-PXTH5JJK` — used by `GTMHead.astro` to render the GTM bootstrap |
 | `GA4_MEASUREMENT_ID` | Plaintext | server-side mirror | `G-05GFQ1XQFH` — used by `sendGA4MP()` (the browser side gets it from the GTM container, not env) |
 | `GA4_API_SECRET` | **Secret** | server-side mirror | GA4 → Admin → Data Streams → Web → Measurement Protocol API secrets |
-| `META_PIXEL_ID` | Plaintext | server-side mirror | `292656820246446` — used by `sendMetaCapi()` (the browser side gets it from the GTM container, not env) |
-| `META_CAPI_ACCESS_TOKEN` | **Secret** | server-side mirror | Meta Events Manager → Pixel → Settings → Conversions API → Generate access token |
-| `META_CAPI_TEST_EVENT_CODE` | Plaintext | testing only | When set, all Meta CAPI hits land in the Test Events tab instead of production. **Remove before going live.** |
+| `PUBLIC_TURNSTILE_SITE_KEY` | Plaintext (public) | gateway dispatch | Site key for the invisible Turnstile widget; its secret pair lives on the event-gateway Worker (`TURNSTILE_SECRET_KEY`). |
+
+Meta credentials (`META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN`,
+`META_CAPI_TEST_EVENT_CODE`) are **no longer read by this app** — they
+live in the event-gateway Worker's `SITE_CONFIG` KV. If they're still set
+on this Worker they're inert and can be removed.
 
 The CookieYes website key is **NOT** an env var — it's configured inside
 the GTM container as a tag parameter on the `CookieYes CMP` tag.
@@ -321,14 +336,10 @@ To rotate the GA4 measurement ID or Pixel ID:
 - **`form_abandonment` is best-effort.** Mobile pagehide/visibilitychange
   fires inconsistently. The numbers should be treated as directional,
   not exact.
-- **Cross-domain upgrade.** This codebase serves the kalkulátor at
-  `calc.painlessremovals.com`. The main `painlessremovals.com` is a
-  separate WordPress site. A user who completes the kalkulátor and
-  then clicks a phone number on the WordPress site will NOT have
-  their upgrade tracked by the 60-min window — `localStorage` is
-  per-origin. Implementing cross-domain upgrade is out of scope for
-  this branch (would need a 1st-party server-side state store
-  keyed by something like a Cloudflare KV record).
+- **`quote_calculator_complete` double-counts in GA4.** Both the browser
+  (GTM tag) and `save-quote.ts` (MP backstop) fire it and GA4 cannot
+  dedup the pair. Accepted trade-off (losing adblocked completions is
+  worse); dedup on `event_id` when exact counts matter.
 - **CookieYes free plan: no modeled conversions** under denial.
   Conversions from users who reject ads consent are simply lost.
   Pro plan would recover most of them via Google's Consent Mode

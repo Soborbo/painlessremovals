@@ -1,52 +1,23 @@
 /**
- * Server-side tracking helpers (GA4 Measurement Protocol + Meta CAPI).
+ * Server-side tracking helpers (GA4 Measurement Protocol).
  *
  * Used from `save-quote.ts` (engagement event mirror), the abandonment
- * beacon endpoint, and the `/api/meta/capi` ingress for client-driven
- * Meta CAPI mirrors.
+ * beacon endpoint, and the contact / clearance-callback conversion
+ * backstops. Meta CAPI is NOT sent from here anymore — the Soborbo
+ * event-gateway Worker owns the server-side Meta leg (see
+ * `docs/tracking-worker-rebuild.md`); the old `sendMetaCapi` was removed
+ * at cutover (runbook §6, `docs/gateway-golive.md`).
  *
  * All sends are best-effort: failures are logged but never thrown — the
  * primary tracking signal is the browser side, server is a redundancy
  * layer.
  */
 
-import { sha256 } from '@noble/hashes/sha2.js';
-import { bytesToHex } from '@noble/hashes/utils.js';
 import { logger } from '@/lib/utils/logger';
-import {
-  normalizePhoneE164,
-  type CountryCode,
-  type UserData,
-} from './tracking';
-import { DEFAULT_COUNTRY, META_GRAPH_API_VERSION } from './config';
 
 interface ServerEnv {
   GA4_MEASUREMENT_ID?: string;
   GA4_API_SECRET?: string;
-  META_PIXEL_ID?: string;
-  META_CAPI_ACCESS_TOKEN?: string;
-  META_CAPI_TEST_EVENT_CODE?: string;
-}
-
-// ---------------------------------------------------------------------------
-// SHA-256 hashing for Meta CAPI
-// ---------------------------------------------------------------------------
-
-const enc = new TextEncoder();
-
-function hash(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  return bytesToHex(sha256(enc.encode(value.trim().toLowerCase())));
-}
-
-function hashPostal(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  return bytesToHex(sha256(enc.encode(value.replace(/\s/g, '').toUpperCase())));
-}
-
-function hashCountry(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  return bytesToHex(sha256(enc.encode(value.trim().toLowerCase().slice(0, 2))));
 }
 
 // ---------------------------------------------------------------------------
@@ -103,100 +74,25 @@ export async function sendGA4MP(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Meta Conversions API
-// ---------------------------------------------------------------------------
-
-export interface MetaCapiEvent {
-  event_name: string;
-  event_id: string;
-  event_time: number;
-  event_source_url?: string;
-  action_source?: 'website';
-  user_data?: UserData & {
-    fbp?: string;
-    fbc?: string;
-    client_user_agent?: string;
-    client_ip_address?: string;
-  };
-  custom_data?: Record<string, unknown>;
-}
-
-export async function sendMetaCapi(
-  env: ServerEnv,
-  events: MetaCapiEvent[],
-  countryCode: CountryCode = DEFAULT_COUNTRY,
-): Promise<void> {
-  const pixelId = env.META_PIXEL_ID;
-  const accessToken = env.META_CAPI_ACCESS_TOKEN;
-  if (!pixelId || !accessToken) {
-    logger.debug('MetaCAPI', 'Skipping send — pixel_id or access_token missing');
-    return;
-  }
-
-  const transformed = events.map((evt) => {
-    const ud = evt.user_data || {};
-    // Meta CAPI expects phone hashed as digits-only (no leading `+`),
-    // per the spec at developers.facebook.com/docs/marketing-api/audiences/guides/advanced-matching.
-    // Previously we fed the full E.164 string `+447700...` into SHA-256
-    // and Meta's hash of `447700...` never matched ours, collapsing
-    // browser+CAPI dedup match quality.
-    const phoneE164 = ud.phone_number ? normalizePhoneE164(ud.phone_number, countryCode) : undefined;
-    const phoneForHash = phoneE164 ? phoneE164.replace(/^\+/, '') : undefined;
-    // Hash each PII field exactly once. Earlier code called hash(...)
-    // twice per field (once in the conditional, once in the value),
-    // burning CPU and complicating diffs. Cache the result locally.
-    const em = hash(ud.email);
-    const ph = hash(phoneForHash);
-    const fn = hash(ud.first_name);
-    const ln = hash(ud.last_name);
-    const ct = hash(ud.city);
-    const zp = hashPostal(ud.postal_code);
-    const country = hashCountry(ud.country);
-    return {
-      event_name: evt.event_name,
-      event_id: evt.event_id,
-      event_time: evt.event_time,
-      event_source_url: evt.event_source_url,
-      action_source: evt.action_source || 'website',
-      user_data: {
-        em: em ? [em] : undefined,
-        ph: ph ? [ph] : undefined,
-        fn: fn ? [fn] : undefined,
-        ln: ln ? [ln] : undefined,
-        ct: ct ? [ct] : undefined,
-        zp: zp ? [zp] : undefined,
-        country: country ? [country] : undefined,
-        fbp: ud.fbp,
-        fbc: ud.fbc,
-        client_user_agent: ud.client_user_agent,
-        client_ip_address: ud.client_ip_address,
-      },
-      custom_data: evt.custom_data,
-    };
-  });
-
-  const payload: Record<string, unknown> = { data: transformed };
-  if (env.META_CAPI_TEST_EVENT_CODE) {
-    payload.test_event_code = env.META_CAPI_TEST_EVENT_CODE;
-  }
-
-  const url = `https://graph.facebook.com/${META_GRAPH_API_VERSION}/${encodeURIComponent(pixelId)}/events?access_token=${encodeURIComponent(accessToken)}`;
-
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const text = await res.text().catch(() => '');
-      logger.warn('MetaCAPI', `Non-2xx response: ${res.status}`, { body: text.slice(0, 500) });
-      return;
-    }
-  } catch (err) {
-    logger.warn('MetaCAPI', 'Send failed', { error: err instanceof Error ? err.message : String(err) });
-  }
+/**
+ * Extracts the browser's GA4 `client_id` from the `_ga` cookie on a
+ * same-origin request, so server-side MP hits attach to the SAME GA4
+ * user the browser-side gtag reports under. `_ga` format is
+ * `GA1.<domain-level>.<random>.<timestamp>` — the client_id is always
+ * the last two segments (robust against GA1.1/GA1.2/GA1.3 variants).
+ * Returns undefined when the cookie is absent (consent denied, first
+ * hit, cookieless) — callers fall back to a fingerprint-derived id.
+ */
+export function ga4ClientIdFromRequest(request: Request): string | undefined {
+  const cookieHeader = request.headers.get('Cookie');
+  if (!cookieHeader) return undefined;
+  const match = cookieHeader.match(/(?:^|;\s*)_ga=([^;]+)/);
+  if (!match) return undefined;
+  const parts = decodeURIComponent(match[1]!).split('.');
+  if (parts.length < 4) return undefined;
+  const clientId = parts.slice(-2).join('.');
+  // Sanity: both segments must be numeric-ish; reject junk cookies.
+  return /^\d+\.\d+$/.test(clientId) ? clientId : undefined;
 }
 
 /**

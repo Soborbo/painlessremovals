@@ -9,6 +9,7 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
+import { getWaitUntil } from '@/lib/crm/server';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -181,8 +182,8 @@ export const POST: APIRoute = async (context) => {
       headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(confirmationPayload),
     }).catch((err) => logger.error('Jobs', 'Confirmation email failed', { error: err instanceof Error ? err.message : String(err) }));
-    const cfContext = (context as unknown as { locals?: { runtime?: { waitUntil: (p: Promise<unknown>) => void } } }).locals?.runtime;
-    if (cfContext?.waitUntil) cfContext.waitUntil(confirmationFetch);
+    const waitUntil = getWaitUntil(context.locals);
+    if (waitUntil) waitUntil(confirmationFetch);
 
     return json({ success: true });
   } catch (err) {
