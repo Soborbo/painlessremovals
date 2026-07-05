@@ -129,7 +129,7 @@ const packingSteps = [
     icon: '<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 8h4l1.5 2L15 7h2"/>',
     title: 'Request a Survey',
     description: 'Book online or call us for a free survey — we can do it in person or via video call. We\'ll assess your home and give you an accurate packing service quote.',
-    link: '/free-home-survey',
+    link: '/free-home-survey/',
     linkText: 'Book your survey',
   },
   {
@@ -508,7 +508,7 @@ const heroPreload = {
             </ul>
 
             <a
-              href={`/instantquote?service=packing&tier=${tier.name.toLowerCase()}`}
+              href={`/instantquote/?service=packing&tier=${tier.name.toLowerCase()}`}
               class={`mt-auto block text-center py-3 px-4 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 ${tier.popular ? 'bg-secondary-500 hover:bg-secondary-600 text-white hover:shadow-lg' : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'}`}
             >
               Get Quote
@@ -536,7 +536,7 @@ const heroPreload = {
       subtitle="From your first enquiry to settling into your new home — here's exactly how our professional packing service makes it painless."
       steps={packingSteps}
       ctaText="GET YOUR FREE PACKING QUOTE →"
-      ctaLink="/instantquote?service=packing"
+      ctaLink="/instantquote/?service=packing"
       id="hiw-packing"
     />
   </div>
@@ -695,7 +695,7 @@ const heroPreload = {
     description="Let our professional packing service team handle the hard part. You focus on the exciting bit - your new home."
     bullets={['All materials included', 'Fragile item specialists', '£15k insurance protection']}
     primaryText="BOOK YOUR PACKING SERVICE"
-    primaryHref="/instantquote?service=packing"
+    primaryHref="/instantquote/?service=packing"
     bottomNote="Every item packed by our team is fully insured. If something breaks, we cover it."
   />
 

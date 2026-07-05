@@ -103,7 +103,7 @@ const itemListSchema = {
     '@type': 'ListItem',
     'position': i + 1,
     'name': lesson.data.title,
-    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}`,
+    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}/`,
   })),
 };
 
@@ -120,7 +120,7 @@ const howToSchema = {
     'position': i + 1,
     'name': lesson.data.title,
     'text': lesson.data.description,
-    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}`,
+    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}/`,
   })),
 };
 
@@ -236,7 +236,7 @@ const masterChecklist = [
     </div>
     <div class="lesson-card-grid">
       {lessons.map((lesson) => (
-        <a href={`/packing-guide/${lesson.id.replace(/\.md$/, '')}`} class="lesson-card">
+        <a href={`/packing-guide/${lesson.id.replace(/\.md$/, '')}/`} class="lesson-card">
           <div class="lesson-card-thumb">
             <img
               src={`https://i.ytimg.com/vi/${lesson.data.youtubeId}/hqdefault.jpg`}

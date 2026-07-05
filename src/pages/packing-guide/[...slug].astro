@@ -136,7 +136,7 @@ const articleSchema = {
   '@type': 'Article',
   'headline': lesson.data.title,
   'description': lesson.data.description,
-  'url': `${domain}/packing-guide/${slug}`,
+  'url': `${domain}/packing-guide/${slug}/`,
   'datePublished': datePublished,
   'dateModified': dateModified,
   'author': ref.person(),
@@ -163,7 +163,7 @@ const pageSchema = [
   ]),
 ];
 
-const canonical = `${domain}/packing-guide/${slug}`;
+const canonical = `${domain}/packing-guide/${slug}/`;
 ---
 
 <CourseLayout
@@ -180,7 +180,7 @@ const canonical = `${domain}/packing-guide/${slug}`;
         <Breadcrumbs
           items={[
             { label: 'Home', href: '/' },
-            { label: 'Packing Guide', href: '/packing-guide' },
+            { label: 'Packing Guide', href: '/packing-guide/' },
             { label: lesson.data.title },
           ]}
         />
@@ -250,7 +250,7 @@ const canonical = `${domain}/packing-guide/${slug}`;
           {relatedLessons.map((rel, i) => (
             <>
               {i > 0 && ', '}
-              <a href={`/packing-guide/${toSlug(rel.id)}`}>{rel.data.title}</a>
+              <a href={`/packing-guide/${toSlug(rel.id)}/`}>{rel.data.title}</a>
             </>
           ))}
         </div>
@@ -259,7 +259,7 @@ const canonical = `${domain}/packing-guide/${slug}`;
       <!-- Prev / Next navigation -->
       <nav class="lesson-prev-next" aria-label="Previous and next lessons">
         {prevLesson ? (
-          <a href={`/packing-guide/${toSlug(prevLesson.id)}`}>
+          <a href={`/packing-guide/${toSlug(prevLesson.id)}/`}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 12H5m0 0l7 7m-7-7l7-7" />
             </svg>
@@ -269,7 +269,7 @@ const canonical = `${domain}/packing-guide/${slug}`;
           <span></span>
         )}
         {nextLesson ? (
-          <a href={`/packing-guide/${toSlug(nextLesson.id)}`}>
+          <a href={`/packing-guide/${toSlug(nextLesson.id)}/`}>
             {nextLesson.data.title}
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M5 12h14m0 0l-7-7m7 7l-7 7" />

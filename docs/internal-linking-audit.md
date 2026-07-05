@@ -5,6 +5,19 @@ all 115 generated HTML pages (nav/footer/mobile-menu links separated from
 in-`<main>` contextual links), cross-referenced with Google Search Console
 (sc-domain:painlessremovals.com, last 90 days).
 
+> **Remediation status (2026-07-05):** All three P1 issues below are fixed on
+> this branch — packing-guide canonicals (+ matching JSON-LD URLs), every
+> non-slash internal link in `.astro`/`.md` sources (95 codemod replacements
+> plus `LessonNav`, query-string CTAs like `/instantquote?service=…`, and the
+> markdown links), and all three orphan pages now have contextual inlinks
+> (`/moving-advice/` cards for the later-life guide + cost calculator,
+> `/pricing/` → cost calculator, `/care-home-removals/` → later-life guide,
+> `/partners/` hub card + `/office-removals/` paragraph → office-space).
+> A new build gate, `scripts/check-internal-links.mjs`, now fails the build
+> on any non-slash internal link, link to a redirect source, or canonical
+> mismatch in the built HTML. P2 anchor-text/linking opportunities (§4–5)
+> remain open.
+
 ## Verdict
 
 The link architecture is fundamentally healthy: **zero broken internal links,

@@ -41,7 +41,7 @@ If you've followed this course, you now know everything you need to pack your ho
 
 ## What a Professional Packing Service Includes
 
-When you book a [packing service](/home-packing-service) with a removal company, here's what typically happens:
+When you book a [packing service](/home-packing-service/) with a removal company, here's what typically happens:
 
 1. **The team arrives the day before your move** (or the morning of, for smaller homes)
 2. **They bring all materials** — boxes, paper, bubble wrap, tape, wardrobe boxes, picture boxes. You don't need to buy anything
@@ -59,7 +59,7 @@ Packing costs vary by home size and location, but as a rough guide:
 | 3 bedroom house | Full day (2–3 packers) | Contact for quote |
 | 4+ bedroom house | Full day (3–4 packers) | Contact for quote |
 
-The cost includes all materials. There are no hidden charges for boxes or tape. [See our full pricing guide →](/how-much-does-a-home-removal-company-cost-in-bristol)
+The cost includes all materials. There are no hidden charges for boxes or tape. [See our full pricing guide →](/how-much-does-a-home-removal-company-cost-in-bristol/)
 
 ## Partial Packing
 
@@ -83,7 +83,7 @@ When you request a packing quote, we'll want to know:
 
 A home survey (in person or by video) gives us the most accurate picture. We can then quote for packing, removals, or both together.
 
-[Get a free packing quote →](/home-packing-service) &nbsp;·&nbsp; [Request a full removal quote →](/home-removals-bristol)
+[Get a free packing quote →](/home-packing-service/) &nbsp;·&nbsp; [Request a full removal quote →](/home-removals-bristol/)
 
 ## Why Customers Choose Professional Packing
 

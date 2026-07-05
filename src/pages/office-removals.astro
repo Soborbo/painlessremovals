@@ -134,9 +134,9 @@ const serviceTiers = [
 ];
 
 const extras = [
-  { title: 'Packing Services', description: 'Our team packs everything from desk contents to kitchen cupboards, using a systematic labelling process.', href: '/home-packing-service' },
-  { title: 'Secure Storage', description: 'If there\'s a gap between leaving your old space and accessing the new one, we offer secure storage at our warehouse.', href: '/storage-service' },
-  { title: 'End-of-Tenancy Cleaning', description: 'We can arrange professional cleaning for the space you\'re leaving behind.', href: '/cleaning-service' },
+  { title: 'Packing Services', description: 'Our team packs everything from desk contents to kitchen cupboards, using a systematic labelling process.', href: '/home-packing-service/' },
+  { title: 'Secure Storage', description: 'If there\'s a gap between leaving your old space and accessing the new one, we offer secure storage at our warehouse.', href: '/storage-service/' },
+  { title: 'End-of-Tenancy Cleaning', description: 'We can arrange professional cleaning for the space you\'re leaving behind.', href: '/cleaning-service/' },
 ];
 
 const faqs = [
@@ -242,7 +242,7 @@ const pageSchema = [
         name="office-removals/office-removals-team-assembling-furniture-bristol"
         pattern="FULL"
         alt="Painless Removals team assembling office furniture in Bristol with Clifton Suspension Bridge view"
-        loading="eager"
+        loading="eager"
         class="absolute inset-0 w-full h-full object-cover object-left"
       />
     </div>
@@ -295,6 +295,10 @@ const pageSchema = [
           <p>
             We've been handling office removals in Bristol for nearly 50 years — from two-person startups shifting into their first proper office to established firms relocating entire floors. Whatever the size, the principle is the same: your business interests come first, and everything else follows.
           </p>
+
+          <p>
+            Manage a building rather than a business? We also work directly with <a href="/partners/office-space/" class="text-primary-600 underline hover:text-primary-700">commercial landlords, property managers and coworking operators</a> who want a mover they can safely recommend to tenants.
+          </p>
         </div>
 
         <a href="#your-options" class="soft-cta mt-8 inline-flex">
@@ -312,7 +316,7 @@ const pageSchema = [
   <!-- ============================================
        KNOW YOUR PRICE
   ============================================ -->
-  <QuoteTeaser ctaHref="/instantquote?service=office" />
+  <QuoteTeaser ctaHref="/instantquote/?service=office" />
 
   <!-- ============================================
        SOCIAL PROOF — Richard Newman (standalone)
@@ -442,7 +446,7 @@ const pageSchema = [
             <h3 class="text-xl font-bold text-gray-900 mb-3">{tier.name}</h3>
             <p class="text-warm-gray text-[15px] leading-relaxed flex-grow">{tier.description}</p>
             <a
-              href={`/instantquote?service=office&level=${tier.label.toLowerCase()}`}
+              href={`/instantquote/?service=office&level=${tier.label.toLowerCase()}`}
               class={`mt-6 block text-center py-3 px-4 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 ${tier.popular ? 'bg-secondary-500 hover:bg-secondary-600 text-white hover:shadow-lg' : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'}`}
             >
               Get Quote
@@ -700,7 +704,7 @@ const pageSchema = [
                 <p class="text-warm-gray text-[14px] leading-relaxed mb-6 flex-grow">{size.description}</p>
 
                 <a
-                  href={`/instantquote?service=office&size=${size.title.toLowerCase().replace(' ', '-')}`}
+                  href={`/instantquote/?service=office&size=${size.title.toLowerCase().replace(' ', '-')}`}
                   class={`mt-auto block text-center py-3 px-4 font-bold uppercase text-sm no-underline rounded-sm transition-all duration-300 hover:-translate-y-1 ${size.popular ? 'bg-secondary-500 hover:bg-secondary-600 text-white hover:shadow-lg' : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-lg'}`}
                 >
                   Get Quote
@@ -880,7 +884,7 @@ const pageSchema = [
     description="Tell us about your space, your team, and your timeline. We'll build a plan around what downtime actually costs you — not around a standard removal template."
     bullets={['Weekend & evening moves', 'Phased moves for zero downtime', '£15k insurance per van']}
     primaryText="GET YOUR FREE OFFICE MOVE QUOTE"
-    primaryHref="/instantquote?service=office"
+    primaryHref="/instantquote/?service=office"
     bottomNote="Your office is how you make your living. We treat it accordingly."
   />
 
