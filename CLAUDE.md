@@ -46,6 +46,11 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    `/api/track/abandonment` forwards the abandonment beacon. Always
    background GA4 MP sends with `getWaitUntil(context.locals)` — a bare
    `void promise` can be cancelled when the Worker response flushes.
+   Every GA4 MP send MUST be session-stitched: pass `sessionId`
+   (`ga4SessionIdFromRequest`) and `pageLocation`
+   (`pageLocationFromRequest`) to `sendGA4MP` — a hit without
+   `session_id` lands as Unassigned / "(not set)" in GA4 and never
+   matches a gclid, so Ads sees 0 conversions for real leads.
 
 5. **Consent default MUST be the first script in `<head>`, before GTM.**
    `GTMHead.astro` already enforces this. Don't reorder.

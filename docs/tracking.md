@@ -144,9 +144,20 @@ and `value`/`currency`. CAPI carries the hashed PII. They share
 
 ## Server-side mirroring
 
+Every GA4 MP hit is **session-stitched**: `sendGA4MP` merges `session_id`
+(from the `_ga_<STREAM>` cookie via `ga4SessionIdFromRequest`),
+`page_location` (from the API POST's Referer via `pageLocationFromRequest`)
+and an `engagement_time_msec` floor into each event. Without these the
+hit lands in GA4 as Unassigned / source "(not set)" and can never be
+matched to a gclid — which surfaced as ad spend with 0 recorded
+conversions while the leads actually existed. When consent is denied
+there is no `_ga`/`_ga_*` cookie; those hits fall back to a
+fingerprint-derived client_id with no session and stay Unassigned —
+that minority is expected and acceptable.
+
 | Event | Server fires | Why |
 | --- | --- | --- |
-| `quote_calculator_complete` | GA4 MP from `save-quote.ts` | Engagement backstop. Browser dataLayer push can miss (adblock, tab close after submit). NOTE: GA4 does NOT dedup browser + MP — when both arrive this event double-counts. The MP hit reuses the browser's `_ga` client_id (same-origin cookie) so at least it lands on the same GA4 user; treat raw counts as inflated and dedup on `event_id` in explorations/BigQuery. |
+| `quote_calculator_complete` | GA4 MP from `save-quote.ts` | Engagement backstop. Browser dataLayer push can miss (adblock, tab close after submit). NOTE: GA4 does NOT dedup browser + MP — when both arrive this event double-counts. The MP hit reuses the browser's `_ga` client_id + `_ga_*` session_id (same-origin cookies) so it lands on the same GA4 user AND session; treat raw counts as inflated and dedup on `event_id` in explorations/BigQuery. |
 | `contact_form_conversion` | GA4 MP from `/api/contact` | Conversion fires only after Turnstile + Resend success — server is authoritative. |
 | `clearance_callback_conversion` | GA4 MP from `/api/clearance-callback` | Same as above. |
 | `form_abandonment` | GA4 MP from `/api/track/abandonment` (sendBeacon) | Pagehide-time browser pushes don't reliably reach GTM on mobile. The client pushes the dataLayer copy ONLY when the beacon fails to queue, so GA4 gets one of the two, not both. |

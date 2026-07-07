@@ -9,7 +9,13 @@ import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
-import { sendGA4MP, deriveClientId, ga4ClientIdFromRequest } from '@/lib/tracking/server';
+import {
+  sendGA4MP,
+  deriveClientId,
+  ga4ClientIdFromRequest,
+  ga4SessionIdFromRequest,
+  pageLocationFromRequest,
+} from '@/lib/tracking/server';
 import { getWaitUntil } from '@/lib/crm/server';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
@@ -168,7 +174,12 @@ export const POST: APIRoute = async (context) => {
             engagement_time_msec: 100,
           },
         }],
-        { userAgent, ipOverride: ipAddress },
+        {
+          userAgent,
+          ipOverride: ipAddress,
+          sessionId: ga4SessionIdFromRequest(request, env.GA4_MEASUREMENT_ID),
+          pageLocation: pageLocationFromRequest(request),
+        },
       ).catch(() => { /* best-effort */ });
       const waitUntil = getWaitUntil(context.locals);
       if (waitUntil) waitUntil(ga4Fire);

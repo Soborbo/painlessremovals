@@ -35,16 +35,28 @@ export interface GA4MPEvent {
  * fingerprint) so server-side hits attribute to the same user the
  * browser-side gtag is reporting under, when possible.
  *
- * Server-side hits do NOT carry browser context (no _ga cookie, no
- * gclid auto-resolution). Use this primarily for events the browser
- * may not have a chance to fire (abandonment, late conversions where
- * we know the tab closed) — not as a primary conversion path.
+ * ATTRIBUTION: an MP hit with only a `client_id` lands in GA4 as
+ * Unassigned / source "(not set)" and can never be tied back to a
+ * gclid — which shows up downstream as £spend with 0 conversions in
+ * Google Ads even when the leads exist. To stitch the hit into the
+ * browser session (and inherit its source/medium/gclid) every event
+ * needs `session_id` + `engagement_time_msec`, and `page_location`
+ * for the page dimension. Pass `sessionId`/`pageLocation` via
+ * options (see `ga4SessionIdFromRequest` / `pageLocationFromRequest`)
+ * — they are merged into every event's params unless the event
+ * already carries its own value.
  */
 export async function sendGA4MP(
   env: ServerEnv,
   clientId: string,
   events: GA4MPEvent[],
-  options: { userId?: string; ipOverride?: string; userAgent?: string } = {},
+  options: {
+    userId?: string;
+    ipOverride?: string;
+    userAgent?: string;
+    sessionId?: string;
+    pageLocation?: string;
+  } = {},
 ): Promise<void> {
   const measurementId = env.GA4_MEASUREMENT_ID;
   const apiSecret = env.GA4_API_SECRET;
@@ -53,11 +65,25 @@ export async function sendGA4MP(
     return;
   }
 
+  // Session-stitching params. Caller-provided event params always win —
+  // the spread order below only fills gaps. `engagement_time_msec` is
+  // required for the hit to register against the session at all, so it
+  // gets a floor value even when the caller didn't set one.
+  const enrichedEvents = events.map((event) => ({
+    name: event.name,
+    params: {
+      ...(options.sessionId ? { session_id: options.sessionId } : {}),
+      ...(options.pageLocation ? { page_location: options.pageLocation } : {}),
+      engagement_time_msec: 1,
+      ...event.params,
+    },
+  }));
+
   const url = `https://www.google-analytics.com/mp/collect?measurement_id=${encodeURIComponent(measurementId)}&api_secret=${encodeURIComponent(apiSecret)}`;
   const body = {
     client_id: clientId,
     ...(options.userId ? { user_id: options.userId } : {}),
-    events,
+    events: enrichedEvents,
   };
 
   try {
@@ -93,6 +119,56 @@ export function ga4ClientIdFromRequest(request: Request): string | undefined {
   const clientId = parts.slice(-2).join('.');
   // Sanity: both segments must be numeric-ish; reject junk cookies.
   return /^\d+\.\d+$/.test(clientId) ? clientId : undefined;
+}
+
+/**
+ * Extracts the browser's GA4 `session_id` from the `_ga_<STREAM>` cookie
+ * (`<STREAM>` = the measurement ID minus its `G-` prefix). Without this
+ * on the MP hit, GA4 mints a phantom session with no source/medium —
+ * the event lands as Unassigned / "(not set)" and Google Ads can't
+ * match it to a gclid. Handles both cookie generations:
+ *
+ *   GS1.1.1712345678.5.1.1712345699.60.0.0            → 1712345678
+ *   GS2.1.s1712345678$o5$g1$t1712345699$j60$l0$h0     → 1712345678
+ *
+ * Returns undefined when the cookie is absent (consent denied, first
+ * hit, cookieless) — callers just omit session_id and accept the
+ * Unassigned fallback for that minority of hits.
+ */
+export function ga4SessionIdFromRequest(
+  request: Request,
+  measurementId?: string,
+): string | undefined {
+  const cookieHeader = request.headers.get('Cookie');
+  if (!cookieHeader) return undefined;
+  const stream = measurementId?.replace(/^G-/, '');
+  // With a known measurement ID, match its exact stream cookie; without
+  // one, accept any _ga_* cookie (single-stream site).
+  const pattern = stream
+    ? new RegExp(`(?:^|;\\s*)_ga_${stream.replace(/[^A-Z0-9]/gi, '')}=([^;]+)`)
+    : /(?:^|;\s*)_ga_[A-Z0-9]+=([^;]+)/;
+  const match = cookieHeader.match(pattern);
+  if (!match) return undefined;
+  const value = decodeURIComponent(match[1]!);
+  // GS2+: session id is the `s<digits>` field.
+  const gs2 = value.match(/^GS\d+\.\d+\.s(\d+)/);
+  if (gs2) return gs2[1];
+  // GS1: dot-separated, session id is the third segment.
+  const parts = value.split('.');
+  if (parts.length >= 3 && /^\d+$/.test(parts[2]!)) return parts[2];
+  return undefined;
+}
+
+/**
+ * Best-effort `page_location` for a server-side MP hit: the Referer of
+ * the same-origin API POST is the page the user was on when the request
+ * fired (default referrer policy sends the full URL same-origin).
+ * Returns undefined for missing/non-http values.
+ */
+export function pageLocationFromRequest(request: Request): string | undefined {
+  const referer = request.headers.get('Referer');
+  if (!referer || !/^https?:\/\//.test(referer)) return undefined;
+  return referer.slice(0, 500);
 }
 
 /**

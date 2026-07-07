@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { sendGA4MP, deriveClientId, ga4ClientIdFromRequest } from './server';
+import {
+  sendGA4MP,
+  deriveClientId,
+  ga4ClientIdFromRequest,
+  ga4SessionIdFromRequest,
+  pageLocationFromRequest,
+} from './server';
 
 /**
  * Regression net for the server-side egress (GA4 Measurement Protocol).
@@ -57,7 +63,41 @@ describe('sendGA4MP', () => {
     await sendGA4MP(FULL_ENV, 'cid.123', [{ name: 'phone_conversion', params: { value: 5 } }]);
     const body = lastBody();
     expect(body.client_id).toBe('cid.123');
-    expect(body.events).toEqual([{ name: 'phone_conversion', params: { value: 5 } }]);
+    expect(body.events).toEqual([
+      { name: 'phone_conversion', params: { value: 5, engagement_time_msec: 1 } },
+    ]);
+  });
+
+  it('stitches session_id and page_location into every event', async () => {
+    await sendGA4MP(
+      FULL_ENV,
+      'cid.1',
+      [{ name: 'quote_calculator_complete', params: { value: 500 } }],
+      { sessionId: '1712345678', pageLocation: 'https://painlessremovals.com/instantquote/your-quote/' },
+    );
+    const params = lastBody().events[0].params;
+    expect(params.session_id).toBe('1712345678');
+    expect(params.page_location).toBe('https://painlessremovals.com/instantquote/your-quote/');
+    expect(params.engagement_time_msec).toBe(1);
+  });
+
+  it('caller-provided event params win over option-derived ones', async () => {
+    await sendGA4MP(
+      FULL_ENV,
+      'cid.1',
+      [{ name: 'x', params: { session_id: 'explicit', engagement_time_msec: 100 } }],
+      { sessionId: 'from-options' },
+    );
+    const params = lastBody().events[0].params;
+    expect(params.session_id).toBe('explicit');
+    expect(params.engagement_time_msec).toBe(100);
+  });
+
+  it('omits session_id / page_location when not provided', async () => {
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }]);
+    const params = lastBody().events[0].params;
+    expect('session_id' in params).toBe(false);
+    expect('page_location' in params).toBe(false);
   });
 
   it('includes user_id only when provided', async () => {
@@ -134,5 +174,65 @@ describe('ga4ClientIdFromRequest', () => {
   it('returns undefined for a malformed _ga cookie', () => {
     expect(ga4ClientIdFromRequest(req('_ga=garbage'))).toBeUndefined();
     expect(ga4ClientIdFromRequest(req('_ga=GA1.1.abc.def'))).toBeUndefined();
+  });
+});
+
+describe('ga4SessionIdFromRequest', () => {
+  const req = (cookie?: string) =>
+    new Request('https://painlessremovals.com/api/x', {
+      headers: cookie ? { Cookie: cookie } : {},
+    });
+
+  it('extracts session_id from a GS1 cookie (third segment)', () => {
+    expect(
+      ga4SessionIdFromRequest(req('_ga_05GFQ1XQFH=GS1.1.1712345678.5.1.1712345699.60.0.0'), 'G-05GFQ1XQFH'),
+    ).toBe('1712345678');
+  });
+
+  it('extracts session_id from a GS2 cookie ($-delimited s-field)', () => {
+    expect(
+      ga4SessionIdFromRequest(req('_ga_05GFQ1XQFH=GS2.1.s1712345678$o5$g1$t1712345699$j60$l0$h0'), 'G-05GFQ1XQFH'),
+    ).toBe('1712345678');
+  });
+
+  it('matches the stream cookie for the given measurement id, not others', () => {
+    const cookie = '_ga_OTHER=GS2.1.s9999999999$o1; _ga_05GFQ1XQFH=GS2.1.s1712345678$o5';
+    expect(ga4SessionIdFromRequest(req(cookie), 'G-05GFQ1XQFH')).toBe('1712345678');
+  });
+
+  it('falls back to any _ga_* cookie when no measurement id is given', () => {
+    expect(
+      ga4SessionIdFromRequest(req('foo=bar; _ga_ABC123=GS2.1.s1700000000$o2')),
+    ).toBe('1700000000');
+  });
+
+  it('ignores the plain _ga client cookie', () => {
+    expect(ga4SessionIdFromRequest(req('_ga=GA1.1.123.456'), 'G-05GFQ1XQFH')).toBeUndefined();
+  });
+
+  it('returns undefined when there is no Cookie header', () => {
+    expect(ga4SessionIdFromRequest(req(), 'G-05GFQ1XQFH')).toBeUndefined();
+  });
+
+  it('returns undefined for a malformed stream cookie', () => {
+    expect(ga4SessionIdFromRequest(req('_ga_05GFQ1XQFH=garbage'), 'G-05GFQ1XQFH')).toBeUndefined();
+  });
+});
+
+describe('pageLocationFromRequest', () => {
+  it('returns the same-origin Referer as page_location', () => {
+    const request = new Request('https://painlessremovals.com/api/save-quote', {
+      headers: { Referer: 'https://painlessremovals.com/instantquote/your-quote/' },
+    });
+    expect(pageLocationFromRequest(request)).toBe('https://painlessremovals.com/instantquote/your-quote/');
+  });
+
+  it('returns undefined when Referer is missing or non-http', () => {
+    expect(pageLocationFromRequest(new Request('https://painlessremovals.com/api/x'))).toBeUndefined();
+    expect(
+      pageLocationFromRequest(
+        new Request('https://painlessremovals.com/api/x', { headers: { Referer: 'android-app://foo' } }),
+      ),
+    ).toBeUndefined();
   });
 });
