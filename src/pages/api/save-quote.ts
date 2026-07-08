@@ -32,7 +32,13 @@ import { createErrorResponse, formatError, generateErrorId } from '@/lib/utils/e
 import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 import { logger } from '@/lib/utils/logger';
-import { deriveClientId, ga4ClientIdFromRequest, sendGA4MP } from '@/lib/tracking/server';
+import {
+  deriveClientId,
+  ga4ClientIdFromRequest,
+  ga4SessionIdFromRequest,
+  pageLocationFromRequest,
+  sendGA4MP,
+} from '@/lib/tracking/server';
 import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
@@ -400,13 +406,26 @@ export const POST: APIRoute = async (context) => {
     // browser-side dataLayer push instead of minting a phantom user per
     // fingerprint. Fingerprint-derived id remains the consent-denied /
     // cookieless fallback.
+    //
+    // session_id + page_location stitch the hit into the live browser
+    // session so it inherits the session's source/medium/gclid instead
+    // of landing as Unassigned / "(not set)" — without them Google Ads
+    // never sees these completions as conversions.
     const ga4ClientId = ga4ClientIdFromRequest(context.request) ?? deriveClientId(fingerprint);
-    const ga4Mirror = sendGA4MP(env, ga4ClientId, [
+    const ga4Mirror = sendGA4MP(
+      env,
+      ga4ClientId,
+      [
+        {
+          name: 'quote_calculator_complete',
+          params: mirrorParams,
+        },
+      ],
       {
-        name: 'quote_calculator_complete',
-        params: mirrorParams,
+        sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
+        pageLocation: pageLocationFromRequest(context.request),
       },
-    ]);
+    );
     if (waitUntil) {
       waitUntil(ga4Mirror);
     } else {

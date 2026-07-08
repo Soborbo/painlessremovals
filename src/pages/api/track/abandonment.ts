@@ -19,7 +19,13 @@ import { env } from 'cloudflare:workers';
 import { CONFIG } from '@/lib/config';
 import { logger } from '@/lib/utils/logger';
 import { checkRateLimit } from '@/lib/features/security/rate-limit';
-import { deriveClientId, sendGA4MP } from '@/lib/tracking/server';
+import {
+  deriveClientId,
+  ga4ClientIdFromRequest,
+  ga4SessionIdFromRequest,
+  pageLocationFromRequest,
+  sendGA4MP,
+} from '@/lib/tracking/server';
 import { isAllowedOrigin } from '@/lib/forms/utils';
 
 export const prerender = false;
@@ -125,15 +131,32 @@ export const POST: APIRoute = async (context) => {
     const raw = (await request.json()) as unknown;
     const payload = sanitize(raw);
 
+    // sendBeacon POSTs same-origin carry cookies, so prefer the browser's
+    // real GA4 client_id + session_id — that stitches the abandonment
+    // into the user's live session (source/medium intact) instead of
+    // minting an Unassigned phantom user from IP+UA. The IP+UA-derived
+    // id stays as the consent-denied / cookieless fallback.
     const ua = request.headers.get('User-Agent') || '';
-    const clientId = deriveClientId(`${ip}${ua}`.replace(/[^a-f0-9]/gi, '').padEnd(32, '0'));
+    const clientId = ga4ClientIdFromRequest(request)
+      ?? deriveClientId(`${ip}${ua}`.replace(/[^a-f0-9]/gi, '').padEnd(32, '0'));
+    const exitUrl = typeof payload.exit_page_url === 'string' && /^https?:\/\//.test(payload.exit_page_url)
+      ? payload.exit_page_url
+      : undefined;
 
-    await sendGA4MP(env, clientId, [
+    await sendGA4MP(
+      env,
+      clientId,
+      [
+        {
+          name: 'form_abandonment',
+          params: payload as Record<string, unknown>,
+        },
+      ],
       {
-        name: 'form_abandonment',
-        params: payload as Record<string, unknown>,
+        sessionId: ga4SessionIdFromRequest(request, env.GA4_MEASUREMENT_ID),
+        pageLocation: exitUrl ?? pageLocationFromRequest(request),
       },
-    ]);
+    );
   } catch (err) {
     logger.warn('Abandonment', 'Failed to process beacon', {
       error: err instanceof Error ? err.message : String(err),
