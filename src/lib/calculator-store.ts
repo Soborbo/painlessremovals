@@ -22,6 +22,7 @@ import { CALCULATOR_CONFIG } from './calculator-config';
 import { trackError } from '@/lib/errors/tracker';
 import { generateUUID } from '@/lib/tracking/uuid';
 import { markActiveFormsAsHandedOff } from '@/lib/tracking/form-tracking';
+import { readAttribution } from '@/lib/tracking/utm-capture';
 import type {
   PropertySize,
   OfficeSize,
@@ -178,6 +179,25 @@ export interface CalculatorState {
   landingPage: string | null;
   sessionId: string | null;
   quoteId: string | null;
+  /**
+   * The completion's tracking event_id — generated once per completed
+   * quote and persisted here (sessionStorage-backed) so a results-page
+   * refresh / duplicated tab reuses the SAME id. This is what makes
+   * `fireQuoteConversion`'s fired-guard actually block refresh
+   * double-fires: the guard compares event_ids, so it only works if a
+   * re-mount doesn't mint a fresh one.
+   */
+  completionEventId: string | null;
+  /**
+   * A fingerprint of the quote `completionEventId` was minted for
+   * (`generateFingerprint({ data, totalPrice })` — same shape save-quote
+   * hashes server-side). Without this, going back after completion,
+   * changing a quote-affecting input, and returning would reuse the
+   * STALE event_id — `fireQuoteConversion`'s fired-guard would then
+   * silently suppress the new, different quote's conversion. A
+   * signature mismatch mints a fresh event_id instead of reusing one.
+   */
+  completionQuoteSignature: string | null;
 }
 
 // ===================
@@ -239,6 +259,8 @@ export const initialState: CalculatorState = {
   landingPage: null,
   sessionId: null,
   quoteId: null,
+  completionEventId: null,
+  completionQuoteSignature: null,
 };
 
 // ===================
@@ -341,6 +363,8 @@ export const LocalStorageStateSchema = z.object({
   landingPage: z.string().max(500).nullable(),
   sessionId: z.string().nullable(),
   quoteId: z.string().max(64).nullable().optional(),
+  completionEventId: z.string().max(64).nullable().optional(),
+  completionQuoteSignature: z.string().max(128).nullable().optional(),
 }).passthrough(); // Allow additional properties for forwards compatibility
 
 // ===================
@@ -745,15 +769,22 @@ export function initializeStore() {
       }
     } catch { /* ignore corrupt data */ }
 
-    // Capture URL params (only on first visit, don't overwrite restored values)
+    // Capture attribution (only on first visit, don't overwrite restored
+    // values). The calculator's own URL almost never carries gclid/UTMs —
+    // ads land on marketing pages (/home-packing-service/ etc.) and the
+    // user clicks through to /instantquote/ with a clean URL. utm-capture
+    // (running in the tracking boot on every page) stashed the landing
+    // page's params in sessionStorage; fall back to that store so paid
+    // traffic keeps its gclid all the way into save-quote → CRM.
     const state = calculatorStore.get();
     if (!state.sessionId) {
       const params = new URLSearchParams(window.location.search);
-      calculatorStore.setKey('gclid', params.get('gclid'));
-      calculatorStore.setKey('utmSource', params.get('utm_source'));
-      calculatorStore.setKey('utmMedium', params.get('utm_medium'));
-      calculatorStore.setKey('utmCampaign', params.get('utm_campaign'));
-      calculatorStore.setKey('landingPage', window.location.pathname);
+      const stored = readAttribution();
+      calculatorStore.setKey('gclid', params.get('gclid') || stored.gclid || null);
+      calculatorStore.setKey('utmSource', params.get('utm_source') || stored.utm_source || null);
+      calculatorStore.setKey('utmMedium', params.get('utm_medium') || stored.utm_medium || null);
+      calculatorStore.setKey('utmCampaign', params.get('utm_campaign') || stored.utm_campaign || null);
+      calculatorStore.setKey('landingPage', stored._landing || window.location.pathname);
       // generateUUID falls back to getRandomValues / Math.random when
       // crypto.randomUUID is missing — iOS Safari only got it in 15.4.
       calculatorStore.setKey('sessionId', generateUUID());

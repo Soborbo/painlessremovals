@@ -1,30 +1,32 @@
 /**
  * Public surface for the tracking system. Components and pages should
  * import from `@/lib/tracking` rather than reaching into individual
- * modules — that keeps the upgrade-state contract centralized.
+ * modules — that keeps the conversion contract centralized.
  */
 
 export {
   trackEvent,
+  trackEventBeforeNavigate,
   setUserDataOnDOM,
   clearUserDataOnDOM,
   readUserDataFromDOM,
   restoreUserDataFromStorage,
+  adStorageConsent,
   normalizePhoneE164,
   normalizeUserData,
   type UserData,
   type CountryCode,
   type TrackingParams,
+  type ConsentDecision,
 } from './tracking';
 
 export {
-  resetQuoteState,
-  getActiveQuoteState,
-  markQuoteUpgraded,
+  fireQuoteConversion,
+  wasQuoteCompletedRecently,
+  getRecentQuoteDetails,
+  cleanupLegacyQuoteState,
   markViewContentFired,
   hasViewContentFired,
-  resumeQuoteTimer,
-  type QuoteState,
 } from './conversion-state';
 
 export {

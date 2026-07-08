@@ -19,13 +19,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 import { trackError } from '@/lib/errors/tracker';
 import {
-  trackEvent,
+  trackEventBeforeNavigate,
   setUserDataOnDOM,
   normalizeUserData,
   dispatchWorkerConversion,
   generateUUID,
-  getActiveQuoteState,
-  markQuoteUpgraded,
   trackFormStart,
   trackFormStep,
   trackFormSubmitted,
@@ -271,40 +269,37 @@ export function SimpleCallbackForm() {
       });
       setUserDataOnDOM(userData);
 
-      // If there's an active quote in the upgrade window, this callback
-      // becomes the upgrade and consumes that quote's event_id so Google
-      // Ads / Meta dedup against the same conversion.
-      const active = getActiveQuoteState();
-      const eventId = active ? active.eventId : generateUUID();
-      const value = active ? active.value : 0;
-      const service = active ? active.service : 'callback_only';
-
-      if (active) markQuoteUpgraded();
+      // Standalone callback — the user skipped the calculator, so there's
+      // no quote value to attach (and value:0 must never be pushed).
+      const eventId = generateUUID();
+      const service = 'callback_only';
 
       // NOTE: the callback lead is mirrored to the Painless-CRM SERVER-SIDE
       // from /api/callbacks (the single chokepoint all calculator callback
       // forms hit), so it isn't pushed from here.
 
-      trackEvent('callback_conversion', {
-        event_id: eventId,
-        // Only push a monetary value when there's a real quote behind it —
-        // pushing value:0 while the CAPI leg strips value:0 desyncs the
-        // browser + server event and feeds £0 into Google Ads.
-        ...(active ? { value, currency: 'GBP' } : {}),
+      // Server-side leg first: the Soborbo Worker (Meta CAPI), same
+      // event_id for dedup. The beacon only queues after the Turnstile
+      // token mint, so navigation below waits for this promise too.
+      const capiQueued = dispatchWorkerConversion('callback_conversion', eventId, {
         service,
-        source: active ? 'after_calculator' : 'standalone',
-      });
-
-      // Server-side leg: the Soborbo Worker (Meta CAPI), same event_id for
-      // dedup; sendBeacon survives the redirect below.
-      dispatchWorkerConversion('callback_conversion', eventId, {
-        ...(active ? { value, currency: 'GBP' } : {}),
-        service,
-        source: active ? 'after_calculator' : 'standalone',
+        source: 'standalone',
         userData,
       });
 
-      window.location.href = '/instantquote/thank-you-callback/';
+      // dataLayer push + navigation via GTM's eventCallback (plus a safety
+      // timeout) — navigating synchronously after the push used to cancel
+      // the Ads/GA4/Meta pixel requests mid-flight.
+      trackEventBeforeNavigate(
+        'callback_conversion',
+        {
+          event_id: eventId,
+          service,
+          source: 'standalone',
+        },
+        '/instantquote/thank-you-callback/',
+        { alsoWaitFor: capiQueued },
+      );
     } catch {
       setError('Something went wrong. Please try again or call us directly on 0117 28 700 82.');
       setLoading(false);

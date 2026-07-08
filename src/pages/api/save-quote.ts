@@ -378,10 +378,11 @@ export const POST: APIRoute = async (context) => {
     }
 
     // Server-side mirror of `quote_calculator_complete` to GA4 MP. This
-    // is the engagement event (not the conversion — that fires later on
-    // upgrade or 60-min timeout, client-side). Server-side gives us a
-    // backstop for sessions where the browser dataLayer push gets
-    // dropped (adblock, navigation race). Fire-and-forget via waitUntil.
+    // is the engagement event (the conversion, `quote_calculator_conversion`,
+    // fires client-side immediately at completion with this same
+    // event_id). Server-side gives us a backstop for sessions where the
+    // browser dataLayer push gets dropped (adblock, navigation race).
+    // Fire-and-forget via waitUntil.
     //
     // `event_id` and `service` come from the validated payload so the
     // server hit carries the same identifiers as the matching browser

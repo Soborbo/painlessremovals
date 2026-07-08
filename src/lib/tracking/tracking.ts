@@ -19,41 +19,53 @@ import {
 import { generateUUID } from './uuid';
 
 /**
- * Reads Google Consent Mode v2 state. Returns `true` only when
- * `ad_storage` is granted; we use this gate before persisting PII to
- * localStorage. A user who hasn't granted ads consent gets the in-memory
- * DOM side-channel (which dies with the page) but no at-rest copy.
+ * Ad-storage consent as a three-state decision. The distinction between
+ * `denied` and `unknown` matters: at boot time GTM hasn't loaded yet, so
+ * the only visible signal is the GTMHead consent DEFAULT (denied) — that
+ * is NOT a user decision. Treating it as one used to purge the persisted
+ * PII side-channel on every page-load, even for fully-consented users
+ * (CookieYes pushes its `update: granted` long after boot).
  *
- * Source of truth is `window.google_tag_data.ics`, populated by GTM's
- * Consent Mode shim. Falls back to checking the dataLayer for an
- * explicit `consent.update` push, then defaults to `denied`.
+ * Decision sources, in order:
+ *   1. `google_tag_data.ics` with an explicit UPDATE entry — the CMP has
+ *      spoken (granted/denied).
+ *   2. The `cookieyes-consent` cookie — survives across page-loads, so
+ *      it's readable at boot before GTM/CookieYes initialise
+ *      (`advertisement:yes|no`).
+ *   3. Neither → `unknown` (first visit, banner not yet answered, or
+ *      too early in the page lifecycle to tell).
  */
-function adStorageGranted(): boolean {
-  if (typeof window === 'undefined') return false;
+export type ConsentDecision = 'granted' | 'denied' | 'unknown';
+
+export function adStorageConsent(): ConsentDecision {
+  if (typeof window === 'undefined') return 'unknown';
   try {
     const ics = (window as unknown as { google_tag_data?: { ics?: { entries?: Record<string, { default?: boolean; update?: boolean }> } } }).google_tag_data?.ics;
     const entry = ics?.entries?.ad_storage;
-    if (entry) {
-      // ICS reports booleans on default/update; update wins when set.
-      const v = entry.update ?? entry.default;
-      return v === true;
+    // Only an explicit UPDATE is a user decision — the default entry is
+    // just the pre-CMP baseline (always denied on this site).
+    if (entry && entry.update !== undefined) {
+      return entry.update === true ? 'granted' : 'denied';
     }
   } catch {
     // ignore
   }
-  // Fallback: walk dataLayer for the most recent `consent` push.
   try {
-    const dl = window.dataLayer || [];
-    for (let i = dl.length - 1; i >= 0; i--) {
-      const item = dl[i] as { 0?: string; 1?: string; 2?: { ad_storage?: string } } | undefined;
-      if (item && item[0] === 'consent' && (item[1] === 'update' || item[1] === 'default')) {
-        return item[2]?.ad_storage === 'granted';
-      }
+    const match = document.cookie.match(/(?:^|;\s*)cookieyes-consent=([^;]+)/);
+    if (match) {
+      const raw = decodeURIComponent(match[1]!);
+      if (/(?:^|,)advertisement:yes(?:,|$)/.test(raw)) return 'granted';
+      if (/(?:^|,)advertisement:no(?:,|$)/.test(raw)) return 'denied';
     }
   } catch {
     // ignore
   }
-  return false;
+  return 'unknown';
+}
+
+/** Back-compat boolean gate: persist PII at rest only on an explicit grant. */
+function adStorageGranted(): boolean {
+  return adStorageConsent() === 'granted';
 }
 
 export { adStorageGranted };
@@ -90,7 +102,16 @@ const PII_KEYS = new Set([
  */
 export function trackEvent(name: string, params: TrackingParams = {}): string {
   if (typeof window === 'undefined') return '';
+  const { event_id, payload } = buildSafePush(name, params);
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(payload);
+  return event_id;
+}
 
+function buildSafePush(
+  name: string,
+  params: TrackingParams,
+): { event_id: string; payload: Record<string, unknown> } {
   const { event_id: providedId, ...rest } = params;
   const safe: Record<string, unknown> = {};
   const stripped: string[] = [];
@@ -107,14 +128,73 @@ export function trackEvent(name: string, params: TrackingParams = {}): string {
       `[tracking] PII keys stripped from trackEvent('${name}'): ${stripped.join(', ')}. Use setUserDataOnDOM() instead.`,
     );
   }
-
   const event_id = (providedId as string | undefined) || generateUUID();
+  return { event_id, payload: { event: name, event_id, ...safe } };
+}
+
+/**
+ * Pushes a conversion event and navigates AFTER GTM's tags have had a
+ * chance to fire. A bare `trackEvent(...)` followed by a synchronous
+ * `window.location.href = ...` cancels the Google Ads / GA4 / Meta
+ * pixel requests mid-flight — the exact race that made "Callback
+ * requested" report ~0 conversions in Ads while real callbacks arrived.
+ *
+ * Uses GTM's `eventCallback` (invoked when all tags for the event have
+ * fired) plus a safety timeout so navigation still happens when GTM is
+ * blocked by an extension or never calls back.
+ *
+ * `alsoWaitFor`: pass the Promise returned by `dispatchWorkerConversion`
+ * when the same handler also fires a server-side CAPI leg — the beacon
+ * only queues after the Turnstile token mint, and a navigation kills a
+ * pending mint. Navigation then waits for BOTH the GTM callback and the
+ * dispatch (the safety timeout still overrides everything).
+ */
+export function trackEventBeforeNavigate(
+  name: string,
+  params: TrackingParams,
+  destination: string,
+  opts: {
+    timeoutMs?: number;
+    alsoWaitFor?: Promise<unknown>;
+    /** Test seam — defaults to a real location change. */
+    navigate?: (url: string) => void;
+  } = {},
+): string {
+  if (typeof window === 'undefined') return '';
+  const { timeoutMs = 2500, alsoWaitFor } = opts;
+  const navigate = opts.navigate || ((url: string) => { window.location.href = url; });
+  const { event_id, payload } = buildSafePush(name, params);
+
+  let navigated = false;
+  let gtmDone = false;
+  let dispatchDone = !alsoWaitFor;
+  const go = () => {
+    if (navigated) return;
+    navigated = true;
+    navigate(destination);
+  };
+  const tryGo = () => {
+    if (gtmDone && dispatchDone) go();
+  };
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
-    event: name,
-    event_id,
-    ...safe,
+    ...payload,
+    eventCallback: () => {
+      gtmDone = true;
+      tryGo();
+    },
+    eventTimeout: timeoutMs - 500 > 0 ? timeoutMs - 500 : timeoutMs,
   });
+  if (alsoWaitFor) {
+    const settle = () => {
+      dispatchDone = true;
+      tryGo();
+    };
+    alsoWaitFor.then(settle, settle);
+  }
+  // Safety net: navigate even if GTM never calls back / the dispatch hangs.
+  setTimeout(go, timeoutMs);
   return event_id;
 }
 
@@ -177,14 +257,16 @@ export function setUserDataOnDOM(data: UserData): void {
   if (typeof document === 'undefined') return;
   writeUserDataToDOMElement(data);
 
-  // At-rest persistence is gated on ad_storage consent. Without it,
-  // PII still lives on the DOM for as long as the page is open (so
-  // the immediate Meta CAPI mirror works), but we do NOT write it to
-  // localStorage where it would survive into future sessions. If
-  // there's a previously-stored blob (consent was granted earlier and
-  // is now revoked), purge it so revocation is honored at-rest.
-  if (!adStorageGranted()) {
-    if (typeof localStorage !== 'undefined') {
+  // At-rest persistence is gated on ad_storage consent. Without an
+  // explicit grant, PII still lives on the DOM for as long as the page
+  // is open (so the immediate Meta CAPI mirror works), but we do NOT
+  // write it to localStorage where it would survive into future
+  // sessions. Purge the at-rest copy only on an explicit DENIAL —
+  // `unknown` (consent state not yet readable) must not destroy data a
+  // consented user persisted on an earlier page.
+  const consent = adStorageConsent();
+  if (consent !== 'granted') {
+    if (consent === 'denied' && typeof localStorage !== 'undefined') {
       try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
     }
     return;
@@ -228,17 +310,23 @@ function readUserDataFromStorage(): UserData {
 }
 
 /**
- * Called from `boot.ts` on every page-load so the hidden DOM element
- * is repopulated before `resumeQuoteTimer()` runs (which may
- * immediately fire a late conversion + CAPI mirror).
+ * Called from `boot.ts` on every page-load (and again on the CookieYes
+ * consent-update event) so the hidden DOM element is repopulated for
+ * tags/dispatches that read user data later in the page's life — e.g. a
+ * phone-click CAPI mirror on a page the user navigated to after
+ * completing the calculator.
  *
- * Re-checks `adStorageGranted` so a user who revoked consent doesn't
- * keep getting their previously-stored PII pushed back into the DOM.
+ * Three-state consent handling: hydrate on an explicit grant, purge the
+ * at-rest copy on an explicit denial, and do NOTHING when consent isn't
+ * readable yet — at boot time GTM/CookieYes haven't initialised, and
+ * treating that as a denial used to delete the persisted blob on every
+ * page-load, breaking the feature for everyone.
  */
 export function restoreUserDataFromStorage(): void {
   if (typeof document === 'undefined') return;
-  if (!adStorageGranted()) {
-    if (typeof localStorage !== 'undefined') {
+  const consent = adStorageConsent();
+  if (consent !== 'granted') {
+    if (consent === 'denied' && typeof localStorage !== 'undefined') {
       try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
     }
     return;
