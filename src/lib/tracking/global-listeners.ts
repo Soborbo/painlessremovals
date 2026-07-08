@@ -3,7 +3,11 @@
  *
  * - phone/email/whatsapp link clicks → their own conversion events
  *   (`source: after_calculator` is a reporting label only — the quote
- *   conversion fires separately, at completion)
+ *   conversion fires separately, at completion). If a quote was just
+ *   completed, the click also carries that quote's value/currency/
+ *   service as its monetary signal — mirrors what the in-page
+ *   callback/book-now handlers attach from their local React state,
+ *   which this global DOM listener doesn't have access to.
  * - scroll depth (50%, 90%) → engagement events
  *
  * No cleanup logic: the calculator runs on hard page-loads (Astro MPA,
@@ -12,7 +16,7 @@
  * weight.
  */
 
-import { wasQuoteCompletedRecently } from './conversion-state';
+import { getRecentQuoteDetails } from './conversion-state';
 import { readUserDataFromDOM, trackEvent } from './tracking';
 import { dispatchWorkerConversion } from './worker-dispatch';
 import { generateUUID } from './uuid';
@@ -71,15 +75,18 @@ function onDocumentClick(e: Event): void {
   }
 
   const eventId = generateUUID();
-  // Reporting label only: was the calculator completed recently in this
-  // browser? No value/event_id is inherited — the quote conversion
-  // already fired at completion and this click is its own conversion.
-  const source = wasQuoteCompletedRecently() ? 'after_calculator' : 'standalone';
+  // event_id is fresh — the quote conversion already fired at completion
+  // and this click is its own conversion. Its value/currency/service ride
+  // along ONLY when a quote was just completed (recent-quote cache);
+  // `source` is a reporting label, it gates no firing decisions.
+  const recentQuote = getRecentQuoteDetails();
+  const source = recentQuote ? 'after_calculator' : 'standalone';
 
   // dataLayer push (browser GA4 / Meta Pixel / Google Ads via GTM).
   trackEvent(eventName, {
     event_id: eventId,
     source,
+    ...(recentQuote ? { value: recentQuote.value, currency: recentQuote.currency, service: recentQuote.service } : {}),
     ...extras,
   });
 
@@ -88,6 +95,7 @@ function onDocumentClick(e: Event): void {
   // from the DOM side-channel; the Worker hashes it.
   dispatchWorkerConversion(eventName, eventId, {
     source,
+    ...(recentQuote ? { value: recentQuote.value, currency: recentQuote.currency, service: recentQuote.service } : {}),
     userData: readUserDataFromDOM(),
   });
 }

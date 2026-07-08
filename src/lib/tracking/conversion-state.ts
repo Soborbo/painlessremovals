@@ -97,12 +97,42 @@ export function fireQuoteConversion(input: {
   });
 
   // Reporting breadcrumb for subsequent phone/email/whatsapp/callback
-  // clicks (`source: after_calculator`). Label only — no dedup logic
-  // hangs off this.
+  // clicks (`source: after_calculator`, plus the completed quote's value
+  // so a global click handler — which has no React state — can still
+  // attach a monetary signal). Label/cache only — no dedup logic hangs
+  // off this.
   try {
-    localStorage.setItem(QUOTE_COMPLETED_AT_KEY, String(Date.now()));
+    const record: RecentQuoteRecord = { ts: Date.now(), value: input.value, currency, service: input.service };
+    localStorage.setItem(QUOTE_COMPLETED_AT_KEY, JSON.stringify(record));
   } catch {
     // ignore
+  }
+}
+
+interface RecentQuoteRecord {
+  ts: number;
+  value: number;
+  currency: string;
+  service: string;
+}
+
+function readRecentQuoteRecord(): RecentQuoteRecord | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(QUOTE_COMPLETED_AT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as Partial<RecentQuoteRecord>;
+    if (
+      typeof parsed.ts !== 'number' || !Number.isFinite(parsed.ts) ||
+      typeof parsed.value !== 'number' || !Number.isFinite(parsed.value) ||
+      typeof parsed.currency !== 'string' || typeof parsed.service !== 'string'
+    ) {
+      return null;
+    }
+    if (Date.now() - parsed.ts > QUOTE_SOURCE_LABEL_WINDOW_MS) return null;
+    return parsed as RecentQuoteRecord;
+  } catch {
+    return null;
   }
 }
 
@@ -112,15 +142,20 @@ export function fireQuoteConversion(input: {
  * `standalone`) for reporting — it gates no firing decisions.
  */
 export function wasQuoteCompletedRecently(): boolean {
-  if (typeof localStorage === 'undefined') return false;
-  try {
-    const raw = localStorage.getItem(QUOTE_COMPLETED_AT_KEY);
-    if (!raw) return false;
-    const ts = Number(raw);
-    return Number.isFinite(ts) && Date.now() - ts <= QUOTE_SOURCE_LABEL_WINDOW_MS;
-  } catch {
-    return false;
-  }
+  return readRecentQuoteRecord() !== null;
+}
+
+/**
+ * The completed quote's value/currency/service, if completion happened
+ * recently in this browser — else null. Lets a global click handler
+ * (tel:/mailto:/wa.me — no React state available) attach the same
+ * monetary signal to a post-quote conversion that the in-page callback/
+ * book-now handlers get from their local `quote` state.
+ */
+export function getRecentQuoteDetails(): { value: number; currency: string; service: string } | null {
+  const record = readRecentQuoteRecord();
+  if (!record) return null;
+  return { value: record.value, currency: record.currency, service: record.service };
 }
 
 /**

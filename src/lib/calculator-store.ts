@@ -188,6 +188,16 @@ export interface CalculatorState {
    * re-mount doesn't mint a fresh one.
    */
   completionEventId: string | null;
+  /**
+   * A fingerprint of the quote `completionEventId` was minted for
+   * (`generateFingerprint({ data, totalPrice })` — same shape save-quote
+   * hashes server-side). Without this, going back after completion,
+   * changing a quote-affecting input, and returning would reuse the
+   * STALE event_id — `fireQuoteConversion`'s fired-guard would then
+   * silently suppress the new, different quote's conversion. A
+   * signature mismatch mints a fresh event_id instead of reusing one.
+   */
+  completionQuoteSignature: string | null;
 }
 
 // ===================
@@ -250,6 +260,7 @@ export const initialState: CalculatorState = {
   sessionId: null,
   quoteId: null,
   completionEventId: null,
+  completionQuoteSignature: null,
 };
 
 // ===================
@@ -353,6 +364,7 @@ export const LocalStorageStateSchema = z.object({
   sessionId: z.string().nullable(),
   quoteId: z.string().max(64).nullable().optional(),
   completionEventId: z.string().max(64).nullable().optional(),
+  completionQuoteSignature: z.string().max(128).nullable().optional(),
 }).passthrough(); // Allow additional properties for forwards compatibility
 
 // ===================

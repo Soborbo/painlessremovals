@@ -25,6 +25,7 @@ import {
   saveState,
 } from '@/lib/calculator-store';
 import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
+import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -80,10 +81,18 @@ export function Step12Quote() {
       // it — fireQuoteConversion's fired-guard compares event_ids, so a
       // fresh UUID per mount would re-fire the conversion on every F5.
       // The server-side GA4 MP mirror (save-quote.ts) carries the same id.
-      const existingEventId = calculatorStore.get().completionEventId;
-      const eventId = existingEventId || generateUUID();
-      if (!existingEventId) {
+      //
+      // Keyed to a fingerprint of THIS quote: going back, changing a
+      // quote-affecting input, and returning here must NOT reuse the
+      // stale event_id — that would silently suppress the new quote's
+      // conversion under the previous quote's fired-guard.
+      const quoteSignature = generateFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
+      const stored = calculatorStore.get();
+      const sameQuote = !!stored.completionEventId && stored.completionQuoteSignature === quoteSignature;
+      const eventId = sameQuote ? stored.completionEventId! : generateUUID();
+      if (!sameQuote) {
         calculatorStore.setKey('completionEventId', eventId);
+        calculatorStore.setKey('completionQuoteSignature', quoteSignature);
         saveState();
       }
 

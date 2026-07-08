@@ -23,6 +23,7 @@ export {
 export {
   fireQuoteConversion,
   wasQuoteCompletedRecently,
+  getRecentQuoteDetails,
   cleanupLegacyQuoteState,
   markViewContentFired,
   hasViewContentFired,

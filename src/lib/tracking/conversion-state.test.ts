@@ -9,6 +9,7 @@ import { dispatchWorkerConversion } from './worker-dispatch';
 import {
   fireQuoteConversion,
   wasQuoteCompletedRecently,
+  getRecentQuoteDetails,
   cleanupLegacyQuoteState,
   hasViewContentFired,
   markViewContentFired,
@@ -88,9 +89,10 @@ describe('fireQuoteConversion', () => {
     expect(fired()).toHaveLength(0);
   });
 
-  it('stamps the completion breadcrumb for the after_calculator label', () => {
+  it('stamps the completion breadcrumb (ts + value/currency/service) for the after_calculator label', () => {
     fireQuoteConversion({ value: 100, service: 'home', eventId: 'evt_q4' });
-    expect(localStorage.getItem(QUOTE_COMPLETED_AT_KEY)).toBe(String(Date.now()));
+    const record = JSON.parse(localStorage.getItem(QUOTE_COMPLETED_AT_KEY)!);
+    expect(record).toMatchObject({ ts: Date.now(), value: 100, currency: 'GBP', service: 'home' });
   });
 });
 
@@ -112,9 +114,38 @@ describe('wasQuoteCompletedRecently — reporting label only', () => {
     expect(wasQuoteCompletedRecently()).toBe(false);
   });
 
-  it('tolerates a junk timestamp', () => {
+  it('tolerates junk in the completion breadcrumb', () => {
     localStorage.setItem(QUOTE_COMPLETED_AT_KEY, 'garbage');
     expect(wasQuoteCompletedRecently()).toBe(false);
+  });
+
+  it('tolerates a well-formed-JSON but wrong-shape breadcrumb', () => {
+    localStorage.setItem(QUOTE_COMPLETED_AT_KEY, JSON.stringify({ value: 'oops' }));
+    expect(wasQuoteCompletedRecently()).toBe(false);
+  });
+});
+
+describe('getRecentQuoteDetails — monetary signal for global click handlers', () => {
+  it('is null with no completion recorded', () => {
+    expect(getRecentQuoteDetails()).toBeNull();
+  });
+
+  it('returns the completed quote value/currency/service right after completion', () => {
+    fireQuoteConversion({ value: 850, service: 'packing', currency: 'GBP', eventId: 'evt_q7' });
+    expect(getRecentQuoteDetails()).toEqual({ value: 850, currency: 'GBP', service: 'packing' });
+  });
+
+  it('expires after the label window, same as wasQuoteCompletedRecently', () => {
+    fireQuoteConversion({ value: 850, service: 'packing', eventId: 'evt_q8' });
+    vi.setSystemTime(Date.now() + QUOTE_SOURCE_LABEL_WINDOW_MS + 1000);
+    expect(getRecentQuoteDetails()).toBeNull();
+    expect(wasQuoteCompletedRecently()).toBe(false);
+  });
+
+  it('reflects the LATEST completed quote when a second quote is submitted', () => {
+    fireQuoteConversion({ value: 100, service: 'home', eventId: 'evt_q9' });
+    fireQuoteConversion({ value: 400, service: 'office', eventId: 'evt_q10' });
+    expect(getRecentQuoteDetails()).toEqual({ value: 400, currency: 'GBP', service: 'office' });
   });
 });
 

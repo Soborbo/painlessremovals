@@ -25,6 +25,7 @@ import {
   type CalculatorState,
 } from '@/lib/calculator-store';
 import { encodeQuoteState } from '@/lib/quote-url';
+import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { calculateQuote, type QuoteResult } from '@/lib/calculator-logic';
 import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
 import { getPackingSizeCategory } from '@/lib/constants';
@@ -388,16 +389,26 @@ export function ResultPage() {
     setSubmissionStatus('submitting');
     setErrorMessage(null);
 
+    const submissionData = getSubmissionData();
+
     // One event_id per COMPLETED QUOTE, not per mount: persisted in the
     // sessionStorage-backed store so a results-page refresh / duplicated
-    // tab reuses it. fireQuoteConversion's fired-guard compares event_ids —
-    // with a fresh UUID per mount every F5 would re-fire the conversion
+    // tab reuses it — fireQuoteConversion's fired-guard compares event_ids,
+    // so a fresh UUID per mount would re-fire the conversion on every F5
     // (save-quote's server dedup replays a 200, which looks like success).
-    // The retry path below also reuses it as its dedup key.
-    const existingEventId = calculatorStore.get().completionEventId;
-    const eventId = existingEventId || generateUUID();
-    if (!existingEventId) {
+    //
+    // Keyed to a fingerprint of THIS quote, not just "a" completion: if the
+    // user goes back and changes a quote-affecting input (address, size,
+    // date) and returns here, the fingerprint changes and a fresh event_id
+    // is minted — otherwise the new quote's conversion would be silently
+    // suppressed by the guard from the PREVIOUS quote's stale event_id.
+    const quoteSignature = generateFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
+    const stored = calculatorStore.get();
+    const sameQuote = !!stored.completionEventId && stored.completionQuoteSignature === quoteSignature;
+    const eventId = sameQuote ? stored.completionEventId! : generateUUID();
+    if (!sameQuote) {
       calculatorStore.setKey('completionEventId', eventId);
+      calculatorStore.setKey('completionQuoteSignature', quoteSignature);
       saveState();
     }
 
@@ -456,7 +467,6 @@ export function ResultPage() {
     };
 
     try {
-      const submissionData = getSubmissionData();
       // Encoded quote payload (no signature). The server signs it with
       // its own HMAC secret and assembles the public-facing share URL
       // — we never sign anything client-side.

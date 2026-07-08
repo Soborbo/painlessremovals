@@ -117,7 +117,11 @@ Consequences of the new model:
 - Phone / email / whatsapp / callback are their OWN conversion events
   with fresh event_ids. `source: after_calculator` (from
   `wasQuoteCompletedRecently()`, 60-min horizon) is a reporting label
-  only.
+  only. The in-page callback/book-now handlers attach their local
+  `quote` state's value/currency/service as the monetary signal; the
+  global `tel:`/`mailto:`/`wa.me` click listener has no React state, so
+  it reads the same numbers from `getRecentQuoteDetails()` (the same
+  60-min cache) instead of dropping the value.
 - A lead who completes the calculator AND then requests a callback (or
   calls) counts in BOTH conversion actions. In Google Ads keep only one
   of them **Primary** per goal (recommendation: "Quote calculator
