@@ -28,11 +28,25 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    to dedup) or let `trackEvent` generate one. The same `event_id` is what
    Meta uses to deduplicate Browser + CAPI for the same conversion.
 
-3. **Quote conversion fires once, on upgrade or after 60 min.** Use
-   `resetQuoteState()` when the calculator finishes; let
-   `markQuoteUpgraded()` consume the state when the user takes a higher-
-   intent action (phone/email/whatsapp click, callback form). Don't fire
-   `quote_calculator_conversion` directly — `conversion-state.ts` owns it.
+3. **Quote conversion fires once, immediately at completion.** Call
+   `fireQuoteConversion()` (from `conversion-state.ts`) right after
+   save-quote succeeds, with the SAME `event_id` that went to save-quote —
+   it's idempotent per event_id (refresh/retry can't double-fire). Don't
+   push `quote_calculator_conversion` to the dataLayer directly.
+   Phone/email/whatsapp/callback are their OWN conversion events with
+   fresh event_ids; `source: after_calculator` is a reporting label only
+   (`wasQuoteCompletedRecently()`), it gates nothing. The old 60-min
+   "upgrade window" state machine is retired — it almost never fired
+   (users close the tab; no client timer survives that), which is why Ads
+   saw ~0 quote conversions. Consequence: a lead who completes the
+   calculator AND requests a callback now counts in BOTH actions — keep
+   only one of them Primary in Google Ads.
+
+3b. **Conversion pushes followed by navigation MUST use
+   `trackEventBeforeNavigate()`** (GTM `eventCallback` + safety timeout).
+   A synchronous `window.location.href = ...` after `trackEvent()`
+   cancels the Ads/GA4/Meta pixel requests mid-flight — this silently
+   zeroed "Callback requested" in Ads for months.
 
 4. **Server-side legs are split: Meta CAPI goes through the Soborbo
    event-gateway Worker; GA4 MP backstops fire in-app.** Don't add
@@ -51,6 +65,15 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    (`pageLocationFromRequest`) to `sendGA4MP` — a hit without
    `session_id` lands as Unassigned / "(not set)" in GA4 and never
    matches a gclid, so Ads sees 0 conversions for real leads.
+
+4b. **Every page that can fire a Worker dispatch needs the invisible
+   Turnstile.** `sendToWorker` requires a Turnstile token; without the
+   `challenges.cloudflare.com/turnstile` script + the
+   `#cf-turnstile-invisible` container on the page, `worker-dispatch.ts`
+   waits 10 s and silently DROPS the Meta CAPI leg. `Layout.astro`,
+   `layout-calculator.astro` and `thank-you-callback.astro` include it —
+   a new layout/standalone page with tel: links or conversion dispatches
+   must too. It is invisible: no user-facing challenge, no UX impact.
 
 5. **Consent default MUST be the first script in `<head>`, before GTM.**
    `GTMHead.astro` already enforces this. Don't reorder.
@@ -81,8 +104,8 @@ Conversions fire to Google Ads + Meta. NOT every form is a conversion:
 | `phone_conversion` | yes | Client-side `tel:` click in `lib/tracking/global-listeners.ts` |
 | `email_conversion` | yes | Client-side `mailto:` click |
 | `whatsapp_conversion` | yes | Client-side WhatsApp click |
-| `quote_calculator_conversion` | yes | Calculator's existing `markQuoteUpgraded()` flow |
-| `callback_conversion` | yes | Client-side after a calculator callback request — Meta `Lead` event, fired alongside `markQuoteUpgraded()` so the quote conversion isn't double-counted |
+| `quote_calculator_conversion` | yes | Client-side `fireQuoteConversion()` immediately after save-quote succeeds (idempotent per event_id) |
+| `callback_conversion` | yes | Client-side after a calculator callback request — Meta `Lead` event, its own conversion with a fresh event_id (navigation goes through `trackEventBeforeNavigate`) |
 | `form_submission` (jobs/affiliate/partner_register/clearance_callback) | no | Client-side analytics only (clearance_callback also fires the conversion above; the analytics one is for funnel reporting) |
 | `instant_quote_cta_click` | no | Analytics only |
 

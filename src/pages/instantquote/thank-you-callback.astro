@@ -23,9 +23,14 @@ const assetBase = CONFIG.site.assetBaseUrl;
     <title>We'll Call You Back | Painless Removals</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <GTMHead />
+    {/* Invisible Turnstile — token source for the server-side CAPI dispatch
+        below (and the tel: click conversion's dispatch). No user-facing
+        challenge. */}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline></script>
   </head>
   <body class="min-h-screen bg-background antialiased flex flex-col">
     <GTMBody />
+    <div id="cf-turnstile-invisible" style="display:none" aria-hidden="true"></div>
 
     <main class="container mx-auto px-4 py-16 flex-1">
       <div class="max-w-md mx-auto text-center space-y-6">
@@ -118,6 +123,7 @@ const assetBase = CONFIG.site.assetBaseUrl;
       double-fires here. Per-session guard stops a refresh re-firing.
     */}
     <script>
+      import '@/lib/tracking/boot';
       import { trackEvent, dispatchWorkerConversion, generateUUID } from '@/lib/tracking';
 
       const isEmailClick = new URLSearchParams(window.location.search).get('conv') === 'email_click';
@@ -127,12 +133,12 @@ const assetBase = CONFIG.site.assetBaseUrl;
         sessionStorage.setItem(ONCE_KEY, '1');
         // Same event_id on the dataLayer push and the Worker dispatch so Meta
         // dedupes the Browser Pixel + server CAPI pair into one Lead. No value
-        // (callback has no monetary figure) — the dispatch omits value:0.
+        // key at all (callback has no monetary figure) — pushing value:0 while
+        // the CAPI leg strips zeros desyncs browser + server and feeds £0
+        // into Google Ads.
         const eventId = generateUUID();
         trackEvent('callback_conversion', {
           event_id: eventId,
-          value: 0,
-          currency: 'GBP',
           service: 'callback_only',
           source: 'email_click',
         });

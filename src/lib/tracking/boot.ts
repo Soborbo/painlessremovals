@@ -2,35 +2,38 @@
  * One-shot client bootstrap. Imported from a bundled `<script>` block in
  * page layouts so it runs once per page-load.
  *
- * Order matters: `restoreUserDataFromStorage()` MUST run before
- * `resumeQuoteTimer()`, because the timer may immediately fire a late
- * `quote_calculator_conversion` whose Meta CAPI mirror reads user data
- * from the DOM element. If the user closed the tab and reopened later,
- * the DOM element doesn't exist on a fresh page-load — restoring from
- * localStorage rebuilds it so CAPI still has hashed identifiers.
- *
  * No View Transitions hooks: the site runs as a hard-navigation MPA.
  */
 
-import { resumeQuoteTimer, hasPendingQuoteConversion } from './conversion-state';
+import { cleanupLegacyQuoteState } from './conversion-state';
 import { initGlobalListeners } from './global-listeners';
 import { restoreUserDataFromStorage, setUserDataOnDOM } from './tracking';
 import { captureUTMs, readAffiliateCode, buildAttribution } from './utm-capture';
 import { dispatchWorkerConversion } from './worker-dispatch';
+import { prewarmTurnstileToken } from '@/lib/worker-tracking';
 import { pushLeadToCRM } from '@/lib/crm/push-lead';
 
 captureUTMs();
-// Only rehydrate the hidden PII side-channel when a quote conversion is
-// actually pending (resumeQuoteTimer below may fire it and its CAPI mirror
-// needs the hashed identifiers). On every other page-load we deliberately
-// leave PII OUT of the DOM — it shrinks at-rest PII exposure site-wide and
-// matches the "PII only present when a tag needs it" rule. MUST run before
-// resumeQuoteTimer (the timer reads user data from the DOM synchronously).
-if (hasPendingQuoteConversion()) {
+// Rehydrate the hidden PII side-channel from localStorage (consent-gated
+// inside: hydrates only on an explicit ad_storage grant, purges on an
+// explicit denial, no-ops while consent is still unknown). Tags and CAPI
+// dispatches later in the page's life (phone click after navigating away
+// from the quote page) read this DOM element.
+restoreUserDataFromStorage();
+// CookieYes announces banner decisions with a DOM CustomEvent — re-run the
+// restore then, so a grant made ON this page hydrates without a reload,
+// and a revocation purges the at-rest copy immediately.
+document.addEventListener('cookieyes_consent_update', () => {
   restoreUserDataFromStorage();
-}
-resumeQuoteTimer();
+});
+// The 60-min upgrade-window state machine is retired (quote conversion now
+// fires inline at completion) — drop any state blob it left behind.
+cleanupLegacyQuoteState();
 initGlobalListeners();
+// Mint the Turnstile token in the background so the first conversion
+// dispatch (which must attach it) doesn't pay the mint round-trip while
+// a navigation races it.
+prewarmTurnstileToken();
 
 // Expose setUserDataOnDOM as a window global so legacy `<script is:inline>`
 // blocks (which cannot do ES-module imports) can stash PII on the hidden

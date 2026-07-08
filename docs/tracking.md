@@ -25,7 +25,7 @@ src/lib/tracking/
   config.ts              # constants (timing windows, storage keys, endpoints)
   uuid.ts                # UUID v4 with HTTPS-less fallback
   tracking.ts            # trackEvent + setUserDataOnDOM (PII side-channel)
-  conversion-state.ts    # 60-min upgrade window state machine, localStorage-backed
+  conversion-state.ts    # fireQuoteConversion (immediate, idempotent per event_id)
   form-tracking.ts       # form_start / form_step_complete / form_abandonment
   global-listeners.ts    # tel: / mailto: / wa.me click handlers, scroll depth
   worker-dispatch.ts     # conversion dispatch → Soborbo event-gateway Worker (Meta CAPI)
@@ -52,9 +52,21 @@ src/components/
   GTMHead.astro          # consent default + CookieYes + GTM bootstrap
   GTMBody.astro          # noscript fallback iframe
 
-GTM-PXTH5JJK_workspace_v2.json   # generated container JSON (import in GTM UI)
-scripts/build-gtm-container.mjs  # source of truth for the GTM JSON
+GTM-PXTH5JJK_workspace_v2.json   # generated container JSON — NEVER PUBLISHED, see below
+scripts/build-gtm-container.mjs  # generator for the JSON above
 ```
+
+**⚠ The repo's container JSON is NOT what's live.** Verified against the
+GTM API on 2026-07-08: the LIVE container GTM-PXTH5JJK runs **version 52**
+("Add currencyCode to Contact form submit Ads tag", published
+2026-06-29), which has 17 triggers / 35 tags and NONE of the v2 JSON's
+extra triggers (`contact_form_conversion`, `form_submission`,
+`instant_quote_cta_click`). The live wiring is correct for the code:
+every live trigger name matches a dataLayer event the code actually
+pushes (incl. `contact_form_submit` → the Ads "Contact form submit" awct
+tag, Conversion Linker with URL passthrough, consent-gated Meta tags).
+Do NOT import the v2 JSON over it without reconciling — and do not
+audit GTM from the JSON file; query the live container.
 
 ## DataLayer event reference
 
@@ -70,9 +82,9 @@ to pair browser Pixel + server CAPI hits.
 | `form_abandonment`               | tab close / hide / navigate-away with unsubmitted form | `form_name`, `last_step`, `last_field`, `time_spent_seconds`, `exit_page_path` |
 | `quote_calculator_complete`      | quote saved successfully (engagement, every completion) | `quote_id`, `value`, `currency`, `service` |
 | `quote_calculator_first_view`    | first quote completion in this browser → triggers Meta `ViewContent` | `service` (NO value, intentionally) |
-| `quote_calculator_conversion`    | upgrade window elapses without upgrade (LATE conversion) | `value`, `currency`, `service`, `late_conversion: true` if past timer |
-| `callback_conversion`            | callback form submitted | `value`, `currency`, `service`, `source` |
-| `contact_form_submit`            | reserved (no contact form yet on this site) | — |
+| `quote_calculator_conversion`    | immediately after save-quote succeeds (`fireQuoteConversion`, idempotent per event_id) | `value`, `currency`, `service` |
+| `callback_conversion`            | callback form submitted (navigation via `trackEventBeforeNavigate`) | `value`, `currency`, `service`, `source` |
+| `contact_form_submit`            | contact form success on /contact (fires the live Ads "Contact form submit" awct tag, GA4 event + Meta Contact) | `form_source` |
 | `phone_conversion`               | tel: click OR programmatic phone dial after quote | `value`, `currency`, `service`, `source`, `tel_target` |
 | `email_conversion`               | mailto: click | `source` |
 | `whatsapp_conversion`            | click on `wa.me` / `whatsapp.com` link | `source` |
@@ -82,37 +94,41 @@ to pair browser Pixel + server CAPI hits.
 
 PII is NEVER pushed to dataLayer. See "PII handling" below.
 
-## The 60-minute upgrade window
+## Quote conversion: fires immediately at completion
 
-The core insight: a kalkulátor completion ≠ a real lead until the user
-takes a higher-intent action. We don't fire
-`quote_calculator_conversion` immediately. Instead, on completion we
-record state in `localStorage` (`pl_quote_state`) and start a timer.
+`quote_calculator_conversion` fires inline on the results page right
+after save-quote succeeds, via `fireQuoteConversion()` — same
+`event_id` as the save-quote POST, idempotent per event_id (a
+localStorage fired-guard, `pl_quote_state:fired`, blocks refresh /
+retry / second-tab double-fires).
 
-- If the user clicks `tel:`, `mailto:`, `wa.me`, or submits the
-  callback form within 60 minutes → that action becomes the conversion
-  with the same `event_id`. The quote is marked `upgraded` and the
-  timer is cancelled. Google Ads and Meta dedup against `event_id` so
-  it counts as one conversion, not two.
-- If the timer elapses without an upgrade → `quote_calculator_conversion`
-  fires automatically. If the user closed the tab and re-opened the
-  site within 24 hours of the timeout, it fires on the next page-load
-  with `late_conversion: true`.
+**History (why the old model was retired, 2026-07):** this used to be a
+60-minute "upgrade window" state machine — the conversion fired late,
+or was consumed by a higher-intent action (phone/callback) to avoid
+double-counting. In practice most visitors closed the tab before the
+window elapsed, and no client-side timer survives a closed browser: the
+conversion almost never fired. Google Ads recorded ONE "Quote
+calculator finished" conversion in 14 weeks against ~20 real weekly
+completions. The upgrade model optimized for signal purity and lost the
+signal entirely.
 
-Cross-tab: a `BroadcastChannel('pl_quote_state_v1')` notifies other
-tabs when an upgrade happens, so they cancel their pending timers too.
-If `BroadcastChannel` isn't available, multiple tabs may both fire the
-late conversion — Meta's `event_id` dedup catches it for Pixel/CAPI;
-Google Ads does NOT dedup on `orderId` for Search/Display by default,
-so this is a known minor over-count edge case. Acceptable for our
-volume.
+Consequences of the new model:
 
-**Why this model**: `phone_conversion` is the highest-quality signal
-for Google Ads Smart Bidding — a phone click after seeing the price
-correlates strongly with bookings. By rolling the kalkulátor completion
-into the phone conversion we feed Smart Bidding fewer, better signals.
-For users who never upgrade, the late-fire conversion still counts
-(important for not losing leads in attribution).
+- Phone / email / whatsapp / callback are their OWN conversion events
+  with fresh event_ids. `source: after_calculator` (from
+  `wasQuoteCompletedRecently()`, 60-min horizon) is a reporting label
+  only.
+- A lead who completes the calculator AND then requests a callback (or
+  calls) counts in BOTH conversion actions. In Google Ads keep only one
+  of them **Primary** per goal (recommendation: "Quote calculator
+  finished" primary as the volume signal; callback/phone secondary or
+  value-bearing) — otherwise the "Conversions" column double-counts one
+  human. Meta receives a `Lead` for the quote and another `Lead` for
+  the callback (different event_ids) — expected, monitor Lead counts.
+- Navigation after a conversion push MUST go through
+  `trackEventBeforeNavigate()` (GTM `eventCallback` + safety timeout).
+  A synchronous redirect after `trackEvent()` cancels the Ads/GA4/Meta
+  pixel requests — this race is what zeroed "Callback requested" in Ads.
 
 ## PII handling
 
@@ -238,7 +254,9 @@ keeps working — server is a redundancy layer.
 - [ ] Admin → Data Streams → Web → Measurement Protocol API secrets →
   create `painless-server` (use this value as `GA4_API_SECRET`)
 - [ ] Admin → Custom Definitions → register event-scoped params:
-  `service`, `form_name`, `source`, `last_step`, `late_conversion`
+  `service`, `form_name`, `source`, `last_step`
+  (`late_conversion` is retired — nothing emits it since the
+  upgrade-window removal)
 
 ### Meta Events Manager (Pixel `292656820246446`)
 - [ ] Settings → "Automatic Advanced Matching": ON
@@ -249,13 +267,17 @@ keeps working — server is a redundancy layer.
   production traffic** or test events will pollute live optimization.
 
 ### GTM (`GTM-PXTH5JJK`)
-- [ ] Tag Manager → Admin → Import Container →
-  `GTM-PXTH5JJK_workspace_v2.json`. Choose:
-   - "New" workspace name: `tracking-rewrite-v2`
-   - Import option: **Overwrite** (the v2 is a complete replacement)
-   - The import also adds the `CookieYes CMP` custom template (carried
-     over from the previous container so you don't have to re-install
-     it from the Community Template Gallery).
+
+**This import was never performed — and must NOT be performed as-is.**
+The live container evolved past this checklist (v52 as of 2026-06-29,
+correct trigger wiring — see the warning in "Source layout" above). The
+v2 JSON no longer reflects the live state; importing it with Overwrite
+would destroy live fixes (the Contact form submit awct tag's currency,
+the clearance tags, Microsoft Clarity). Kept for historical reference:
+
+- [x] ~~Tag Manager → Admin → Import Container →
+  `GTM-PXTH5JJK_workspace_v2.json` (Overwrite)~~ — superseded by
+  incremental edits made directly in the GTM UI (v37→v52).
 - [ ] Enhanced Conversions are **already configured** by the import:
   the `Google Tag — GA4` has a `user_data` shared event setting that
   reads from the `JS - User Data Object` variable, which builds the
@@ -303,17 +325,19 @@ Use Meta Test Events while `META_CAPI_TEST_EVENT_CODE` is set:
 
 Use GA4 DebugView for engagement events:
 
-1. Open Chrome DevTools → Application → Local Storage → confirm a
-   `pl_quote_state` entry appears after kalkulátor completion.
-2. GA4 Admin → DebugView → confirm `quote_calculator_complete`,
+1. Open Chrome DevTools → Application → Local Storage → confirm
+   `pl_quote_state:fired` holds the completion's event_id after
+   kalkulátor completion (the old `pl_quote_state` blob is retired).
+2. GA4 Admin → DebugView → confirm `quote_calculator_complete` AND
+   `quote_calculator_conversion` (both fire at completion now),
    `attribution_selected`, `scroll_50`/`scroll_90` events appear.
 
 Use Google Ads Tag Assistant for the conversion tags:
 
 1. Tag Assistant Companion → record the kalkulátor flow.
-2. Confirm the `Quote Calculator Conversion` Google Ads tag fires on
-   the late-conversion timer (or upgrade) with the right value and
-   that "User-Provided Data: Provided" appears.
+2. Confirm the `Quote Calculator Conversion` Google Ads tag fires
+   immediately on the results page with the right value and that
+   "User-Provided Data: Provided" appears.
 
 ## Maintenance
 
@@ -327,13 +351,15 @@ To add a new event:
 4. Update the `META_EVENT_NAMES` map in `meta-mirror.ts` if Meta
    should mirror this event.
 5. Run `node scripts/build-gtm-container.mjs`.
-6. Import the new JSON into GTM (or merge selectively in the GTM UI).
+6. Merge the change SELECTIVELY in the GTM UI (add the one new
+   trigger/tag by hand, or import with "Merge → Rename conflicting").
+   Never import with Overwrite — the live container (v52+) has fixes
+   the generated JSON doesn't.
 
-To change the upgrade window:
+To change the `after_calculator` labelling horizon:
 
-1. Edit `QUOTE_UPGRADE_WINDOW_MS` in `src/lib/tracking/config.ts`.
-2. Note: existing in-flight quote states use the old window until
-   they expire (the timer is captured at `resetQuoteState` time).
+1. Edit `QUOTE_SOURCE_LABEL_WINDOW_MS` in `src/lib/tracking/config.ts`.
+   (Reporting label only — no firing logic depends on it.)
 
 To rotate the GA4 measurement ID or Pixel ID:
 
@@ -355,6 +381,7 @@ To rotate the GA4 measurement ID or Pixel ID:
   Conversions from users who reject ads consent are simply lost.
   Pro plan would recover most of them via Google's Consent Mode
   modeling. Decision deferred.
-- **No real `contact_form_submit` event source on this site.**
-  The trigger and tags exist in GTM but the kalkulátor doesn't fire
-  this event today. Reserved for a future contact page.
+- ~~No real `contact_form_submit` event source on this site.~~
+  **Outdated:** `/contact` fires `contact_form_submit` on success
+  (src/pages/contact.astro) and the live GTM v52 wires it to the Ads
+  "Contact form submit" awct tag, a GA4 event and Meta `Contact`.

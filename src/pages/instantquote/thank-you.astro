@@ -117,5 +117,10 @@ const quoteId = Astro.url.searchParams.get('id');
         </div>
       </div>
     </footer>
+
+    <!-- Tracking bootstrap: click/scroll listeners + PII rehydration for CAPI -->
+    <script>
+      import '@/lib/tracking/boot';
+    </script>
   </body>
 </html>

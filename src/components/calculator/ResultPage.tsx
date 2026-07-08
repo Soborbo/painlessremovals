@@ -21,6 +21,7 @@ import {
   clearState,
   initializeStore,
   initialState,
+  saveState,
   type CalculatorState,
 } from '@/lib/calculator-store';
 import { encodeQuoteState } from '@/lib/quote-url';
@@ -33,14 +34,13 @@ import { REVIEW_STATS } from '@/lib/review-config';
 import { trackError } from '@/lib/errors/tracker';
 import {
   trackEvent,
+  trackEventBeforeNavigate,
   setUserDataOnDOM,
   normalizeUserData,
   dispatchWorkerConversion,
-  resetQuoteState,
+  fireQuoteConversion,
   markViewContentFired,
   hasViewContentFired,
-  markQuoteUpgraded,
-  getActiveQuoteState,
   generateUUID,
 } from '@/lib/tracking';
 
@@ -388,9 +388,72 @@ export function ResultPage() {
     setSubmissionStatus('submitting');
     setErrorMessage(null);
 
-    // Generated up-front so both the initial attempt and the retry
-    // share one dedup key with the matching client-side conversion.
-    const eventId = generateUUID();
+    // One event_id per COMPLETED QUOTE, not per mount: persisted in the
+    // sessionStorage-backed store so a results-page refresh / duplicated
+    // tab reuses it. fireQuoteConversion's fired-guard compares event_ids —
+    // with a fresh UUID per mount every F5 would re-fire the conversion
+    // (save-quote's server dedup replays a 200, which looks like success).
+    // The retry path below also reuses it as its dedup key.
+    const existingEventId = calculatorStore.get().completionEventId;
+    const eventId = existingEventId || generateUUID();
+    if (!existingEventId) {
+      calculatorStore.setKey('completionEventId', eventId);
+      saveState();
+    }
+
+    // Everything that must happen after a SUCCESSFUL save — shared by the
+    // first attempt and the retry path (the retry used to skip all of
+    // this, losing the conversion + PII side-channel for that lead).
+    const firePostSaveTracking = (result: { quoteId?: string }) => {
+      // Persist the server-issued quote ID so the displayed ref matches
+      // what the team sees in their inbox / DB.
+      if (result.quoteId) {
+        calculatorStore.setKey('quoteId', result.quoteId);
+      }
+
+      // PII to DOM side-channel (never dataLayer).
+      if (state.contact) {
+        setUserDataOnDOM(
+          normalizeUserData({
+            email: state.contact.email,
+            phone_number: state.contact.phone,
+            first_name: state.contact.firstName,
+            last_name: state.contact.lastName,
+          }),
+        );
+      }
+
+      // Engagement event — fires on every completion.
+      trackEvent('quote_calculator_complete', {
+        event_id: eventId,
+        quote_id: result.quoteId,
+        quote_value: quote.totalPrice,
+        value: quote.totalPrice,
+        currency: 'GBP',
+        service: state.serviceType || 'removal',
+      });
+
+      // The conversion — fires immediately, while this page is alive under
+      // the GTM tags. Same event_id as save-quote so every hit for this
+      // completion shares one dedup/join key. Idempotent per event_id.
+      fireQuoteConversion({
+        value: quote.totalPrice,
+        service: state.serviceType || 'removal',
+        eventId,
+      });
+
+      // Meta ViewContent — first completion only, no value. Fires browser-
+      // only from GTM off this dataLayer push; ViewContent is not a canonical
+      // gateway conversion event, so there's no Worker leg. Reads the
+      // dedicated VIEW_CONTENT_FIRED_KEY flag, which survives re-runs.
+      if (!hasViewContentFired()) {
+        trackEvent('quote_calculator_first_view', {
+          event_id: eventId,
+          service: state.serviceType || 'removal',
+        });
+        markViewContentFired();
+      }
+    };
 
     try {
       const submissionData = getSubmissionData();
@@ -446,57 +509,7 @@ export function ResultPage() {
 
       const result = await response.json() as { quoteId?: string };
 
-      // Persist the server-issued quote ID so the displayed ref matches
-      // what the team sees in their inbox / DB.
-      if (result.quoteId) {
-        calculatorStore.setKey('quoteId', result.quoteId);
-      }
-
-      // PII to DOM side-channel (never dataLayer).
-      if (state.contact) {
-        setUserDataOnDOM(
-          normalizeUserData({
-            email: state.contact.email,
-            phone_number: state.contact.phone,
-            first_name: state.contact.firstName,
-            last_name: state.contact.lastName,
-          }),
-        );
-      }
-
-      // Start the 60-min upgrade window. The actual conversion fires
-      // either when the user upgrades (phone/email/whatsapp/callback)
-      // or when the timer elapses without an upgrade. Reuse the same
-      // event_id as save-quote so client + server hits share a dedup
-      // key.
-      const quoteState = resetQuoteState({
-        value: quote.totalPrice,
-        service: state.serviceType || 'removal',
-        eventId,
-      });
-
-      // Engagement event — fires on every completion.
-      trackEvent('quote_calculator_complete', {
-        event_id: quoteState.eventId,
-        quote_id: result.quoteId,
-        quote_value: quote.totalPrice,
-        value: quote.totalPrice,
-        currency: 'GBP',
-        service: state.serviceType || 'removal',
-      });
-
-      // Meta ViewContent — first completion only, no value. Fires browser-
-      // only from GTM off this dataLayer push; ViewContent is not a canonical
-      // gateway conversion event, so there's no Worker leg. Reads the
-      // dedicated VIEW_CONTENT_FIRED_KEY flag, which survives quote-state
-      // deletion across re-runs.
-      if (!hasViewContentFired()) {
-        trackEvent('quote_calculator_first_view', {
-          event_id: quoteState.eventId,
-          service: state.serviceType || 'removal',
-        });
-        markViewContentFired();
-      }
+      firePostSaveTracking(result);
 
       setSubmissionStatus('success');
     } catch (error) {
@@ -532,6 +545,16 @@ export function ResultPage() {
           });
 
           if (retryResponse.ok) {
+            // The retry path used to skip ALL post-success tracking — no
+            // conversion, no PII side-channel, no engagement event for a
+            // lead that actually saved. Same helper as the happy path;
+            // the shared event_id keeps a double-fire impossible (server
+            // dedup + fireQuoteConversion's fired-guard). A body-parse
+            // failure (flaky connection, 202 deferred with empty body)
+            // must not lose the tracking + success state for a lead the
+            // server already saved.
+            const retryResult = await retryResponse.json().catch(() => ({})) as { quoteId?: string };
+            firePostSaveTracking(retryResult);
             setSubmissionStatus('success');
             setErrorMessage(null);
           }
@@ -596,38 +619,45 @@ export function ResultPage() {
         );
       }
 
-      // The callback consumes the active quote (if any) as its upgrade.
-      // Source is "after_calculator" only if the upgrade window is still
-      // open — past that, the calculator-store `quote` is still truthy
-      // but the conversion has either fired late or expired, so this is
-      // a standalone callback.
-      const active = getActiveQuoteState();
-      const eventId = active ? active.eventId : generateUUID();
-      const quoteVal = active ? active.value : 0;
-      const service = active ? active.service : state.serviceType || 'removal';
-      if (active) markQuoteUpgraded();
+      // The callback is its own conversion event — the quote conversion
+      // already fired at completion. Fresh event_id; the quote's value
+      // rides along (there's always a live quote on this page) so the
+      // Ads/Meta callback actions carry a real monetary signal.
+      const eventId = generateUUID();
+      const service = state.serviceType || 'removal';
+      const quoteVal = quote?.totalPrice;
 
-      trackEvent('callback_conversion', {
-        event_id: eventId,
-        // Only push a monetary value when there's a real quote behind it —
-        // pushing value:0 while the CAPI leg strips value:0 desyncs the
-        // browser + server event and feeds £0 into Google Ads.
-        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
+      // Server-side leg first. The beacon only queues after the Turnstile
+      // token mint, so navigation below waits for this promise too.
+      const capiQueued = dispatchWorkerConversion('callback_conversion', eventId, {
+        ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
-        source: active ? 'after_calculator' : 'standalone',
-      });
-      dispatchWorkerConversion('callback_conversion', eventId, {
-        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
-        service,
-        source: active ? 'after_calculator' : 'standalone',
+        source: 'after_calculator',
       });
 
-      window.location.href = '/instantquote/thank-you/';
+      // dataLayer push + navigation via GTM's eventCallback (plus a safety
+      // timeout) — a synchronous location change here used to cancel the
+      // Google Ads / GA4 / Meta pixel requests mid-flight, which is why
+      // "Callback requested" reported ~0 conversions against real callbacks.
+      trackEventBeforeNavigate(
+        'callback_conversion',
+        {
+          event_id: eventId,
+          // Only push a monetary value when there's a real quote behind it —
+          // pushing value:0 while the CAPI leg strips value:0 desyncs the
+          // browser + server event and feeds £0 into Google Ads.
+          ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
+          service,
+          source: 'after_calculator',
+        },
+        '/instantquote/thank-you/',
+        { alsoWaitFor: capiQueued },
+      );
     } catch (error) {
       trackError('MOVE-CB-001', error, { phase: 'request-callback' }, 'ResultPage');
       setCallbackStatus('error');
     }
-  }, [callbackStatus, state.contact]);
+  }, [callbackStatus, state.contact, state.serviceType, quote]);
 
   const handleRestart = () => {
     clearState();

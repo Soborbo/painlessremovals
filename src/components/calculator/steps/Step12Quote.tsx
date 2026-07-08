@@ -22,6 +22,7 @@ import {
   finalResources,
   getSubmissionData,
   prevStep,
+  saveState,
 } from '@/lib/calculator-store';
 import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
 import { Card } from '@/components/ui/card';
@@ -36,11 +37,9 @@ import {
   setUserDataOnDOM,
   normalizeUserData,
   dispatchWorkerConversion,
-  resetQuoteState,
+  fireQuoteConversion,
   markViewContentFired,
   hasViewContentFired,
-  markQuoteUpgraded,
-  getActiveQuoteState,
   generateUUID,
 } from '@/lib/tracking';
 
@@ -76,10 +75,17 @@ export function Step12Quote() {
     try {
       const submissionData = getSubmissionData();
 
-      // Generate event_id up-front so the server-side GA4 MP mirror
-      // (fired from save-quote.ts) carries the same id as the
-      // browser-side dataLayer push and the eventual conversion.
-      const eventId = generateUUID();
+      // One event_id per COMPLETED QUOTE, not per mount: persisted in the
+      // sessionStorage-backed store so a refresh / duplicated tab reuses
+      // it — fireQuoteConversion's fired-guard compares event_ids, so a
+      // fresh UUID per mount would re-fire the conversion on every F5.
+      // The server-side GA4 MP mirror (save-quote.ts) carries the same id.
+      const existingEventId = calculatorStore.get().completionEventId;
+      const eventId = existingEventId || generateUUID();
+      if (!existingEventId) {
+        calculatorStore.setKey('completionEventId', eventId);
+        saveState();
+      }
 
       // Format data for save-quote API
       const apiData = {
@@ -129,26 +135,25 @@ export function Step12Quote() {
         );
       }
 
-      // Start the 60-min upgrade window. Conversion fires later: either
-      // when the user upgrades (phone/email/whatsapp/callback click) or
-      // when the timer elapses without an upgrade. Reuse the same
-      // event_id that went to save-quote so all hits for this
-      // conversion (server engagement, browser engagement, eventual
-      // conversion + Meta CAPI mirror) share one dedup key.
-      const quoteState = resetQuoteState({
-        value: quote.totalPrice,
-        service: state.serviceType || 'removal',
-        eventId,
-      });
-
-      // Engagement event — fires every completion.
+      // Engagement event — fires every completion. Same event_id as
+      // save-quote so all hits for this completion (server GA4 MP mirror,
+      // browser events, conversion + Meta CAPI mirror) share one dedup key.
       trackEvent('quote_calculator_complete', {
-        event_id: quoteState.eventId,
+        event_id: eventId,
         quote_id: result.quoteId,
         quote_value: quote.totalPrice,
         value: quote.totalPrice,
         currency: 'GBP',
         service: state.serviceType || 'removal',
+      });
+
+      // The conversion — fires immediately at completion (the retired
+      // 60-min upgrade window almost never fired in practice: most users
+      // closed the tab first). Idempotent per event_id.
+      fireQuoteConversion({
+        value: quote.totalPrice,
+        service: state.serviceType || 'removal',
+        eventId,
       });
 
       // Meta ViewContent — only the FIRST completion in this browser, no
@@ -160,7 +165,7 @@ export function Step12Quote() {
       // receives the real Lead/Contact conversions.
       if (!hasViewContentFired()) {
         trackEvent('quote_calculator_first_view', {
-          event_id: quoteState.eventId,
+          event_id: eventId,
           service: state.serviceType || 'removal',
         });
         markViewContentFired();
@@ -198,30 +203,26 @@ export function Step12Quote() {
 
   // Handle booking request — programmatic phone dial. The global click
   // listener won't see this (no <a href="tel:"> click), so we fire the
-  // conversion explicitly. `getActiveQuoteState` is the only correct
-  // gate for "after_calculator" attribution: the calculator-store
-  // `quote` is still truthy after the upgrade window has expired or
-  // already fired late, but those clicks are no longer real upgrades.
+  // conversion explicitly. Its own conversion event with a fresh
+  // event_id — the quote conversion already fired at completion. The
+  // on-screen quote's value rides along as the monetary signal (never
+  // value:0 — the CAPI leg strips zeros, desyncing browser + server).
   const handleBookNow = () => {
     const tel = CALCULATOR_CONFIG.company.phone.replace(/\s/g, '');
-    const active = getActiveQuoteState();
-    const eventId = active ? active.eventId : generateUUID();
-    const quoteVal = active ? active.value : 0;
-    const service = active ? active.service : state.serviceType || 'removal';
-    if (active) markQuoteUpgraded();
+    const eventId = generateUUID();
+    const service = state.serviceType || 'removal';
+    const quoteVal = quote?.totalPrice;
     trackEvent('phone_conversion', {
       event_id: eventId,
-      value: quoteVal,
-      currency: 'GBP',
+      ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
       service,
-      source: active ? 'after_calculator' : 'standalone',
+      source: 'after_calculator',
       tel_target: tel,
     });
     dispatchWorkerConversion('phone_conversion', eventId, {
-      value: quoteVal,
-      currency: 'GBP',
+      ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
       service,
-      source: active ? 'after_calculator' : 'standalone',
+      source: 'after_calculator',
     });
     window.location.href = `tel:${tel}`;
   };
@@ -253,26 +254,24 @@ export function Step12Quote() {
         throw new Error('Failed to submit callback request');
       }
 
-      const active = getActiveQuoteState();
-      const eventId = active ? active.eventId : generateUUID();
-      const quoteVal = active ? active.value : 0;
-      const service = active ? active.service : state.serviceType || 'removal';
-      if (active) markQuoteUpgraded();
+      // The callback is its own conversion — the quote conversion already
+      // fired at completion. Fresh event_id; the on-screen quote's value
+      // rides along (never value:0 — the CAPI leg strips zeros, desyncing
+      // browser + server for the same event_id).
+      const eventId = generateUUID();
+      const service = state.serviceType || 'removal';
+      const quoteVal = quote?.totalPrice;
 
       trackEvent('callback_conversion', {
         event_id: eventId,
-        // Only push a monetary value when there's a real quote behind it.
-        // Pushing value:0 here while the CAPI leg strips value:0 desyncs the
-        // browser + server event for the same event_id and feeds £0 into
-        // Google Ads Smart Bidding.
-        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
+        ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
-        source: active ? 'after_calculator' : 'standalone',
+        source: 'after_calculator',
       });
       dispatchWorkerConversion('callback_conversion', eventId, {
-        ...(active ? { value: quoteVal, currency: 'GBP' } : {}),
+        ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
-        source: active ? 'after_calculator' : 'standalone',
+        source: 'after_calculator',
       });
 
       setCallbackStatus('success');

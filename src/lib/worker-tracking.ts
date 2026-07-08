@@ -152,6 +152,25 @@ export async function getTurnstileToken(): Promise<string | undefined> {
   });
 }
 
+/**
+ * Előmelegíti a Turnstile-tokent oldalbetöltéskor, hogy az ELSŐ valódi
+ * konverzió-dispatch ne a mint körútjával kezdjen (300ms–1,5s), miközben
+ * egy navigáció versenyez vele. A token 4 percig cache-elődik. Némán
+ * no-op, ha a script/konténer nincs az oldalon.
+ */
+export function prewarmTurnstileToken(): void {
+  if (typeof window === 'undefined') return;
+  const deadline = Date.now() + 15_000;
+  const iv = setInterval(() => {
+    if (window.turnstile && document.getElementById('cf-turnstile-invisible')) {
+      clearInterval(iv);
+      void getTurnstileToken().catch(() => undefined);
+    } else if (Date.now() > deadline) {
+      clearInterval(iv);
+    }
+  }, 500);
+}
+
 function getCookie(name: string): string | undefined {
   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
   return match ? decodeURIComponent(match[2]) : undefined;

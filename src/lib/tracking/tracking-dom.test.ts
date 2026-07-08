@@ -2,7 +2,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   trackEvent,
+  trackEventBeforeNavigate,
   adStorageGranted,
+  adStorageConsent,
   setUserDataOnDOM,
   readUserDataFromDOM,
   restoreUserDataFromStorage,
@@ -39,6 +41,7 @@ beforeEach(() => {
   document.getElementById(USER_DATA_ELEMENT_ID)?.remove();
   (window as any).dataLayer = undefined;
   delete (window as any).google_tag_data;
+  document.cookie = 'cookieyes-consent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
   vi.spyOn(console, 'warn').mockImplementation(() => {});
 });
 afterEach(() => {
@@ -78,29 +81,112 @@ describe('trackEvent — dataLayer push', () => {
   });
 });
 
-describe('adStorageGranted', () => {
-  it('is false when nothing is set', () => {
+describe('trackEventBeforeNavigate — navigation-safe conversion push', () => {
+  it('pushes the event with an eventCallback + eventTimeout and returns the event_id', () => {
+    const id = trackEventBeforeNavigate('callback_conversion', { value: 500, currency: 'GBP' }, '/thanks/', { navigate: () => {} });
+    const last = dl().at(-1)!;
+    expect(id).toBeTruthy();
+    expect(last).toMatchObject({ event: 'callback_conversion', event_id: id, value: 500 });
+    expect(typeof last.eventCallback).toBe('function');
+    expect(typeof last.eventTimeout).toBe('number');
+  });
+
+  it('strips PII keys exactly like trackEvent', () => {
+    trackEventBeforeNavigate('callback_conversion', { email: 'a@b.com', keepme: 1 }, '/thanks/', { navigate: () => {} });
+    const last = dl().at(-1)!;
+    expect(last.email).toBeUndefined();
+    expect(last.keepme).toBe(1);
+  });
+
+  it('uses a caller-provided event_id', () => {
+    const id = trackEventBeforeNavigate('callback_conversion', { event_id: 'evt_nav1' }, '/thanks/', { navigate: () => {} });
+    expect(id).toBe('evt_nav1');
+    expect(dl().at(-1)!.event_id).toBe('evt_nav1');
+  });
+
+  it('navigates to the destination when GTM invokes the eventCallback', () => {
+    const navigate = vi.fn();
+    trackEventBeforeNavigate('callback_conversion', {}, '/thanks/', { navigate });
+    expect(navigate).not.toHaveBeenCalled();
+    (dl().at(-1)!.eventCallback as () => void)();
+    expect(navigate).toHaveBeenCalledExactlyOnceWith('/thanks/');
+  });
+
+  it('navigates via the safety timeout when GTM never calls back, exactly once', () => {
+    vi.useFakeTimers();
+    try {
+      const navigate = vi.fn();
+      trackEventBeforeNavigate('callback_conversion', {}, '/thanks/', { navigate, timeoutMs: 2500 });
+      vi.advanceTimersByTime(2500);
+      expect(navigate).toHaveBeenCalledTimes(1);
+      // Late GTM callback after the timeout must NOT navigate again.
+      (dl().at(-1)!.eventCallback as () => void)();
+      expect(navigate).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('waits for BOTH the GTM callback and alsoWaitFor before navigating', async () => {
+    const navigate = vi.fn();
+    let resolveDispatch!: (v: boolean) => void;
+    const dispatch = new Promise<boolean>((r) => { resolveDispatch = r; });
+    trackEventBeforeNavigate('callback_conversion', {}, '/thanks/', { navigate, alsoWaitFor: dispatch });
+    (dl().at(-1)!.eventCallback as () => void)();
+    expect(navigate).not.toHaveBeenCalled(); // GTM done, dispatch pending
+    resolveDispatch(true);
+    await Promise.resolve(); // flush the .then
+    expect(navigate).toHaveBeenCalledExactlyOnceWith('/thanks/');
+  });
+
+  it('a REJECTED alsoWaitFor still releases the navigation', async () => {
+    const navigate = vi.fn();
+    const dispatch = Promise.reject(new Error('gateway down'));
+    trackEventBeforeNavigate('callback_conversion', {}, '/thanks/', { navigate, alsoWaitFor: dispatch });
+    (dl().at(-1)!.eventCallback as () => void)();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(navigate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('adStorageConsent — three-state decision', () => {
+  it('is unknown when nothing is set (pre-CMP boot)', () => {
+    expect(adStorageConsent()).toBe('unknown');
     expect(adStorageGranted()).toBe(false);
   });
 
-  it('is true when ICS ad_storage update is true', () => {
+  it('is granted when ICS ad_storage update is true', () => {
     grantAdStorage();
+    expect(adStorageConsent()).toBe('granted');
     expect(adStorageGranted()).toBe(true);
   });
 
-  it('is false when ICS ad_storage is denied', () => {
+  it('is denied when ICS ad_storage update is false', () => {
     denyAdStorage();
+    expect(adStorageConsent()).toBe('denied');
     expect(adStorageGranted()).toBe(false);
   });
 
-  it('falls back to the most recent dataLayer consent push (granted)', () => {
-    (window as any).dataLayer = [['consent', 'update', { ad_storage: 'granted' }]];
-    expect(adStorageGranted()).toBe(true);
+  it('treats an ICS DEFAULT entry without an update as unknown — the GTMHead default is not a user decision', () => {
+    (window as any).google_tag_data = { ics: { entries: { ad_storage: { default: false } } } };
+    expect(adStorageConsent()).toBe('unknown');
   });
 
-  it('falls back to the dataLayer consent push (denied)', () => {
-    (window as any).dataLayer = [['consent', 'default', { ad_storage: 'denied' }]];
-    expect(adStorageGranted()).toBe(false);
+  it('reads a CookieYes cookie grant before GTM initialises', () => {
+    document.cookie = 'cookieyes-consent=consentid:abc,consent:yes,analytics:yes,advertisement:yes';
+    expect(adStorageConsent()).toBe('granted');
+  });
+
+  it('reads a CookieYes cookie denial before GTM initialises', () => {
+    document.cookie = 'cookieyes-consent=consentid:abc,consent:yes,analytics:yes,advertisement:no';
+    expect(adStorageConsent()).toBe('denied');
+  });
+
+  it('prefers an explicit ICS update over the cookie', () => {
+    document.cookie = 'cookieyes-consent=consentid:abc,advertisement:no';
+    grantAdStorage();
+    expect(adStorageConsent()).toBe('granted');
   });
 });
 
@@ -167,6 +253,17 @@ describe('consent gating of at-rest persistence', () => {
     setUserDataOnDOM({ first_name: 'John' });
     expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
   });
+
+  it('under UNKNOWN consent: writes the DOM but neither persists nor purges an existing blob', () => {
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com' }); // consented persist on an earlier page
+    delete (window as any).google_tag_data; // fresh page, consent not yet readable
+    setUserDataOnDOM({ first_name: 'John' });
+    expect(readUserDataFromDOM().first_name).toBe('John'); // DOM write happens
+    const blob = JSON.parse(localStorage.getItem(USER_DATA_STORAGE_KEY)!);
+    expect(blob.data.email).toBe('a@b.com'); // existing blob survives…
+    expect(blob.data.first_name).toBeUndefined(); // …but no new persist without a grant
+  });
 });
 
 describe('restoreUserDataFromStorage', () => {
@@ -187,6 +284,19 @@ describe('restoreUserDataFromStorage', () => {
     restoreUserDataFromStorage();
     expect(readUserDataFromDOM()).toEqual({});
     expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
+  });
+
+  it('does NOT purge storage while consent is still unknown (boot before GTM/CMP loads)', () => {
+    // Regression: boot used to see the pre-CMP default (no ICS, no cookie),
+    // treat it as denial, and delete the consented user's persisted blob on
+    // every page-load — killing user_data for late CAPI dispatches.
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com' });
+    document.getElementById(USER_DATA_ELEMENT_ID)?.remove();
+    delete (window as any).google_tag_data; // fresh page-load, GTM not yet up
+    restoreUserDataFromStorage();
+    expect(readUserDataFromDOM()).toEqual({}); // no hydration without a grant…
+    expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).not.toBeNull(); // …but no destruction either
   });
 
   it('drops a blob older than the TTL and purges it', () => {

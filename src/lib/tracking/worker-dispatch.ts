@@ -61,18 +61,25 @@ function waitForTurnstile(timeoutMs = 10_000): Promise<boolean> {
 }
 
 /**
- * Egy konverzió szerver-oldali elküldése a Workerhez. Tűzz-és-felejts
- * (nem await-elendő) — a `sendToWorker` `sendBeacon`-t használ, ami túléli a
- * navigációt. Ismeretlen `internalEventName` esetén némán kihagyja.
+ * Egy konverzió szerver-oldali elküldése a Workerhez. Tipikusan
+ * tűzz-és-felejts — a `sendToWorker` `sendBeacon`-t használ, ami túléli a
+ * navigációt —, DE a beacon csak a Turnstile-token megszerzése UTÁN áll
+ * sorba. Ha a hívó a dispatch után navigál (callback-flow), várja meg a
+ * visszaadott Promise-t (pl. `trackEventBeforeNavigate` `alsoWaitFor`
+ * opciójával), különben a kemény navigáció megöli a folyamatban lévő
+ * token-mintet és a CAPI-leg elveszik. Ismeretlen `internalEventName`
+ * esetén némán kihagyja.
+ *
+ * @returns true, ha a beacon/fetch ténylegesen sorba állt.
  */
 export function dispatchWorkerConversion(
   internalEventName: string,
   eventId: string,
   opts: WorkerConversionOptions = {},
-): void {
-  if (typeof window === 'undefined') return;
+): Promise<boolean> {
+  if (typeof window === 'undefined') return Promise.resolve(false);
   const event_name = CANONICAL_EVENT[internalEventName];
-  if (!event_name) return;
+  if (!event_name) return Promise.resolve(false);
 
   // Onboarding #4: SOHA ne küldj value:0-t — hagyd ki a value-t (és a hozzá
   // tartozó currency-t), ha nincs valós pénzérték.
@@ -90,11 +97,11 @@ export function dispatchWorkerConversion(
     user_data: opts.userData ?? readUserDataFromDOM(),
   };
 
-  void (async () => {
+  return (async () => {
     if (!(await waitForTurnstile())) {
       console.warn('[tracking] Turnstile never loaded, dropping server-side dispatch', event_name);
-      return;
+      return false;
     }
-    await sendToWorker(payload);
+    return sendToWorker(payload);
   })();
 }

@@ -36,6 +36,12 @@ const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY
     />
 
     <GTMHead />
+    {/* Cloudflare Turnstile — INVISIBLE widget (no user-facing challenge).
+        This page fires the quote + callback conversions; without this
+        script and the container below, worker-dispatch.ts waits 10 s for
+        window.turnstile and silently DROPS every server-side Meta CAPI
+        leg (CLAUDE.md rule 4b). */}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer is:inline></script>
     {googleMapsApiKey && (
       <script
         async
@@ -46,6 +52,8 @@ const googleMapsApiKey = env.GOOGLE_MAPS_API_KEY
   </head>
   <body class="min-h-screen antialiased flex flex-col" style="background: #F0EBE3; font-family: 'DM Sans', -apple-system, sans-serif;">
     <GTMBody />
+    {/* Invisible Turnstile container — worker-tracking.ts renders the widget here. */}
+    <div id="cf-turnstile-invisible" style="display:none" aria-hidden="true"></div>
     <main class="flex-1">
       <ResultPage client:load />
     </main>
