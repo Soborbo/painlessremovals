@@ -17,7 +17,12 @@
     "phone_conversion",
     "quote_calculator_complete"
   ],
-  "conversionCapablePages": ["/contact/"],
+  "conversionCapablePages": [
+    "/contact/",
+    "/instantquote/your-quote/",
+    "/instantquote/simple-callback/",
+    "/instantquote/thank-you-callback/"
+  ],
   "turnstileExempt": [],
   "ssrPages": [
     "/instantquote/",

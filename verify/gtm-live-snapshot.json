@@ -1,5 +1,6 @@
 {
   "_snapshotNote": "LIVE GTM-PXTH5JJK version 52 fetched via Tag Manager API on 2026-07-08. Offline fallback for verify-gtm-live.mjs; prefer live mode (GTM_ACCOUNT_ID=6202585123, GTM_CONTAINER_ID=169431610).",
+  "fetchedAt": "2026-07-08T09:30:00Z",
   "containerVersionId": "52",
   "name": "Add currencyCode to Contact form submit Ads tag",
   "trigger": [
@@ -386,157 +387,157 @@
       ]
     },
     {
-      "name": "GA4 Event \u2014 phone_conversion",
+      "name": "GA4 Event — phone_conversion",
       "firingTriggerId": [
         "43"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Contact (whatsapp)",
+      "name": "Meta Pixel — Contact (whatsapp)",
       "firingTriggerId": [
         "48"
       ]
     },
     {
-      "name": "GA4 Event \u2014 scroll_90",
+      "name": "GA4 Event — scroll_90",
       "firingTriggerId": [
         "50"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Contact (email)",
+      "name": "Meta Pixel — Contact (email)",
       "firingTriggerId": [
         "60"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Contact (phone)",
+      "name": "Meta Pixel — Contact (phone)",
       "firingTriggerId": [
         "43"
       ]
     },
     {
-      "name": "GA4 Event \u2014 pricing_view",
+      "name": "GA4 Event — pricing_view",
       "firingTriggerId": [
         "63"
       ]
     },
     {
-      "name": "GA4 Event \u2014 form_step_complete",
+      "name": "GA4 Event — form_step_complete",
       "firingTriggerId": [
         "68"
       ]
     },
     {
-      "name": "GA4 Event \u2014 attribution_skipped",
+      "name": "GA4 Event — attribution_skipped",
       "firingTriggerId": [
         "70"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Contact (form submit)",
+      "name": "Meta Pixel — Contact (form submit)",
       "firingTriggerId": [
         "72"
       ]
     },
     {
-      "name": "GA4 Event \u2014 attribution_selected",
+      "name": "GA4 Event — attribution_selected",
       "firingTriggerId": [
         "75"
       ]
     },
     {
-      "name": "GA4 Event \u2014 contact_form_submit",
+      "name": "GA4 Event — contact_form_submit",
       "firingTriggerId": [
         "72"
       ]
     },
     {
-      "name": "GA4 Event \u2014 form_abandonment",
+      "name": "GA4 Event — form_abandonment",
       "firingTriggerId": [
         "79"
       ]
     },
     {
-      "name": "GA4 Event \u2014 quote_calculator_first_view",
+      "name": "GA4 Event — quote_calculator_first_view",
       "firingTriggerId": [
         "83"
       ]
     },
     {
-      "name": "GA4 Event \u2014 callback_conversion",
+      "name": "GA4 Event — callback_conversion",
       "firingTriggerId": [
         "85"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 base loader",
+      "name": "Meta Pixel — base loader",
       "firingTriggerId": [
         "2147479553"
       ]
     },
     {
-      "name": "GA4 Event \u2014 email_conversion",
+      "name": "GA4 Event — email_conversion",
       "firingTriggerId": [
         "60"
       ]
     },
     {
-      "name": "Google Ads \u2014 Callback Conversion",
+      "name": "Google Ads — Callback Conversion",
       "firingTriggerId": [
         "85"
       ]
     },
     {
-      "name": "GA4 Event \u2014 quote_calculator_conversion",
+      "name": "GA4 Event — quote_calculator_conversion",
       "firingTriggerId": [
         "42"
       ]
     },
     {
-      "name": "GA4 Event \u2014 form_start",
+      "name": "GA4 Event — form_start",
       "firingTriggerId": [
         "81"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Lead (callback)",
+      "name": "Meta Pixel — Lead (callback)",
       "firingTriggerId": [
         "85"
       ]
     },
     {
-      "name": "GA4 Event \u2014 scroll_50",
+      "name": "GA4 Event — scroll_50",
       "firingTriggerId": [
         "52"
       ]
     },
     {
-      "name": "Google Ads \u2014 Quote Calculator Conversion",
+      "name": "Google Ads — Quote Calculator Conversion",
       "firingTriggerId": [
         "42"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Lead (quote conversion)",
+      "name": "Meta Pixel — Lead (quote conversion)",
       "firingTriggerId": [
         "42"
       ]
     },
     {
-      "name": "GA4 Event \u2014 quote_calculator_complete",
+      "name": "GA4 Event — quote_calculator_complete",
       "firingTriggerId": [
         "65"
       ]
     },
     {
-      "name": "Meta Pixel \u2014 ViewContent (first quote)",
+      "name": "Meta Pixel — ViewContent (first quote)",
       "firingTriggerId": [
         "83"
       ]
     },
     {
-      "name": "Google Ads \u2014 Phone Click",
+      "name": "Google Ads — Phone Click",
       "firingTriggerId": [
         "43"
       ]
@@ -548,13 +549,13 @@
       ]
     },
     {
-      "name": "GA4 Event \u2014 whatsapp_conversion",
+      "name": "GA4 Event — whatsapp_conversion",
       "firingTriggerId": [
         "48"
       ]
     },
     {
-      "name": "Google Tag \u2014 GA4",
+      "name": "Google Tag — GA4",
       "firingTriggerId": [
         "2147479553"
       ]
@@ -572,19 +573,19 @@
       ]
     },
     {
-      "name": "Meta Pixel \u2014 Lead (clearance)",
+      "name": "Meta Pixel — Lead (clearance)",
       "firingTriggerId": [
         "109"
       ]
     },
     {
-      "name": "Google Ads \u2014 Quote Calc Conversion (clearance)",
+      "name": "Google Ads — Quote Calc Conversion (clearance)",
       "firingTriggerId": [
         "109"
       ]
     },
     {
-      "name": "GA4 Event \u2014 quote_calculator_conversion (clearance)",
+      "name": "GA4 Event — quote_calculator_conversion (clearance)",
       "firingTriggerId": [
         "109"
       ]

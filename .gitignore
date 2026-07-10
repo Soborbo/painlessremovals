@@ -50,3 +50,7 @@ check_png_chunks.ps1
 # Playwright e2e artifacts
 test-results/
 playwright-report/
+
+# verify harness generated files
+verify/.events-found.json
+verify/.e2e-skips.txt

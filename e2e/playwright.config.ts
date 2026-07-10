@@ -12,9 +12,8 @@
  *     wrangler's default port 8787, not the 4321 this suite targets. Run
  *     `npx astro build` yourself when dist is stale.
  *
- * The runner needs @playwright/test resolvable — it is intentionally NOT
- * a package.json dependency; `npm i --no-save @playwright/test` (matching
- * the globally installed playwright / preinstalled browsers version).
+ * The runner needs @playwright/test — pinned in package.json devDependencies
+ * (1.56.x) to match the preinstalled browsers (PLAYWRIGHT_BROWSERS_PATH).
  */
 
 import { defineConfig, devices } from '@playwright/test';
