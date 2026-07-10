@@ -46,3 +46,7 @@ leadgen-monorepo-master/
 partners-pages-copy.md
 painless-removals-about-page-FINAL.md
 check_png_chunks.ps1
+
+# Playwright e2e artifacts
+test-results/
+playwright-report/

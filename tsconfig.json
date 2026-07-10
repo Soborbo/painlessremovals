@@ -8,5 +8,5 @@
     "jsxImportSource": "react",
     "types": ["@cloudflare/workers-types", "@types/react", "@types/react-dom", "google.maps"]
   },
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "e2e", "verify"]
 }

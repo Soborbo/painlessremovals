@@ -1,0 +1,20 @@
+[
+  "attribution_selected",
+  "attribution_skipped",
+  "callback_conversion",
+  "clearance_callback_conversion",
+  "contact_form_submit",
+  "email_conversion",
+  "form_abandonment",
+  "form_start",
+  "form_step_complete",
+  "form_submission",
+  "instant_quote_cta_click",
+  "phone_conversion",
+  "quote_calculator_complete",
+  "quote_calculator_conversion",
+  "quote_calculator_first_view",
+  "scroll_50",
+  "scroll_90",
+  "whatsapp_conversion"
+]

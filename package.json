@@ -16,7 +16,11 @@
     "check": "astro check",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify": "node verify/run-verify.mjs --config verify.site.json",
+    "verify:static": "node verify/run-verify.mjs --config verify.site.json --layers source,dist,gtm-live",
+    "verify:strict": "node verify/run-verify.mjs --config verify.site.json --strict",
+    "verify:e2e": "playwright test --config e2e"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.0.0",
@@ -40,6 +44,7 @@
     "@cloudflare/workers-types": "^4.20260623.1",
     "@emnapi/core": "^1.11.1",
     "@emnapi/runtime": "^1.11.1",
+    "@playwright/test": "^1.56.1",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.1",
