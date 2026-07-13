@@ -134,6 +134,18 @@ export default defineConfig({
       'import.meta.env.GTG_PATH': JSON.stringify(
         process.env.GTG_PATH ?? 'f807'
       ),
+      // Turnstile sitekey for the invisible widget that gates the
+      // server-side conversion leg (worker-tracking.ts getTurnstileToken).
+      // Same failure class as GTM_ID above: client code reads
+      // import.meta.env.PUBLIC_TURNSTILE_SITE_KEY at BUILD time, so a deploy
+      // from a machine without the env var baked `sitekey: void 0` into the
+      // live bundle — every token acquisition failed and sendToWorker
+      // silently dropped ALL server-side conversions (found 2026-07-13, dead
+      // since the 2026-06-28 go-live tests). The sitekey is public by design;
+      // bake the production value as fallback so it can never be dropped.
+      'import.meta.env.PUBLIC_TURNSTILE_SITE_KEY': JSON.stringify(
+        process.env.PUBLIC_TURNSTILE_SITE_KEY || '0x4AAAAAACs7GfndiZsA_2c4'
+      ),
     },
     build: { sourcemap: 'hidden' },
   },

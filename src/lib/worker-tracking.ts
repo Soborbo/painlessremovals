@@ -13,6 +13,7 @@
  */
 
 import { generateUUID } from './uuid';
+import { trackError } from './errors/tracker';
 
 declare global {
   interface Window {
@@ -90,6 +91,16 @@ export async function getTurnstileToken(): Promise<string | undefined> {
 
   if (!window.turnstile) {
     console.warn('[tracking] Turnstile not loaded');
+    trackError('TURN-LOAD-001', undefined, { page: location.pathname }, 'worker-tracking/getTurnstileToken');
+    return undefined;
+  }
+
+  // A missing baked sitekey renders the widget with `sitekey: undefined` and
+  // every token acquisition fails — that silently killed ALL server-side
+  // conversions between 2026-06-28 and 2026-07-13. Report it loudly.
+  if (!import.meta.env.PUBLIC_TURNSTILE_SITE_KEY) {
+    console.error('[tracking] PUBLIC_TURNSTILE_SITE_KEY missing from build — server-side dispatch disabled');
+    trackError('TURN-KEY-001', undefined, { keyPrefix: 'MISSING_AT_BUILD' }, 'worker-tracking/getTurnstileToken');
     return undefined;
   }
 
@@ -97,6 +108,7 @@ export async function getTurnstileToken(): Promise<string | undefined> {
     const container = document.getElementById('cf-turnstile-invisible');
     if (!container) {
       console.warn('[tracking] Turnstile container not found');
+      trackError('TURN-LOAD-002', undefined, { containerId: 'cf-turnstile-invisible' }, 'worker-tracking/getTurnstileToken');
       resolve(undefined);
       return;
     }
@@ -113,6 +125,7 @@ export async function getTurnstileToken(): Promise<string | undefined> {
         const r = pendingResolver;
         pendingResolver = undefined;
         console.warn('[tracking] Turnstile timeout');
+        trackError('TURN-TOKEN-001', undefined, { waitedMs: 10000, reason: 'timeout' }, 'worker-tracking/getTurnstileToken');
         r.resolve(undefined);
       }
     }, 10000);
@@ -132,6 +145,7 @@ export async function getTurnstileToken(): Promise<string | undefined> {
       const r = pendingResolver;
       pendingResolver = undefined;
       clearTimeout(r.timeout);
+      trackError('TURN-TOKEN-001', undefined, { waitedMs: 0, reason: 'error-callback' }, 'worker-tracking/getTurnstileToken');
       r.resolve(undefined);
     };
 
