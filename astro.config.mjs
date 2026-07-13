@@ -124,6 +124,16 @@ export default defineConfig({
       'import.meta.env.GTM_ID': JSON.stringify(
         process.env.GTM_ID || 'GTM-PXTH5JJK'
       ),
+      // Google Tag Gateway (first-party) measurement path. Cloudflare's
+      // auto-injection does NOT rewrite the gtm.js loader in our
+      // Worker-served HTML, so we load the container from the first-party
+      // path ourselves (https://<host>/<GTG_PATH>/gtm.js) — same-origin, so
+      // GA4/Ads measurement then routes first-party too. Empty string falls
+      // back to www.googletagmanager.com (GTMHead), so disabling GTG can't
+      // silently break tracking. Path is public (it's in every page's HTML).
+      'import.meta.env.GTG_PATH': JSON.stringify(
+        process.env.GTG_PATH ?? 'f807'
+      ),
     },
     build: { sourcemap: 'hidden' },
   },
