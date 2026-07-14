@@ -93,9 +93,13 @@ export const POST: APIRoute = async (context) => {
     // Get runtime config
     const runtimeConfig = getRuntimeConfig(env);
 
-    // Generate fingerprint (used as quote reference)
+    // Generate fingerprint (used as quote reference). `completedAt` is a
+    // per-request timestamp — hashing it would give every retry/double-fire
+    // a fresh fingerprint and the dedup below would never match (the client
+    // excludes it from its quote signature for the same reason).
+    const { completedAt: _volatileCompletedAt, ...stableData } = validated.data;
     const fingerprint = generateFingerprint({
-      data: validated.data,
+      data: stableData,
       totalPrice: validated.totalPrice,
     });
 

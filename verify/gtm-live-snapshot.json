@@ -1,0 +1,594 @@
+{
+  "_snapshotNote": "LIVE GTM-PXTH5JJK version 52 fetched via Tag Manager API on 2026-07-08. Offline fallback for verify-gtm-live.mjs; prefer live mode (GTM_ACCOUNT_ID=6202585123, GTM_CONTAINER_ID=169431610).",
+  "fetchedAt": "2026-07-08T09:30:00Z",
+  "containerVersionId": "52",
+  "name": "Add currencyCode to Contact form submit Ads tag",
+  "trigger": [
+    {
+      "triggerId": "42",
+      "name": "quote_calculator_conversion",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "quote_calculator_conversion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "43",
+      "name": "phone_conversion",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "phone_conversion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "48",
+      "name": "whatsapp_conversion",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "whatsapp_conversion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "50",
+      "name": "scroll_90",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "scroll_90"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "52",
+      "name": "scroll_50",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "scroll_50"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "60",
+      "name": "email_conversion",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "email_conversion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "63",
+      "name": "pricing_view",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "pricing_view"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "65",
+      "name": "quote_calculator_complete",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "quote_calculator_complete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "68",
+      "name": "form_step_complete",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "form_step_complete"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "70",
+      "name": "attribution_skipped",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "attribution_skipped"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "72",
+      "name": "contact_form_submit",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "contact_form_submit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "75",
+      "name": "attribution_selected",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "attribution_selected"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "79",
+      "name": "form_abandonment",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "form_abandonment"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "81",
+      "name": "form_start",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "form_start"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "83",
+      "name": "quote_calculator_first_view",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "quote_calculator_first_view"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "85",
+      "name": "callback_conversion",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "callback_conversion"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "triggerId": "109",
+      "name": "clearance_callback_conversion",
+      "type": "customEvent",
+      "customEventFilter": [
+        {
+          "type": "equals",
+          "parameter": [
+            {
+              "type": "template",
+              "key": "arg0",
+              "value": "{{_event}}"
+            },
+            {
+              "type": "template",
+              "key": "arg1",
+              "value": "clearance_callback_conversion"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "tag": [
+    {
+      "name": "CookieYes CMP",
+      "firingTriggerId": [
+        "2147479572"
+      ]
+    },
+    {
+      "name": "GA4 Event — phone_conversion",
+      "firingTriggerId": [
+        "43"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Contact (whatsapp)",
+      "firingTriggerId": [
+        "48"
+      ]
+    },
+    {
+      "name": "GA4 Event — scroll_90",
+      "firingTriggerId": [
+        "50"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Contact (email)",
+      "firingTriggerId": [
+        "60"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Contact (phone)",
+      "firingTriggerId": [
+        "43"
+      ]
+    },
+    {
+      "name": "GA4 Event — pricing_view",
+      "firingTriggerId": [
+        "63"
+      ]
+    },
+    {
+      "name": "GA4 Event — form_step_complete",
+      "firingTriggerId": [
+        "68"
+      ]
+    },
+    {
+      "name": "GA4 Event — attribution_skipped",
+      "firingTriggerId": [
+        "70"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Contact (form submit)",
+      "firingTriggerId": [
+        "72"
+      ]
+    },
+    {
+      "name": "GA4 Event — attribution_selected",
+      "firingTriggerId": [
+        "75"
+      ]
+    },
+    {
+      "name": "GA4 Event — contact_form_submit",
+      "firingTriggerId": [
+        "72"
+      ]
+    },
+    {
+      "name": "GA4 Event — form_abandonment",
+      "firingTriggerId": [
+        "79"
+      ]
+    },
+    {
+      "name": "GA4 Event — quote_calculator_first_view",
+      "firingTriggerId": [
+        "83"
+      ]
+    },
+    {
+      "name": "GA4 Event — callback_conversion",
+      "firingTriggerId": [
+        "85"
+      ]
+    },
+    {
+      "name": "Meta Pixel — base loader",
+      "firingTriggerId": [
+        "2147479553"
+      ]
+    },
+    {
+      "name": "GA4 Event — email_conversion",
+      "firingTriggerId": [
+        "60"
+      ]
+    },
+    {
+      "name": "Google Ads — Callback Conversion",
+      "firingTriggerId": [
+        "85"
+      ]
+    },
+    {
+      "name": "GA4 Event — quote_calculator_conversion",
+      "firingTriggerId": [
+        "42"
+      ]
+    },
+    {
+      "name": "GA4 Event — form_start",
+      "firingTriggerId": [
+        "81"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Lead (callback)",
+      "firingTriggerId": [
+        "85"
+      ]
+    },
+    {
+      "name": "GA4 Event — scroll_50",
+      "firingTriggerId": [
+        "52"
+      ]
+    },
+    {
+      "name": "Google Ads — Quote Calculator Conversion",
+      "firingTriggerId": [
+        "42"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Lead (quote conversion)",
+      "firingTriggerId": [
+        "42"
+      ]
+    },
+    {
+      "name": "GA4 Event — quote_calculator_complete",
+      "firingTriggerId": [
+        "65"
+      ]
+    },
+    {
+      "name": "Meta Pixel — ViewContent (first quote)",
+      "firingTriggerId": [
+        "83"
+      ]
+    },
+    {
+      "name": "Google Ads — Phone Click",
+      "firingTriggerId": [
+        "43"
+      ]
+    },
+    {
+      "name": "Conversion Linker",
+      "firingTriggerId": [
+        "2147479553"
+      ]
+    },
+    {
+      "name": "GA4 Event — whatsapp_conversion",
+      "firingTriggerId": [
+        "48"
+      ]
+    },
+    {
+      "name": "Google Tag — GA4",
+      "firingTriggerId": [
+        "2147479553"
+      ]
+    },
+    {
+      "name": "Google Ads - Contact form submit",
+      "firingTriggerId": [
+        "72"
+      ]
+    },
+    {
+      "name": "Microsoft Clarity - Official",
+      "firingTriggerId": [
+        "2147479553"
+      ]
+    },
+    {
+      "name": "Meta Pixel — Lead (clearance)",
+      "firingTriggerId": [
+        "109"
+      ]
+    },
+    {
+      "name": "Google Ads — Quote Calc Conversion (clearance)",
+      "firingTriggerId": [
+        "109"
+      ]
+    },
+    {
+      "name": "GA4 Event — quote_calculator_conversion (clearance)",
+      "firingTriggerId": [
+        "109"
+      ]
+    }
+  ]
+}

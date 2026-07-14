@@ -402,7 +402,14 @@ export function ResultPage() {
     // date) and returns here, the fingerprint changes and a fresh event_id
     // is minted — otherwise the new quote's conversion would be silently
     // suppressed by the guard from the PREVIOUS quote's stale event_id.
-    const quoteSignature = generateFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
+    //
+    // completedAt is minted fresh inside getSubmissionData() on EVERY call —
+    // it must NOT feed the signature, or the fingerprint rotates per mount,
+    // sameQuote is always false, and a refresh re-fires the conversion under
+    // a fresh event_id (caught by the e2e refresh-no-dupe scenario on its
+    // first real run).
+    const { completedAt: _volatile, ...stableSubmission } = submissionData;
+    const quoteSignature = generateFingerprint({ data: stableSubmission, totalPrice: quote.totalPrice });
     const stored = calculatorStore.get();
     const sameQuote = !!stored.completionEventId && stored.completionQuoteSignature === quoteSignature;
     const eventId = sameQuote ? stored.completionEventId! : generateUUID();

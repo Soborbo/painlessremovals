@@ -1,0 +1,31 @@
+{
+  // Typecheck project for the Playwright e2e layer (e2e/ + verify/e2e/).
+  //
+  // The root tsconfig excludes "e2e" and "verify" (Astro's base config
+  // sweeps `**/*` with allowJs, so the copied verify/*.mjs scripts and the
+  // @playwright/test imports would otherwise break `npx tsc --noEmit` for
+  // the app). This project picks those files up instead:
+  //
+  //   npx tsc -p e2e --noEmit
+  //
+  // Requires @playwright/test to be resolvable (it is NOT a package.json
+  // dependency by design — install with `npm i --no-save @playwright/test`
+  // to match the globally installed playwright runner version).
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": [
+      "node",
+      "@cloudflare/workers-types",
+      "@types/react",
+      "@types/react-dom",
+      "google.maps"
+    ]
+  },
+  "include": [
+    "./**/*.ts",
+    "../verify/e2e/**/*.ts",
+    // Pulls in astro/client (import.meta.env) + generated Astro types for
+    // the src/ modules the seed/spec import (calculator-store chain).
+    "../src/env.d.ts"
+  ]
+}

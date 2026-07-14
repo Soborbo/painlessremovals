@@ -1,0 +1,38 @@
+{
+  "src": "./src",
+  "dist": "./dist/client",
+  "mpFn": "sendGA4MP",
+  "conversionEvents": [
+    "quote_calculator_conversion",
+    "callback_conversion",
+    "phone_conversion",
+    "email_conversion",
+    "whatsapp_conversion",
+    "contact_form_submit",
+    "clearance_callback_conversion"
+  ],
+  "keyEvents": [
+    "quote_calculator_conversion",
+    "callback_conversion",
+    "phone_conversion",
+    "quote_calculator_complete"
+  ],
+  "conversionCapablePages": [
+    "/contact/",
+    "/instantquote/your-quote/",
+    "/instantquote/simple-callback/",
+    "/instantquote/thank-you-callback/"
+  ],
+  "turnstileExempt": [],
+  "ssrPages": [
+    "/instantquote/",
+    "/instantquote/your-quote/",
+    "/instantquote/simple-callback/",
+    "/instantquote/thank-you/",
+    "/instantquote/thank-you-callback/"
+  ],
+  "gtmSnapshot": "./verify/gtm-live-snapshot.json",
+  "committedGtm": "./GTM-PXTH5JJK_workspace_v2.json",
+  "e2eDir": "./e2e",
+  "liveData": { "days": 2, "maxUnassigned": 0.4 }
+}

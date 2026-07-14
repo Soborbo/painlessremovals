@@ -86,7 +86,11 @@ export function Step12Quote() {
       // quote-affecting input, and returning here must NOT reuse the
       // stale event_id — that would silently suppress the new quote's
       // conversion under the previous quote's fired-guard.
-      const quoteSignature = generateFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
+      // completedAt is minted fresh inside getSubmissionData() on EVERY
+      // call — exclude it, or the signature rotates per mount and a refresh
+      // re-fires the conversion under a fresh event_id (e2e refresh-no-dupe).
+      const { completedAt: _volatile, ...stableSubmission } = submissionData;
+      const quoteSignature = generateFingerprint({ data: stableSubmission, totalPrice: quote.totalPrice });
       const stored = calculatorStore.get();
       const sameQuote = !!stored.completionEventId && stored.completionQuoteSignature === quoteSignature;
       const eventId = sameQuote ? stored.completionEventId! : generateUUID();
