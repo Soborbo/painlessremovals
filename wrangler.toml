@@ -40,6 +40,27 @@ id = "b9ceca436b2d44e0a9d4dca42b998da8"
 # code reads `env.SESSIONS`. Delete the namespace via:
 #   wrangler kv namespace delete --namespace-id=cfc7e5916f054125922731a9ddbce29a
 
+# Server-side conversions reach the event-gateway Worker through this binding, NOT
+# through a plain fetch to painlessremovals.com/api/event/*. That URL is a Worker
+# route on our own zone, and a Worker subrequest cannot re-enter another Worker
+# route on the same zone — Cloudflare short-circuits it, so the gateway never sees
+# the event while the lead endpoint still returns 200 (a silent zero).
+[[services]]
+binding = "EVENT_GATEWAY"
+service = "event-gateway"
+
+# Gateway smoke test. A conversion is routed to Meta's *Test* stream ONLY when the
+# lead's email is TRACKING_TEST_LEAD_EMAIL (see lib/tracking/gateway-dispatch.ts).
+# Keyed on the lead, not on a global flag, so a REAL lead can never be diverted into
+# the Test stream — which is why these are safe to leave set, and why the whole
+# chain stays re-testable at any time without touching live config.
+# TRACKING_TEST_EVENT_CODE should be the code shown in Meta Events Manager →
+# Test Events for this pixel; any value keeps the event out of the production
+# dataset, but only the real one makes it visible in that tab.
+[vars]
+TRACKING_TEST_LEAD_EMAIL = "gateway-smoke-test@soborbo.co.uk"
+TRACKING_TEST_EVENT_CODE = "TEST_PAINLESS"
+
 # Plain env vars and secrets are managed in the Cloudflare dashboard
 # (Workers > painlessremovals-worker > Settings > Variables and Secrets).
 # `keep_vars = true` above prevents `wrangler deploy` from wiping them.

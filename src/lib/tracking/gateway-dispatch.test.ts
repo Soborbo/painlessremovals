@@ -5,6 +5,7 @@ import {
   isGatewayConfigured,
   gatewayBaseUrl,
   splitFullName,
+  resolveTestEventCode,
   type GatewayEnv,
   type GatewayConversionInput,
 } from './gateway-dispatch';
@@ -227,5 +228,92 @@ describe('sendGatewayConversion', () => {
       }) as any,
     });
     expect(res).toMatchObject({ ok: false, error: 'gateway_not_configured', attempts: 0 });
+  });
+});
+
+/**
+ * Synthetic-lead smoke test. The load-bearing property is the NEGATIVE one: a real
+ * lead must never pick up the test code, or its conversion silently lands in Meta's
+ * Test stream instead of the live one and the revenue disappears from ROAS.
+ */
+describe('resolveTestEventCode', () => {
+  const testEnv: GatewayEnv = {
+    ...env,
+    TRACKING_TEST_LEAD_EMAIL: 'gateway-smoke-test@soborbo.co.uk',
+    TRACKING_TEST_EVENT_CODE: 'TEST12345',
+  };
+
+  it('tags ONLY the designated synthetic lead', () => {
+    expect(resolveTestEventCode(testEnv, 'gateway-smoke-test@soborbo.co.uk')).toBe('TEST12345');
+  });
+
+  it('is case/whitespace-insensitive (the address is typed into a real form)', () => {
+    expect(resolveTestEventCode(testEnv, '  Gateway-Smoke-Test@Soborbo.co.uk ')).toBe('TEST12345');
+  });
+
+  it('NEVER tags a real lead', () => {
+    expect(resolveTestEventCode(testEnv, 'jane@customer.com')).toBeUndefined();
+    expect(resolveTestEventCode(testEnv, undefined)).toBeUndefined();
+  });
+
+  it('is inert unless BOTH vars are set', () => {
+    expect(
+      resolveTestEventCode({ ...env, TRACKING_TEST_LEAD_EMAIL: 'x@y.z' }, 'x@y.z'),
+    ).toBeUndefined();
+    expect(
+      resolveTestEventCode({ ...env, TRACKING_TEST_EVENT_CODE: 'TEST1' }, 'x@y.z'),
+    ).toBeUndefined();
+  });
+
+  it('rides on the wire for the synthetic lead, and is absent for a real one', async () => {
+    const captured: { url?: string; init?: any } = {};
+    await sendGatewayConversion(
+      testEnv,
+      { ...baseInput, userData: { email: 'gateway-smoke-test@soborbo.co.uk' } },
+      { fetchImpl: okFetch(captured) },
+    );
+    expect(JSON.parse(captured.init.body).test_event_code).toBe('TEST12345');
+
+    const real: { url?: string; init?: any } = {};
+    await sendGatewayConversion(
+      testEnv,
+      { ...baseInput, userData: { email: 'jane@customer.com' } },
+      { fetchImpl: okFetch(real) },
+    );
+    expect(JSON.parse(real.init.body).test_event_code).toBeUndefined();
+  });
+});
+
+/**
+ * The service binding is not an optimisation — it is the only path that reaches the
+ * gateway from on-zone. A plain fetch to our own zone's /api/event/* route is
+ * short-circuited by Cloudflare's Worker-loop protection: the lead endpoint still
+ * returns 200 and the gateway never sees the conversion. Silent zero.
+ */
+describe('service binding', () => {
+  it('dispatches THROUGH the binding when one is bound, not via global fetch', async () => {
+    const seen: { url?: string; init?: any } = {};
+    const binding = {
+      fetch: async (url: string, init: any) => {
+        seen.url = url;
+        seen.init = init;
+        return new Response(null, { status: 204 });
+      },
+    };
+    const globalFetch = vi.fn(async () => new Response(null, { status: 204 }));
+    const orig = globalThis.fetch;
+    globalThis.fetch = globalFetch as any;
+    try {
+      const res = await sendGatewayConversion({ ...env, EVENT_GATEWAY: binding }, baseInput);
+      expect(res.ok).toBe(true);
+      expect(globalFetch).not.toHaveBeenCalled();
+    } finally {
+      globalThis.fetch = orig;
+    }
+
+    // The Host must stay the SITE's hostname: the gateway resolves the tenant from
+    // it (CLAUDE.md #14). Sending the gateway's own hostname would 404 the config.
+    expect(seen.url).toBe('https://painlessremovals.com/api/event/conversion-server');
+    expect(seen.init.headers['x-admin-token']).toBe('per-site-token');
   });
 });

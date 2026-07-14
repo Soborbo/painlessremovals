@@ -21,7 +21,30 @@
 import { logger } from '@/lib/utils/logger';
 import type { WaitUntil } from '@/lib/crm/server';
 
+/** Minimal shape of a Cloudflare service binding (Fetcher). */
+export interface GatewayFetcher {
+  fetch: (input: string, init?: RequestInit) => Promise<Response>;
+}
+
 export interface GatewayEnv {
+  /**
+   * Service binding to the event-gateway Worker. REQUIRED in production, and not
+   * merely an optimisation.
+   *
+   * A plain `fetch()` to https://painlessremovals.com/api/event/conversion-server
+   * DOES NOT REACH THE GATEWAY. That URL is served by a Worker route on our OWN
+   * zone, and Cloudflare deliberately does not let a Worker's subrequest re-enter
+   * another Worker route on the same zone (loop protection) — the subrequest is
+   * short-circuited instead. The lead endpoint still answered 200, the gateway
+   * simply never saw the event: a silent zero, the exact failure class this module
+   * was written to end.
+   *
+   * The binding is Worker-to-Worker and bypasses zone routing entirely. We still
+   * fetch the site's own absolute URL through it, because the gateway resolves the
+   * tenant from the request hostname (CLAUDE.md #14) — the Host must stay
+   * painlessremovals.com or the site-config lookup 404s.
+   */
+  EVENT_GATEWAY?: GatewayFetcher;
   /**
    * Plaintext per-site token. Its SHA-256 lives in the gateway's SITE_CONFIG KV
    * as `crm_token_sha256`. Per-site by design: a leak affects THIS site only —
@@ -36,6 +59,31 @@ export interface GatewayEnv {
    */
   TRACKING_GATEWAY_URL?: string;
   SITE_URL?: string;
+  /**
+   * Synthetic-lead smoke test. A conversion is tagged with
+   * `TRACKING_TEST_EVENT_CODE` — landing it in Meta's *Test* stream instead of the
+   * live one — ONLY when the lead's email equals `TRACKING_TEST_LEAD_EMAIL`.
+   *
+   * Keyed on the lead itself, not on a global "test mode" flag, and that is the
+   * whole point: a global flag (or the gateway's KV `meta.test_event_code`) also
+   * catches every REAL lead that happens to arrive while it is on, quietly routing
+   * paying conversions into the Test stream. Keying on the address means real leads
+   * can never carry the code, so these two vars are safe to leave set permanently
+   * and the chain stays re-testable end-to-end at any time.
+   */
+  TRACKING_TEST_LEAD_EMAIL?: string;
+  TRACKING_TEST_EVENT_CODE?: string;
+}
+
+/**
+ * Returns the Meta test-event code iff this lead is the designated synthetic one.
+ * Case/whitespace-insensitive: the address is typed into a real form by hand.
+ */
+export function resolveTestEventCode(env: GatewayEnv, email?: string): string | undefined {
+  const marker = env.TRACKING_TEST_LEAD_EMAIL?.trim().toLowerCase();
+  const code = env.TRACKING_TEST_EVENT_CODE?.trim();
+  if (!marker || !code || !email) return undefined;
+  return email.trim().toLowerCase() === marker ? code : undefined;
 }
 
 /** Loose fetch shape so test mocks and Node's fetch both assign. */
@@ -88,6 +136,11 @@ export interface GatewayConversionInput {
    */
   clientIpAddress?: string;
   clientUserAgent?: string;
+  /**
+   * Meta Test-stream override, honoured by the gateway only on the authenticated
+   * server ingress. Resolved from the lead's email — see `resolveTestEventCode`.
+   */
+  testEventCode?: string;
 }
 
 export interface GatewayResult {
@@ -154,6 +207,7 @@ export function buildGatewayPayload(input: GatewayConversionInput): Record<strin
     event_source_url: input.eventSourceUrl,
     client_ip_address: input.clientIpAddress,
     client_user_agent: input.clientUserAgent,
+    test_event_code: input.testEventCode,
     // NOTE: no `turnstile_token`. There is no browser in this call path; the
     // per-site X-Admin-Token is what authorises us past the Turnstile gate.
   });
@@ -173,7 +227,13 @@ export async function sendGatewayConversion(
     return { ok: false, error: 'gateway_not_configured', retriable: false, attempts: 0 };
   }
 
-  const fetchImpl = opts.fetchImpl ?? ((globalThis.fetch as unknown) as FetchLike);
+  // Service binding first — see GatewayEnv.EVENT_GATEWAY. The global-fetch fallback
+  // only works from OFF-zone callers; on-zone it silently never reaches the gateway.
+  const fetchImpl =
+    opts.fetchImpl ??
+    (env.EVENT_GATEWAY
+      ? (((url, init) => env.EVENT_GATEWAY!.fetch(url, init as RequestInit)) as FetchLike)
+      : ((globalThis.fetch as unknown) as FetchLike));
   const sleepImpl = opts.sleepImpl ?? defaultSleep;
   const delays = opts.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
 
@@ -186,7 +246,12 @@ export async function sendGatewayConversion(
   // The gateway refuses this route without a valid per-site token — no browser
   // fallback — so the exemption cannot be abused as a rate-limit bypass.
   const url = `${base}/api/event/conversion-server`;
-  const body = JSON.stringify(buildGatewayPayload(input));
+  const body = JSON.stringify(
+    buildGatewayPayload({
+      ...input,
+      testEventCode: input.testEventCode ?? resolveTestEventCode(env, input.userData?.email),
+    }),
+  );
   const headers = {
     'content-type': 'application/json',
     'x-admin-token': env.TRACKING_GATEWAY_TOKEN,
