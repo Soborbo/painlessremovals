@@ -145,12 +145,15 @@ describe('splitFullName', () => {
 });
 
 describe('sendGatewayConversion', () => {
-  it('POSTs to /api/event/conversion with the per-site token header', async () => {
+  it('POSTs to the SERVER route (WAF-exempt), not the browser one', async () => {
     const captured: { url?: string; init?: any } = {};
     const res = await sendGatewayConversion(env, baseInput, { fetchImpl: okFetch(captured) as any });
 
     expect(res.ok).toBe(true);
-    expect(captured.url).toBe('https://painlessremovals.com/api/event/conversion');
+    // Must NOT be `/api/event/conversion` — that path is what the zone's WAF
+    // rate-limiting rule throttles. Sending money conversions there would put them
+    // behind an IP-keyed limit they all share (single Worker egress IP).
+    expect(captured.url).toBe('https://painlessremovals.com/api/event/conversion-server');
     expect(captured.init.method).toBe('POST');
     expect(captured.init.headers['x-admin-token']).toBe('per-site-token');
     // The token must never leak into the body.

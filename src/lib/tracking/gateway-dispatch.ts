@@ -177,7 +177,15 @@ export async function sendGatewayConversion(
   const sleepImpl = opts.sleepImpl ?? defaultSleep;
   const delays = opts.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
 
-  const url = `${base}/api/event/conversion`;
+  // NOT `/api/event/conversion` — that is the BROWSER path, and it is the one the
+  // zone's WAF rate-limiting rule matches (on the Free plan a rule can only match
+  // on Path, so this separate route is the only way to exempt us). Server-side
+  // conversions all leave from a single Worker egress IP, so an IP-keyed limit
+  // would throttle exactly the conversions that carry money.
+  //
+  // The gateway refuses this route without a valid per-site token — no browser
+  // fallback — so the exemption cannot be abused as a rate-limit bypass.
+  const url = `${base}/api/event/conversion-server`;
   const body = JSON.stringify(buildGatewayPayload(input));
   const headers = {
     'content-type': 'application/json',
