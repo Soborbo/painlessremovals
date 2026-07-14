@@ -1,0 +1,273 @@
+/**
+ * Server-to-server conversion dispatch to the Soborbo event-gateway Worker.
+ *
+ * WHY THIS EXISTS. The browser leg (`worker-tracking.ts` → `sendToWorker`) can
+ * only reach the gateway with a Turnstile token, and it bails silently when it
+ * cannot get one. That is not a hypothetical: an unbaked `PUBLIC_TURNSTILE_SITE_KEY`
+ * killed every server-side conversion between 2026-06-28 and 2026-07-13 without a
+ * single error surfacing. Meanwhile the lead itself always arrived (email + i-mve +
+ * Painless-CRM), so the business saw leads while Meta saw nothing.
+ *
+ * This module is the backstop: the lead chokepoints (`save-quote.ts`,
+ * `callbacks.ts`) push the conversion straight from the server, authenticated with
+ * a per-site token, so it no longer depends on a browser, a widget, or consent to
+ * a challenge. The browser leg stays as-is — both legs carry the SAME `event_id`,
+ * so Meta dedupes them into one Lead (CLAUDE.md #16).
+ *
+ * Shape deliberately mirrors `lib/crm/server.ts` (background delivery via
+ * `waitUntil`, injectable `fetchImpl`, never throws into the request path).
+ */
+
+import { logger } from '@/lib/utils/logger';
+import type { WaitUntil } from '@/lib/crm/server';
+
+export interface GatewayEnv {
+  /**
+   * Plaintext per-site token. Its SHA-256 lives in the gateway's SITE_CONFIG KV
+   * as `crm_token_sha256`. Per-site by design: a leak affects THIS site only —
+   * the gateway explicitly refuses the global operator token on this route.
+   */
+  TRACKING_GATEWAY_TOKEN?: string;
+  /**
+   * Gateway origin. MUST be a hostname the gateway has a KV site-config for —
+   * it routes by `new URL(request.url).hostname` (CLAUDE.md #14). For Painless
+   * that is our own apex, which Cloudflare routes to the gateway Worker via the
+   * `painlessremovals.com/api/event/*` route. Defaults to SITE_URL.
+   */
+  TRACKING_GATEWAY_URL?: string;
+  SITE_URL?: string;
+}
+
+/** Loose fetch shape so test mocks and Node's fetch both assign. */
+export type FetchLike = (
+  input: string,
+  init: { method: string; headers: Record<string, string>; body: string },
+) => Promise<Response>;
+
+/** Canonical gateway event names (see Serverside `src/events.json`). */
+export type GatewayEventName =
+  | 'quote_calculator_submitted'
+  | 'callback_request_submitted'
+  | 'contact_form_submitted';
+
+export interface GatewayUserData {
+  email?: string;
+  phone_number?: string;
+  first_name?: string;
+  last_name?: string;
+  city?: string;
+  postal_code?: string;
+  country?: string;
+}
+
+export interface GatewayConversionInput {
+  eventName: GatewayEventName;
+  /**
+   * MUST be the same id the browser used for this conversion (the one that goes
+   * to the Meta Pixel via the dataLayer). A different id here does not "add" a
+   * conversion — it DOUBLE-COUNTS the Lead, because Meta dedupes on the
+   * (event_name, event_id) pair.
+   */
+  eventId: string;
+  /** Stable CRM-side lead key, so the gateway ledger row joins the CRM lead. */
+  leadId?: string;
+  value?: number;
+  currency?: string;
+  service?: string;
+  source?: string;
+  userData?: GatewayUserData;
+  /** Click IDs + UTMs already lifted out of the calculator state. */
+  attribution?: Record<string, string | undefined>;
+  clientId?: string;
+  sessionId?: string;
+  eventSourceUrl?: string;
+  /**
+   * The REAL end-user's IP/UA, read from the inbound request headers. Without
+   * these the gateway would attribute the conversion to our own Worker's egress
+   * IP/UA — wrong geo and a measurably worse Meta EMQ.
+   */
+  clientIpAddress?: string;
+  clientUserAgent?: string;
+}
+
+export interface GatewayResult {
+  ok: boolean;
+  status?: number;
+  error?: string;
+  retriable?: boolean;
+  attempts: number;
+}
+
+const DEFAULT_RETRY_DELAYS_MS = [1000, 5000];
+const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+export function gatewayBaseUrl(env: GatewayEnv): string | undefined {
+  const raw = env.TRACKING_GATEWAY_URL || env.SITE_URL;
+  return raw ? raw.replace(/\/+$/, '') : undefined;
+}
+
+export function isGatewayConfigured(env: GatewayEnv): boolean {
+  return Boolean(env.TRACKING_GATEWAY_TOKEN && gatewayBaseUrl(env));
+}
+
+/**
+ * Splits a single "full name" field into first/last for Meta's `fn`/`ln`.
+ * We send RAW values — the gateway is the single normalizer (CLAUDE.md #1), so
+ * lowercasing/trimming here would just be a second, drift-prone copy of it.
+ */
+export function splitFullName(full?: string): { first_name?: string; last_name?: string } {
+  const parts = (full ?? '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return {};
+  if (parts.length === 1) return { first_name: parts[0] };
+  return { first_name: parts[0], last_name: parts.slice(1).join(' ') };
+}
+
+/** Drops undefined/empty entries so we never ship empty strings as PII. */
+function compact(obj: object): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (v !== undefined && v !== null && v !== '') out[k] = v;
+  }
+  return out;
+}
+
+export function buildGatewayPayload(input: GatewayConversionInput): Record<string, unknown> {
+  // CLAUDE.md #3: never send `value: 0` — Meta logs it as a real value and it
+  // skews ROAS. Omit value AND currency together when there is no money value.
+  const hasValue = typeof input.value === 'number' && Number.isFinite(input.value) && input.value > 0;
+
+  const userData = input.userData ? compact(input.userData) : undefined;
+  const attribution = input.attribution ? compact(input.attribution) : undefined;
+
+  return compact({
+    event_name: input.eventName,
+    event_id: input.eventId,
+    event_time: Math.floor(Date.now() / 1000),
+    lead_id: input.leadId,
+    ...(hasValue ? { value: input.value, currency: input.currency || 'GBP' } : {}),
+    service: input.service,
+    source: input.source,
+    user_data: userData && Object.keys(userData).length > 0 ? userData : undefined,
+    attribution: attribution && Object.keys(attribution).length > 0 ? attribution : undefined,
+    client_id: input.clientId,
+    session_id: input.sessionId,
+    event_source_url: input.eventSourceUrl,
+    client_ip_address: input.clientIpAddress,
+    client_user_agent: input.clientUserAgent,
+    // NOTE: no `turnstile_token`. There is no browser in this call path; the
+    // per-site X-Admin-Token is what authorises us past the Turnstile gate.
+  });
+}
+
+export async function sendGatewayConversion(
+  env: GatewayEnv,
+  input: GatewayConversionInput,
+  opts: {
+    fetchImpl?: FetchLike;
+    sleepImpl?: (ms: number) => Promise<void>;
+    retryDelaysMs?: number[];
+  } = {},
+): Promise<GatewayResult> {
+  const base = gatewayBaseUrl(env);
+  if (!env.TRACKING_GATEWAY_TOKEN || !base) {
+    return { ok: false, error: 'gateway_not_configured', retriable: false, attempts: 0 };
+  }
+
+  const fetchImpl = opts.fetchImpl ?? ((globalThis.fetch as unknown) as FetchLike);
+  const sleepImpl = opts.sleepImpl ?? defaultSleep;
+  const delays = opts.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
+
+  const url = `${base}/api/event/conversion`;
+  const body = JSON.stringify(buildGatewayPayload(input));
+  const headers = {
+    'content-type': 'application/json',
+    'x-admin-token': env.TRACKING_GATEWAY_TOKEN,
+  };
+
+  let attempts = 0;
+  let lastError = 'unknown';
+  let lastStatus: number | undefined;
+
+  for (let i = 0; i <= delays.length; i++) {
+    attempts++;
+    try {
+      const res = await fetchImpl(url, { method: 'POST', headers, body });
+      lastStatus = res.status;
+
+      // The gateway answers 204 on every accepted event (CLAUDE.md #12).
+      if (res.status === 204 || (res.status >= 200 && res.status < 300)) {
+        return { ok: true, status: res.status, attempts };
+      }
+
+      // 401/403/404 are OUR misconfiguration (bad token, no KV site-config),
+      // not a transient fault. Retrying cannot fix them — fail loud instead, so
+      // the failure is visible rather than silently swallowed like the browser
+      // leg used to do.
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
+        return {
+          ok: false,
+          status: res.status,
+          error: `gateway_rejected_${res.status}`,
+          retriable: false,
+          attempts,
+        };
+      }
+
+      lastError = `gateway_status_${res.status}`;
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+    }
+
+    if (i < delays.length) await sleepImpl(delays[i]);
+  }
+
+  return { ok: false, status: lastStatus, error: lastError, retriable: true, attempts };
+}
+
+/**
+ * Backgrounds a gateway conversion; safe no-op when the gateway is unconfigured.
+ * Never throws — the lead response must not depend on tracking.
+ */
+export function deliverGatewayConversion(
+  env: GatewayEnv,
+  waitUntil: WaitUntil | undefined,
+  input: GatewayConversionInput,
+): void {
+  if (!isGatewayConfigured(env)) {
+    // Loud on purpose: an unconfigured gateway is exactly the silent-zero state
+    // this module exists to end.
+    logger.error('GATEWAY', 'Conversion not dispatched — gateway not configured', {
+      eventName: input.eventName,
+      eventId: input.eventId,
+    });
+    return;
+  }
+
+  const promise = sendGatewayConversion(env, input)
+    .then((res) => {
+      if (!res.ok) {
+        logger.error('GATEWAY', 'Server-side conversion dispatch failed', {
+          eventName: input.eventName,
+          eventId: input.eventId,
+          status: res.status,
+          error: res.error,
+          retriable: res.retriable,
+          attempts: res.attempts,
+        });
+      }
+      return res;
+    })
+    .catch((err) => {
+      logger.error('GATEWAY', 'Server-side conversion dispatch threw', {
+        eventName: input.eventName,
+        eventId: input.eventId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    });
+
+  if (waitUntil) {
+    waitUntil(promise as Promise<unknown>);
+  } else {
+    void promise;
+  }
+}

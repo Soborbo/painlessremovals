@@ -24,6 +24,21 @@ declare namespace Cloudflare {
     // Keep unset/false until the route + KV config + Ads OAuth are live.
     PUBLIC_GATEWAY_ENABLED?: string;
 
+    // Server-to-server conversion dispatch to the event-gateway (see
+    // lib/tracking/gateway-dispatch.ts). This is the leg that does NOT depend on
+    // the browser winning a Turnstile challenge.
+    //
+    // TRACKING_GATEWAY_TOKEN — SECRET. Plaintext per-site token; its SHA-256 is
+    //   stored in the gateway's SITE_CONFIG KV as `crm_token_sha256`. Per-site by
+    //   design: the gateway refuses the global operator token on this route, so a
+    //   leak is contained to Painless. NO `PUBLIC_` prefix — never ship it to the
+    //   browser. Unset → the dispatch no-ops (and logs), it does not throw.
+    // TRACKING_GATEWAY_URL — optional origin override; defaults to SITE_URL. It
+    //   MUST be a hostname the gateway has a KV site-config for (it routes by
+    //   hostname), i.e. our own apex.
+    TRACKING_GATEWAY_TOKEN?: string;
+    TRACKING_GATEWAY_URL?: string;
+
     // KV Namespaces
     RATE_LIMITER?: KVNamespace;
 

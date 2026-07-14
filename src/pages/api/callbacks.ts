@@ -20,6 +20,12 @@ import {
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
+import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
+import {
+  ga4ClientIdFromRequest,
+  ga4SessionIdFromRequest,
+  pageLocationFromRequest,
+} from '@/lib/tracking/server';
 import { generateFingerprint } from '@/lib/utils/fingerprint';
 import { getCORSHeaders } from '@/lib/utils/cors';
 import { requireAllowedOrigin } from '@/lib/forms/utils';
@@ -42,6 +48,16 @@ const callbackSchema = z.object({
   email: emailSchema.optional(),
   phone: phoneSchema.optional(),
   data: z.record(z.string().max(200), z.unknown()).optional(),
+  // The browser-minted conversion id for this callback (the same UUID the
+  // dataLayer push — and therefore the Meta Pixel — carries). We need it here so
+  // the server-side gateway conversion dedupes against the Pixel instead of
+  // counting a second Lead. Optional: an older client that omits it still gets
+  // its lead delivered, it just gets no server-side conversion (logged).
+  //
+  // NOTE this is deliberately NOT the CRM's event_id: the CRM keeps its
+  // content-derived `cb-<fingerprint>` key, which is what makes a client retry
+  // idempotent there. Two ids, two jobs — they meet again via `lead_id`.
+  event_id: z.string().max(200).optional(),
 });
 
 export const POST: APIRoute = async (context) => {
@@ -242,15 +258,63 @@ export const POST: APIRoute = async (context) => {
       const attribution = Object.values(attributionEntries).some((v) => v !== undefined)
         ? attributionEntries
         : undefined;
+      const crmEventId = `cb-${fp.slice(0, 40)}`;
       deliverCallbackLead(env, getWaitUntil(context.locals), {
         fullName: contactName,
         email: contactEmail,
         phone: contactPhone,
         message: validated.callbackReason,
         propertyPostcode: fromAddr?.postcode,
-        eventId: `cb-${fp.slice(0, 40)}`,
+        eventId: crmEventId,
         attribution,
       });
+
+      // Server-side conversion → Soborbo event-gateway, on the same chokepoint
+      // that already guarantees the CRM lead. The browser leg stays, but it can
+      // no longer be the ONLY path: it bails silently whenever Turnstile does not
+      // hand it a token.
+      //
+      // event_id = the BROWSER's UUID (Meta dedupes the Pixel + CAPI legs on the
+      // (event_name, event_id) pair — a different id here would count 2 Leads).
+      // lead_id  = the CRM's content-derived key, so the gateway ledger row joins
+      //            the CRM lead record and the later offline-loop statuses.
+      if (validated.event_id) {
+        deliverGatewayConversion(env, getWaitUntil(context.locals), {
+          eventName: 'callback_request_submitted',
+          eventId: validated.event_id,
+          leadId: crmEventId,
+          // No value/currency on a callback — CLAUDE.md #3 forbids value: 0, and
+          // this surface genuinely has no money value in scope.
+          source: 'server',
+          userData: {
+            email: contactEmail,
+            phone_number: contactPhone,
+            ...splitFullName(contactName),
+            postal_code: fromAddr?.postcode,
+            country: context.request.headers.get('CF-IPCountry') || 'GB',
+          },
+          attribution: {
+            gclid: asStr(dataObj.gclid),
+            utm_source: asStr(dataObj.utmSource),
+            utm_medium: asStr(dataObj.utmMedium),
+            utm_campaign: asStr(dataObj.utmCampaign),
+            landing_page: asStr(dataObj.landingPage),
+          },
+          clientId: ga4ClientIdFromRequest(context.request),
+          sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
+          eventSourceUrl: pageLocationFromRequest(context.request),
+          clientIpAddress: context.request.headers.get('CF-Connecting-IP') ?? undefined,
+          clientUserAgent: context.request.headers.get('User-Agent') ?? undefined,
+        });
+      } else {
+        // NOT an error: the auto-submitting callback surfaces (the post-quote
+        // email/"we'll call you" blocks in ResultPage/Step12Quote) deliver a lead
+        // but deliberately fire no conversion event, so they send no event_id.
+        // Only the three interactive callback CTAs mint one. Warn, don't page.
+        logger.warn('GATEWAY', 'Callback lead without event_id — no conversion dispatched', {
+          leadId: crmEventId,
+        });
+      }
     }
 
     return new Response(

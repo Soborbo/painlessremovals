@@ -240,6 +240,10 @@ export function SimpleCallbackForm() {
     setError('');
 
     try {
+      // Minted before the POST and sent with it: the server dispatches the
+      // gateway conversion under this exact id, so the CAPI leg dedupes against
+      // the Pixel leg below instead of counting a second Lead.
+      const eventId = generateUUID();
       const res = await fetch('/api/callbacks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -252,6 +256,7 @@ export function SimpleCallbackForm() {
             'Moving from': fromAddress?.formatted || '',
             'Moving to': toAddress?.formatted || '',
           },
+          event_id: eventId,
         }),
         signal: AbortSignal.timeout(10000),
       });
@@ -271,7 +276,7 @@ export function SimpleCallbackForm() {
 
       // Standalone callback — the user skipped the calculator, so there's
       // no quote value to attach (and value:0 must never be pushed).
-      const eventId = generateUUID();
+      // event_id was minted above, before the POST.
       const service = 'callback_only';
 
       // NOTE: the callback lead is mirrored to the Painless-CRM SERVER-SIDE

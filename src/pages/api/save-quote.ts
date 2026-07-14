@@ -40,6 +40,7 @@ import {
   sendGA4MP,
 } from '@/lib/tracking/server';
 import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
+import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
@@ -274,6 +275,55 @@ export const POST: APIRoute = async (context) => {
         utmCampaign: validated.utm_campaign,
         gclid: validated.gclid,
       });
+
+      // Server-side conversion → Soborbo event-gateway. The SAME chokepoint that
+      // guarantees the CRM lead now also guarantees the tracking event, so the
+      // conversion no longer depends on the browser winning a Turnstile challenge
+      // (which silently lost every quote conversion 2026-06-28 → 2026-07-13).
+      //
+      // `validated.event_id` is the browser-minted UUID that the dataLayer push
+      // (and therefore the Meta Pixel) already carries — sending the SAME id here
+      // is what makes Meta dedupe the two legs into ONE Lead instead of two.
+      // Without an event_id we cannot dedupe, so we skip rather than double-count.
+      if (validated.event_id) {
+        deliverGatewayConversion(env, getWaitUntil(context.locals), {
+          eventName: 'quote_calculator_submitted',
+          eventId: validated.event_id,
+          leadId: validated.event_id,
+          value: validated.totalPrice,
+          currency: validated.currency || 'GBP',
+          service:
+            typeof data.serviceType === 'string' ? (data.serviceType as string) : 'removal',
+          source: 'server',
+          userData: {
+            email: validated.email,
+            phone_number: validated.phone,
+            ...splitFullName(validated.name),
+            postal_code: fromAddr?.postcode || toAddr?.postcode,
+            country: country || 'GB',
+          },
+          attribution: {
+            gclid: validated.gclid,
+            utm_source: validated.utm_source,
+            utm_medium: validated.utm_medium,
+            utm_campaign: validated.utm_campaign,
+            utm_term: validated.utm_term,
+            utm_content: validated.utm_content,
+            landing_page: typeof data.landingPage === 'string' ? data.landingPage : undefined,
+          },
+          clientId: ga4ClientIdFromRequest(context.request),
+          sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
+          eventSourceUrl: pageLocationFromRequest(context.request),
+          // The real end user's IP/UA — without these the gateway would hand Meta
+          // our own Worker's egress identity (wrong geo, worse EMQ).
+          clientIpAddress: context.request.headers.get('CF-Connecting-IP') ?? undefined,
+          clientUserAgent: userAgent ?? undefined,
+        });
+      } else {
+        logger.error('GATEWAY', 'Quote lead has no event_id — conversion NOT dispatched', {
+          quoteId: quote.id,
+        });
+      }
 
       // Stash the customer's contact + attribution keyed by quote id, so the
       // "Yes, Call Me to Book a Survey" link in the confirmation email

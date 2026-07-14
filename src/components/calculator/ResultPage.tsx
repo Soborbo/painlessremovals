@@ -600,6 +600,11 @@ export function ResultPage() {
 
     try {
       const submissionData = getSubmissionData();
+      // Mint the conversion id BEFORE the POST and send it along: the server
+      // dispatches the gateway conversion with this exact id, so the Pixel leg
+      // (below) and the CAPI leg dedupe into one Lead. Minting it after the POST
+      // — as this used to — left the server with no id to dedupe against.
+      const eventId = generateUUID();
       const response = await fetch('/api/callbacks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -611,6 +616,7 @@ export function ResultPage() {
           phone: state.contact?.phone,
           callbackReason: 'Customer requested callback from quote page',
           data: submissionData,
+          event_id: eventId,
         }),
       });
 
@@ -630,10 +636,10 @@ export function ResultPage() {
       }
 
       // The callback is its own conversion event — the quote conversion
-      // already fired at completion. Fresh event_id; the quote's value
-      // rides along (there's always a live quote on this page) so the
-      // Ads/Meta callback actions carry a real monetary signal.
-      const eventId = generateUUID();
+      // already fired at completion. The event_id was minted above (and sent to
+      // the server with the lead); the quote's value rides along (there's always
+      // a live quote on this page) so the Ads/Meta callback actions carry a real
+      // monetary signal.
       const service = state.serviceType || 'removal';
       const quoteVal = quote?.totalPrice;
 

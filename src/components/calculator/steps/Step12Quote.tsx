@@ -245,6 +245,10 @@ export function Step12Quote() {
     try {
       const submissionData = getSubmissionData();
 
+      // Minted before the POST and sent with it, so the server can dispatch the
+      // gateway conversion under the SAME id the Pixel uses (Meta dedup).
+      const eventId = generateUUID();
+
       const response = await fetch('/api/callbacks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -255,6 +259,7 @@ export function Step12Quote() {
           phone: state.contact?.phone,
           callbackReason: 'Customer requested callback from quote page',
           data: submissionData,
+          event_id: eventId,
         }),
         signal: AbortSignal.timeout(10000),
       });
@@ -264,10 +269,9 @@ export function Step12Quote() {
       }
 
       // The callback is its own conversion — the quote conversion already
-      // fired at completion. Fresh event_id; the on-screen quote's value
-      // rides along (never value:0 — the CAPI leg strips zeros, desyncing
-      // browser + server for the same event_id).
-      const eventId = generateUUID();
+      // fired at completion. The on-screen quote's value rides along (never
+      // value:0 — the CAPI leg strips zeros, desyncing browser + server for the
+      // same event_id).
       const service = state.serviceType || 'removal';
       const quoteVal = quote?.totalPrice;
 
