@@ -499,6 +499,13 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
             return res.json();
           })
           .then(function(data) {
+            if (data.success && data.silent) {
+              // Honeypot-út: a szerver csendes „sikert" adott (bot). Mutassuk a
+              // thank-you-t, hogy a bot ne tanuljon, de SEMMI tracking: se CRM
+              // lead, se dataLayer/Pixel, se konverzió.
+              window.location.href = '/contact/thank-you/';
+              return;
+            }
             if (data.success) {
               // Mirror the lead to the CRM (signed server-side). Fire-and-
               // forget with the SAME event_id so a resend is idempotent;
@@ -538,14 +545,11 @@ const pageSchema = [contactPageSchema, faqPage(faqs), breadcrumbs([
                 eventCallback: goToThankYou,
                 eventTimeout: 2000,
               });
-              // Server-side leg: the Soborbo event-gateway Worker fires Meta
-              // CAPI `Contact` with the SAME event_id (Meta dedupes against the
-              // browser Pixel above). PII is read from the hidden DOM
-              // side-channel set via PR_setUserDataOnDOM earlier. sendBeacon
-              // survives the navigation below.
-              if (window.PR_trackWorkerConversion) {
-                window.PR_trackWorkerConversion('contact_form_submit', eventId, { source: 'contact-page' });
-              }
+              // A Meta CAPI szerver-leget az /api/contact backendje dispatcheli
+              // (deliverGatewayConversion, UGYANEZZEL az event_id-vel) — a
+              // gateway a contact_form_submitted-et a böngésző-útról 403-mal
+              // dobja (Run 6, server-ingress-only), ezért itt nincs böngésző
+              // worker-hívás.
               // Safety net: navigate even if GTM never calls back
               // (e.g. GTM blocked by an extension).
               setTimeout(goToThankYou, 2500);

@@ -356,12 +356,10 @@ export function collectAttribution(): AttributionParams {
 }
 
 export async function sendToWorker(payload: ConversionPayload): Promise<boolean> {
-  const turnstileToken = await getTurnstileToken();
-  if (!turnstileToken) {
-    console.warn('[tracking] No Turnstile token, skipping server-side dispatch', payload.event_name);
-    return false;
-  }
-
+  // Turnstile-token NINCS TÖBBÉ: a gateway nem validálja (a böngésző-ág kapuja
+  // az Origin allow-list + rate limit), tehát a token-mint csak latency és egy
+  // néma kiesés-osztály volt — pont ez okozta a 2026-06-28→07-13 outage-et
+  // (token-hiba → eldobott klikk-konverziók). A dispatch tokentől függetlenül megy.
   const fbp = getCookie('_fbp');
   const fbc = getCookie('_fbc');
   const clientId = extractGAClientId(getCookie('_ga'));
@@ -369,7 +367,6 @@ export async function sendToWorker(payload: ConversionPayload): Promise<boolean>
 
   const body = JSON.stringify({
     ...payload,
-    turnstile_token: turnstileToken,
     fbp,
     fbc,
     client_id: clientId,

@@ -272,11 +272,12 @@ export async function sendGatewayConversion(
         return { ok: true, status: res.status, attempts };
       }
 
-      // 401/403/404 are OUR misconfiguration (bad token, no KV site-config),
-      // not a transient fault. Retrying cannot fix them — fail loud instead, so
-      // the failure is visible rather than silently swallowed like the browser
-      // leg used to do.
-      if (res.status === 401 || res.status === 403 || res.status === 404) {
+      // 400/401/403/404 are OUR misconfiguration (invalid payload since the
+      // gateway Run 6 returns 400 to authenticated callers, bad token, no KV
+      // site-config), not a transient fault. Retrying cannot fix them — fail
+      // loud instead, so the failure is visible rather than silently swallowed
+      // like the browser leg used to do.
+      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404) {
         return {
           ok: false,
           status: res.status,

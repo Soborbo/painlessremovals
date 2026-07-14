@@ -17,6 +17,7 @@ import {
   pageLocationFromRequest,
 } from '@/lib/tracking/server';
 import { getWaitUntil } from '@/lib/crm/server';
+import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -64,8 +65,10 @@ export const POST: APIRoute = async (context) => {
     }
     const { name, phone, email, message, honeypot, turnstileToken, source, event_id } = body;
 
-    // Honeypot
-    if (honeypot) return json({ success: true });
+    // Honeypot — csendes „siker", hogy a bot ne tanuljon. A `silent: true`
+    // jelzi a kliensnek, hogy tracking (CRM pushLead, dataLayer, Pixel) NEM
+    // futhat: enélkül egy JS-t futtató bot valódi lead-et + konverziót könyvelt.
+    if (honeypot) return json({ success: true, silent: true });
 
     // Validate
     if (!name || !phone || !email) return json({ error: 'Please fill in all required fields.' }, 400);
@@ -185,10 +188,28 @@ export const POST: APIRoute = async (context) => {
       if (waitUntil) waitUntil(ga4Fire);
       else void ga4Fire;
 
-      // Meta CAPI is now fired by the Soborbo event-gateway Worker (browser →
-      // /api/event/conversion via trackConversion, same event_id). The old
-      // server-side `sendMetaCapi` here was retired at cutover to avoid a
-      // double Meta `Contact` event.
+      // Meta CAPI — a gateway hitelesített szerver-ingressén (Run 6: a
+      // contact_form_submitted server-ingress-only, a böngésző-út 403-mal
+      // dobja). A böngésző Pixel ugyanezzel az event_id-vel tüzel → dedup ép.
+      // leadId = event_id: a kliens PR_pushLead ugyanezzel a kulccsal viszi a
+      // leadet a CRM-be, így a gateway ledger a CRM offline-loophoz joinolható.
+      deliverGatewayConversion(env, waitUntil, {
+        eventName: 'contact_form_submitted',
+        eventId: event_id,
+        leadId: event_id,
+        source: source || 'contact-page',
+        userData: {
+          email,
+          phone_number: phone,
+          ...splitFullName(name),
+          country: request.headers.get('CF-IPCountry') || 'GB',
+        },
+        clientId,
+        sessionId: ga4SessionIdFromRequest(request, env.GA4_MEASUREMENT_ID),
+        eventSourceUrl: pageLocationFromRequest(request),
+        clientIpAddress: ipAddress,
+        clientUserAgent: userAgent,
+      });
     }
 
     return json({ success: true, event_id: event_id || null });

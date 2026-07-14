@@ -564,11 +564,17 @@ const phone = siteConfig.company.contact.phone;
           }),
         });
 
-        const data = await res.json() as { error?: string; success?: boolean };
+        const data = await res.json() as { error?: string; success?: boolean; silent?: boolean };
         if (!res.ok || data.error) {
           window.showToast(data.error || `Something went wrong sending your request. Please try again or call us on ${PHONE}.`, 'error');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Request Callback';
+          return;
+        }
+        if (data.silent) {
+          // Honeypot-út: a szerver csendes „sikert" adott (bot). Thank-you-t
+          // mutatunk, de SEMMI tracking: se CRM lead, se dataLayer, se Pixel.
+          window.location.href = '/house-and-waste-clearance/thank-you/';
           return;
         }
 
@@ -628,20 +634,11 @@ const phone = siteConfig.company.contact.phone;
           eventCallback: navigateOnce,
           eventTimeout: 2000,
         });
-        // Server-side leg: the Soborbo event-gateway Worker fires Meta CAPI
-        // `Lead` with the SAME event_id (Meta dedupes against the browser
-        // Pixel above). PII is read from the hidden DOM side-channel set via
-        // PR_setUserDataOnDOM earlier. sendBeacon survives the navigation.
-        const trackWorker = (window as unknown as {
-          PR_trackWorkerConversion?: (name: string, id: string, opts?: Record<string, unknown>) => void;
-        }).PR_trackWorkerConversion;
-        if (trackWorker) {
-          trackWorker('clearance_callback_conversion', eventId, {
-            source: 'clearance-calculator',
-            service: 'house_clearance',
-            ...(hasEstimate ? { value: estimateNum, currency: 'GBP' } : {}),
-          });
-        }
+        // A Meta CAPI szerver-leget az /api/clearance-callback backendje
+        // dispatcheli (deliverGatewayConversion, UGYANEZZEL az event_id-vel és
+        // estimate-értékkel) — a gateway a callback_request_submitted-et a
+        // böngésző-útról 403-mal dobja (Run 6, server-ingress-only), ezért itt
+        // nincs böngésző worker-hívás.
         // Safety net: navigate after 2.5s even if GTM never calls back
         // (e.g. GTM blocked by an extension).
         setTimeout(navigateOnce, 2500);
