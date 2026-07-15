@@ -116,33 +116,33 @@ const assetBase = CONFIG.site.assetBaseUrl;
     </main>
 
     {/*
-      Email-click callback conversion. Only fires when this page was reached
-      from the quote-email link (simple-callback redirects here with
-      ?conv=email_click). The normal form flow fires callback_conversion itself
-      in SimpleCallbackForm and redirects WITHOUT this flag, so it never
-      double-fires here. Per-session guard stops a refresh re-firing.
+      Email-click callback conversion — BROWSER leg only (dataLayer → Google
+      Ads + Meta Pixel). A Meta CAPI szerver-leget a simple-callback.astro
+      dispatcheli a gateway hitelesített ingressén (Run 6: a
+      callback_request_submitted a böngésző-útról 403), determinisztikus
+      `cb-emailclick-<ref>` event_id-vel — a Pixel push-nak UGYANEZT kell
+      használnia, hogy a Meta (event_name, event_id) páron dedupoljon. A ref a
+      redirect query-jéből jön. Per-session guard stops a refresh re-firing.
     */}
     <script>
       import '@/lib/tracking/boot';
-      import { trackEvent, dispatchWorkerConversion, generateUUID } from '@/lib/tracking';
+      import { trackEvent, generateUUID } from '@/lib/tracking';
 
-      const isEmailClick = new URLSearchParams(window.location.search).get('conv') === 'email_click';
+      const params = new URLSearchParams(window.location.search);
+      const isEmailClick = params.get('conv') === 'email_click';
+      const ref = params.get('ref');
       const ONCE_KEY = 'emailclick_callback_conversion_fired';
 
       if (isEmailClick && !sessionStorage.getItem(ONCE_KEY)) {
         sessionStorage.setItem(ONCE_KEY, '1');
-        // Same event_id on the dataLayer push and the Worker dispatch so Meta
-        // dedupes the Browser Pixel + server CAPI pair into one Lead. No value
-        // key at all (callback has no monetary figure) — pushing value:0 while
-        // the CAPI leg strips zeros desyncs browser + server and feeds £0
-        // into Google Ads.
-        const eventId = generateUUID();
+        // A szerver CAPI-leg event_id-je: cb-emailclick-<ref>. Ha a ref
+        // hiányozna (régi email-link kézi URL-lel), UUID-fallback — akkor a
+        // dedup nem él, de a Pixel-konverzió így sem vész el.
+        const eventId = ref && /^[A-Za-z0-9]{6,16}$/.test(ref)
+          ? 'cb-emailclick-' + ref
+          : generateUUID();
         trackEvent('callback_conversion', {
           event_id: eventId,
-          service: 'callback_only',
-          source: 'email_click',
-        });
-        dispatchWorkerConversion('callback_conversion', eventId, {
           service: 'callback_only',
           source: 'email_click',
         });

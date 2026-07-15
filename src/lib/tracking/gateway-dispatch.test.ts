@@ -168,8 +168,8 @@ describe('sendGatewayConversion', () => {
     expect(res).toMatchObject({ ok: true, status: 204, attempts: 1 });
   });
 
-  it('does NOT retry 401/403/404 — those are our misconfig, not a blip', async () => {
-    for (const status of [401, 403, 404]) {
+  it('does NOT retry 400/401/403/404 — those are our misconfig, not a blip', async () => {
+    for (const status of [400, 401, 403, 404]) {
       const fetchImpl = vi.fn(async () => new Response(null, { status }));
       const res = await sendGatewayConversion(env, baseInput, {
         fetchImpl: fetchImpl as any,

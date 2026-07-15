@@ -17,6 +17,7 @@ import {
   pageLocationFromRequest,
 } from '@/lib/tracking/server';
 import { getWaitUntil } from '@/lib/crm/server';
+import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -63,7 +64,10 @@ export const POST: APIRoute = async (context) => {
     }
     const { name, phone, email, honeypot, turnstileToken, estimate, summary, postcode, event_id } = body;
 
-    if (honeypot) return json({ success: true });
+    // Honeypot — csendes „siker" + `silent: true`: a kliens NEM futtathat
+    // trackinget (pushLead/dataLayer/Pixel), különben a bot valódi lead-et +
+    // konverziót könyvelne.
+    if (honeypot) return json({ success: true, silent: true });
 
     if (!name || !phone || !email) return json({ error: 'Please fill in all required fields.' }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Please provide a valid email address.' }, 400);
@@ -209,10 +213,31 @@ export const POST: APIRoute = async (context) => {
       if (waitUntil) waitUntil(ga4Fire);
       else void ga4Fire;
 
-      // Meta CAPI `Lead` is now fired by the Soborbo event-gateway Worker
-      // (browser → /api/event/conversion via PR_trackWorkerConversion, same
-      // event_id). The old server-side `sendMetaCapi` here was retired at
-      // cutover to avoid a double Meta `Lead` event.
+      // Meta CAPI `Lead` — a gateway hitelesített szerver-ingressén (Run 6: a
+      // callback_request_submitted server-ingress-only, a böngésző-út 403-mal
+      // dobja). A böngésző Pixel ugyanezzel az event_id-vel tüzel → dedup ép.
+      // Az estimate £-értéke Smart Bidding / value-optimalizáció jel.
+      deliverGatewayConversion(env, waitUntil, {
+        eventName: 'callback_request_submitted',
+        eventId: event_id,
+        leadId: event_id,
+        ...(typeof estimateValue === 'number' && estimateValue > 0
+          ? { value: estimateValue, currency: 'GBP' }
+          : {}),
+        source: 'clearance-calculator',
+        userData: {
+          email,
+          phone_number: phone,
+          ...splitFullName(name),
+          postal_code: postcode ? String(postcode) : undefined,
+          country: request.headers.get('CF-IPCountry') || 'GB',
+        },
+        clientId,
+        sessionId: ga4SessionIdFromRequest(request, env.GA4_MEASUREMENT_ID),
+        eventSourceUrl: pageLocationFromRequest(request),
+        clientIpAddress: ipAddress,
+        clientUserAgent: userAgent,
+      });
     }
 
     return json({ success: true, event_id: event_id || null });

@@ -27,6 +27,7 @@ import { sendEmail } from '@/lib/core/email/sender';
 import { generateCallbackCustomerEmail, generateCallbackAdminEmail } from '@/lib/core/email/templates';
 import { sanitizeSubjectPart } from '@/lib/core/email/templates/helpers';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
+import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
 import type { CallbackWebhookPayload } from '@/lib/crm/schemas';
 import { syncQuoteToImve } from '@/lib/features/imve';
 import { safeKV, kvGet, kvPut } from '@/lib/utils/kv';
@@ -162,6 +163,32 @@ if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
             attribution: rec.attribution,
           });
 
+          // Meta CAPI `Lead` — a gateway hitelesített szerver-ingressén. A
+          // callback_request_submitted a böngésző-útról 403 (Run 6), ezért a
+          // korábbi thank-you-oldali böngésző-dispatch halott volt; a szerver-
+          // leg ITT megy, determinisztikus ref-kulcsú event_id-vel — a
+          // thank-you oldal dataLayer/Pixel push-a UGYANEZT az id-t használja
+          // (ref a query-ben), így a Pixel↔CAPI dedup ép. Ez az Astro-request
+          // maga a felhasználó email-kattintása → a CF-Connecting-IP/UA a
+          // VALÓDI kliensé.
+          deliverGatewayConversion(env, waitUntil, {
+            eventName: 'callback_request_submitted',
+            eventId: `cb-emailclick-${ref}`,
+            leadId: `cb-emailclick-${ref}`,
+            source: 'email_click',
+            userData: {
+              email: rec.email,
+              phone_number: rec.phone,
+              ...splitFullName(rec.name),
+              postal_code: rec.postcode,
+              country: Astro.request.headers.get('CF-IPCountry') || 'GB',
+            },
+            attribution: rec.attribution as Record<string, string | undefined> | undefined,
+            eventSourceUrl: Astro.url.href,
+            clientIpAddress: Astro.request.headers.get('CF-Connecting-IP') ?? undefined,
+            clientUserAgent: Astro.request.headers.get('User-Agent') ?? undefined,
+          });
+
           logger.info('API', 'Email-click callback registered', { ref });
         }
       }
@@ -175,10 +202,12 @@ if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
 }
 
 if (emailClickHandled) {
-  // `conv=email_click` tells the thank-you page to fire the callback
-  // conversion (Google Ads + Meta). The form flow fires it client-side itself
-  // and redirects without this flag, so there's no double-fire on that path.
-  return Astro.redirect('/instantquote/thank-you-callback/?conv=email_click');
+  // `conv=email_click` tells the thank-you page to fire the BROWSER-side
+  // conversion (dataLayer → Google Ads + Meta Pixel); a `ref`-ből képzett
+  // determinisztikus event_id-t használja, ami MEGEGYEZIK az itt elküldött
+  // szerver CAPI-leg event_id-jével → Meta Pixel↔CAPI dedup. A form-flow
+  // kliens-oldalon tüzel és e flag nélkül redirectel, ott nincs dupla.
+  return Astro.redirect(`/instantquote/thank-you-callback/?conv=email_click&ref=${encodeURIComponent(ref!)}`);
 }
 ---
 
