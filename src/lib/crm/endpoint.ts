@@ -19,7 +19,7 @@ import { requireAllowedOrigin, json } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { generateErrorId } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
-import { sendToCRM, isCRMConfigured, newEventId } from './client';
+import { sendToCRMWithMirror, isCRMConfigured, newEventId } from './client';
 import { getWaitUntil } from './server';
 import { webhookEnvelopeSchema, type WebhookSurface } from './schemas';
 
@@ -103,8 +103,10 @@ export function createLeadHandler<TSchema extends z.ZodType>(
     }
 
     // Background the signed delivery + retry loop. waitUntil keeps the Worker
-    // alive through the 1s/5s/30s backoff without blocking the response.
-    const delivery = sendToCRM(env, surface, parsed.data as Record<string, unknown>, { eventId })
+    // alive through the 1s/5s/30s backoff without blocking the response. When a
+    // secondary CRM is configured (parallel-run), the same event is mirrored to
+    // it best-effort — its outcome never affects this primary delivery.
+    const delivery = sendToCRMWithMirror(env, surface, parsed.data as Record<string, unknown>, { eventId })
       .then((result) => {
         if (!result.ok) {
           logger.error('CRM', 'Background delivery failed', {

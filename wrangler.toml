@@ -101,6 +101,12 @@ TRACKING_TEST_EVENT_CODE = "TEST_PAINLESS"
 #       wrangler secret put CRM_WEBHOOK_SECRET
 #     NEVER expose it to the client (no PUBLIC_ prefix, never in import.meta.env
 #     reaching the browser). All signing happens server-side in the Worker.
+#   Parallel-run (phase9b cutover): set CRM_BASE_URL_2 + secret CRM_WEBHOOK_SECRET_2
+#     (optionally CRM_COMPANY_ID_2 / CRM_WEBHOOK_SOURCE_2) to ALSO mirror every
+#     lead to a second CRM best-effort. Point at the new Soborbo-CRM
+#     (https://painless.golaxo.workers.dev) to validate on live traffic, then
+#     unset after the DNS cutover. The mirror's outcome never affects the primary.
+#       wrangler secret put CRM_WEBHOOK_SECRET_2
 
 # Observability — Workers Logs enabled at 100% sampling.
 # Top-level `enabled = false` is the legacy unified flag; we use the per-channel
