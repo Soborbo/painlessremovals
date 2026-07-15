@@ -2,9 +2,21 @@ name = 'painlessremovals-website'
 compatibility_date = "2026-04-15"
 compatibility_flags = ["nodejs_compat"]
 
+# Egyedi Worker-entry (@astrojs/cloudflare v14): az Astro-handler mellett a napi
+# synthetic-lead füstteszt scheduled() handlerét is exportálja. Az astro build
+# ebből fordítja a dist/server/entry.mjs-t (a generált configban main = entry.mjs).
+main = "./src/worker.ts"
+
 # Dashboard is the source of truth for plain env vars and secrets.
 # Without this, `wrangler deploy` would wipe any var set only in the dashboard.
+# FONTOS: top-level kulcs — minden [table] szekció ELŐTT kell állnia, különben
+# a TOML az utolsó tábla almezőjének olvassa és a deploy törli a dashboard-varokat.
 keep_vars = true
+
+# Napi füstteszt: szintetikus lead a TELJES szerver-láncon át a Meta TEST
+# streambe (lásd src/lib/tracking/smoke.ts). Szándékosan nem kerek perc.
+[triggers]
+crons = ["51 4 * * *"]
 
 # Static assets binding — Workers Static Assets.
 # The @astrojs/cloudflare adapter generates `dist/server/wrangler.json` at build
