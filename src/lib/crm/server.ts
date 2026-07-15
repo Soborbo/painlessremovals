@@ -11,7 +11,7 @@
  */
 
 import { logger } from '@/lib/utils/logger';
-import { sendToCRM, isCRMConfigured, newEventId, type CRMClientEnv } from './client';
+import { sendToCRMWithMirror, isCRMConfigured, newEventId, type DualCRMClientEnv } from './client';
 import {
   quoteWebhookSchema,
   callbackWebhookSchema,
@@ -20,7 +20,7 @@ import {
 import { normalizeUKPhoneForCRM } from './format';
 import { mapSubmissionToQuotePayload } from './quote-mapper';
 
-interface CRMServerEnv extends CRMClientEnv {
+interface CRMServerEnv extends DualCRMClientEnv {
   CRM_PRICING_VERSION_ID?: string;
 }
 
@@ -53,7 +53,7 @@ function deliver(
     logger.error('CRM', 'Lead not delivered — CRM not configured', { surface, eventId });
     return;
   }
-  const promise = sendToCRM(env, surface, payload, { eventId, source })
+  const promise = sendToCRMWithMirror(env, surface, payload, { eventId, source })
     .then((res) => {
       if (!res.ok) {
         logger.error('CRM', 'Server-side delivery failed', {

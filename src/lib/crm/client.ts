@@ -30,6 +30,25 @@ export interface CRMClientEnv {
 }
 
 /**
+ * Optional SECONDARY CRM target for parallel-run (phase9b cutover). When both
+ * `CRM_BASE_URL_2` and `CRM_WEBHOOK_SECRET_2` are set, every lead is ALSO
+ * delivered to the second CRM — best-effort, with its own signature/secret and
+ * the SAME `event_id` (so both CRMs dedup consistently). The secondary's result
+ * NEVER affects the primary: this is how we validate the new Soborbo-CRM on live
+ * traffic with zero risk before flipping the DNS. Leave unset in steady state.
+ */
+export interface CRMMirrorEnv {
+  CRM_WEBHOOK_SECRET_2?: string;
+  CRM_BASE_URL_2?: string;
+  /** Defaults to the primary `CRM_COMPANY_ID` when unset. */
+  CRM_COMPANY_ID_2?: string;
+  /** Defaults to the primary `CRM_WEBHOOK_SOURCE` when unset. */
+  CRM_WEBHOOK_SOURCE_2?: string;
+}
+
+export type DualCRMClientEnv = CRMClientEnv & CRMMirrorEnv;
+
+/**
  * Minimal fetch shape we depend on. Looser than the Workers-augmented global
  * `fetch` type so test mocks (and Node's fetch) assign without friction.
  */
@@ -223,4 +242,80 @@ export async function sendToCRM(
       return { ok: false, error: message, retriable: true, eventId, attempts: attempt + 1 };
     }
   }
+}
+
+/**
+ * Derives a primary-shaped `CRMClientEnv` for the SECONDARY target, or null when
+ * the mirror isn't configured. The secondary uses its OWN base URL + secret; the
+ * company_id / source fall back to the primary's when their `_2` overrides are
+ * unset (during parallel-run the second CRM usually shares the tenant + source).
+ */
+export function resolveMirrorEnv(env: DualCRMClientEnv): CRMClientEnv | null {
+  if (!env.CRM_BASE_URL_2 || !env.CRM_WEBHOOK_SECRET_2) return null;
+  return {
+    CRM_BASE_URL: env.CRM_BASE_URL_2,
+    CRM_WEBHOOK_SECRET: env.CRM_WEBHOOK_SECRET_2,
+    CRM_COMPANY_ID: env.CRM_COMPANY_ID_2 ?? env.CRM_COMPANY_ID,
+    CRM_WEBHOOK_SOURCE: env.CRM_WEBHOOK_SOURCE_2 ?? env.CRM_WEBHOOK_SOURCE,
+  };
+}
+
+/**
+ * Delivers a lead to the primary CRM and — when a secondary is configured
+ * (`CRM_BASE_URL_2` + `CRM_WEBHOOK_SECRET_2`) — MIRRORS the exact same event to
+ * it, best-effort. Both deliveries share ONE `event_id` so the two CRMs dedup in
+ * lockstep. The secondary's outcome is isolated: it can fail, throw, or hang its
+ * full retry budget without ever changing the returned PRIMARY result.
+ *
+ * The returned promise settles only after BOTH deliveries have settled, so a
+ * caller that hands it to `waitUntil()` keeps the Worker alive through the
+ * mirror's retries too (a bare fire-and-forget mirror would be cut off when the
+ * primary resolves and the response flushes).
+ *
+ * Drop-in replacement for `sendToCRM` at the delivery chokepoints.
+ */
+export async function sendToCRMWithMirror(
+  env: DualCRMClientEnv,
+  surface: WebhookSurface,
+  payload: Record<string, unknown>,
+  options: SendToCRMOptions = {},
+): Promise<SendToCRMResult> {
+  // Resolve the idempotency key ONCE so primary and mirror carry the same one.
+  const eventId = options.eventId ?? newEventId();
+  const opts: SendToCRMOptions = { ...options, eventId };
+
+  const primaryPromise = sendToCRM(env, surface, payload, opts);
+
+  const mirrorEnv = resolveMirrorEnv(env);
+  if (!mirrorEnv) {
+    return primaryPromise;
+  }
+
+  const mirrorPromise = sendToCRM(mirrorEnv, surface, payload, opts)
+    .then((res) => {
+      if (res.ok) {
+        logger.info('CRM', 'Mirror delivered', { surface, eventId, duplicate: !!res.duplicate });
+      } else {
+        // WARN, not ERROR: the mirror is the not-yet-authoritative target during
+        // parallel-run; its failures must not page as if a real lead was lost.
+        logger.warn('CRM', 'Mirror delivery failed (primary unaffected)', {
+          surface,
+          eventId,
+          status: res.status,
+          retriable: res.retriable,
+        });
+      }
+    })
+    .catch((err) => {
+      logger.warn('CRM', 'Mirror delivery threw (primary unaffected)', {
+        surface,
+        eventId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    });
+
+  // `sendToCRM` never rejects (it resolves with a result), and `mirrorPromise`
+  // is `.catch`-guarded, so this Promise.all cannot reject. Return ONLY primary.
+  const [primary] = await Promise.all([primaryPromise, mirrorPromise]);
+  return primary;
 }

@@ -80,6 +80,18 @@ declare namespace Cloudflare {
     // `quote.pricing_version_id`. If unset, the optional quote block is
     // dropped rather than sent without a valid uuid.
     CRM_PRICING_VERSION_ID?: string;
+
+    // Optional SECONDARY CRM target — parallel-run for the phase9b cutover.
+    // When both _2 vars are set, every lead is ALSO mirrored to this target
+    // best-effort (its own secret, the SAME event_id), and its outcome never
+    // affects the primary delivery. Point these at the new Soborbo-CRM
+    // (https://painless.golaxo.workers.dev) to validate it on live traffic,
+    // then unset after the DNS cutover. company_id_2/source_2 fall back to the
+    // primary values when unset.
+    CRM_BASE_URL_2?: string;
+    CRM_WEBHOOK_SECRET_2?: string;
+    CRM_COMPANY_ID_2?: string;
+    CRM_WEBHOOK_SOURCE_2?: string;
   }
 }
 
