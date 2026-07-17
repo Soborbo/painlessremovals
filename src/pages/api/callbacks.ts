@@ -20,7 +20,11 @@ import {
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
-import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
+import {
+  deliverGatewayConversion,
+  readConsentFromCookie,
+  splitFullName,
+} from '@/lib/tracking/gateway-dispatch';
 import {
   ga4ClientIdFromRequest,
   ga4SessionIdFromRequest,
@@ -300,6 +304,9 @@ export const POST: APIRoute = async (context) => {
             utm_campaign: asStr(dataObj.utmCampaign),
             landing_page: asStr(dataObj.landingPage),
           },
+          // Consent Mode state from the CookieYes cookie on this POST — becomes the
+          // lead's explicit consent-receipt in the gateway ledger (offline-upload gate).
+          consent: readConsentFromCookie(context.request.headers.get('Cookie')),
           clientId: ga4ClientIdFromRequest(context.request),
           sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
           eventSourceUrl: pageLocationFromRequest(context.request),

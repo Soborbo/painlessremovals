@@ -86,6 +86,53 @@ export function resolveTestEventCode(env: GatewayEnv, email?: string): string | 
   return email.trim().toLowerCase() === marker ? code : undefined;
 }
 
+/**
+ * Consent Mode v2 state from the CookieYes cookie — the SAME source, and the same
+ * mapping, the browser lib uses (`worker-tracking.ts` `getConsentState`). Reading
+ * it server-side means the two legs always agree about the user's choice.
+ *
+ * CookieYes format:
+ *   consentid:..,consent:yes,necessary:yes,analytics:yes,advertisement:yes,...
+ * Mapping (CookieYes official):
+ *   advertisement → ad_storage + ad_user_data + ad_personalization
+ *   analytics     → analytics_storage
+ *
+ * Returns undefined when the cookie is absent or is not a CookieYes cookie — we do
+ * NOT guess. The gateway then applies `require_consent`, and the consent-receipt it
+ * writes carries no explicit signal, which downstream (offline lead-status upload)
+ * is never treated as consent evidence.
+ */
+export function readConsentFromCookie(cookieHeader: string | null): ConsentState | undefined {
+  if (!cookieHeader) return undefined;
+
+  let raw: string | undefined;
+  for (const part of cookieHeader.split(';')) {
+    const idx = part.indexOf('=');
+    if (idx < 0) continue;
+    if (part.slice(0, idx).trim() === 'cookieyes-consent') {
+      raw = decodeURIComponent(part.slice(idx + 1).trim());
+      break;
+    }
+  }
+  if (!raw) return undefined;
+
+  const map: Record<string, string> = {};
+  for (const part of raw.split(',')) {
+    const idx = part.indexOf(':');
+    if (idx > 0) map[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
+  }
+  if (map.advertisement === undefined && map.analytics === undefined) return undefined;
+
+  const sig = (yes: boolean): ConsentSignal => (yes ? 'GRANTED' : 'DENIED');
+  const adGranted = map.advertisement === 'yes';
+  return {
+    ad_user_data: sig(adGranted),
+    ad_personalization: sig(adGranted),
+    ad_storage: sig(adGranted),
+    analytics_storage: sig(map.analytics === 'yes'),
+  };
+}
+
 /** Loose fetch shape so test mocks and Node's fetch both assign. */
 export type FetchLike = (
   input: string,
@@ -97,6 +144,15 @@ export type GatewayEventName =
   | 'quote_calculator_submitted'
   | 'callback_request_submitted'
   | 'contact_form_submitted';
+
+export type ConsentSignal = 'GRANTED' | 'DENIED';
+
+export interface ConsentState {
+  ad_user_data: ConsentSignal;
+  ad_personalization: ConsentSignal;
+  ad_storage: ConsentSignal;
+  analytics_storage: ConsentSignal;
+}
 
 export interface GatewayUserData {
   email?: string;
@@ -126,6 +182,15 @@ export interface GatewayConversionInput {
   userData?: GatewayUserData;
   /** Click IDs + UTMs already lifted out of the calculator state. */
   attribution?: Record<string, string | undefined>;
+  /**
+   * Consent Mode v2 state read from the CookieYes cookie on the inbound request
+   * (`readConsentFromCookie`). Without it the gateway falls back to the site's
+   * `require_consent` default, and the consent-receipt it writes for the lead
+   * carries NO explicit signal — which the offline lead-status loop refuses to
+   * treat as consent evidence. Sending the real signal is what makes the later
+   * Enhanced-Conversions upload provably lawful.
+   */
+  consent?: ConsentState;
   clientId?: string;
   sessionId?: string;
   eventSourceUrl?: string;
@@ -202,6 +267,7 @@ export function buildGatewayPayload(input: GatewayConversionInput): Record<strin
     source: input.source,
     user_data: userData && Object.keys(userData).length > 0 ? userData : undefined,
     attribution: attribution && Object.keys(attribution).length > 0 ? attribution : undefined,
+    consent: input.consent,
     client_id: input.clientId,
     session_id: input.sessionId,
     event_source_url: input.eventSourceUrl,

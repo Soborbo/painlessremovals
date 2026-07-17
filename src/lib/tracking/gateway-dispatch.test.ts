@@ -6,6 +6,7 @@ import {
   gatewayBaseUrl,
   splitFullName,
   resolveTestEventCode,
+  readConsentFromCookie,
   type GatewayEnv,
   type GatewayConversionInput,
 } from './gateway-dispatch';
@@ -129,6 +130,62 @@ describe('buildGatewayPayload', () => {
   it('carries lead_id so the ledger row joins the CRM lead record', () => {
     const p = buildGatewayPayload({ ...baseInput, leadId: 'cb-deadbeef' });
     expect(p.lead_id).toBe('cb-deadbeef');
+  });
+
+  it('carries the Consent Mode state verbatim, and omits it when absent', () => {
+    const consent = {
+      ad_user_data: 'GRANTED',
+      ad_personalization: 'GRANTED',
+      ad_storage: 'GRANTED',
+      analytics_storage: 'DENIED',
+    } as const;
+    expect(buildGatewayPayload({ ...baseInput, consent }).consent).toEqual(consent);
+    expect(buildGatewayPayload(baseInput)).not.toHaveProperty('consent');
+  });
+});
+
+describe('readConsentFromCookie', () => {
+  /**
+   * The offline lead-status loop only treats an EXPLICIT capture-time signal as
+   * consent evidence. If this mapping drifts from the browser lib's
+   * (`worker-tracking.ts` getConsentState), the two legs disagree about the same
+   * user and the gateway's consent-receipt stops being trustworthy.
+   */
+  const cky = (v: string) => `cookieyes-consent=${encodeURIComponent(v)}`;
+
+  it('advertisement:yes → every ad signal GRANTED; analytics maps separately', () => {
+    expect(
+      readConsentFromCookie(cky('consentid:abc,consent:yes,analytics:no,advertisement:yes')),
+    ).toEqual({
+      ad_user_data: 'GRANTED',
+      ad_personalization: 'GRANTED',
+      ad_storage: 'GRANTED',
+      analytics_storage: 'DENIED',
+    });
+  });
+
+  it('advertisement:no → every ad signal DENIED (a refusal IS a signal)', () => {
+    expect(
+      readConsentFromCookie(cky('consent:yes,analytics:yes,advertisement:no')),
+    ).toEqual({
+      ad_user_data: 'DENIED',
+      ad_personalization: 'DENIED',
+      ad_storage: 'DENIED',
+      analytics_storage: 'GRANTED',
+    });
+  });
+
+  it('returns undefined (NOT a guess) without a CookieYes cookie', () => {
+    expect(readConsentFromCookie(null)).toBeUndefined();
+    expect(readConsentFromCookie('')).toBeUndefined();
+    expect(readConsentFromCookie('session=xyz; _ga=GA1.1.1.1')).toBeUndefined();
+    // A cookieyes-consent cookie without category keys is not a decision either.
+    expect(readConsentFromCookie(cky('consentid:abc'))).toBeUndefined();
+  });
+
+  it('finds the cookie among others and survives URI encoding', () => {
+    const header = `_ga=GA1.1.1.1; ${cky('analytics:yes,advertisement:yes')}; session=1`;
+    expect(readConsentFromCookie(header)?.ad_user_data).toBe('GRANTED');
   });
 });
 

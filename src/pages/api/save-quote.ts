@@ -40,7 +40,11 @@ import {
   sendGA4MP,
 } from '@/lib/tracking/server';
 import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
-import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
+import {
+  deliverGatewayConversion,
+  readConsentFromCookie,
+  splitFullName,
+} from '@/lib/tracking/gateway-dispatch';
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 
@@ -311,6 +315,11 @@ export const POST: APIRoute = async (context) => {
             utm_content: validated.utm_content,
             landing_page: typeof data.landingPage === 'string' ? data.landingPage : undefined,
           },
+          // The user's Consent Mode state from the CookieYes cookie riding on this
+          // very POST — the gateway stores it as an explicit consent-receipt for the
+          // lead, which is what later authorises (or lawfully blocks) the offline
+          // Enhanced-Conversions upload.
+          consent: readConsentFromCookie(context.request.headers.get('Cookie')),
           clientId: ga4ClientIdFromRequest(context.request),
           sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
           eventSourceUrl: pageLocationFromRequest(context.request),
