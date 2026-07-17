@@ -109,7 +109,10 @@ export function Step12Quote() {
         utm_source: state.utmSource || undefined,
         utm_medium: state.utmMedium || undefined,
         utm_campaign: state.utmCampaign || undefined,
+        utm_term: state.utmTerm || undefined,
+        utm_content: state.utmContent || undefined,
         gclid: state.gclid || undefined,
+        fbclid: state.fbclid || undefined,
         event_id: eventId,
       };
 

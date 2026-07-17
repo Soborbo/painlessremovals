@@ -23,6 +23,7 @@ import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
   readConsentFromCookie,
+  readMetaCookies,
   splitFullName,
 } from '@/lib/tracking/gateway-dispatch';
 import {
@@ -256,6 +257,7 @@ export const POST: APIRoute = async (context) => {
         utm_medium: asStr(dataObj.utmMedium),
         utm_campaign: asStr(dataObj.utmCampaign),
         gclid: asStr(dataObj.gclid),
+        fbclid: asStr(dataObj.fbclid),
         landing_page: asStr(dataObj.landingPage),
         session_id: asStr(dataObj.sessionId),
       };
@@ -283,6 +285,9 @@ export const POST: APIRoute = async (context) => {
       // lead_id  = the CRM's content-derived key, so the gateway ledger row joins
       //            the CRM lead record and the later offline-loop statuses.
       if (validated.event_id) {
+        // Meta browser IDs from the `_fbp`/`_fbc` cookies on this same-origin
+        // POST — forwarded PLAIN so the CAPI leg matches the Pixel's identity.
+        const metaCookies = readMetaCookies(context.request.headers.get('Cookie'));
         deliverGatewayConversion(env, getWaitUntil(context.locals), {
           eventName: 'callback_request_submitted',
           eventId: validated.event_id,
@@ -299,6 +304,8 @@ export const POST: APIRoute = async (context) => {
           },
           attribution: {
             gclid: asStr(dataObj.gclid),
+            // fbclid lets the gateway rebuild fbc when the _fbc cookie is absent.
+            fbclid: asStr(dataObj.fbclid),
             utm_source: asStr(dataObj.utmSource),
             utm_medium: asStr(dataObj.utmMedium),
             utm_campaign: asStr(dataObj.utmCampaign),
@@ -307,6 +314,8 @@ export const POST: APIRoute = async (context) => {
           // Consent Mode state from the CookieYes cookie on this POST — becomes the
           // lead's explicit consent-receipt in the gateway ledger (offline-upload gate).
           consent: readConsentFromCookie(context.request.headers.get('Cookie')),
+          fbp: metaCookies.fbp,
+          fbc: metaCookies.fbc,
           clientId: ga4ClientIdFromRequest(context.request),
           sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
           eventSourceUrl: pageLocationFromRequest(context.request),

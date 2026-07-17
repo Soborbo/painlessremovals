@@ -101,6 +101,7 @@ export interface QuoteLeadInput {
   utmMedium?: string;
   utmCampaign?: string;
   gclid?: string;
+  fbclid?: string;
 }
 
 /**
@@ -127,6 +128,7 @@ export function deliverQuoteLead(
     utmMedium: input.utmMedium,
     utmCampaign: input.utmCampaign,
     gclid: input.gclid,
+    fbclid: input.fbclid,
     // The client can't know the CRM pricing-version uuid; inject from env.
     pricingVersionId: env.CRM_PRICING_VERSION_ID,
   });

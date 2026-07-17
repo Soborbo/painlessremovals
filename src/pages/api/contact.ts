@@ -20,6 +20,7 @@ import { getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
   readConsentFromCookie,
+  readMetaCookies,
   splitFullName,
 } from '@/lib/tracking/gateway-dispatch';
 import { logger } from '@/lib/utils/logger';
@@ -197,6 +198,9 @@ export const POST: APIRoute = async (context) => {
       // dobja). A böngésző Pixel ugyanezzel az event_id-vel tüzel → dedup ép.
       // leadId = event_id: a kliens PR_pushLead ugyanezzel a kulccsal viszi a
       // leadet a CRM-be, így a gateway ledger a CRM offline-loophoz joinolható.
+      // A `_fbp`/`_fbc` cookie-k PLAIN mennek tovább — a CAPI-leg így ugyanazt
+      // a böngésző-identitást viszi, mint a Pixel (EMQ; audit 2026-07-17).
+      const metaCookies = readMetaCookies(request.headers.get('Cookie'));
       deliverGatewayConversion(env, waitUntil, {
         eventName: 'contact_form_submitted',
         eventId: event_id,
@@ -212,6 +216,8 @@ export const POST: APIRoute = async (context) => {
         // lead's explicit consent-receipt in the gateway ledger. Without it the
         // gateway's `require_consent` default silently consent-skips the Meta leg.
         consent: readConsentFromCookie(request.headers.get('Cookie')),
+        fbp: metaCookies.fbp,
+        fbc: metaCookies.fbc,
         clientId,
         sessionId: ga4SessionIdFromRequest(request, env.GA4_MEASUREMENT_ID),
         eventSourceUrl: pageLocationFromRequest(request),

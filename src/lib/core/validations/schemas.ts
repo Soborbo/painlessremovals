@@ -121,6 +121,7 @@ export const saveQuoteSchema = z.object({
   utm_term: z.string().max(100).optional(),
   utm_content: z.string().max(100).optional(),
   gclid: z.string().max(200).optional(),
+  fbclid: z.string().max(200).optional(),
 
   // Quote URL payload (for email link-back). The CLIENT sends the
   // urlsafe-base64 encoded payload only; the SERVER signs it with

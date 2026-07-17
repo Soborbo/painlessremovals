@@ -173,9 +173,12 @@ export interface CalculatorState {
 
   // Tracking
   gclid: string | null;
+  fbclid: string | null;
   utmSource: string | null;
   utmMedium: string | null;
   utmCampaign: string | null;
+  utmTerm: string | null;
+  utmContent: string | null;
   landingPage: string | null;
   sessionId: string | null;
   quoteId: string | null;
@@ -253,9 +256,12 @@ export const initialState: CalculatorState = {
   },
 
   gclid: null,
+  fbclid: null,
   utmSource: null,
   utmMedium: null,
   utmCampaign: null,
+  utmTerm: null,
+  utmContent: null,
   landingPage: null,
   sessionId: null,
   quoteId: null,
@@ -357,9 +363,14 @@ export const LocalStorageStateSchema = z.object({
     marketingConsent: z.boolean(),
   }),
   gclid: z.string().max(200).nullable(),
+  // Optional so state saved before the fbclid/utm_term/utm_content capture
+  // shipped still validates — a missing key must not void the whole session.
+  fbclid: z.string().max(200).nullable().optional(),
   utmSource: z.string().max(100).nullable(),
   utmMedium: z.string().max(100).nullable(),
   utmCampaign: z.string().max(100).nullable(),
+  utmTerm: z.string().max(100).nullable().optional(),
+  utmContent: z.string().max(100).nullable().optional(),
   landingPage: z.string().max(500).nullable(),
   sessionId: z.string().nullable(),
   quoteId: z.string().max(64).nullable().optional(),
@@ -781,9 +792,14 @@ export function initializeStore() {
       const params = new URLSearchParams(window.location.search);
       const stored = readAttribution();
       calculatorStore.setKey('gclid', params.get('gclid') || stored.gclid || null);
+      // fbclid rides the same capture path as gclid — the gateway rebuilds the
+      // Meta fbc from it when the _fbc cookie is absent (EMQ; audit 2026-07-17).
+      calculatorStore.setKey('fbclid', params.get('fbclid') || stored.fbclid || null);
       calculatorStore.setKey('utmSource', params.get('utm_source') || stored.utm_source || null);
       calculatorStore.setKey('utmMedium', params.get('utm_medium') || stored.utm_medium || null);
       calculatorStore.setKey('utmCampaign', params.get('utm_campaign') || stored.utm_campaign || null);
+      calculatorStore.setKey('utmTerm', params.get('utm_term') || stored.utm_term || null);
+      calculatorStore.setKey('utmContent', params.get('utm_content') || stored.utm_content || null);
       calculatorStore.setKey('landingPage', stored._landing || window.location.pathname);
       // generateUUID falls back to getRandomValues / Math.random when
       // crypto.randomUUID is missing — iOS Safari only got it in 15.4.
@@ -1297,9 +1313,12 @@ export function getSubmissionData() {
 
     // Tracking
     gclid: state.gclid,
+    fbclid: state.fbclid,
     utmSource: state.utmSource,
     utmMedium: state.utmMedium,
     utmCampaign: state.utmCampaign,
+    utmTerm: state.utmTerm,
+    utmContent: state.utmContent,
     landingPage: state.landingPage,
     sessionId: state.sessionId,
     startedAt: state.startedAt,

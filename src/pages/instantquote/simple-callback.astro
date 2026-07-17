@@ -30,6 +30,7 @@ import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
   readConsentFromCookie,
+  readMetaCookies,
   splitFullName,
 } from '@/lib/tracking/gateway-dispatch';
 import type { CallbackWebhookPayload } from '@/lib/crm/schemas';
@@ -175,6 +176,10 @@ if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
           // (ref a query-ben), így a Pixel↔CAPI dedup ép. Ez az Astro-request
           // maga a felhasználó email-kattintása → a CF-Connecting-IP/UA a
           // VALÓDI kliensé.
+          // A `_fbp`/`_fbc` cookie-k PLAIN mennek tovább — az email-klikk
+          // same-site navigáció, így visszatérő látogatónál a Meta cookie-k
+          // itt is jelen vannak (EMQ; audit 2026-07-17).
+          const metaCookies = readMetaCookies(Astro.request.headers.get('Cookie'));
           deliverGatewayConversion(env, waitUntil, {
             eventName: 'callback_request_submitted',
             eventId: `cb-emailclick-${ref}`,
@@ -193,6 +198,8 @@ if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
             // for returning visitors. Without it the gateway's `require_consent`
             // default silently consent-skips the Meta leg.
             consent: readConsentFromCookie(Astro.request.headers.get('Cookie')),
+            fbp: metaCookies.fbp,
+            fbc: metaCookies.fbc,
             eventSourceUrl: Astro.url.href,
             clientIpAddress: Astro.request.headers.get('CF-Connecting-IP') ?? undefined,
             clientUserAgent: Astro.request.headers.get('User-Agent') ?? undefined,

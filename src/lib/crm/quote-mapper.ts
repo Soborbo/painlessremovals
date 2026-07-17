@@ -41,6 +41,7 @@ export interface SubmissionMapInput {
   utmMedium?: string;
   utmCampaign?: string;
   gclid?: string;
+  fbclid?: string;
   /** Pricing-version uuid injected from env; without it the quote block drops. */
   pricingVersionId?: string;
 }
@@ -250,6 +251,13 @@ export function mapSubmissionToQuotePayload(
     utm_medium: input.utmMedium || asString(data.utmMedium),
     utm_campaign: input.utmCampaign || asString(data.utmCampaign),
     gclid: input.gclid || asString(data.gclid),
+    // Click IDs beyond gclid — the intake schema accepts them since the
+    // 2026-07-17 audit (before that z.object stripped them silently).
+    // msclkid/wbraid have no top-level input; they ride in the data map when
+    // a future capture adds them.
+    fbclid: input.fbclid || asString(data.fbclid),
+    msclkid: asString(data.msclkid),
+    wbraid: asString(data.wbraid),
     landing_page: asString(data.landingPage),
     session_id: asString(data.sessionId),
   });
