@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, it, expect, vi } from 'vitest';
 import {
   buildGatewayPayload,
@@ -187,6 +189,47 @@ describe('readConsentFromCookie', () => {
     const header = `_ga=GA1.1.1.1; ${cky('analytics:yes,advertisement:yes')}; session=1`;
     expect(readConsentFromCookie(header)?.ad_user_data).toBe('GRANTED');
   });
+
+  it('does NOT throw on malformed percent-encoding — returns undefined instead', () => {
+    // decodeURIComponent throws URIError on a truncated escape sequence. A bad
+    // cookie must degrade to "no explicit signal", never 500 the lead endpoint.
+    expect(() => readConsentFromCookie('cookieyes-consent=analytics%3')).not.toThrow();
+    expect(readConsentFromCookie('cookieyes-consent=analytics%3')).toBeUndefined();
+    expect(readConsentFromCookie('cookieyes-consent=%E0%A4%A')).toBeUndefined();
+    // ...even when it rides among healthy cookies.
+    expect(
+      readConsentFromCookie('_ga=GA1.1.1.1; cookieyes-consent=%ZZ; session=1'),
+    ).toBeUndefined();
+  });
+});
+
+/**
+ * Guard: EVERY server-side dispatch call site must forward the CookieYes consent
+ * from the inbound request. The gateway's KV config has `require_consent=true`,
+ * so a call site that "forgets" the consent field makes the Meta CAPI leg
+ * consent-skip SILENTLY — leads keep arriving, Meta sees nothing (the exact
+ * failure found by the 2026-07-17 audit: only 2 of 5 call sites passed it).
+ */
+describe('every deliverGatewayConversion caller forwards consent', () => {
+  const CALLERS = [
+    '../../pages/api/save-quote.ts',
+    '../../pages/api/callbacks.ts',
+    '../../pages/api/contact.ts',
+    '../../pages/api/clearance-callback.ts',
+    '../../pages/instantquote/simple-callback.astro',
+  ];
+
+  for (const rel of CALLERS) {
+    it(`${rel} passes consent: readConsentFromCookie(...)`, () => {
+      const src = readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
+      const dispatchCalls = src.match(/deliverGatewayConversion\(/g) ?? [];
+      expect(dispatchCalls.length).toBeGreaterThan(0);
+      const consentPasses = src.match(/consent:\s*readConsentFromCookie\(/g) ?? [];
+      // One consent line per dispatch call — a second dispatch added without its
+      // own consent line fails here instead of silently consent-skipping.
+      expect(consentPasses.length).toBe(dispatchCalls.length);
+    });
+  }
 });
 
 describe('splitFullName', () => {

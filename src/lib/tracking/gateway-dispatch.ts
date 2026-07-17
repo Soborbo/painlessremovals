@@ -110,7 +110,14 @@ export function readConsentFromCookie(cookieHeader: string | null): ConsentState
     const idx = part.indexOf('=');
     if (idx < 0) continue;
     if (part.slice(0, idx).trim() === 'cookieyes-consent') {
-      raw = decodeURIComponent(part.slice(idx + 1).trim());
+      try {
+        raw = decodeURIComponent(part.slice(idx + 1).trim());
+      } catch {
+        // Malformed percent-encoding (e.g. a truncated `%` sequence) throws
+        // URIError — a bad cookie must degrade to "no explicit signal", never
+        // 500 the lead endpoint that carries it.
+        return undefined;
+      }
       break;
     }
   }
