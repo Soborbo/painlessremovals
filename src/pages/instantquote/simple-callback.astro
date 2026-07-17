@@ -27,7 +27,11 @@ import { sendEmail } from '@/lib/core/email/sender';
 import { generateCallbackCustomerEmail, generateCallbackAdminEmail } from '@/lib/core/email/templates';
 import { sanitizeSubjectPart } from '@/lib/core/email/templates/helpers';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
-import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
+import {
+  deliverGatewayConversion,
+  readConsentFromCookie,
+  splitFullName,
+} from '@/lib/tracking/gateway-dispatch';
 import type { CallbackWebhookPayload } from '@/lib/crm/schemas';
 import { syncQuoteToImve } from '@/lib/features/imve';
 import { safeKV, kvGet, kvPut } from '@/lib/utils/kv';
@@ -184,6 +188,11 @@ if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
               country: Astro.request.headers.get('CF-IPCountry') || 'GB',
             },
             attribution: rec.attribution as Record<string, string | undefined> | undefined,
+            // Consent Mode state from the CookieYes cookie riding on this GET —
+            // the email click is a same-site navigation, so the cookie is present
+            // for returning visitors. Without it the gateway's `require_consent`
+            // default silently consent-skips the Meta leg.
+            consent: readConsentFromCookie(Astro.request.headers.get('Cookie')),
             eventSourceUrl: Astro.url.href,
             clientIpAddress: Astro.request.headers.get('CF-Connecting-IP') ?? undefined,
             clientUserAgent: Astro.request.headers.get('User-Agent') ?? undefined,

@@ -17,7 +17,11 @@ import {
   pageLocationFromRequest,
 } from '@/lib/tracking/server';
 import { getWaitUntil } from '@/lib/crm/server';
-import { deliverGatewayConversion, splitFullName } from '@/lib/tracking/gateway-dispatch';
+import {
+  deliverGatewayConversion,
+  readConsentFromCookie,
+  splitFullName,
+} from '@/lib/tracking/gateway-dispatch';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -232,6 +236,10 @@ export const POST: APIRoute = async (context) => {
           postal_code: postcode ? String(postcode) : undefined,
           country: request.headers.get('CF-IPCountry') || 'GB',
         },
+        // Consent Mode state from the CookieYes cookie on this POST — becomes the
+        // lead's explicit consent-receipt in the gateway ledger. Without it the
+        // gateway's `require_consent` default silently consent-skips the Meta leg.
+        consent: readConsentFromCookie(request.headers.get('Cookie')),
         clientId,
         sessionId: ga4SessionIdFromRequest(request, env.GA4_MEASUREMENT_ID),
         eventSourceUrl: pageLocationFromRequest(request),
