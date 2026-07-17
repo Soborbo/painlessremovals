@@ -42,6 +42,15 @@ export async function runDailySmokeLead(env: GatewayEnv): Promise<void> {
     source: 'daily_smoke',
     // Szintetikus tesztszemély (a kulcsolt teszt-email) — nem valós PII.
     userData: { email, country: 'GB' },
+    // Explicit GRANTED (a lomtalan smoke mintája): a gateway require_consent
+    // kapuja különben ad-tiltással skippelné a Meta-lábat, és a füstteszt nem
+    // bizonyítana semmit — a smoke-őr zölden nézne egy halott láncra.
+    consent: {
+      ad_user_data: 'GRANTED',
+      ad_personalization: 'GRANTED',
+      ad_storage: 'GRANTED',
+      analytics_storage: 'GRANTED',
+    },
     eventSourceUrl: 'https://painlessremovals.com/__smoke',
     testEventCode,
   });
