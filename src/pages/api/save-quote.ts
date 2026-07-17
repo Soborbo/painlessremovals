@@ -43,6 +43,7 @@ import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
   readConsentFromCookie,
+  readMetaCookies,
   splitFullName,
 } from '@/lib/tracking/gateway-dispatch';
 import type { APIRoute } from 'astro';
@@ -278,6 +279,7 @@ export const POST: APIRoute = async (context) => {
         utmMedium: validated.utm_medium,
         utmCampaign: validated.utm_campaign,
         gclid: validated.gclid,
+        fbclid: validated.fbclid,
       });
 
       // Server-side conversion → Soborbo event-gateway. The SAME chokepoint that
@@ -290,6 +292,10 @@ export const POST: APIRoute = async (context) => {
       // is what makes Meta dedupe the two legs into ONE Lead instead of two.
       // Without an event_id we cannot dedupe, so we skip rather than double-count.
       if (validated.event_id) {
+        // Meta browser IDs from the `_fbp`/`_fbc` cookies riding on this
+        // same-origin POST — forwarded PLAIN so the server CAPI leg carries the
+        // same browser identity as the Pixel (EMQ lift; audit 2026-07-17).
+        const metaCookies = readMetaCookies(context.request.headers.get('Cookie'));
         deliverGatewayConversion(env, getWaitUntil(context.locals), {
           eventName: 'quote_calculator_submitted',
           eventId: validated.event_id,
@@ -308,6 +314,10 @@ export const POST: APIRoute = async (context) => {
           },
           attribution: {
             gclid: validated.gclid,
+            // fbclid also lets the gateway rebuild fbc when the _fbc cookie is
+            // absent (Meta only sets it on-site; the gateway's
+            // buildFbcFromFbclid covers the landing-direct case).
+            fbclid: validated.fbclid,
             utm_source: validated.utm_source,
             utm_medium: validated.utm_medium,
             utm_campaign: validated.utm_campaign,
@@ -320,6 +330,8 @@ export const POST: APIRoute = async (context) => {
           // lead, which is what later authorises (or lawfully blocks) the offline
           // Enhanced-Conversions upload.
           consent: readConsentFromCookie(context.request.headers.get('Cookie')),
+          fbp: metaCookies.fbp,
+          fbc: metaCookies.fbc,
           clientId: ga4ClientIdFromRequest(context.request),
           sessionId: ga4SessionIdFromRequest(context.request, env.GA4_MEASUREMENT_ID),
           eventSourceUrl: pageLocationFromRequest(context.request),
@@ -355,6 +367,7 @@ export const POST: APIRoute = async (context) => {
             utm_medium: validated.utm_medium,
             utm_campaign: validated.utm_campaign,
             gclid: validated.gclid,
+            fbclid: validated.fbclid,
             landing_page: asStr(data.landingPage),
             session_id: asStr(data.sessionId),
           },

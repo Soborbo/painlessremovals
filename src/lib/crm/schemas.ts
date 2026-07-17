@@ -142,6 +142,13 @@ export const intakeAttributionSchema = z.object({
   utm_medium: z.string().max(120).optional(),
   utm_campaign: z.string().max(160).optional(),
   gclid: z.string().max(200).optional(),
+  // Meta / Microsoft / Google-wbraid click IDs. Without these the z.object
+  // default (strip unknown keys) silently DROPPED them on the wire even when a
+  // caller passed them — the CRM `lead_attribution` table already accepts all
+  // three (audit 2026-07-17).
+  fbclid: z.string().max(200).optional(),
+  msclkid: z.string().max(200).optional(),
+  wbraid: z.string().max(200).optional(),
   landing_page: z.string().max(500).optional(),
   session_id: z.string().max(120).optional(),
 });

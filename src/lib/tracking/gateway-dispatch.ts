@@ -140,6 +140,45 @@ export function readConsentFromCookie(cookieHeader: string | null): ConsentState
   };
 }
 
+/**
+ * Meta browser identifiers from the inbound request's Cookie header — the SAME
+ * `_fbp`/`_fbc` cookies the browser leg reads (`worker-tracking.ts`
+ * `sendToWorker`), so the two legs hand Meta the same identity. Forwarding them
+ * on the server leg is what lifts EMQ for consent-granted users whose browser
+ * leg never fired (the exact audit finding: em+fbc moves EMQ 3 → 7).
+ *
+ * Values are passed RAW (CLAUDE.md #1: fbp/fbc are pass-through plain, never
+ * hashed, never normalized). We do NOT synthesize an fbc here when only an
+ * fbclid is known — the gateway itself rebuilds fbc from `attribution.fbclid`
+ * (`buildFbcFromFbclid`), and a second, drifting reconstruction would race it.
+ *
+ * Same degradation posture as `readConsentFromCookie`: a malformed cookie must
+ * yield `{}` — never throw into the lead endpoint that carries it.
+ */
+export function readMetaCookies(cookieHeader: string | null): { fbp?: string; fbc?: string } {
+  if (!cookieHeader) return {};
+
+  const out: { fbp?: string; fbc?: string } = {};
+  for (const part of cookieHeader.split(';')) {
+    const idx = part.indexOf('=');
+    if (idx < 0) continue;
+    const name = part.slice(0, idx).trim();
+    if (name !== '_fbp' && name !== '_fbc') continue;
+    let value: string;
+    try {
+      value = decodeURIComponent(part.slice(idx + 1).trim());
+    } catch {
+      // Truncated percent-encoding throws URIError — skip the bad cookie,
+      // keep any healthy one.
+      continue;
+    }
+    if (!value) continue;
+    if (name === '_fbp') out.fbp = value;
+    else out.fbc = value;
+  }
+  return out;
+}
+
 /** Loose fetch shape so test mocks and Node's fetch both assign. */
 export type FetchLike = (
   input: string,
@@ -198,6 +237,14 @@ export interface GatewayConversionInput {
    * Enhanced-Conversions upload provably lawful.
    */
   consent?: ConsentState;
+  /**
+   * Meta browser IDs from the request's `_fbp`/`_fbc` cookies
+   * (`readMetaCookies`). Pass-through PLAIN — never hashed (CLAUDE.md #1).
+   * `fbc` should only ever be the real cookie value; when it is absent the
+   * gateway reconstructs one from `attribution.fbclid` itself.
+   */
+  fbp?: string;
+  fbc?: string;
   clientId?: string;
   sessionId?: string;
   eventSourceUrl?: string;
@@ -275,6 +322,10 @@ export function buildGatewayPayload(input: GatewayConversionInput): Record<strin
     user_data: userData && Object.keys(userData).length > 0 ? userData : undefined,
     attribution: attribution && Object.keys(attribution).length > 0 ? attribution : undefined,
     consent: input.consent,
+    // Top-level, like the browser leg sends them — the gateway reads
+    // `payload.fbp` / `payload.fbc`, not user_data (it builds user_data itself).
+    fbp: input.fbp,
+    fbc: input.fbc,
     client_id: input.clientId,
     session_id: input.sessionId,
     event_source_url: input.eventSourceUrl,

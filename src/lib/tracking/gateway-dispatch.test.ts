@@ -9,6 +9,7 @@ import {
   splitFullName,
   resolveTestEventCode,
   readConsentFromCookie,
+  readMetaCookies,
   type GatewayEnv,
   type GatewayConversionInput,
 } from './gateway-dispatch';
@@ -134,6 +135,26 @@ describe('buildGatewayPayload', () => {
     expect(p.lead_id).toBe('cb-deadbeef');
   });
 
+  it('carries fbp/fbc top-level and PLAIN (CLAUDE.md #1: pass-through, never hashed)', () => {
+    const p = buildGatewayPayload({
+      ...baseInput,
+      fbp: 'fb.1.1700000000000.1234567890',
+      fbc: 'fb.1.1700000000000.IwAR2xyz',
+    }) as any;
+    // Top-level like the browser leg — NOT inside user_data (the gateway
+    // builds user_data itself and reads payload.fbp / payload.fbc).
+    expect(p.fbp).toBe('fb.1.1700000000000.1234567890');
+    expect(p.fbc).toBe('fb.1.1700000000000.IwAR2xyz');
+    expect(p.user_data).not.toHaveProperty('fbp');
+    expect(p.user_data).not.toHaveProperty('fbc');
+  });
+
+  it('omits fbp/fbc entirely when the cookies were absent (no empty strings)', () => {
+    const p = buildGatewayPayload({ ...baseInput, fbp: undefined, fbc: '' });
+    expect(p).not.toHaveProperty('fbp');
+    expect(p).not.toHaveProperty('fbc');
+  });
+
   it('carries the Consent Mode state verbatim, and omits it when absent', () => {
     const consent = {
       ad_user_data: 'GRANTED',
@@ -203,6 +224,52 @@ describe('readConsentFromCookie', () => {
   });
 });
 
+describe('readMetaCookies', () => {
+  /**
+   * The server CAPI leg's browser identity. If this drifts from what the
+   * browser leg reads (`worker-tracking.ts`: getCookie('_fbp')/getCookie('_fbc')),
+   * the two legs hand Meta different identities for the same user and EMQ
+   * silently degrades — em+fbc is what lifts EMQ 3 → 7 (audit 2026-07-17).
+   */
+  it('reads _fbp and _fbc among other cookies, values passed RAW', () => {
+    expect(
+      readMetaCookies(
+        '_ga=GA1.1.1.1; _fbp=fb.1.1700000000000.1234567890; _fbc=fb.1.1700000000123.IwAR2xyz; session=1',
+      ),
+    ).toEqual({
+      fbp: 'fb.1.1700000000000.1234567890',
+      fbc: 'fb.1.1700000000123.IwAR2xyz',
+    });
+  });
+
+  it('returns only what is present — _fbc is usually missing without a click-through', () => {
+    expect(readMetaCookies('_fbp=fb.1.1700000000000.1234567890')).toEqual({
+      fbp: 'fb.1.1700000000000.1234567890',
+    });
+    // No fbc key at all: buildGatewayPayload must not emit fbc, so the gateway
+    // falls through to its own fbclid → fbc reconstruction.
+    expect(readMetaCookies('_fbp=fb.1.1.1')).not.toHaveProperty('fbc');
+  });
+
+  it('returns {} without cookies (never a guess, never a synthesized fbc)', () => {
+    expect(readMetaCookies(null)).toEqual({});
+    expect(readMetaCookies('')).toEqual({});
+    expect(readMetaCookies('session=xyz; _ga=GA1.1.1.1')).toEqual({});
+  });
+
+  it('does NOT throw on malformed cookies — degrades instead of 500ing the lead', () => {
+    // Truncated percent-encoding throws URIError in decodeURIComponent.
+    expect(() => readMetaCookies('_fbp=%E0%A4%A')).not.toThrow();
+    expect(readMetaCookies('_fbp=%E0%A4%A')).toEqual({});
+    // A bad _fbc must not take the healthy _fbp down with it.
+    expect(readMetaCookies('_fbp=fb.1.1.1; _fbc=%ZZ')).toEqual({ fbp: 'fb.1.1.1' });
+    // Empty values are absence, not identity.
+    expect(readMetaCookies('_fbp=; _fbc=')).toEqual({});
+    // Nameless/valueless fragments are skipped.
+    expect(readMetaCookies('; =x; _fbp')).toEqual({});
+  });
+});
+
 /**
  * Guard: EVERY server-side dispatch call site must forward the CookieYes consent
  * from the inbound request. The gateway's KV config has `require_consent=true`,
@@ -228,6 +295,16 @@ describe('every deliverGatewayConversion caller forwards consent', () => {
       // One consent line per dispatch call — a second dispatch added without its
       // own consent line fails here instead of silently consent-skipping.
       expect(consentPasses.length).toBe(dispatchCalls.length);
+    });
+
+    it(`${rel} forwards the _fbp/_fbc cookies (readMetaCookies) on every dispatch`, () => {
+      // Same silent-failure class as consent: a call site that "forgets" fbp/fbc
+      // still delivers the lead, but the Meta CAPI leg loses the browser
+      // identity and EMQ quietly drops (the 2026-07-17 audit's MEDIUM finding).
+      const src = readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8');
+      const dispatchCalls = src.match(/deliverGatewayConversion\(/g) ?? [];
+      expect((src.match(/fbp:\s*metaCookies\.fbp/g) ?? []).length).toBe(dispatchCalls.length);
+      expect((src.match(/fbc:\s*metaCookies\.fbc/g) ?? []).length).toBe(dispatchCalls.length);
     });
   }
 });

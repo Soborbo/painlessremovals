@@ -503,7 +503,10 @@ export function ResultPage() {
         utm_source: state.utmSource || undefined,
         utm_medium: state.utmMedium || undefined,
         utm_campaign: state.utmCampaign || undefined,
+        utm_term: state.utmTerm || undefined,
+        utm_content: state.utmContent || undefined,
         gclid: state.gclid || undefined,
+        fbclid: state.fbclid || undefined,
         quoteUrlPayload,
         event_id: eventId,
       };
@@ -573,7 +576,7 @@ export function ResultPage() {
         }
       }, 3000);
     }
-  }, [submissionStatus, quote, state.contact, state.utmSource, state.utmMedium, state.utmCampaign, state.gclid, state.serviceType]);
+  }, [submissionStatus, quote, state.contact, state.utmSource, state.utmMedium, state.utmCampaign, state.utmTerm, state.utmContent, state.gclid, state.fbclid, state.serviceType]);
 
   // Auto-submit on mount (skip if loading screen is showing — we wait for attribution)
   useEffect(() => {
