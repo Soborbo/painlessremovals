@@ -6,7 +6,7 @@
  */
 import OptimizedPicture from '@/components/OptimizedPicture.astro';
 
-const clients = [
+const defaultClients = [
   { name: 'Bristol Old Vic', imageName: 'home-removals/clients/bristol-old-vic' },
   { name: 'LiveWest', imageName: 'home-removals/clients/livewest' },
   { name: 'Church of England', imageName: 'home-removals/clients/church-of-england' },
@@ -16,10 +16,12 @@ const clients = [
 interface Props {
   heading?: string;
   class?: string;
+  clients?: { name: string; imageName: string }[];
 }
 const {
   heading = 'Some of Our Regular Clients Include',
   class: className = '',
+  clients = defaultClients,
 } = Astro.props;
 ---
 

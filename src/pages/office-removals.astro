@@ -182,7 +182,7 @@ const pageSchema = [
     serviceType: "Office Removals",
     url: "/office-removals/",
     areaServed: areas.bristol,
-    image: "/img/office-removals/office-removals-team-assembling-furniture-bristol-1200w.webp",
+    image: "/img/office-removals/painless-office-move-queen-square-bristol-1200w.webp",
   }),
   faqPage(faqs),
   breadcrumbs([
@@ -192,7 +192,7 @@ const pageSchema = [
 ];
 ---
 
-<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/og/office-removals/office-removals-team-assembling-furniture-bristol-og.jpg">
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema} ogImage="/og/office-removals/painless-office-move-queen-square-bristol-og.jpg">
 
   <!-- ============================================
        HERO SECTION
@@ -201,12 +201,12 @@ const pageSchema = [
     <!-- Mobile: Image at top -->
     <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
       <OptimizedPicture
-        name="office-removals/office-removals-team-assembling-furniture-bristol"
+        name="office-removals/painless-office-move-queen-square-bristol"
         pattern="FULL"
-        alt="Painless Removals team assembling office furniture in Bristol with Clifton Suspension Bridge view"
+        alt="Painless Removals crew mid-relocation in a Bristol office — staged chairs and a branded moving skate"
         loading="eager"
         fetchpriority="high"
-        class="w-full h-full object-cover object-left"
+        class="w-full h-full object-cover object-center"
       />
     </div>
 
@@ -239,11 +239,11 @@ const pageSchema = [
     <!-- Right: Full-bleed image (desktop) -->
     <div class="hidden lg:block relative overflow-hidden">
       <OptimizedPicture
-        name="office-removals/office-removals-team-assembling-furniture-bristol"
+        name="office-removals/painless-office-move-queen-square-bristol"
         pattern="FULL"
-        alt="Painless Removals team assembling office furniture in Bristol with Clifton Suspension Bridge view"
+        alt="Painless Removals crew mid-relocation in a Bristol office — staged chairs and a branded moving skate"
         loading="eager"
-        class="absolute inset-0 w-full h-full object-cover object-left"
+        class="absolute inset-0 w-full h-full object-cover object-center"
       />
     </div>
   </section>
@@ -269,7 +269,7 @@ const pageSchema = [
         <OptimizedPicture
           name="office-removals/office-mover-carrying-boxes-bristol"
           pattern="HALF"
-          alt="Painless Removals mover carrying branded moving boxes from Bristol office building"
+          alt="Painless Removals team member reassembling an office desk frame at a Bristol business relocation"
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"
         />
@@ -307,7 +307,16 @@ const pageSchema = [
   <!-- ============================================
        CLIENT LOGOS
   ============================================ -->
-  <ClientLogos heading="Trusted by organisations across Bristol" />
+  <ClientLogos
+    heading="Trusted by organisations across Bristol"
+    clients={[
+      { name: 'Runway East', imageName: 'office-removals/clients/runway-east' },
+      { name: 'Bristol Old Vic', imageName: 'home-removals/clients/bristol-old-vic' },
+      { name: 'LiveWest', imageName: 'home-removals/clients/livewest' },
+      { name: 'Church of England', imageName: 'home-removals/clients/church-of-england' },
+      { name: 'Second Step', imageName: 'home-removals/clients/second-step' },
+    ]}
+  />
 
   <!-- ============================================
        KNOW YOUR PRICE
@@ -454,6 +463,131 @@ const pageSchema = [
   </section>
 
   <!-- ============================================
+       BUILT FOR MOVES OF ANY SCALE
+       (Scale + project management — larger commercial clients)
+  ============================================ -->
+  <section class="section bg-gray-50">
+    <div class="container-wide">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <!-- Image -->
+        <div class="relative mx-auto w-full max-w-sm aspect-[3/4] rounded-xl overflow-hidden shadow-lg">
+          <OptimizedPicture
+            name="office-removals/painless-removals-van-london-the-shard"
+            pattern="HALF"
+            alt="Painless Removals branded van on a London street beneath The Shard during a London-to-Bristol office relocation"
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        </div>
+
+        <!-- Text -->
+        <div>
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">Major &amp; Multi-Site Relocations</p>
+          <h2 class="mb-5">Built for Moves of Any Scale</h2>
+          <p class="text-lg text-warm-gray mb-6 leading-relaxed">
+            From a two-person studio to a multi-floor corporate relocation moved across a live, occupied building — the principle is the same, only the planning grows. Bigger moves are run as proper projects: a written plan, daily targets, and one person accountable from the first survey to the final sign-off.
+          </p>
+
+          <ul class="space-y-3 mb-8">
+            <li class="flex gap-3"><span class="text-secondary-500 font-bold mt-0.5">&#10003;</span><span class="text-gray-700"><strong>A dedicated project manager</strong> and a single accountable point of contact throughout — you're never passed around.</span></li>
+            <li class="flex gap-3"><span class="text-secondary-500 font-bold mt-0.5">&#10003;</span><span class="text-gray-700"><strong>A written move plan</strong> with clear daily targets, so everyone knows exactly what moves when.</span></li>
+            <li class="flex gap-3"><span class="text-secondary-500 font-bold mt-0.5">&#10003;</span><span class="text-gray-700"><strong>Sequenced around your operation</strong> — we keep hallways clear and disruption to other tenants to a minimum.</span></li>
+            <li class="flex gap-3"><span class="text-secondary-500 font-bold mt-0.5">&#10003;</span><span class="text-gray-700"><strong>Crews scaled to the job</strong>, working evenings and weekends where the deadline demands it.</span></li>
+          </ul>
+
+          <div class="border-l-4 border-secondary-500 bg-white rounded-r-lg p-5 shadow-sm">
+            <p class="text-gray-700"><span class="font-semibold text-primary-600">Recently:</span> we relocated <strong>Runway East</strong> from London to their new Bristol home at Queen Square — a multi-team office move sequenced around a working building and delivered ready for occupation on the deadline.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- The people behind your move -->
+      <div class="mt-12 lg:mt-16 border-t border-gray-200 pt-10">
+        <p class="text-center text-sm font-semibold uppercase tracking-wide text-primary-600 mb-8">The People Behind Your Move</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
+          {[
+            { name: 'Jay Newton', role: 'Director & Project Manager', img: 'about/team/Jay-Newton', desc: 'On site with the crew, accountable for your move from first survey to final sign-off.' },
+            { name: 'Tom', role: 'Operations & Logistics', img: 'about/team/Tom', desc: 'Runs scheduling and coordination, keeping both ends of the move in sync.' },
+            { name: 'Richard', role: 'Account Manager', img: 'about/team/Richard', desc: 'Your single point of contact — every question, change, or update flows through him.' },
+          ].map((person) => (
+            <div class="flex flex-col items-center text-center">
+              <div class="w-24 h-24 rounded-full overflow-hidden shadow-md mb-4">
+                <OptimizedPicture
+                  name={person.img}
+                  pattern="QUARTER"
+                  alt={`${person.name} — ${person.role} at Painless Removals`}
+                  loading="lazy"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <p class="font-bold text-gray-900">{person.name}</p>
+              <p class="text-secondary-500 text-sm font-semibold mb-2">{person.role}</p>
+              <p class="text-warm-gray text-sm leading-relaxed">{person.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       WE REBUILD YOUR OFFICE — DOWN TO THE LAST FIXING
+       (Reassembly USP — "ready to work day one")
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <!-- Text -->
+        <div>
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">Reassembled, Not Just Delivered</p>
+          <h2 class="mb-5">We Rebuild Your Office — Down to the Last Fixing</h2>
+          <p class="text-lg text-warm-gray mb-6 leading-relaxed">
+            Anyone can carry a desk out of a building. The hard part is putting your office back together so your team can sit down and work the moment they walk in — and that's the part we obsess over.
+          </p>
+          <div class="space-y-4 text-warm-gray mb-8">
+            <p><strong class="text-primary-600">Every workstation is labelled before it's taken apart</strong>, so it goes back exactly where it belongs on your new floor plan — same layout, same orientation, no guesswork.</p>
+            <p><strong class="text-primary-600">Every screw, bracket and cable clip is bagged and kept with its desk.</strong> Missing fixings are the number-one cause of reassembly delays on office moves — so we simply don't let them go missing.</p>
+            <p>Desks rebuilt, furniture positioned, monitors back on stands, crates cleared. <strong class="text-primary-600">You walk in on Monday and get straight to work.</strong></p>
+          </div>
+          <a href="/instantquote/?service=office" class="btn-cta-orange">GET YOUR OFFICE MOVE QUOTE</a>
+        </div>
+
+        <!-- Image -->
+        <div class="relative aspect-[4/5] lg:aspect-auto lg:min-h-[560px] rounded-xl overflow-hidden shadow-lg">
+          <OptimizedPicture
+            name="office-removals/office-desk-reassembly-fixings-bristol"
+            pattern="HALF"
+            alt="Painless Removals team member sorting and tracking office desk fixings during reassembly at a Bristol office"
+            loading="lazy"
+            class="absolute inset-0 w-full h-full object-cover object-center"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SOCIAL PROOF — Alisha Annan (office move, names Richard)
+  ============================================ -->
+  <section class="py-10 md:py-14 bg-gray-50">
+    <div class="container-wide max-w-3xl mx-auto">
+      <div class="office-review group relative bg-white rounded-xl p-6 lg:p-8 shadow-sm border border-gray-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
+        <div class="office-review__shine"></div>
+        <div class="flex gap-1 text-orange-400 text-xl mb-3 transition-transform duration-300 group-hover:scale-105 origin-left">
+          <span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span><span>&#9733;</span>
+        </div>
+        <p class="text-gray-700 text-[15px] lg:text-base leading-relaxed">
+          Excellent service for our <mark>office move</mark>. Quick, easy and <mark>took all the pain away</mark> from the stress of moving. Richard and his team were brilliant, I really can't fault them! Very responsive via messages, providing quotes and just getting things done. I'd <mark>highly recommend</mark> and will definitely use them again — thanks for making our move easy.
+        </p>
+        <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+          <span class="font-semibold text-gray-900 text-[14px]">Alisha Annan</span>
+          <img src="/images/google-g-logo.svg" alt="Google" class="w-6 h-6" width="48" height="48" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
        SENSITIVE DOCUMENTS & DATA
        (High-value client targeting: solicitors, accountants, medical)
   ============================================ -->
@@ -519,9 +653,9 @@ const pageSchema = [
       <!-- Image (right on desktop) -->
       <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] order-2">
         <OptimizedPicture
-          name="areas/office-removal-real2"
+          name="office-removals/office-it-equipment-monitors-wrapped-bristol"
           pattern="HALF"
-          alt="Painless Removals handling IT equipment during an office move"
+          alt="Office monitors individually wrapped and cable-managed by Painless Removals during a Bristol office move"
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"
         />
@@ -606,7 +740,7 @@ const pageSchema = [
   </section>
 
   <!-- ============================================
-       HOW IT WORKS (5 steps) — horizontal scroll mobile, full-width desktop
+       HOW IT WORKS (6 steps) — horizontal scroll mobile, full-width desktop
   ============================================ -->
   <section id="how-it-works" class="office-steps section bg-cream">
     <div class="office-steps__container">
@@ -712,6 +846,9 @@ const pageSchema = [
       </div>
 
       <div class="max-w-2xl mx-auto mt-8 space-y-3">
+        <p class="text-center text-warm-gray">
+          Larger, phased, and multi-site relocations are quoted bespoke after a free survey — the figures above are a starting point, not a ceiling.
+        </p>
         <p class="text-center text-sm text-warm-gray">
           * Estimates only for local Bristol moves. Distance, access, and specific circumstances significantly influence the final price. Your exact quote is based on a free survey of your office.
         </p>
@@ -783,9 +920,9 @@ const pageSchema = [
       <!-- Right: Image -->
       <div class="hidden lg:block relative min-h-[400px]">
         <OptimizedPicture
-          name="office-removals/Office-removals-Bristol-2"
+          name="office-removals/office-set-up-ready-queen-square-bristol"
           pattern="HALF"
-          alt="Painless Removals team handling office furniture during a business move"
+          alt="Office set up and ready for occupation — desks assembled and monitors in place after a Painless Removals move"
           loading="lazy"
           class="absolute inset-0 w-full h-full object-cover"
         />

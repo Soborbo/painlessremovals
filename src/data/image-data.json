@@ -1259,6 +1259,11 @@
     "height": 300,
     "format": "jpg"
   },
+  "office-removals/clients/runway-east": {
+    "width": 200,
+    "height": 200,
+    "format": "jpg"
+  },
   "office-removals/large-office": {
     "width": 500,
     "height": 500,
@@ -1279,9 +1284,24 @@
     "height": 800,
     "format": "jpg"
   },
+  "office-removals/office-desk-assembly-team-bristol": {
+    "width": 4128,
+    "height": 6192,
+    "format": "jpg"
+  },
+  "office-removals/office-desk-reassembly-fixings-bristol": {
+    "width": 4128,
+    "height": 6192,
+    "format": "jpg"
+  },
+  "office-removals/office-it-equipment-monitors-wrapped-bristol": {
+    "width": 1600,
+    "height": 738,
+    "format": "jpg"
+  },
   "office-removals/office-mover-carrying-boxes-bristol": {
-    "width": 1500,
-    "height": 1500,
+    "width": 6192,
+    "height": 4128,
     "format": "jpg"
   },
   "office-removals/office-removals": {
@@ -1307,6 +1327,26 @@
   "office-removals/office-removals-team-assembling-furniture-bristol": {
     "width": 1500,
     "height": 1500,
+    "format": "jpg"
+  },
+  "office-removals/office-set-up-ready-queen-square-bristol": {
+    "width": 1600,
+    "height": 738,
+    "format": "jpg"
+  },
+  "office-removals/painless-office-move-queen-square-bristol": {
+    "width": 6192,
+    "height": 4128,
+    "format": "jpg"
+  },
+  "office-removals/painless-removals-van-bristol-office-move": {
+    "width": 6192,
+    "height": 4128,
+    "format": "jpg"
+  },
+  "office-removals/painless-removals-van-london-the-shard": {
+    "width": 737,
+    "height": 1600,
     "format": "jpg"
   },
   "office-removals/small-office": {
@@ -1395,8 +1435,8 @@
     "format": "jpg"
   },
   "packing/tamara-packing3": {
-    "width": 2500,
-    "height": 1667,
+    "width": 2048,
+    "height": 1366,
     "format": "jpg"
   },
   "partners/bingo": {
