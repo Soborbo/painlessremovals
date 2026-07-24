@@ -649,8 +649,9 @@
 .guides-cinema-image {
   position: relative;
   overflow: hidden;
-  min-height: 280px;
-  aspect-ratio: 4/3;
+  /* the guide image is a 3:2 rendition and stands alone, so match it rather
+     than crop it into 4:3 */
+  aspect-ratio: 3/2;
   order: -1; /* mobile: image appears above text */
 }
 

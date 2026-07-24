@@ -1116,7 +1116,8 @@ const pageSchema = [
   .kf-tier-image {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    /* every tier is fed a 3:2 rendition, so 3/2 fits them all with no crop */
+    aspect-ratio: 3 / 2;
     overflow: hidden;
     background: var(--kf-petrol);
   }
@@ -1787,8 +1788,9 @@ const pageSchema = [
     .kf-hero-image {
       position: static;
       width: 100%;
-      height: clamp(220px, 36vh, 320px);
+      height: auto;
     }
+    .kf-hero-image :global(.kf-hero-image-img) { height: auto; }
     .kf-hero-image::before { display: none; }
     .kf-hero-copy { max-width: 100%; }
     .kf-hero-inner { padding-top: clamp(28px, 4vh, 56px); padding-bottom: clamp(36px, 5vh, 64px); }
