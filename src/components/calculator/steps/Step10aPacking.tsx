@@ -11,12 +11,15 @@ import { useStore } from '@nanostores/react';
 import { PictureImg } from '@/components/ui/picture-img';
 import {
   calculatorStore,
+  calculatedCubes,
   setPackingTier,
   clearPackingExtra,
   nextStep,
   prevStep,
   type PackingTier,
 } from '@/lib/calculator-store';
+import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
+import { getPackingSizeCategory, type PackingSizeCategory } from '@/lib/constants';
 import { NavigationButtons } from '@/components/calculator/navigation-buttons';
 import { cn } from '@/lib/utils';
 import { CheckIcon } from '@/components/icons/CheckIcon';
@@ -27,7 +30,6 @@ const FRAGILE_ONLY = {
   title: 'Fragile Only',
   subtitle: "Perfect if you're happy packing clothes and books, but want expert hands for your kitchen and fragile items.",
   description: '',
-  price: 435,
   image: '/images/calculator/step-10-extras/packing/kitchen-packing-fragile.jpg',
   features: [
     'Kitchen items professionally packed',
@@ -45,7 +47,6 @@ const FULL_HOUSE_TIERS = [
     label: 'Small',
     subtitle: 'Flats and smaller homes',
     officeSubtitle: 'Small office, up to ~10 desks',
-    price: 395,
     image: '/images/calculator/step-10-extras/packing/packing-small.jpg',
     badge: null,
     features: [
@@ -61,7 +62,6 @@ const FULL_HOUSE_TIERS = [
     label: 'Medium',
     subtitle: '2-3 bedroom homes',
     officeSubtitle: 'Medium office, ~10–25 desks',
-    price: 580,
     image: '/images/calculator/step-10-extras/packing/packing-medium.jpg',
     badge: 'Most Popular',
     features: [
@@ -77,7 +77,6 @@ const FULL_HOUSE_TIERS = [
     label: 'Large',
     subtitle: '3-4 bedroom family homes',
     officeSubtitle: 'Large office, ~25–50 desks',
-    price: 725,
     image: '/images/calculator/step-10-extras/packing/packing-large.jpg',
     badge: null,
     features: [
@@ -93,7 +92,6 @@ const FULL_HOUSE_TIERS = [
     label: 'Extra',
     subtitle: '5+ bedrooms or lots of stuff',
     officeSubtitle: '50+ desks or multi-floor office',
-    price: 990,
     image: '/images/calculator/step-10-extras/packing/packing-extra-large.jpg',
     badge: null,
     features: [
@@ -109,13 +107,20 @@ type Selection = 'fragile' | 'small' | 'medium' | 'large' | 'xl' | null;
 
 export function Step10aPacking() {
   const state = useStore(calculatorStore);
+  // Billing follows the surveyed volume, not the card the buyer taps, so each
+  // card must quote the band getExtrasCost() will charge. Config is the source.
+  const cubes = useStore(calculatedCubes);
+  const sizeCategory = getPackingSizeCategory(cubes);
+  const fragilePrice = CALCULATOR_CONFIG.packingTiers.fragile.priceBySize[sizeCategory];
+  const fullServicePrice = (size: PackingSizeCategory) =>
+    CALCULATOR_CONFIG.packingTiers.fullService.priceBySize[size];
 
   const [selected, setSelected] = useState<Selection>(
     state.extras.packingTier === 'fragile'
       ? 'fragile'
       : state.extras.packingTier === 'fullService'
-        ? 'medium' // default full service to medium
-        : null
+        ? (state.extras.packingSize ?? sizeCategory)
+        : sizeCategory // pre-select the band that matches their volume
   );
 
   useEffect(() => {
@@ -131,7 +136,7 @@ export function Step10aPacking() {
   const handleContinue = () => {
     if (!selected) return;
     const tier: PackingTier = selected === 'fragile' ? 'fragile' : 'fullService';
-    setPackingTier(tier);
+    setPackingTier(tier, tier === 'fullService' ? (selected as PackingSizeCategory) : undefined);
     nextStep();
   };
 
@@ -192,13 +197,14 @@ export function Step10aPacking() {
               width={400}
               height={300}
             />
+            {/* mobile: source images are square — show them whole rather than cropping a face off */}
             <PictureImg
               src={FRAGILE_ONLY.image}
               alt="Professional kitchen packing service"
-              className="w-full aspect-[16/9] object-cover md:hidden"
+              className="w-full h-auto md:hidden"
               loading="lazy"
-              width={400}
-              height={225}
+              width={660}
+              height={660}
             />
           </div>
 
@@ -224,7 +230,7 @@ export function Step10aPacking() {
             {/* Price */}
             <div>
               <span className="text-2xl font-bold text-primary">
-                £{FRAGILE_ONLY.price}
+                £{fragilePrice}
               </span>
             </div>
           </div>
@@ -278,14 +284,15 @@ export function Step10aPacking() {
                 )}
 
                 {/* Image */}
-                <div className="relative aspect-[4/3] overflow-hidden">
+                {/* mobile: full square image, no crop. From md up the 4:3 card crop returns. */}
+                <div className="relative overflow-hidden md:aspect-[4/3]">
                   <PictureImg
                     src={tier.image}
                     alt={`${tier.label} packing service`}
-                    className="h-full w-full object-cover"
+                    className="w-full h-auto md:absolute md:inset-0 md:h-full md:object-cover"
                     loading="lazy"
-                    width={300}
-                    height={225}
+                    width={660}
+                    height={660}
                   />
                 </div>
 
@@ -304,7 +311,7 @@ export function Step10aPacking() {
                   {/* Price */}
                   <div className="mb-4">
                     <span className="text-2xl font-bold text-primary">
-                      £{tier.price}
+                      £{fullServicePrice(tier.sizeKey as PackingSizeCategory)}
                     </span>
                   </div>
 

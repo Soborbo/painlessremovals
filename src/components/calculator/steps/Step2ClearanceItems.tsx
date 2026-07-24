@@ -171,14 +171,15 @@ export function Step2ClearanceItems() {
               )}
             >
               {/* Image */}
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted/20">
+              <div className="relative w-full overflow-hidden bg-muted/20 md:aspect-[4/3]">
                 <PictureImg
                   src={`${CONFIG.site.assetBaseUrl}${itemConfig.image}`}
                   alt={itemConfig.shortName}
-                  width={300}
-                  height={225}
+                  width={660}
+                  height={660}
                   className={cn(
-                    'w-full h-full object-cover transition-transform duration-300',
+                    'w-full h-auto transition-transform duration-300',
+                    'md:absolute md:inset-0 md:h-full md:object-cover',
                     isActive && 'scale-105'
                   )}
                   loading="lazy"

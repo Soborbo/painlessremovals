@@ -302,7 +302,7 @@ const pageSchema = [
       {benefits.map((benefit, index) => (
         <div class="grid lg:grid-cols-2">
           <!-- Image (50% width, full height) -->
-          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+          <div class={`relative aspect-[3/2] lg:aspect-auto lg:min-h-[500px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
             <OptimizedPicture
               name={benefit.imageName}
               pattern="HALF_CARD"
@@ -407,7 +407,7 @@ const pageSchema = [
       </div>
 
       <!-- Image -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px]">
+      <div class="relative aspect-[3/2] lg:aspect-auto lg:min-h-[400px]">
         <OptimizedPicture
           name="packing/Bristol-home-packing-service"
           pattern="HALF_CARD"

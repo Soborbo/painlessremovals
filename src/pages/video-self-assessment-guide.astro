@@ -249,14 +249,14 @@ const pageSchema = [articleSchema, breadcrumbSchema];
   ============================================ -->
   <section class="relative lg:grid lg:grid-rows-[1fr_auto]">
     <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+    <div class="lg:hidden w-full relative overflow-hidden">
       <OptimizedPicture
         name="assessment/video-assessment"
         pattern="FULL"
         alt="Person filming their home with a phone for a video self-assessment removal quote"
         loading="eager"
         fetchpriority="high"
-        class="w-full h-full object-cover"
+        class="w-full h-auto"
       />
     </div>
 
@@ -587,7 +587,7 @@ const pageSchema = [articleSchema, breadcrumbSchema];
         {finalChecklist.map((item) => (
           <div class="group rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
 
-            <div class="relative aspect-[4/3] overflow-hidden">
+            <div class="relative aspect-[3/2] overflow-hidden">
               <OptimizedPicture
                 name={item.image}
                 pattern="THIRD"

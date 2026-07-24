@@ -170,8 +170,8 @@ const pageSchema = [serviceSchema, faqSchema];
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
 
     <!-- Mobile: image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
-      <OptimizedPicture name="partners/bingo" pattern="FULL" alt="Elderly residents enjoying activities at a Bristol care home" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture name="partners/bingo" pattern="FULL" alt="Elderly residents enjoying activities at a Bristol care home" class="absolute inset-0 w-full h-auto" />
     </div>
 
     <!-- Left: content -->
@@ -289,7 +289,7 @@ const pageSchema = [serviceSchema, faqSchema];
     {benefits.map((benefit, index) => (
       <div class="grid lg:grid-cols-2">
         <!-- Image -->
-        <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+        <div class={`relative aspect-[3/2] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
           <OptimizedPicture name={benefit.image} pattern="FULL" alt={benefit.imageAlt} class="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         </div>
         <!-- Text -->
@@ -395,7 +395,7 @@ const pageSchema = [serviceSchema, faqSchema];
   <section class="bg-white">
     <div class="grid lg:grid-cols-2">
       <!-- Image -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200">
+      <div class="relative aspect-[3/2] lg:aspect-auto lg:min-h-[500px] overflow-hidden bg-gray-200">
         <div class="absolute inset-0 flex items-center justify-center">
           <span class="text-gray-400 text-sm">Image placeholder — care home staff at reception</span>
         </div>

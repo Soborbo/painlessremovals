@@ -38,8 +38,6 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@cloudflare/workers-types": "^5.20260717.1",
-    "@emnapi/core": "^1.11.2",
-    "@emnapi/runtime": "^1.11.2",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",

@@ -778,7 +778,9 @@ export function getExtrasCost(extras: QuoteInput['extras'], cubes: number): numb
 
   // New packing tier system
   if ('packingTier' in extras && extras.packingTier) {
-    const sizeCategory = getPackingSizeCategory(cubes);
+    const sizeCategory = ('packingSize' in extras && extras.packingSize)
+      ? (extras.packingSize as ReturnType<typeof getPackingSizeCategory>)
+      : getPackingSizeCategory(cubes);
     const tierConfig = CALCULATOR_CONFIG.packingTiers[extras.packingTier as keyof typeof CALCULATOR_CONFIG.packingTiers];
     if (tierConfig && tierConfig.priceBySize) {
       total += tierConfig.priceBySize[sizeCategory];
@@ -850,7 +852,9 @@ export function getExtrasBreakdown(
 
   // Packing — new tier system, else legacy
   if ('packingTier' in extras && extras.packingTier) {
-    const sizeCategory = getPackingSizeCategory(cubes);
+    const sizeCategory = ('packingSize' in extras && extras.packingSize)
+      ? (extras.packingSize as ReturnType<typeof getPackingSizeCategory>)
+      : getPackingSizeCategory(cubes);
     const tierConfig =
       CALCULATOR_CONFIG.packingTiers[extras.packingTier as keyof typeof CALCULATOR_CONFIG.packingTiers];
     if (tierConfig && tierConfig.priceBySize) out.packing = tierConfig.priceBySize[sizeCategory];

@@ -112,9 +112,9 @@ export function Step10cCleaning() {
                     ? '/images/calculator/extras/cleaning.jpg'
                     : '/images/calculator/step-10-extras/gateway/bristol-move-out-cleaning-service-440w.jpg'}
                   alt={config.label}
-                  width={200}
-                  height={150}
-                  className="w-full aspect-[4/3] object-cover"
+                  width={660}
+                  height={660}
+                  className="w-full h-auto md:aspect-[4/3] md:object-cover"
                   loading="lazy"
                 />
                 <div className={cn(
