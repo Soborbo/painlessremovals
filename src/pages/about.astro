@@ -141,7 +141,7 @@ const aboutPageSchema = [
           pattern="FULL"
           alt="Painless Removals van parked in Bristol neighbourhood"
           loading="eager"
-          class="absolute inset-0 w-full h-full object-cover object-bottom"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-bottom"
         />
         <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg px-3 py-2 flex items-center gap-2">
           <img src="/images/google-g-logo.svg" alt="Google" class="w-8 h-8" width="32" height="32" />
@@ -192,14 +192,14 @@ const aboutPageSchema = [
   ============================================ -->
   <section class="bg-white overflow-hidden">
     <div class="grid lg:grid-cols-2 items-stretch">
-      <div class="relative overflow-hidden min-h-[250px] sm:min-h-[300px] lg:min-h-[500px]">
+      <div class="relative overflow-hidden lg:min-h-[500px]">
         <OptimizedPicture
           name="about/young-steve-fanger"
           pattern="HALF"
           alt="Steve Fanger with his band The Vultures in the early days"
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover"
         />
       </div>
 
@@ -327,14 +327,14 @@ const aboutPageSchema = [
         </div>
       </div>
 
-      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px] order-1 lg:order-2">
+      <div class="relative overflow-hidden lg:min-h-[500px] order-1 lg:order-2">
         <OptimizedPicture
           name="about/Horsley-removal"
           pattern="HALF"
           alt="Painless Removals van at a countryside home in Horsley, Gloucestershire"
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 w-full h-full object-cover object-[75%_center]"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-[75%_center]"
         />
       </div>
     </div>
@@ -381,14 +381,14 @@ const aboutPageSchema = [
         </div>
       </div>
 
-      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px] order-1 lg:order-2">
+      <div class="relative overflow-hidden lg:min-h-[500px] order-1 lg:order-2">
         <OptimizedPicture
           name="about/christmas-party"
           pattern="HALF"
           alt="Painless Removals team at their Christmas party"
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover"
         />
       </div>
     </div>
@@ -454,14 +454,14 @@ const aboutPageSchema = [
 
         <!-- Jay -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Jay-Newton"
               pattern="HALF"
               alt="Jay Newton, Director of Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -477,14 +477,14 @@ const aboutPageSchema = [
 
         <!-- Tom -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Tom"
               pattern="HALF"
               alt="Tom, Customer Relationships at Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -498,14 +498,14 @@ const aboutPageSchema = [
 
         <!-- Tamara -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Tamara"
               pattern="HALF"
               alt="Tamara, Packing Team Lead at Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -519,14 +519,14 @@ const aboutPageSchema = [
 
         <!-- Pete -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Pete"
               pattern="HALF"
               alt="Pete, Removal Team Leader at Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -540,14 +540,14 @@ const aboutPageSchema = [
 
         <!-- Mike -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Mike"
               pattern="HALF"
               alt="Mike, Removal Team Leader at Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -561,14 +561,14 @@ const aboutPageSchema = [
 
         <!-- László -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Laszlo"
               pattern="HALF"
               alt="László, Marketing Executive at Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -582,14 +582,14 @@ const aboutPageSchema = [
 
         <!-- Richard -->
         <div class="grid md:grid-cols-[280px_1fr] rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300 group">
-          <div class="relative aspect-[3/2] md:aspect-auto md:min-h-[240px] overflow-hidden">
+          <div class="relative aspect-square md:aspect-auto md:min-h-[240px] overflow-hidden">
             <OptimizedPicture
               name="about/team/Richard"
               pattern="HALF"
               alt="Richard, Business Development & Partnerships at Painless Removals"
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-top group-hover:scale-105 transition-transform duration-500"
             />
           </div>
           <div class="p-6 lg:p-8 flex flex-col justify-center bg-white">
@@ -703,14 +703,14 @@ const aboutPageSchema = [
         </div>
       </div>
 
-      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px] order-1 lg:order-2">
+      <div class="relative overflow-hidden lg:min-h-[500px] order-1 lg:order-2">
         <OptimizedPicture
           name="about/theatre-school"
           pattern="HALF"
           alt="Painless Removals van at Bristol Old Vic Theatre School Scenic Workshop in Bedminster"
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover"
         />
       </div>
     </div>
@@ -721,14 +721,14 @@ const aboutPageSchema = [
   ============================================ -->
   <section class="bg-cream overflow-hidden">
     <div class="grid lg:grid-cols-2 items-stretch">
-      <div class="relative overflow-hidden min-h-[300px] lg:min-h-[500px]">
+      <div class="relative overflow-hidden lg:min-h-[500px]">
         <OptimizedPicture
           name="about/family"
           pattern="HALF"
           alt="Three generations of a Bristol family - long-standing Painless Removals customers"
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 w-full h-full object-cover object-center"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-center"
         />
       </div>
 
@@ -799,14 +799,14 @@ const aboutPageSchema = [
         </div>
       </div>
 
-      <div class="relative overflow-hidden min-h-[300px] sm:min-h-[350px] lg:min-h-[500px] order-1 lg:order-2">
+      <div class="relative overflow-hidden lg:min-h-[500px] order-1 lg:order-2">
         <OptimizedPicture
           name="about/Painless-Removals-St-Peter-Hospice"
           pattern="HALF"
           alt="Painless Removals team collecting Christmas trees for St. Peter's Hospice fundraising campaign"
           loading="lazy"
           decoding="async"
-          class="absolute inset-0 w-full h-full object-cover object-center"
+          class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover object-center"
         />
       </div>
     </div>
