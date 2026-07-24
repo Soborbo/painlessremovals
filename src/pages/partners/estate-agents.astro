@@ -178,8 +178,8 @@ const pageSchema = [serviceSchema, faqSchema];
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
 
     <!-- Mobile: image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
-      <OptimizedPicture name="partners/refer-a-client" pattern="FULL" alt="Estate agent referring a client to Painless Removals" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="lg:hidden w-full relative overflow-hidden">
+      <OptimizedPicture name="partners/refer-a-client" pattern="FULL" alt="Estate agent referring a client to Painless Removals" class="absolute inset-0 w-full h-auto" />
     </div>
 
     <!-- Left: content -->
@@ -361,7 +361,7 @@ const pageSchema = [serviceSchema, faqSchema];
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         {partnerOffers.map((offer) => (
           <div class="group relative bg-cream rounded-xl border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col">
-            <div class="relative aspect-[4/3] overflow-hidden bg-gray-100">
+            <div class="relative aspect-[3/2] overflow-hidden bg-gray-100">
               <OptimizedPicture
                 name={offer.image}
                 pattern="QUARTER"

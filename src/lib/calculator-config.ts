@@ -241,9 +241,10 @@ export const CALCULATOR_CONFIG = {
     fragileOnly: {
       cubesMin: 0,
       cubesMax: Infinity,
-      work: 250,
-      materials: 185,
-      total: 435,
+      // one packer, four hours, plus ~£100 of materials — enough for an average kitchen
+      work: 220,
+      materials: 100,
+      total: 320,
       label: 'Fragile items only'
     },
     small: {
@@ -306,7 +307,7 @@ export const CALCULATOR_CONFIG = {
       description: 'Professional packing for fragile items only',
       image: 'home-packing.jpg',
       priceBySize: {
-        small: 285,
+        small: 320,
         medium: 365,
         large: 435,
         xl: 520,

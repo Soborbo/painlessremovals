@@ -19,6 +19,7 @@ import {
   type QuoteResult,
 } from './calculator-logic';
 import { CALCULATOR_CONFIG } from './calculator-config';
+import type { PackingSizeCategory } from './constants';
 import { trackError } from '@/lib/errors/tracker';
 import { generateUUID } from '@/lib/tracking/uuid';
 import { markActiveFormsAsHandedOff } from '@/lib/tracking/form-tracking';
@@ -91,6 +92,9 @@ export interface ExtrasData {
 
   // Packing (materials, fragile, or full service)
   packingTier?: PackingTier;
+  // Full-service pack size the buyer picked. When set it overrides the
+  // volume-derived band, so the card they chose is the card they pay for.
+  packingSize?: PackingSizeCategory;
 
   // Disassembly items with quantities
   disassemblyItems: DisassemblyItem[];
@@ -339,6 +343,7 @@ export const LocalStorageStateSchema = z.object({
   extras: z.object({
     gateway: z.array(z.enum(['packing', 'assembly', 'cleaning', 'storage'])),
     packingTier: z.enum(['materials', 'fragile', 'fullService']).optional(),
+    packingSize: z.enum(['small', 'medium', 'large', 'xl']).optional(),
     disassemblyItems: z.array(z.object({
       category: z.string(),
       quantity: z.number().min(1).max(9),
@@ -1168,9 +1173,13 @@ export function toggleExtrasGateway(option: ExtrasGatewayOption) {
 /**
  * Set packing tier (Step 10a)
  */
-export function setPackingTier(tier: PackingTier) {
+export function setPackingTier(tier: PackingTier, size?: PackingSizeCategory) {
   const current = calculatorStore.get().extras;
-  calculatorStore.setKey('extras', { ...current, packingTier: tier });
+  const next: ExtrasData = { ...current, packingTier: tier };
+  // Only full service is sized; fragile is one band, so drop any stale size.
+  if (tier === 'fullService' && size) next.packingSize = size;
+  else delete next.packingSize;
+  calculatorStore.setKey('extras', next);
   saveState();
 }
 
@@ -1185,6 +1194,7 @@ export function clearPackingExtra() {
   const current = calculatorStore.get().extras;
   const next = { ...current };
   delete next.packingTier;
+  delete next.packingSize;
   next.gateway = (current.gateway || []).filter((o) => o !== 'packing');
   calculatorStore.setKey('extras', next);
   saveState();

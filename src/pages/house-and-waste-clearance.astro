@@ -144,14 +144,14 @@ const pageSchema = [
   ============================================ -->
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
     <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+    <div class="lg:hidden w-full relative overflow-hidden">
       <OptimizedPicture
         name="house-clearance/Bristol-clearance-service-2"
         pattern="FULL"
         alt="Eco-friendly house clearance service in Bristol – Painless Removals team clearing a property"
         loading="eager"
         fetchpriority="high"
-        class="w-full h-full object-cover"
+        class="w-full h-auto"
       />
     </div>
 
@@ -244,13 +244,13 @@ const pageSchema = [
       {benefits.map((benefit, index) => (
         <div class="grid lg:grid-cols-2">
           <!-- Image (50% width, full height) -->
-          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+          <div class={`relative lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
             <OptimizedPicture
               name={benefit.imageName}
               pattern="HALF"
               alt={benefit.title}
               loading="lazy"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover transition-transform duration-500 hover:scale-105"
             />
           </div>
           <!-- Text (50% width) -->
@@ -275,13 +275,13 @@ const pageSchema = [
   <section class="bg-white">
     <div class="grid lg:grid-cols-2">
       <!-- Image -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden order-2">
+      <div class="relative lg:aspect-auto lg:min-h-[400px] overflow-hidden order-2">
         <OptimizedPicture
           name="house-clearance/Bristol-Hazardous-Waste"
           pattern="HALF"
           alt="Hazardous waste disposal handled safely and responsibly"
           loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover object-[center_30%] transition-transform duration-500 hover:scale-105"
+          class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover object-[center_30%] transition-transform duration-500 hover:scale-105"
         />
       </div>
       <!-- Text -->
@@ -317,13 +317,13 @@ const pageSchema = [
   <section class="bg-white">
     <div class="grid lg:grid-cols-2">
       <!-- Image -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden">
+      <div class="relative lg:aspect-auto lg:min-h-[400px] overflow-hidden">
         <OptimizedPicture
           name="cleaning/cleaning-service"
           pattern="HALF"
           alt="Professional deep cleaning service in Bristol by Painless Removals"
           loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover transition-transform duration-500 hover:scale-105"
         />
       </div>
       <!-- Text -->
@@ -366,13 +366,13 @@ const pageSchema = [
       </div>
 
       <!-- Image -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px]">
+      <div class="relative lg:aspect-auto lg:min-h-[400px]">
         <OptimizedPicture
           name="house-clearance/Bristol-home-removals-service-1"
           pattern="HALF"
           alt="Professional home removals service in Bristol by Painless Removals"
           loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover"
         />
       </div>
     </div>

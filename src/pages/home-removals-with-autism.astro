@@ -266,14 +266,14 @@ const pageSchema = [
   ============================================ -->
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
     <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden bg-cream">
+    <div class="lg:hidden w-full relative overflow-hidden bg-cream">
       <OptimizedPicture
         name="autism/1.moving-with-autism"
         pattern="FULL"
         alt="Watercolour illustration of a person standing calmly while removal crew work around them"
         loading="eager"
         fetchpriority="high"
-        class="w-full h-full object-cover"
+        class="w-full h-auto"
       />
     </div>
 
@@ -335,7 +335,7 @@ const pageSchema = [
       <div class="grid md:grid-cols-3 gap-6 lg:gap-8 mb-8">
         {challengesWithImages.map((challenge) => (
           <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div class="aspect-[4/3] overflow-hidden bg-cream">
+            <div class="aspect-[3/2] overflow-hidden bg-cream">
               <OptimizedPicture
                 name={challenge.imageName}
                 pattern="THIRD"
@@ -355,7 +355,7 @@ const pageSchema = [
       <div class="grid md:grid-cols-3 gap-6 lg:gap-8">
         {challengesBottom.map((challenge) => (
           <div class="bg-cream rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-            <div class="aspect-[4/3] overflow-hidden bg-cream">
+            <div class="aspect-[3/2] overflow-hidden bg-cream">
               <OptimizedPicture
                 name={challenge.imageName}
                 pattern="THIRD"

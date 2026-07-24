@@ -54,7 +54,7 @@ const benefits = [
 const fragileOnlyPricing = {
   name: 'Fragile Only',
   description: 'Perfect if you\'re happy packing clothes and books, but want expert packers for the delicate stuff.',
-  price: '£435',
+  price: '£320',
   features: [
     'Kitchen items professionally packed',
     'China, glassware & ceramics',
@@ -272,7 +272,7 @@ const heroPreload = {
   ============================================ -->
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
     <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+    <div class="lg:hidden w-full relative overflow-hidden">
       <Picture
         src={homePackingHero}
         formats={['avif', 'webp']}
@@ -282,7 +282,7 @@ const heroPreload = {
         loading="eager"
         fetchpriority="high"
         decoding="sync"
-        class="w-full h-full object-cover"
+        class="w-full h-auto"
       />
     </div>
 
@@ -336,7 +336,7 @@ const heroPreload = {
   <section class="bg-white">
     <div class="grid lg:grid-cols-2">
       <!-- Image 50% -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px]">
+      <div class="relative aspect-[3/2] lg:aspect-auto lg:min-h-[500px]">
         <OptimizedPicture
           name="packing/day-before-packing-family"
           pattern="HALF"
@@ -404,7 +404,7 @@ const heroPreload = {
       {benefits.map((benefit, index) => (
         <div class="grid lg:grid-cols-2">
           <!-- Image (50% width, full height) -->
-          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+          <div class={`relative aspect-[3/2] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
             <OptimizedPicture
               name={benefit.imageName}
               pattern="HALF"
@@ -438,13 +438,15 @@ const heroPreload = {
       <!-- Fragile Only - Full width card with image -->
       <div class="bg-cream border border-gray-200 rounded-xl overflow-hidden mb-8 transition-all duration-300 hover:shadow-lg">
         <div class="grid md:grid-cols-[250px_1fr] lg:grid-cols-[300px_1fr]">
-          <div class="relative h-48 md:h-full">
+          <!-- Source is square; forcing it into a 12rem strip on mobile cropped the
+               packer out of frame. Show it whole below md, crop to the column from md up. -->
+          <div class="relative md:h-full">
             <OptimizedPicture
               name="packing/Tamara-packing2"
               pattern="QUARTER"
               alt="Professional kitchen packing service - wrapping dishes and fragile items"
               loading="lazy"
-              class="absolute inset-0 w-full h-full object-cover"
+              class="block w-full h-auto md:absolute md:inset-0 md:h-full md:object-cover"
             />
           </div>
           <div class="p-4 sm:p-6 lg:p-8">
@@ -584,7 +586,7 @@ const heroPreload = {
   <section class="bg-cream">
     <div class="grid lg:grid-cols-2">
       <!-- Image (left) -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden">
+      <div class="relative aspect-[3/2] lg:aspect-auto lg:min-h-[500px] overflow-hidden">
         <OptimizedPicture
           name="packing/packing-home-professional"
           pattern="HALF"

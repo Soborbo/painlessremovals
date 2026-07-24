@@ -367,14 +367,14 @@ const schemas = [
     <!-- Single hero image — full-width band on mobile, right column on desktop.
          ONE <picture> with sizes covering both breakpoints, so the browser
          downloads exactly one correctly-sized file (no off-screen duplicate). -->
-    <div class="order-1 lg:order-2 w-full h-[50vh] min-h-[280px] lg:h-auto relative overflow-hidden">
+    <div class="order-1 lg:order-2 w-full lg:h-auto relative overflow-hidden">
       <OptimizedPicture
         name="packing/Bristol-home-packing-service"
         pattern="FULL"
         sizes="(min-width:1024px) 50vw, 100vw"
         alt="Painless Removals packing team carefully wrapping and packing belongings in a Bristol home"
         lcp
-        class="w-full h-full object-cover lg:absolute lg:inset-0"
+        class="w-full h-auto lg:h-full lg:object-cover lg:absolute lg:inset-0"
       />
     </div>
   </section>
@@ -505,7 +505,7 @@ const schemas = [
           i % 2 === 0 ? 'bg-white' : 'bg-cream',
         ]}>
           <div class:list={[
-            'aspect-[4/3] md:aspect-auto md:min-h-[360px] overflow-hidden order-1',
+            'aspect-[3/2] md:aspect-auto md:min-h-[360px] overflow-hidden order-1',
             i % 2 === 1 ? 'md:order-2' : 'md:order-1',
           ]}>
             <OptimizedPicture
@@ -598,7 +598,7 @@ const schemas = [
           i % 2 === 0 ? 'bg-cream' : 'bg-white',
         ]}>
           <a href={service.link} class:list={[
-            'aspect-[4/3] md:aspect-auto md:min-h-[360px] overflow-hidden block group relative order-1',
+            'aspect-[3/2] md:aspect-auto md:min-h-[360px] overflow-hidden block group relative order-1',
             i % 2 === 1 ? 'md:order-2' : 'md:order-1',
           ]}>
             {i === 0 ? (
@@ -704,7 +704,7 @@ const schemas = [
   <section class="bg-cream cv-auto" aria-labelledby="areas-heading">
     <div class="grid lg:grid-cols-2">
       <!-- Image (full-bleed, right on desktop) -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px] overflow-hidden order-2">
+      <div class="relative aspect-[3/2] lg:aspect-auto lg:min-h-[500px] overflow-hidden order-2">
         <OptimizedPicture
           name="homepage/painless-removals-home"
           pattern="HALF"
@@ -789,7 +789,7 @@ const schemas = [
 
       <div class="grid lg:grid-cols-2 gap-8 items-start">
         <!-- Google Maps GBP Embed -->
-        <div class="rounded-xl overflow-hidden shadow-md aspect-[4/3] lg:aspect-auto lg:h-full lg:min-h-[360px]">
+        <div class="rounded-xl overflow-hidden shadow-md aspect-[3/2] lg:aspect-auto lg:h-full lg:min-h-[360px]">
           <iframe
             src="https://www.google.com/maps?q=Painless+Removals,+290-294+Southmead+Rd,+Bristol+BS10+5EN&output=embed"
             width="100%"

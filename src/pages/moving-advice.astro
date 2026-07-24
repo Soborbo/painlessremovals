@@ -208,7 +208,7 @@ const pageSchema = [
       <div class="grid md:grid-cols-3 gap-6">
         {featuredGuides.map((guide) => (
           <a href={guide.href} class="group bg-white rounded-xl border border-gray-200 overflow-hidden no-underline hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-            <div class="relative h-40 overflow-hidden">
+            <div class="relative md:h-40 overflow-hidden">
               <div class="absolute top-3 left-3 z-10 text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full" class:list={[guide.tagColor]}>
                 {guide.tag}
               </div>
@@ -242,7 +242,7 @@ const pageSchema = [
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {resources.map((resource) => (
           <a href={resource.href} class="group flex flex-col bg-cream rounded-lg border border-gray-200 overflow-hidden no-underline hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-            <div class="relative h-36 overflow-hidden">
+            <div class="relative md:h-36 overflow-hidden">
               <div class="absolute top-3 left-3 z-10">
                 <span class="text-xs font-bold uppercase tracking-wide text-primary-600 bg-white/90 px-2 py-0.5 rounded-full">{resource.tag}</span>
               </div>

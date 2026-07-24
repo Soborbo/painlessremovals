@@ -148,14 +148,14 @@ const pageSchema = [
   ============================================ -->
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
     <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+    <div class="lg:hidden w-full relative overflow-hidden">
       <OptimizedPicture
         name="storage/painless-removals-storage"
         pattern="FULL"
         alt="Secure storage facility in Bristol with individually locked units"
         loading="eager"
         fetchpriority="high"
-        class="w-full h-full object-cover"
+        class="w-full h-auto"
       />
     </div>
 
@@ -223,7 +223,7 @@ const pageSchema = [
   <section class="bg-cream">
     <div class="grid lg:grid-cols-2">
       <!-- Image -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden">
+      <div class="relative lg:aspect-auto lg:min-h-[400px] overflow-hidden">
         <OptimizedPicture
           name="storage/more-storage-door"
           pattern="HALF"
@@ -282,14 +282,14 @@ const pageSchema = [
       {benefits.map((benefit, index) => (
         <div class="grid lg:grid-cols-2">
           <!-- Image (50% width, full height) -->
-          <div class={`relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+          <div class={`relative lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
             <OptimizedPicture
               name={benefit.imageName}
               pattern="HALF"
               alt={benefit.title}
               loading="lazy"
               decoding="async"
-              class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover transition-transform duration-500 hover:scale-105"
             />
           </div>
           <!-- Text (50% width) -->

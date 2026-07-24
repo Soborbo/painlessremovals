@@ -199,14 +199,14 @@ const pageSchema = [
   ============================================ -->
   <section class="relative lg:grid lg:grid-cols-2 lg:min-h-[calc(100dvh-var(--header-h,104px))]">
     <!-- Mobile: Image at top -->
-    <div class="lg:hidden w-full h-[50vh] min-h-[280px] relative overflow-hidden">
+    <div class="lg:hidden w-full relative overflow-hidden">
       <OptimizedPicture
         name="office-removals/painless-office-move-queen-square-bristol"
         pattern="FULL"
         alt="Painless Removals crew mid-relocation in a Bristol office — staged chairs and a branded moving skate"
         loading="eager"
         fetchpriority="high"
-        class="w-full h-full object-cover object-center"
+        class="w-full h-auto object-center"
       />
     </div>
 
@@ -265,13 +265,13 @@ const pageSchema = [
   <section class="bg-white">
     <div class="grid lg:grid-cols-2">
       <!-- Image 50% -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[500px]">
+      <div class="relative lg:aspect-auto lg:min-h-[500px]">
         <OptimizedPicture
           name="office-removals/office-mover-carrying-boxes-bristol"
           pattern="HALF"
           alt="Painless Removals team member reassembling an office desk frame at a Bristol business relocation"
           loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover"
         />
       </div>
 
@@ -672,13 +672,13 @@ const pageSchema = [
   <section class="bg-cream">
     <div class="grid lg:grid-cols-2">
       <!-- Image (right on desktop) -->
-      <div class="relative aspect-[4/3] lg:aspect-auto lg:min-h-[400px] order-2">
+      <div class="relative lg:aspect-auto lg:min-h-[400px] order-2">
         <OptimizedPicture
           name="office-removals/office-it-equipment-monitors-wrapped-bristol"
           pattern="HALF"
           alt="Office monitors individually wrapped and cable-managed by Painless Removals during a Bristol office move"
           loading="lazy"
-          class="absolute inset-0 w-full h-full object-cover"
+          class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover"
         />
       </div>
 
@@ -825,7 +825,7 @@ const pageSchema = [
             )}
 
             <div class={`bg-white overflow-hidden flex flex-col flex-grow transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl group ${size.popular ? 'border-2 border-secondary-500 border-t-0 rounded-b-xl shadow-xl' : 'border border-gray-200 rounded-xl shadow-sm'}`}>
-              <div class="relative h-44 overflow-hidden">
+              <div class="relative md:h-44 overflow-hidden">
                 <OptimizedPicture
                   name={size.imageName}
                   pattern="THIRD"
