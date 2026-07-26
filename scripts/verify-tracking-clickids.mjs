@@ -127,6 +127,16 @@ if (p) {
   setUrl('?gbraid=NEW_GBRAID');
   persist();
   check('fbclid érintetlen marad a Google-tisztítás során', stored().fbclid, 'FBCLID_KEPT');
+
+  // 6. Codex-kör: az URL MAGA hoz két Google klikk-ID-t (redirect / tag-manager artefakt).
+  //    A dropStale ilyenkor mindkettőt frissnek látja, tehát önmagában nem elég.
+  store.clear();
+  setUrl('?gclid=URL_GCLID&gbraid=URL_GBRAID');
+  persist();
+  const both = p.getAllTrackingData();
+  check('URL-ben KÉT friss Google ID → csak egy megy tovább (persistence)',
+    [both.gclid, both.gbraid], ['URL_GCLID', undefined]);
+  check('...és a tárolóba is csak egy kerül', [stored().gclid, stored().gbraid], ['URL_GCLID', undefined]);
 }
 
 
@@ -163,6 +173,35 @@ if (gw?.collectAttribution) {
   check('collectAttribution: friss Google klikk-ID nélkül a tárolt marad', [a3.gclid, a3.fbclid], ['KEPT', 'FB']);
 } else {
   console.log('SKIP  collectAttribution (ebben a repóban nincs)');
+}
+
+// ── 7. Codex-kör: a friss forrás MAGA hoz több Google klikk-ID-t ──────────────
+// (a) az URL egyszerre gclid+gbraid (redirect / tag-manager artefakt), és
+// (b) a `_gcl_aw` cookie-fallback, ami egy RÉGI gclid-et injektál a friss halmazba,
+//     miközben az URL gbraid-et hozott. Mindkettő megkerülte a dropStale-t, mert az
+//     csak a `stored`-ból metsz — a `fresh`-ből nem.
+if (gw?.collectAttribution) {
+  const ATTR_KEY = '__sb_attribution';
+  store.clear();
+  setUrl('?gclid=URL_GCLID&gbraid=URL_GBRAID');
+  const a4 = gw.collectAttribution();
+  check('URL-ben KÉT friss Google ID → csak egy megy tovább (collectAttribution)',
+    [a4.gclid, a4.gbraid], ['URL_GCLID', undefined]);
+
+  // A _gcl_aw cookie egy KORÁBBI gclid-kattintásé; az URL most gbraid-et hoz.
+  store.clear();
+  globalThis.document.cookie = `${CKY_COOKIE}; _gcl_aw=GCL.1750000000.COOKIE_GCLID`;
+  setUrl('?gbraid=FRESH_GBRAID');
+  const a5 = gw.collectAttribution();
+  check('friss gbraid mellett a _gcl_aw cookie-gclid NEM kerül be',
+    [a5.gclid, a5.gbraid], [undefined, 'FRESH_GBRAID']);
+
+  // Google klikk-ID nélküli landolásnál a cookie-fallback TOVÁBBRA IS érvényes.
+  store.clear();
+  setUrl('?utm_source=hirlevel');
+  const a6 = gw.collectAttribution();
+  check('Google klikk-ID nélkül a _gcl_aw fallback megmarad', a6.gclid, 'COOKIE_GCLID');
+  globalThis.document.cookie = CKY_COOKIE;
 }
 
 console.log(failures === 0 ? '\nMinden ellenőrzés zöld.' : `\n${failures} ellenőrzés bukott.`);

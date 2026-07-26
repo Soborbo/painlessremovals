@@ -333,6 +333,17 @@ function dropStaleGoogleClickIds(
   return cleaned;
 }
 
+/**
+ * A friss forrásból determinisztikusan EGY Google klikk-ID marad (gclid > gbraid > wbraid).
+ * HELYBEN módosít: a hívó `fresh` objektuma `const`, és a felesleges kulcsokat TÖRÖLNI kell.
+ */
+function keepSingleGoogleClickId(fresh: AttributionParams): void {
+  const present = GOOGLE_CLICK_KEYS.filter((k) => fresh[k]);
+  if (present.length < 2) return;
+  const keep = present.includes('gclid') ? 'gclid' : present[0];
+  for (const k of GOOGLE_CLICK_KEYS) if (k !== keep) delete fresh[k];
+}
+
 export function collectAttribution(): AttributionParams {
   const stored = readStoredAttribution();
   const fresh: AttributionParams = {};
@@ -360,7 +371,14 @@ export function collectAttribution(): AttributionParams {
     // no-op
   }
 
-  if (adGranted && !fresh.gclid) {
+  // Ebből a függvényből CSAK EGY Google klikk-ID mehet ki. Két őr, ebben a sorrendben:
+  //  1. Maga az URL is hozhat többet (redirect / tag-manager artefakt) — egyre szűkítjük.
+  //  2. A `_gcl_aw` cookie-fallback NEM futhat, ha az URL már hozott Google klikk-ID-t.
+  //     Különben egy visszatérő látogató ?gbraid=… landolásánál a régi gclid-cookie is
+  //     FRISSNEK számítana, a `dropStaleGoogleClickIds` pedig mindkettőt megtartaná (az
+  //     csak a `stored`-ból metsz) — és a payload két különböző kattintás azonosítóját vinné.
+  keepSingleGoogleClickId(fresh);
+  if (adGranted && !GOOGLE_CLICK_KEYS.some((k) => fresh[k])) {
     const g = gclidFromCookie();
     if (g) fresh.gclid = g;
   }
