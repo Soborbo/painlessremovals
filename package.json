@@ -16,7 +16,8 @@
     "check": "astro check",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify:clickids": "npx tsx scripts/verify-tracking-clickids.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.1.3",
