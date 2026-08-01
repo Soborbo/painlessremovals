@@ -44,30 +44,50 @@ const QUOTE_FIRED_KEY = `${QUOTE_STATE_KEY}:fired`;
 // so completions counted ~2x per session (audit 2026-08, P0-B).
 const QUOTE_COMPLETE_EVENT_FIRED_KEY = `${QUOTE_STATE_KEY}:complete-fired`;
 
-function readGuard(key: string): string | null {
-  if (typeof localStorage === 'undefined') return null;
+// The guards remember the last N fired event_ids, NOT just the latest one:
+// with a single stored id, two completed quotes open in different tabs
+// overwrite each other's guard, and refreshing the older tab re-fires its
+// event (PR #40 review). N=20 comfortably covers any realistic number of
+// concurrently open quotes while keeping the localStorage entry tiny.
+const GUARD_MAX_IDS = 20;
+
+function readFiredIds(key: string): string[] {
+  if (typeof localStorage === 'undefined') return [];
   try {
-    return localStorage.getItem(key);
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    // Legacy format (single event_id string) — both the retired
+    // upgrade-window model and the first version of these guards stored
+    // one bare id. Honour it as a one-element set.
+    if (!raw.startsWith('[')) return [raw];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === 'string') : [];
   } catch {
-    return null;
+    return [];
   }
 }
 
-function writeGuard(key: string, eventId: string): void {
+function hasFiredId(key: string, eventId: string): boolean {
+  return readFiredIds(key).includes(eventId);
+}
+
+function markFiredId(key: string, eventId: string): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(key, eventId);
+    const ids = readFiredIds(key).filter((id) => id !== eventId);
+    ids.push(eventId);
+    localStorage.setItem(key, JSON.stringify(ids.slice(-GUARD_MAX_IDS)));
   } catch {
     // ignore
   }
 }
 
 function hasFired(eventId: string): boolean {
-  return readGuard(QUOTE_FIRED_KEY) === eventId;
+  return hasFiredId(QUOTE_FIRED_KEY, eventId);
 }
 
 function markFired(eventId: string): void {
-  writeGuard(QUOTE_FIRED_KEY, eventId);
+  markFiredId(QUOTE_FIRED_KEY, eventId);
 }
 
 /**
@@ -84,8 +104,8 @@ export function fireQuoteCompletedEvent(input: {
   currency?: string;
   service: string;
 }): void {
-  if (readGuard(QUOTE_COMPLETE_EVENT_FIRED_KEY) === input.eventId) return;
-  writeGuard(QUOTE_COMPLETE_EVENT_FIRED_KEY, input.eventId);
+  if (hasFiredId(QUOTE_COMPLETE_EVENT_FIRED_KEY, input.eventId)) return;
+  markFiredId(QUOTE_COMPLETE_EVENT_FIRED_KEY, input.eventId);
 
   trackEvent('quote_calculator_complete', {
     event_id: input.eventId,

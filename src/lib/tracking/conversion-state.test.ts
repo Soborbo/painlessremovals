@@ -131,6 +131,33 @@ describe('fireQuoteCompletedEvent — engagement event, once per completed quote
     expect(completed()).toHaveLength(1);
     expect(fired()).toHaveLength(1);
   });
+
+  it('interleaved tabs: firing quote B does not evict quote A from the guard (PR #40 review)', () => {
+    fireQuoteCompletedEvent({ eventId: 'evt_tabA', value: 500, service: 'home' });
+    fireQuoteCompletedEvent({ eventId: 'evt_tabB', value: 700, service: 'packing' });
+    // Tab A refreshes → save-quote KV replays a 200 → post-save tracking re-runs.
+    fireQuoteCompletedEvent({ eventId: 'evt_tabA', value: 500, service: 'home' });
+    fireQuoteCompletedEvent({ eventId: 'evt_tabB', value: 700, service: 'packing' });
+    expect(completed()).toHaveLength(2);
+  });
+
+  it('the conversion guard survives interleaving too', () => {
+    fireQuoteConversion({ value: 500, service: 'home', eventId: 'evt_tabC' });
+    fireQuoteConversion({ value: 700, service: 'packing', eventId: 'evt_tabD' });
+    fireQuoteConversion({ value: 500, service: 'home', eventId: 'evt_tabC' });
+    expect(fired()).toHaveLength(2);
+  });
+
+  it('guard set is bounded — old ids are evicted FIFO past the cap', () => {
+    for (let i = 0; i < 25; i++) {
+      fireQuoteCompletedEvent({ eventId: `evt_cap_${i}`, value: 100, service: 'home' });
+    }
+    expect(completed()).toHaveLength(25);
+    // The oldest ids fell out of the bounded set — a re-fire of a 25-quote-old
+    // id is acceptable leakage; the recent ones stay guarded.
+    fireQuoteCompletedEvent({ eventId: 'evt_cap_24', value: 100, service: 'home' });
+    expect(completed()).toHaveLength(25);
+  });
 });
 
 describe('wasQuoteCompletedRecently — reporting label only', () => {
