@@ -40,7 +40,7 @@ src/lib/
 
 src/pages/api/
   track/abandonment.ts   # sendBeacon target → forwards to GA4 MP
-  save-quote.ts          # ALSO mirrors quote_calculator_complete to GA4 MP
+  save-quote.ts          # ALSO mirrors quote_calculator_complete_server to GA4 MP
   contact.ts             # fires contact_form_conversion to GA4 MP
   clearance-callback.ts  # fires clearance_callback_conversion to GA4 MP
 
@@ -177,7 +177,7 @@ that minority is expected and acceptable.
 
 | Event | Server fires | Why |
 | --- | --- | --- |
-| `quote_calculator_complete` | GA4 MP from `save-quote.ts` | Engagement backstop. Browser dataLayer push can miss (adblock, tab close after submit). NOTE: GA4 does NOT dedup browser + MP — when both arrive this event double-counts. The MP hit reuses the browser's `_ga` client_id + `_ga_*` session_id (same-origin cookies) so it lands on the same GA4 user AND session; treat raw counts as inflated and dedup on `event_id` in explorations/BigQuery. |
+| `quote_calculator_complete_server` | GA4 MP from `save-quote.ts` | Engagement backstop under a DISTINCT event name. GA4 does NOT dedup browser + MP on event_id — mirroring under the same name double-counted every completion (audit 2026-08, P0-B). The MP hit reuses the browser's `_ga` client_id + `_ga_*` session_id (same-origin cookies) so it lands on the same GA4 user AND session; treat raw counts as inflated and dedup on `event_id` in explorations/BigQuery. |
 | `contact_form_conversion` | GA4 MP from `/api/contact` | Conversion fires only after Turnstile + Resend success — server is authoritative. |
 | `clearance_callback_conversion` | GA4 MP from `/api/clearance-callback` | Same as above. |
 | `form_abandonment` | GA4 MP from `/api/track/abandonment` (sendBeacon) | Pagehide-time browser pushes don't reliably reach GTM on mobile. The client pushes the dataLayer copy ONLY when the beacon fails to queue, so GA4 gets one of the two, not both. |

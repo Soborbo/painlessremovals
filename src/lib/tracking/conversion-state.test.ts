@@ -8,6 +8,7 @@ vi.mock('./worker-dispatch', () => ({ dispatchWorkerConversion: vi.fn() }));
 import { dispatchWorkerConversion } from './worker-dispatch';
 import {
   fireQuoteConversion,
+  fireQuoteCompletedEvent,
   wasQuoteCompletedRecently,
   getRecentQuoteDetails,
   cleanupLegacyQuoteState,
@@ -93,6 +94,42 @@ describe('fireQuoteConversion', () => {
     fireQuoteConversion({ value: 100, service: 'home', eventId: 'evt_q4' });
     const record = JSON.parse(localStorage.getItem(QUOTE_COMPLETED_AT_KEY)!);
     expect(record).toMatchObject({ ts: Date.now(), value: 100, currency: 'GBP', service: 'home' });
+  });
+});
+
+describe('fireQuoteCompletedEvent — engagement event, once per completed quote', () => {
+  const completed = () => dl().filter((e) => e.event === 'quote_calculator_complete');
+
+  it('fires the dataLayer engagement event with value/quote_id/event_id', () => {
+    fireQuoteCompletedEvent({ eventId: 'evt_c1', quoteId: 'Q-1', value: 950, service: 'home' });
+    expect(completed()).toHaveLength(1);
+    expect(completed()[0]).toMatchObject({
+      event_id: 'evt_c1',
+      quote_id: 'Q-1',
+      quote_value: 950,
+      value: 950,
+      currency: 'GBP',
+      service: 'home',
+    });
+  });
+
+  it('is idempotent per event_id — a /your-quote refresh (save-quote KV replay) cannot double-fire', () => {
+    fireQuoteCompletedEvent({ eventId: 'evt_c2', value: 500, service: 'packing' });
+    fireQuoteCompletedEvent({ eventId: 'evt_c2', value: 500, service: 'packing' });
+    expect(completed()).toHaveLength(1);
+  });
+
+  it('a NEW quote (new event_id) fires again', () => {
+    fireQuoteCompletedEvent({ eventId: 'evt_c3', value: 500, service: 'home' });
+    fireQuoteCompletedEvent({ eventId: 'evt_c4', value: 700, service: 'home' });
+    expect(completed()).toHaveLength(2);
+  });
+
+  it('uses a guard key separate from the conversion guard — firing the conversion does not suppress the engagement event', () => {
+    fireQuoteConversion({ value: 500, service: 'home', eventId: 'evt_c5' });
+    fireQuoteCompletedEvent({ eventId: 'evt_c5', value: 500, service: 'home' });
+    expect(completed()).toHaveLength(1);
+    expect(fired()).toHaveLength(1);
   });
 });
 

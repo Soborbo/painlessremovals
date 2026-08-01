@@ -40,6 +40,7 @@ import {
   normalizeUserData,
   dispatchWorkerConversion,
   fireQuoteConversion,
+  fireQuoteCompletedEvent,
   markViewContentFired,
   hasViewContentFired,
   generateUUID,
@@ -434,11 +435,12 @@ export function ResultPage() {
         );
       }
 
-      // Engagement event — fires on every completion.
-      trackEvent('quote_calculator_complete', {
-        event_id: eventId,
-        quote_id: result.quoteId,
-        quote_value: quote.totalPrice,
+      // Engagement event — once per completed quote (guarded per
+      // event_id; a refresh re-POSTs save-quote and replays a 200, which
+      // used to re-fire this unguarded and double-count completions).
+      fireQuoteCompletedEvent({
+        eventId,
+        quoteId: result.quoteId,
         value: quote.totalPrice,
         currency: 'GBP',
         service: state.serviceType || 'removal',

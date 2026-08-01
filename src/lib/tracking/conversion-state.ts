@@ -37,23 +37,64 @@ import {
 // event_id-based CAPI dedup). Key format predates the simplification —
 // keep it so quotes fired under the old state machine stay deduped.
 const QUOTE_FIRED_KEY = `${QUOTE_STATE_KEY}:fired`;
+// Same guard pattern for the ENGAGEMENT event (`quote_calculator_complete`).
+// It used to fire unguarded on every /your-quote mount: a refresh /
+// back-navigation re-POSTs save-quote, the KV dedup replays a 200, and the
+// post-save tracking re-fired the event — GA4 does not dedup on event_id,
+// so completions counted ~2x per session (audit 2026-08, P0-B).
+const QUOTE_COMPLETE_EVENT_FIRED_KEY = `${QUOTE_STATE_KEY}:complete-fired`;
 
-function hasFired(eventId: string): boolean {
-  if (typeof localStorage === 'undefined') return false;
+function readGuard(key: string): string | null {
+  if (typeof localStorage === 'undefined') return null;
   try {
-    return localStorage.getItem(QUOTE_FIRED_KEY) === eventId;
+    return localStorage.getItem(key);
   } catch {
-    return false;
+    return null;
   }
 }
 
-function markFired(eventId: string): void {
+function writeGuard(key: string, eventId: string): void {
   if (typeof localStorage === 'undefined') return;
   try {
-    localStorage.setItem(QUOTE_FIRED_KEY, eventId);
+    localStorage.setItem(key, eventId);
   } catch {
     // ignore
   }
+}
+
+function hasFired(eventId: string): boolean {
+  return readGuard(QUOTE_FIRED_KEY) === eventId;
+}
+
+function markFired(eventId: string): void {
+  writeGuard(QUOTE_FIRED_KEY, eventId);
+}
+
+/**
+ * Fires the `quote_calculator_complete` ENGAGEMENT event exactly once per
+ * completed quote (per event_id — a new quote signature mints a new
+ * event_id upstream, so a genuinely new quote fires again). Refreshes,
+ * save-quote retries and duplicated tabs no-op, mirroring
+ * `fireQuoteConversion`'s guard.
+ */
+export function fireQuoteCompletedEvent(input: {
+  eventId: string;
+  quoteId?: string;
+  value: number;
+  currency?: string;
+  service: string;
+}): void {
+  if (readGuard(QUOTE_COMPLETE_EVENT_FIRED_KEY) === input.eventId) return;
+  writeGuard(QUOTE_COMPLETE_EVENT_FIRED_KEY, input.eventId);
+
+  trackEvent('quote_calculator_complete', {
+    event_id: input.eventId,
+    quote_id: input.quoteId,
+    quote_value: input.value,
+    value: input.value,
+    currency: input.currency || CURRENCY,
+    service: input.service,
+  });
 }
 
 /**

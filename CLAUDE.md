@@ -54,7 +54,9 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    conversions to `/api/event/conversion` (a Cloudflare zone route to
    the `event-gateway` Worker, NOT an app route) via
    `worker-dispatch.ts` → the Worker sends Meta CAPI. In-app GA4 MP
-   backstops: `save-quote.ts` mirrors `quote_calculator_complete`;
+   backstops: `save-quote.ts` mirrors `quote_calculator_complete_server`
+   (DISTINCT name — GA4 does not dedup on event_id, the same-name mirror
+   double-counted completions);
    `/api/contact` fires `contact_form_conversion`;
    `/api/clearance-callback` fires `clearance_callback_conversion`;
    `/api/track/abandonment` forwards the abandonment beacon. Always

@@ -44,14 +44,18 @@ describe('tel: click — post-quote monetary signal', () => {
     click('tel:01172870082');
 
     const last = dl().at(-1)!;
+    // The dataLayer carries the label under `cta_context` — a literal
+    // `source` key is a GA4-reserved manual-campaign param that would
+    // overwrite the session source (audit 2026-08, P0-A).
     expect(last).toMatchObject({
       event: 'phone_conversion',
-      source: 'after_calculator',
+      cta_context: 'after_calculator',
       value: 850,
       currency: 'GBP',
       service: 'packing',
       tel_target: '01172870082',
     });
+    expect('source' in last).toBe(false);
     expect(dispatchWorkerConversion).toHaveBeenCalledWith(
       'phone_conversion',
       expect.any(String),
@@ -64,7 +68,8 @@ describe('tel: click — post-quote monetary signal', () => {
     click('tel:01172870082');
 
     const last = dl().at(-1)!;
-    expect(last.source).toBe('standalone');
+    expect(last.cta_context).toBe('standalone');
+    expect('source' in last).toBe(false);
     expect('value' in last).toBe(false);
     expect('currency' in last).toBe(false);
     const dispatchArgs = vi.mocked(dispatchWorkerConversion).mock.calls.at(-1)![2];
@@ -74,10 +79,10 @@ describe('tel: click — post-quote monetary signal', () => {
   it('mailto: and wa.me clicks get the same treatment', () => {
     vi.mocked(getRecentQuoteDetails).mockReturnValue({ value: 300, currency: 'GBP', service: 'home' });
     click('mailto:hello@painlessremovals.com');
-    expect(dl().at(-1)).toMatchObject({ event: 'email_conversion', value: 300, source: 'after_calculator' });
+    expect(dl().at(-1)).toMatchObject({ event: 'email_conversion', value: 300, cta_context: 'after_calculator' });
 
     click('https://wa.me/447700900123');
-    expect(dl().at(-1)).toMatchObject({ event: 'whatsapp_conversion', value: 300, source: 'after_calculator' });
+    expect(dl().at(-1)).toMatchObject({ event: 'whatsapp_conversion', value: 300, cta_context: 'after_calculator' });
   });
 });
 
