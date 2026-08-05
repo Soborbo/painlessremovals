@@ -39,6 +39,7 @@ import {
   normalizeUserData,
   dispatchWorkerConversion,
   fireQuoteConversion,
+  fireQuoteCompletedEvent,
   markViewContentFired,
   hasViewContentFired,
   generateUUID,
@@ -147,13 +148,13 @@ export function Step12Quote() {
         );
       }
 
-      // Engagement event — fires every completion. Same event_id as
-      // save-quote so all hits for this completion (server GA4 MP mirror,
-      // browser events, conversion + Meta CAPI mirror) share one dedup key.
-      trackEvent('quote_calculator_complete', {
-        event_id: eventId,
-        quote_id: result.quoteId,
-        quote_value: quote.totalPrice,
+      // Engagement event — once per completed quote (guarded per
+      // event_id). Same event_id as save-quote so all hits for this
+      // completion (server GA4 MP mirror, browser events, conversion +
+      // Meta CAPI mirror) share one dedup key.
+      fireQuoteCompletedEvent({
+        eventId,
+        quoteId: result.quoteId,
         value: quote.totalPrice,
         currency: 'GBP',
         service: state.serviceType || 'removal',

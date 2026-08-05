@@ -463,13 +463,17 @@ export const POST: APIRoute = async (context) => {
     const calcServiceType = typeof validated.data.serviceType === 'string'
       ? validated.data.serviceType
       : 'removal';
+    // `dispatch_channel`, NOT `source`: an event param literally named
+    // `source` is a GA4-reserved manual-campaign key — on an unstitched
+    // hit it became the session source ("server / (not set)" rows,
+    // audit 2026-08 P0-A).
     const mirrorParams: Record<string, unknown> = {
       quote_id: quote.id,
       quote_value: validated.totalPrice,
       value: validated.totalPrice,
       currency: validated.currency || 'GBP',
       service: calcServiceType,
-      source: 'server',
+      dispatch_channel: 'server',
     };
     if (validated.event_id) {
       mirrorParams.event_id = validated.event_id;
@@ -490,7 +494,14 @@ export const POST: APIRoute = async (context) => {
       ga4ClientId,
       [
         {
-          name: 'quote_calculator_complete',
+          // DISTINCT name from the browser event: GA4 does not dedup on
+          // event_id, so mirroring under the same name double-counted
+          // every completion (~2x per session) and — when the hit could
+          // not be session-stitched — piled the copies into phantom
+          // "(not set)" sessions (80 events / 4 sessions in the 2026-07
+          // window). The `_server` suffix keeps the backstop visible in
+          // GA4 without corrupting the primary engagement metric.
+          name: 'quote_calculator_complete_server',
           params: mirrorParams,
         },
       ],

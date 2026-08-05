@@ -96,6 +96,24 @@ const PII_KEYS = new Set([
 ]);
 
 /**
+ * GA4-reserved manual-campaign parameter names. An event param literally
+ * named `source` / `medium` / `campaign` is interpreted by GA4 as a
+ * TRAFFIC-SOURCE signal: when such a hit opens (or is early in) a session,
+ * the label becomes the session's source. That is exactly how the
+ * `standalone / (not set)`, `after_calculator / (not set)` and
+ * `email_click / (not set)` phantom rows appeared in sessionSourceMedium
+ * (audit 2026-08, P0-A) — 40%+ of key events detached from their real
+ * acquisition source. The label itself is legitimate reporting data, so
+ * it is REMAPPED to a safe name rather than dropped. GTM must read the
+ * remapped key (`cta_context`), never `source`.
+ */
+const GA4_RESERVED_ATTRIBUTION_KEYS: Record<string, string> = {
+  source: 'cta_context',
+  medium: 'cta_medium',
+  campaign: 'cta_campaign',
+};
+
+/**
  * Pushes a NON-PII event to `window.dataLayer`. Returns the `event_id`
  * used (generated if not provided) so callers that need to mirror to a
  * server-side endpoint with the same dedup key can do so.
@@ -115,9 +133,16 @@ function buildSafePush(
   const { event_id: providedId, ...rest } = params;
   const safe: Record<string, unknown> = {};
   const stripped: string[] = [];
+  const remapped: string[] = [];
   for (const [k, v] of Object.entries(rest)) {
     if (PII_KEYS.has(k)) {
       stripped.push(k);
+      continue;
+    }
+    const remap = GA4_RESERVED_ATTRIBUTION_KEYS[k];
+    if (remap) {
+      remapped.push(k);
+      safe[remap] = v;
       continue;
     }
     safe[k] = v;
@@ -126,6 +151,14 @@ function buildSafePush(
     // eslint-disable-next-line no-console
     console.warn(
       `[tracking] PII keys stripped from trackEvent('${name}'): ${stripped.join(', ')}. Use setUserDataOnDOM() instead.`,
+    );
+  }
+  if (remapped.length && import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[tracking] GA4-reserved attribution keys remapped in trackEvent('${name}'): ${remapped
+        .map((k) => `${k}→${GA4_RESERVED_ATTRIBUTION_KEYS[k]}`)
+        .join(', ')}. A literal 'source' event param overwrites the GA4 session source.`,
     );
   }
   const event_id = (providedId as string | undefined) || generateUUID();

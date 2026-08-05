@@ -79,6 +79,18 @@ describe('trackEvent — dataLayer push', () => {
     expect(last[key]).toBeUndefined();
     expect(last.keepme).toBe(1);
   });
+
+  it.each([
+    ['source', 'cta_context'],
+    ['medium', 'cta_medium'],
+    ['campaign', 'cta_campaign'],
+  ])('remaps GA4-reserved attribution key "%s" to "%s" — a literal `source` param overwrites the GA4 session source', (reserved, safe) => {
+    trackEvent('phone_conversion', { [reserved]: 'after_calculator', keepme: 1 });
+    const last = dl().at(-1)!;
+    expect(last[reserved]).toBeUndefined();
+    expect(last[safe]).toBe('after_calculator');
+    expect(last.keepme).toBe(1);
+  });
 });
 
 describe('trackEventBeforeNavigate — navigation-safe conversion push', () => {
