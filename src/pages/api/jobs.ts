@@ -10,6 +10,7 @@ import { env } from 'cloudflare:workers';
 import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { getWaitUntil } from '@/lib/crm/server';
+import { forwardApplication } from '@/lib/careers/crm';
 import { logger } from '@/lib/utils/logger';
 import { generateErrorId } from '@/lib/utils/error';
 
@@ -62,17 +63,32 @@ export const POST: APIRoute = async (context) => {
     const phone = (formData.get('phone') as string || '').trim();
     const email = (formData.get('email') as string || '').trim();
     const position = (formData.get('position') as string || '').trim();
-    const licence = (formData.get('licence') as string || '').trim();
     const message = (formData.get('message') as string || '').trim();
     const honeypot = (formData.get('honeypot') as string || '').trim();
     const turnstileToken = (formData.get('turnstileToken') as string || '').trim();
     const cvFile = formData.get('cv') as File | null;
+    // CRM mirroring (see lib/careers/crm.ts). Absent when the page rendered its fallback
+    // roles — the application then takes the email-only path, exactly as before.
+    const postingId = (formData.get('posting_id') as string || '').trim();
+    // The driving-licence radios became one of these per-vacancy questions, so the answers
+    // are no longer a fixed set — they are whatever the selected vacancy asked. `label_q_*`
+    // carries the question wording so the email can show it without knowing the vacancy.
+    const answers: Record<string, string> = {};
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith('q_') && typeof value === 'string') answers[key.slice(2)] = value;
+    }
+    const answerRows = Object.entries(answers)
+      .filter(([, value]) => value.trim() !== '')
+      .map(([key, value]) => ({
+        label: (formData.get(`label_q_${key}`) as string || key).trim(),
+        value,
+      }));
 
     // Honeypot
     if (honeypot) return json({ success: true });
 
     // Validate
-    if (!name || !phone || !email || !position || !licence) return json({ error: 'Please fill in all required fields.' }, 400);
+    if (!name || !phone || !email || !position) return json({ error: 'Please fill in all required fields.' }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Please provide a valid email address.' }, 400);
     if (!/^(?:\+44|0)\d{9,10}$/.test(phone.replace(/\s/g, ''))) {
       return json({ error: 'Please provide a valid UK phone number.' }, 400);
@@ -126,7 +142,7 @@ export const POST: APIRoute = async (context) => {
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}">${escapeHtml(phone)}</a></td></tr>
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Email</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
               <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Position</td><td style="padding: 8px 0;">${escapeHtml(position)}</td></tr>
-              <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Driving Licence</td><td style="padding: 8px 0;">${escapeHtml(licence)}</td></tr>
+              ${answerRows.map((row) => `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">${escapeHtml(row.label)}</td><td style="padding: 8px 0;">${escapeHtml(row.value)}</td></tr>`).join('')}
               ${message ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Message</td><td style="padding: 8px 0; white-space: pre-wrap;">${escapeHtml(message)}</td></tr>` : ''}
               ${cvAttachment ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">CV</td><td style="padding: 8px 0;">Attached: ${escapeHtml(cvAttachment.filename)}</td></tr>` : ''}
             </table>
@@ -184,6 +200,23 @@ export const POST: APIRoute = async (context) => {
     }).catch((err) => logger.error('Jobs', 'Confirmation email failed', { error: err instanceof Error ? err.message : String(err) }));
     const waitUntil = getWaitUntil(context.locals);
     if (waitUntil) waitUntil(confirmationFetch);
+
+    // Mirror into the CRM AFTER the notification email has gone out, in the background.
+    // `forwardApplication` never throws, and its outcome never affects this response —
+    // the email remains the delivery guarantee for the applicant.
+    if (postingId) {
+      const crmForward = forwardApplication({
+        postingId,
+        name,
+        email,
+        phone,
+        message,
+        answers,
+        cv: cvFile && cvFile.size > 0 ? cvFile : null,
+      });
+      if (waitUntil) waitUntil(crmForward);
+      else await crmForward;
+    }
 
     return json({ success: true });
   } catch (err) {

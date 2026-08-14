@@ -72,6 +72,11 @@ service = "event-gateway"
 [vars]
 TRACKING_TEST_LEAD_EMAIL = "gateway-smoke-test@soborbo.co.uk"
 TRACKING_TEST_EVENT_CODE = "TEST_PAINLESS"
+# Soborbo-CRM a /jobs karrieroldalhoz: innen jönnek a publikált álláshirdetések, és ide
+# tükröződik a beérkező jelentkezés (lib/careers/crm.ts). NEM titok — a CRM publikus
+# végpontjai origin- és rate-limit-kapusak, a Turnstile pedig ezen az oldalon marad.
+# Szándékosan külön a CRM_BASE_URL-től: az a régi CRM, ahol nincs toborzás-végpont.
+SOBORBO_CRM_URL = "https://crm.painlessremovals.com"
 
 # Plain env vars and secrets are managed in the Cloudflare dashboard
 # (Workers > painlessremovals-worker > Settings > Variables and Secrets).
