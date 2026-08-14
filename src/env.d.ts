@@ -92,6 +92,13 @@ declare namespace Cloudflare {
     CRM_WEBHOOK_SECRET_2?: string;
     CRM_COMPANY_ID_2?: string;
     CRM_WEBHOOK_SOURCE_2?: string;
+
+    // Soborbo-CRM base URL for the RECRUITMENT bridge (/jobs vacancies + application
+    // mirroring, see lib/careers/crm.ts). Deliberately separate from CRM_BASE_URL: that
+    // one still points at the legacy CRM, which has no recruitment endpoints. Falls back
+    // to CRM_BASE_URL_2 (the parallel-run mirror) when unset. No secret — the CRM's
+    // public endpoints are origin + rate-limit gated, and Turnstile stays on this side.
+    SOBORBO_CRM_URL?: string;
   }
 }
 

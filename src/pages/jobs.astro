@@ -9,10 +9,14 @@
 import Layout from '@/layouts/Layout.astro';
 import { siteConfig } from '@/config/site.config';
 import { ref, breadcrumbs } from '@/utils/schema';
+import { fetchPostings } from '@/lib/careers/crm';
+import { EMPLOYMENT_LABELS, FALLBACK_POSTINGS } from '@/lib/careers/fallback';
+
+export const prerender = false;
 
 // Page metadata
 const pageTitle = "Jobs – Join the Painless Removals Team";
-const pageDescription = 'Looking for removal jobs in Bristol? Join the Painless Removals team. We are hiring removal crew, drivers, and packing specialists. Apply today.';
+const pageDescription = 'Looking for removal jobs in Bristol? Join the Painless Removals team. We are hiring a Removal Driver / Porter and a remote Operations Coordinator. Apply online today.';
 
 // Turnstile site key
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
@@ -41,42 +45,15 @@ const benefits = [
   },
 ];
 
-// Current roles
-const roles = [
-  {
-    title: 'Removal Crew Member',
-    type: 'Full-Time',
-    description: 'The backbone of every move. You\'ll be loading, carrying, and unloading household items with care. Physical fitness and a positive attitude are essential.',
-    requirements: [
-      'Physically fit and able to lift heavy items',
-      'Reliable and punctual',
-      'Friendly and respectful with customers',
-      'No experience necessary — we\'ll train you',
-    ],
-  },
-  {
-    title: 'Removal Driver',
-    type: 'Full-Time',
-    description: 'Drive our vans across Bristol and beyond. You\'ll also help with loading and unloading. Clean driving licence required.',
-    requirements: [
-      'Full, clean UK driving licence (Category C preferred)',
-      'Confident driving large vehicles',
-      'Good knowledge of Bristol and surrounding areas',
-      'Minimum 2 years driving experience',
-    ],
-  },
-  {
-    title: 'Packing Specialist',
-    type: 'Full-Time / Part-Time',
-    description: 'Carefully wrap and pack customers\' belongings for safe transport. Attention to detail and a gentle touch are key.',
-    requirements: [
-      'Careful and methodical approach',
-      'Good communication skills',
-      'Able to work efficiently under time pressure',
-      'Previous packing experience a plus, but not essential',
-    ],
-  },
-];
+// Current roles — the CRM publishes them (edit a vacancy without a deploy); if it is
+// unreachable we render the long-standing three roles instead. In fallback mode the
+// postings carry no id, so the application takes the email-only path.
+const roles = (await fetchPostings()) ?? FALLBACK_POSTINGS;
+
+// The page went from prerendered to on-demand so vacancy edits go live without a deploy.
+// `s-maxage` lets the edge serve the same HTML for five minutes — matching the CRM's own
+// cache TTL — so the common case costs no more than the static page did.
+Astro.response.headers.set('cache-control', 'public, max-age=0, s-maxage=300');
 
 // Company values
 const values = [
@@ -164,16 +141,19 @@ const pageSchema = [
         </p>
       </div>
 
-      <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {/* Full-width blocks rather than narrow columns: these are complete job descriptions,
+          and three-across cards made them unreadable. `whitespace-pre-line` keeps the
+          paragraph breaks the CRM stores in the description text. */}
+      <div class="space-y-8 max-w-3xl mx-auto">
         {roles.map((role) => (
-          <div class="bg-cream rounded-xl p-6 border border-gray-100 flex flex-col">
+          <div class="bg-cream rounded-xl p-6 sm:p-8 border border-gray-100 flex flex-col">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-xl font-bold text-primary-600">{role.title}</h3>
+              <h3 class="text-xl lg:text-2xl font-bold text-primary-600">{role.title}</h3>
             </div>
             <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-4">
-              {role.type}
+              {role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType]}
             </span>
-            <p class="text-warm-gray text-sm leading-relaxed mb-5">{role.description}</p>
+            <p class="text-warm-gray text-sm leading-relaxed mb-5 whitespace-pre-line">{role.description}</p>
             <div class="mt-auto">
               <p class="text-sm font-semibold text-primary-600 mb-2">What we're looking for:</p>
               <ul class="space-y-1.5">
@@ -205,17 +185,8 @@ const pageSchema = [
         <h2 class="text-3xl lg:text-4xl font-bold mb-4">Looking for a Removals Job in North Bristol?</h2>
         <div class="text-warm-gray text-lg max-w-xl mx-auto text-left space-y-4">
           <p>
-            We're always on the lookout for reliable, capable removals staff to join our team. No experience? No problem — we'll teach you everything you need to know. You'll be part of a supportive, friendly team where your efforts are valued.
+            We're always on the lookout for reliable, capable people to join our team. Pick the role you're applying for below — each one asks a couple of extra questions so we can get back to you quickly. What we're looking for is set out in full with each vacancy above.
           </p>
-          <p class="font-semibold text-primary-600">What we're looking for:</p>
-          <ul class="list-disc list-inside space-y-1 text-base">
-            <li>Good level of fitness</li>
-            <li>Full driving licence (van driving experience an advantage)</li>
-            <li>Polite and professional manner</li>
-            <li>Punctuality</li>
-            <li>Attention to detail</li>
-            <li>Proactive attitude</li>
-          </ul>
           <p>Fill in the form, and we'll be in touch soon!</p>
         </div>
       </div>
@@ -255,41 +226,60 @@ const pageSchema = [
             <select id="position" name="position" required
               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
               <option value="">Select a position...</option>
-              <option value="Removal Crew">Removal Crew Member</option>
-              <option value="Driver">Removal Driver</option>
-              <option value="Packing Specialist">Packing Specialist</option>
+              {roles.map((role) => (
+                <option value={role.title} data-posting-id={role.id} data-slug={role.slug}>{role.title}</option>
+              ))}
               <option value="Other">Other</option>
             </select>
           </div>
 
-          <!-- Driving Licence -->
-          <div>
-            <fieldset>
-              <legend class="block text-sm font-semibold text-primary-600 mb-2">What type of driving licence do you hold? <span class="text-secondary-500">*</span></legend>
-              <div class="space-y-2">
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                  <input type="radio" name="licence" value="None" required class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500" />
-                  None
-                </label>
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                  <input type="radio" name="licence" value="Category B" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500" />
-                  Category B
-                </label>
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                  <input type="radio" name="licence" value="Category C1" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500" />
-                  Category C1
-                </label>
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                  <input type="radio" name="licence" value="Category C" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500" />
-                  Category C
-                </label>
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                  <input type="radio" name="licence" value="Category C+E" class="w-4 h-4 text-primary-600 border-gray-300 focus:ring-primary-500" />
-                  Category C+E
-                </label>
-              </div>
-            </fieldset>
-          </div>
+          {/* Vacancy-specific questions, including the driving licence — asking a remote
+              office role about licence categories made no sense, so the whole set is now
+              per-vacancy. The script shows the selected posting's block and disables the
+              rest, so one role's questions can never be submitted for another. */}
+          {roles.some((role) => role.questions.length > 0) && (
+            <div id="posting-questions">
+              {roles.map((role) => (
+                <div class="space-y-5 hidden" data-questions-for={role.slug} hidden>
+                  {role.questions.map((q) => (
+                    <div>
+                      {q.type === 'checkbox' ? (
+                        <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                          <input type="checkbox" id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
+                            disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                            class="w-4 h-4 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
+                          <span>{q.label}{q.required && <span class="text-secondary-500"> *</span>}</span>
+                        </label>
+                      ) : (
+                        <>
+                          <label for={`${role.slug}--q_${q.key}`} class="block text-sm font-semibold text-primary-600 mb-1.5">
+                            {q.label}{q.required && <span class="text-secondary-500"> *</span>}
+                          </label>
+                          {q.type === 'select' || q.type === 'radio' ? (
+                            <select id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
+                              disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                              <option value="">Please choose...</option>
+                              {(q.options ?? []).map((opt) => <option value={opt}>{opt}</option>)}
+                            </select>
+                          ) : q.type === 'textarea' ? (
+                            <textarea id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`} rows="4"
+                              disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+                          ) : (
+                            <input type="text" id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
+                              disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
 
           <!-- Message / Cover Letter -->
           <div>
@@ -400,6 +390,50 @@ const pageSchema = [
       var errorDiv = document.getElementById('form-error');
       var submitBtn = document.getElementById('submit-btn');
 
+      // The selected vacancy decides which extra-question block is live. Hidden blocks
+      // stay `disabled` so a role's questions can never be submitted for another role.
+      var positionSelect = form && form.querySelector('#position');
+      var questionBlocks = form ? form.querySelectorAll('[data-questions-for]') : [];
+
+      function selectedOption() {
+        if (!positionSelect) return null;
+        return (positionSelect.selectedOptions && positionSelect.selectedOptions[0]) || null;
+      }
+
+      // The CRM id is absent in fallback mode; the slug is always there, so the visible
+      // questions key off the slug and only the CRM forwarding depends on the id.
+      function selectedPostingId() {
+        var opt = selectedOption();
+        return (opt && opt.dataset.postingId) || '';
+      }
+
+      function selectedSlug() {
+        var opt = selectedOption();
+        return (opt && opt.dataset.slug) || '';
+      }
+
+      function activeQuestionBlock() {
+        var slug = selectedSlug();
+        return slug ? form.querySelector('[data-questions-for="' + slug + '"]') : null;
+      }
+
+      function syncQuestionBlocks() {
+        var active = selectedSlug();
+        for (var i = 0; i < questionBlocks.length; i++) {
+          var block = questionBlocks[i];
+          var show = Boolean(active) && block.dataset.questionsFor === active;
+          block.hidden = !show;
+          block.classList.toggle('hidden', !show);
+          var fields = block.querySelectorAll('input, select, textarea');
+          for (var j = 0; j < fields.length; j++) fields[j].disabled = !show;
+        }
+      }
+
+      if (positionSelect) {
+        positionSelect.addEventListener('change', syncQuestionBlocks);
+        syncQuestionBlocks();
+      }
+
       if (form) {
         form.addEventListener('submit', function(e) {
           e.preventDefault();
@@ -440,12 +474,29 @@ const pageSchema = [
             return;
           }
 
-          var licenceRadio = form.querySelector('input[name="licence"]:checked');
-          if (!licenceRadio) {
-            window.showToast('Please select your driving licence type.', 'error');
+          // Vacancy-specific questions replaced the fixed licence radios: which ones are
+          // required now depends on the selected role, so the check is data-driven.
+          var activeBlock = activeQuestionBlock();
+          var missingAnswer = null;
+          if (activeBlock) {
+            var required = activeBlock.querySelectorAll('[data-required="true"]');
+            for (var ri = 0; ri < required.length; ri++) {
+              var field = required[ri];
+              var answered = field.type === 'checkbox' ? field.checked : String(field.value || '').trim();
+              if (!answered) {
+                missingAnswer = field;
+                break;
+              }
+            }
+          }
+          if (missingAnswer) {
+            var prompt = missingAnswer.type === 'checkbox'
+              ? 'Please confirm: ' + (missingAnswer.dataset.label || 'the required question')
+              : 'Please answer: ' + (missingAnswer.dataset.label || 'the required question');
+            window.showToast(prompt, 'error');
+            missingAnswer.focus();
             return;
           }
-          var licence = licenceRadio.value;
 
           var consentBox = form.querySelector('#consent');
           if (!consentBox.checked) {
@@ -490,13 +541,30 @@ const pageSchema = [
           formData.append('email', email);
           formData.append('phone', phone);
           formData.append('position', position);
-          formData.append('licence', licence);
           formData.append('message', message);
           formData.append('honeypot', honeypot);
           formData.append('turnstileToken', turnstileResponse);
           if (cvFile) {
             formData.append('cv', cvFile);
           }
+
+          // The answers always travel — Jay's email shows them even when the CRM is not in
+          // play. The posting id only exists in CRM mode; without it the handler skips the
+          // CRM and the application still goes out by email exactly as before.
+          if (activeBlock) {
+            var answerFields = activeBlock.querySelectorAll('[name^="q_"]');
+            for (var qi = 0; qi < answerFields.length; qi++) {
+              var answerField = answerFields[qi];
+              if (answerField.disabled) continue;
+              var answerValue = answerField.type === 'checkbox'
+                ? (answerField.checked ? 'Yes' : 'No')
+                : answerField.value;
+              formData.append(answerField.name, answerValue);
+              formData.append('label_' + answerField.name, answerField.dataset.label || answerField.name);
+            }
+          }
+          var postingId = selectedPostingId();
+          if (postingId) formData.append('posting_id', postingId);
 
           fetch('/api/jobs', {
             method: 'POST',
