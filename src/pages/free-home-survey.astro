@@ -18,7 +18,7 @@ import { ref, service, offer, faqPage, breadcrumbs, areas } from '@/utils/schema
 
 // Page metadata
 const pageTitle = "Free Home Survey – Accurate Removal Quote";
-const pageDescription = 'Get an accurate removal quote with our free home survey. Choose a quick video self-survey from your phone or book an in-person assessment. No obligation, no pressure.';
+const pageDescription = 'Get an accurate removal quote with our free home survey. Choose a quick video self-survey from your phone or book an in-person assessment. No obligation.';
 
 
 // 9 filming tips are now in the <FilmingTipsGrid /> component
@@ -181,7 +181,8 @@ const pageSchema = [
           name="assessment/video-survey-hero"
           pattern="HALF"
           alt="Hand holding phone filming a living room for a video self-survey removal quote"
-          loading="eager"
+          loading="eager"
+
           class="absolute inset-0 w-full h-full object-cover"
         />
       </div>
@@ -467,7 +468,7 @@ const pageSchema = [
     description="Whether you send a quick video or book an in-person visit, you'll receive an accurate, no-obligation quote you can plan your move around."
     bullets={['100% free, no obligation', 'Accurate volume assessment', 'Quote you can trust']}
     primaryText="BOOK YOUR FREE SURVEY"
-    primaryHref="/contact"
+    primaryHref="/contact/"
     bottomNote="Items surveyed by our team are fully covered by £15,000 Goods in Transit insurance."
   />
 

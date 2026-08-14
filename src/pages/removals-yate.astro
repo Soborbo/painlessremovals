@@ -76,7 +76,7 @@ const reviewProps = {
 };
 
 const title = "Yate Removals | House Moves in Yate";
-const description = `Yate removal specialists — 12 miles from our Bristol depot. Purpose-built estates to Chipping Sodbury period homes, easy access and free parking. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+const description = `Yate removal specialists — 12 miles from our Bristol depot. Purpose-built estates to Chipping Sodbury period homes, easy access and free parking.`;
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -148,7 +148,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       </h1>
 
       <div class="flex flex-col gap-2 mb-5 items-center">
-        <a href={`/instantquote?area=yate`} class="btn-cta-orange">
+        <a href={`/instantquote/?area=yate`} class="btn-cta-orange">
           GET YOUR FREE QUOTE NOW
         </a>
         <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
@@ -164,7 +164,8 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       name="areas/yate-house-move-team"
       pattern="FULL"
       alt="Painless Removals team working on a house move in Yate"
-      loading="eager"
+      loading="eager"
+
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
   </div>
@@ -220,7 +221,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
 
       <div class="midcta-bleed">
-        <MidCTA heading="Moving to or from Yate?" description="Get a personalised quote — no long-distance surcharge for Yate, it's our standard Bristol rate." buttonText="Get Your Yate Removal Quote →" buttonHref="/instantquote" />
+        <MidCTA heading="Moving to or from Yate?" description="Get a personalised quote — no long-distance surcharge for Yate, it's our standard Bristol rate." buttonText="Get Your Yate Removal Quote →" buttonHref="/instantquote/" />
       </div>
 
       <!-- S4: Experience -->

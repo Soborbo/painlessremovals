@@ -15,7 +15,7 @@ import FinalCTA from '@/components/FinalCTA.astro';
 
 // Page metadata
 const pageTitle = `Man with a Van Near Bristol | Insured & Rated ${siteConfig.company.rating.value} | Painless Removals`;
-const pageDescription = `Affordable man with a van in Bristol. Insured to £15,000, rated ${siteConfig.company.rating.value} stars, operating since 1978. Single items, studio flats, eBay pickups and student moves. Get a quote today.`;
+const pageDescription = `Affordable man with a van near Bristol, insured to £15,000 and rated ${siteConfig.company.rating.value} stars. Single items, studio flats, eBay pickups and student moves. Since 1978.`;
 
 // What We Move items
 const moveItems = [
@@ -157,7 +157,7 @@ const faqSchema = {
 const pageSchema = [serviceSchema, faqSchema];
 ---
 
-<Layout title={pageTitle} description={pageDescription} schema={pageSchema} noindex>
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
 
   <!-- ============================================
        SECTION 1: HERO
@@ -495,7 +495,7 @@ const pageSchema = [serviceSchema, faqSchema];
     primaryText="CALL FOR A QUOTE"
     primaryHref={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`}
     secondaryText="SEND US A MESSAGE"
-    secondaryHref="/contact"
+    secondaryHref="/contact/"
     bottomNote="Every item we move is fully insured. If something breaks, we cover it."
   />
 

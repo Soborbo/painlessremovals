@@ -262,7 +262,9 @@ const localBusinessSchema = {
 
   <title>{fullTitle}</title>
   <meta name="description" content={description} />
-  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  {/* `follow` is deliberate: keeping a page out of the index is no reason to
+      strip equity from the links it points at. Use robots.txt for true walls. */}
+  {noindex && <meta name="robots" content="noindex, follow" />}
   <link rel="canonical" href={canonicalUrl} />
 
   <!-- Favicon -->

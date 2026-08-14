@@ -31,7 +31,7 @@ const durationLabel =
 // ── Page metadata ───────────────────────────────────────────────────
 const pageTitle = "Packing Guide – How to Pack for Moving House";
 const pageDescription =
-  `Learn how to pack your entire home for a move with this free ${lessonCount}-lesson video guide from Painless Removals Bristol. Room-by-room walkthroughs, checklists, and pro tips from movers with 45+ years' experience.`;
+  `How to pack your whole home for a move, in ${lessonCount} free video lessons. Room-by-room walkthroughs, checklists and pro tips from movers with 45+ years' experience.`;
 const canonical = `${siteConfig.brand.domain}/packing-guide/`;
 const domain = siteConfig.brand.domain;
 const director = siteConfig.company.director;
@@ -103,7 +103,7 @@ const itemListSchema = {
     '@type': 'ListItem',
     'position': i + 1,
     'name': lesson.data.title,
-    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}`,
+    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}/`,
   })),
 };
 
@@ -120,7 +120,7 @@ const howToSchema = {
     'position': i + 1,
     'name': lesson.data.title,
     'text': lesson.data.description,
-    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}`,
+    'url': `${domain}/packing-guide/${lesson.id.replace(/\.md$/, '')}/`,
   })),
 };
 
@@ -236,7 +236,7 @@ const masterChecklist = [
     </div>
     <div class="lesson-card-grid">
       {lessons.map((lesson) => (
-        <a href={`/packing-guide/${lesson.id.replace(/\.md$/, '')}`} class="lesson-card">
+        <a href={`/packing-guide/${lesson.id.replace(/\.md$/, '')}/`} class="lesson-card">
           <div class="lesson-card-thumb">
             <img
               src={`https://i.ytimg.com/vi/${lesson.data.youtubeId}/hqdefault.jpg`}

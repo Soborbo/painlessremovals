@@ -73,7 +73,7 @@ const reviewProps = {
 };
 
 const title = "Chepstow Removals | House Moves in Chepstow";
-const description = `Chepstow removal specialists — 17 miles from Bristol via M48 Severn Bridge (no toll). Medieval town centre to modern suburbs, cross-border moves handled. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+const description = `Chepstow removal specialists — 17 miles from Bristol via M48 Severn Bridge (no toll). Medieval town centre to modern suburbs, cross-border moves handled.`;
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -143,7 +143,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       </h1>
 
       <div class="flex flex-col gap-2 mb-5 items-center">
-        <a href={`/instantquote?area=chepstow`} class="btn-cta-orange">
+        <a href={`/instantquote/?area=chepstow`} class="btn-cta-orange">
           GET YOUR FREE QUOTE NOW
         </a>
         <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
@@ -159,7 +159,8 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       name="areas/chepstow-house-move-team"
       pattern="FULL"
       alt="Painless Removals team working on a house move in Chepstow"
-      loading="eager"
+      loading="eager"
+
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
   </div>
@@ -213,7 +214,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
 
       <div class="midcta-bleed">
-        <MidCTA heading="Moving to or from Chepstow?" description="Get a personalised quote — we know the old town access and the bridge crossing." buttonText="Get Your Chepstow Removal Quote →" buttonHref="/instantquote" />
+        <MidCTA heading="Moving to or from Chepstow?" description="Get a personalised quote — we know the old town access and the bridge crossing." buttonText="Get Your Chepstow Removal Quote →" buttonHref="/instantquote/" />
       </div>
 
       <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">

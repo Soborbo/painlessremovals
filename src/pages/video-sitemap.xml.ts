@@ -8,6 +8,7 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import { siteConfig } from '@/config/site.config';
+import { PACKING_GUIDE_UPLOAD_DATE } from '@/utils/schema';
 
 export const GET: APIRoute = async () => {
   const lessons = await getCollection('packing-guide');
@@ -27,6 +28,7 @@ export const GET: APIRoute = async () => {
       <video:description><![CDATA[${lesson.data.description}]]></video:description>
       <video:player_loc>https://www.youtube.com/embed/${id}</video:player_loc>
       <video:duration>${lesson.data.durationMinutes * 60}</video:duration>
+      <video:publication_date>${PACKING_GUIDE_UPLOAD_DATE}</video:publication_date>
     </video:video>
   </url>`;
     })
