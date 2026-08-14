@@ -6,6 +6,7 @@
  *   - no non-slashed URLs (trailingSlash: 'always')
  *   - no redirect-source URLs (from src/data/redirects.ts)
  *   - no noindexed URLs (detected from the rendered robots meta)
+ *   - every URL self-canonicalises (the rendered canonical equals the <loc>)
  *
  * Exits non-zero on any violation so it can gate the build.
  */
@@ -49,6 +50,12 @@ for (const sf of sitemapFiles) {
     if (fs.existsSync(htmlPath)) {
       const html = fs.readFileSync(htmlPath, 'utf8');
       if (/<meta\s+name="robots"\s+content="noindex/i.test(html)) errors.push(`noindex URL: ${pathname}`);
+
+      // A sitemap URL that canonicalises anywhere else tells Google to drop it.
+      // The unslashed form also 307s, so the declared canonical was a redirect.
+      const canon = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i);
+      if (!canon) errors.push(`no canonical: ${pathname}`);
+      else if (canon[1] !== m[1]) errors.push(`canonical mismatch: ${pathname} declares ${canon[1]}`);
     }
   }
 }

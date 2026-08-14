@@ -37,6 +37,15 @@ export interface CrmPosting {
   questions: CrmQuestion[];
   /** Fallback-only: preserves a label the CRM enum can't express ("Full-Time / Part-Time"). */
   typeLabel?: string;
+  /**
+   * Optional SEO metadata — present on the fallback postings, absent from the CRM payload
+   * today. The JobPosting structured data on /jobs/[slug] only emits what exists, so a
+   * CRM posting without these still gets valid (if less rich) schema.
+   */
+  datePosted?: string; // ISO date
+  salary?: { min: number; max: number; unit: 'YEAR' | 'HOUR' };
+  /** Fully-remote role → JobPosting jobLocationType TELECOMMUTE. */
+  remote?: boolean;
 }
 
 /**

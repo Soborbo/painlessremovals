@@ -172,6 +172,13 @@ export function howTo(opts: HowToOpts) {
 
 // ── VideoObject builder ─────────────────────────────────────────────────────
 
+/**
+ * Upload date for the packing-guide lesson videos. Google cross-checks the
+ * on-page VideoObject against the video sitemap entry, so both must quote the
+ * same timestamp — and it must carry a timezone or Search Console flags it.
+ */
+export const PACKING_GUIDE_UPLOAD_DATE = '2025-04-15T09:00:00+00:00';
+
 export function video(opts: {
   name: string;
   description: string;

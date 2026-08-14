@@ -22,12 +22,8 @@ const noindexPages = [
   '/house-and-waste-clearance/thank-you/',
   '/jobs/thank-you/',
   '/later-life-moves/',
-  '/man-with-a-van-near-bristol/',
   '/partners/agent-referral/',
-  '/partners/home-staging/',
   '/partners/knight-frank/',
-  '/partners/relocation-agents/',
-  '/partners/solicitors/',
   '/partners/thank-you/',
   '/student-removals-bristol/',
   '/vehicle-check/',
@@ -89,6 +85,15 @@ export default defineConfig({
   integrations: [
     react(),
     sitemap({
+      // On-demand (SSR) routes never reach the sitemap integration on their own.
+      // /jobs went SSR for CRM-driven vacancies — list it and the two long-standing
+      // vacancy URLs explicitly so the careers pages stay crawlable. CRM-only slugs
+      // beyond these are still reachable via the /jobs hub links.
+      customPages: [
+        'https://painlessremovals.com/jobs/',
+        'https://painlessremovals.com/jobs/removal-driver-porter/',
+        'https://painlessremovals.com/jobs/operations-coordinator-remote/',
+      ],
       filter: (page) => {
         try { return !noindexSet.has(new URL(page).pathname); }
         catch { return true; }

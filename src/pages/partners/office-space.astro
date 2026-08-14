@@ -8,9 +8,9 @@
  * mover the landlord can recommend, with site-specific protocols, named
  * account contact, and full insurance.
  *
- * Sister page to /partners/office-space/ which is for the moving
- * company itself. Same visual system (qs-* classes), different audience
- * and copy.
+ * Sister page to /office-removals/, which sells the same move to the
+ * business doing the moving. Same visual system (qs-* classes),
+ * different audience and copy.
  *
  * Form posts to /api/partner-register/ with businessType: 'other' and
  * form_source: 'partners-office-space'.
@@ -23,7 +23,7 @@ import { ref, breadcrumbs } from '@/utils/schema';
 import { getLcpPreload } from '@/utils/lcp-preload';
 
 const pageTitle = "Office Move Partner for Bristol Landlords";
-const pageDescription = 'Bristol\'s trusted office relocation specialists for commercial landlords, property managers and coworking operators. A reliable mover you can recommend to your tenants, with site-specific protocols, named account contact, and full insurance. Trusted since 1978.';
+const pageDescription = 'Office relocation for Bristol landlords, property managers and coworking operators: a mover you can recommend to tenants, with a named account contact.';
 const pagePath = '/partners/office-space/';
 // JPG (1200×630) — used for og:image (social crawlers need JPG, not WebP) and schema image.
 const heroImagePath = '/og/office-removals/office-removals-team-assembling-furniture-bristol-og.jpg';

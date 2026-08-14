@@ -46,3 +46,8 @@ leadgen-monorepo-master/
 partners-pages-copy.md
 painless-removals-about-page-FINAL.md
 check_png_chunks.ps1
+
+# Session/build artifacts — never commit
+tmp/
+output/
+.playwright-mcp/

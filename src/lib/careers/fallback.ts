@@ -20,6 +20,9 @@ export const FALLBACK_POSTINGS: CrmPosting[] = [
     title: 'Operations Coordinator (Remote)',
     employmentType: 'full_time',
     typeLabel: 'Full-Time · Remote',
+    datePosted: '2026-08-01',
+    salary: { min: 30000, max: 35000, unit: 'YEAR' },
+    remote: true,
     description: `£30,000 – £35,000 per annum, depending on experience · Monday to Friday, 9:00am – 5:00pm (some flexibility required) · Permanent PAYE contract · Fully remote, Bristol-based company
 
 About us
@@ -96,6 +99,7 @@ Apply online at ${APPLY_URL} — attach your CV and add a brief note about your 
     title: 'Removal Driver / Porter',
     employmentType: 'full_time',
     typeLabel: 'Full-Time',
+    datePosted: '2026-08-01',
     description: `Bristol, reporting to our Filton warehouse · Monday to Saturday, averaging around 150 hours per month · PAYE employed position · Immediate start available
 
 We're looking for a reliable, hardworking Removal Driver / Porter to join our team in Bristol.
@@ -184,6 +188,26 @@ Apply online at ${APPLY_URL} — attach your CV if you have one to hand. If you'
     ],
   },
 ];
+
+/**
+ * The CRM payload doesn't yet carry the SEO metadata (datePosted, salary, remote) or the
+ * richer type label — graft the fallback's values onto CRM postings with a matching slug
+ * so the JobPosting structured data stays rich in CRM mode too. CRM-only slugs pass
+ * through untouched; once the CRM starts sending these fields, its values win.
+ */
+export function withFallbackMeta(postings: CrmPosting[]): CrmPosting[] {
+  return postings.map((posting) => {
+    const fallback = FALLBACK_POSTINGS.find((f) => f.slug === posting.slug);
+    if (!fallback) return posting;
+    return {
+      ...posting,
+      typeLabel: posting.typeLabel ?? fallback.typeLabel,
+      datePosted: posting.datePosted ?? fallback.datePosted,
+      salary: posting.salary ?? fallback.salary,
+      remote: posting.remote ?? fallback.remote,
+    };
+  });
+}
 
 /** Human label for the employment type badge on the role cards. */
 export const EMPLOYMENT_LABELS: Record<CrmPosting['employmentType'], string> = {

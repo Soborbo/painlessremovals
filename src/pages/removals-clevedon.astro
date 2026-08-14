@@ -76,7 +76,7 @@ const reviewProps = {
 };
 
 const title = "Clevedon Removals | House Moves in Clevedon";
-const description = `Clevedon removal specialists — 14 miles from our Bristol depot. Victorian seafront villas to modern estates, we know both halves of this town. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+const description = `Clevedon removal specialists — 14 miles from our Bristol depot. Victorian seafront villas to modern estates, we know both halves of this town.`;
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -150,7 +150,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       </h1>
 
       <div class="flex flex-col gap-2 mb-5 items-center">
-        <a href={`/instantquote?area=clevedon`} class="btn-cta-orange">
+        <a href={`/instantquote/?area=clevedon`} class="btn-cta-orange">
           GET YOUR FREE QUOTE NOW
         </a>
         <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
@@ -166,7 +166,8 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       name="areas/clevedon-period-property-removal"
       pattern="FULL"
       alt="Painless Removals team at a period property in Clevedon"
-      loading="eager"
+      loading="eager"
+
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
   </div>
@@ -240,7 +241,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
           heading="Moving to or from Clevedon?"
           description="Get a personalised quote — we factor in the distance from our depot automatically."
           buttonText="Get Your Clevedon Removal Quote →"
-          buttonHref="/instantquote"
+          buttonHref="/instantquote/"
         />
       </div>
 

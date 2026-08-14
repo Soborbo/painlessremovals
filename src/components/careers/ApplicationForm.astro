@@ -1,0 +1,428 @@
+---
+/**
+ * Job application form — shared by /jobs and the per-vacancy /jobs/[slug] pages.
+ *
+ * Turnstile + honeypot protected, posts to /api/jobs. The vacancy select drives
+ * which per-role question block is live; hidden blocks stay `disabled` so one
+ * role's questions can never be submitted for another. `preselectSlug` lets a
+ * vacancy detail page arrive with its own role already chosen.
+ */
+
+import { siteConfig } from '@/config/site.config';
+import type { CrmPosting } from '@/lib/careers/crm';
+
+interface Props {
+  roles: CrmPosting[];
+  /** Pre-select this vacancy in the position dropdown (detail pages). */
+  preselectSlug?: string;
+  /** dataLayer form_source label — distinguishes hub vs detail submissions. */
+  source?: string;
+  heading?: string;
+}
+
+const {
+  roles,
+  preselectSlug,
+  source = 'jobs-page',
+  heading = 'Looking for a Removals Job in North Bristol?',
+} = Astro.props;
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+---
+
+<section class="section bg-cream" id="application-form" style="scroll-margin-top: 5rem;">
+  <div class="container-narrow">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl lg:text-4xl font-bold mb-4">{heading}</h2>
+      <div class="text-warm-gray text-lg max-w-xl mx-auto text-left space-y-4">
+        <slot name="intro">
+          <p>
+            We're always on the lookout for reliable, capable people to join our team. Pick the role you're applying for below — each one asks a couple of extra questions so we can get back to you quickly. What we're looking for is set out in full with each vacancy.
+          </p>
+          <p>Fill in the form, and we'll be in touch soon!</p>
+        </slot>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 sm:p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto">
+      <form id="jobs-form-el" class="space-y-5" novalidate data-phone={siteConfig.company.contact.phone} data-source={source}>
+        <!-- Honeypot -->
+        <div style="position: absolute; left: -9999px;" aria-hidden="true">
+          <label for="website">Leave this blank</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <!-- Name -->
+        <div>
+          <label for="name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Name <span class="text-secondary-500">*</span></label>
+          <input type="text" id="name" name="name" required autocomplete="name"
+            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+        </div>
+
+        <!-- Email and Phone row -->
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div>
+            <label for="email" class="block text-sm font-semibold text-primary-600 mb-1.5">Email Address <span class="text-secondary-500">*</span></label>
+            <input type="email" id="email" name="email" required autocomplete="email"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+          <div>
+            <label for="phone" class="block text-sm font-semibold text-primary-600 mb-1.5">Phone Number <span class="text-secondary-500">*</span></label>
+            <input type="tel" id="phone" name="phone" required autocomplete="tel"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+        </div>
+
+        <!-- Position -->
+        <div>
+          <label for="position" class="block text-sm font-semibold text-primary-600 mb-1.5">Position <span class="text-secondary-500">*</span></label>
+          <select id="position" name="position" required
+            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+            <option value="">Select a position...</option>
+            {roles.map((role) => (
+              <option value={role.title} data-posting-id={role.id} data-slug={role.slug} selected={role.slug === preselectSlug}>{role.title}</option>
+            ))}
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        {/* Vacancy-specific questions, including the driving licence — asking a remote
+            office role about licence categories made no sense, so the whole set is now
+            per-vacancy. The script shows the selected posting's block and disables the
+            rest, so one role's questions can never be submitted for another. */}
+        {roles.some((role) => role.questions.length > 0) && (
+          <div id="posting-questions">
+            {roles.map((role) => (
+              <div class="space-y-5 hidden" data-questions-for={role.slug} hidden>
+                {role.questions.map((q) => (
+                  <div>
+                    {q.type === 'checkbox' ? (
+                      <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="checkbox" id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
+                          disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                          class="w-4 h-4 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
+                        <span>{q.label}{q.required && <span class="text-secondary-500"> *</span>}</span>
+                      </label>
+                    ) : (
+                      <>
+                        <label for={`${role.slug}--q_${q.key}`} class="block text-sm font-semibold text-primary-600 mb-1.5">
+                          {q.label}{q.required && <span class="text-secondary-500"> *</span>}
+                        </label>
+                        {q.type === 'select' || q.type === 'radio' ? (
+                          <select id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
+                            disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                            <option value="">Please choose...</option>
+                            {(q.options ?? []).map((opt) => <option value={opt}>{opt}</option>)}
+                          </select>
+                        ) : q.type === 'textarea' ? (
+                          <textarea id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`} rows="4"
+                            disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+                        ) : (
+                          <input type="text" id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
+                            disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
+                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+
+
+        <!-- Message / Cover Letter -->
+        <div>
+          <label for="message" class="block text-sm font-semibold text-primary-600 mb-1.5">Tell Us About Yourself</label>
+          <textarea id="message" name="message" rows="5"
+            placeholder="A bit about your experience, why you'd like to join, availability..."
+            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+        </div>
+
+        <!-- Cloudflare Turnstile -->
+        <div>
+          <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
+        </div>
+
+        <!-- Error message area -->
+        <div id="form-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+
+        <!-- CV upload -->
+        <div>
+          <label for="cv" class="block text-sm font-semibold text-primary-600 mb-1.5">Attach Your CV <span class="text-warm-gray font-normal">(optional)</span></label>
+          <input type="file" id="cv" name="cv"
+            accept=".pdf,.doc,.docx,.txt,.rtf,.odt"
+            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:cursor-pointer" />
+          <p class="text-warm-gray text-xs mt-1.5">Accepted formats: PDF, DOC, DOCX, TXT, RTF, ODT. Maximum 5 MB.</p>
+        </div>
+
+        <!-- Consent -->
+        <div>
+          <fieldset>
+            <legend class="block text-sm font-semibold text-primary-600 mb-2">Consent <span class="text-secondary-500">*</span></legend>
+            <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+              <input type="checkbox" id="consent" name="consent" required class="w-4 h-4 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
+              <span>I agree to the <a href="/privacy-policy/" class="text-primary-600 underline hover:text-primary-700">privacy policy</a>.</span>
+            </label>
+          </fieldset>
+        </div>
+
+        <!-- Submit -->
+        <div>
+          <button type="submit" id="submit-btn"
+            class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 cursor-pointer w-full sm:w-auto">
+            SUBMIT APPLICATION
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Cloudflare Turnstile script -->
+<script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<!-- Jobs form submission -->
+<script is:inline>
+  (function() {
+    var form = document.getElementById('jobs-form-el');
+    var PHONE = form && form.dataset.phone || '0117 287 0082';
+    var FORM_SOURCE = form && form.dataset.source || 'jobs-page';
+    var errorDiv = document.getElementById('form-error');
+    var submitBtn = document.getElementById('submit-btn');
+
+    // The selected vacancy decides which extra-question block is live. Hidden blocks
+    // stay `disabled` so a role's questions can never be submitted for another role.
+    var positionSelect = form && form.querySelector('#position');
+    var questionBlocks = form ? form.querySelectorAll('[data-questions-for]') : [];
+
+    function selectedOption() {
+      if (!positionSelect) return null;
+      return (positionSelect.selectedOptions && positionSelect.selectedOptions[0]) || null;
+    }
+
+    // The CRM id is absent in fallback mode; the slug is always there, so the visible
+    // questions key off the slug and only the CRM forwarding depends on the id.
+    function selectedPostingId() {
+      var opt = selectedOption();
+      return (opt && opt.dataset.postingId) || '';
+    }
+
+    function selectedSlug() {
+      var opt = selectedOption();
+      return (opt && opt.dataset.slug) || '';
+    }
+
+    function activeQuestionBlock() {
+      var slug = selectedSlug();
+      return slug ? form.querySelector('[data-questions-for="' + slug + '"]') : null;
+    }
+
+    function syncQuestionBlocks() {
+      var active = selectedSlug();
+      for (var i = 0; i < questionBlocks.length; i++) {
+        var block = questionBlocks[i];
+        var show = Boolean(active) && block.dataset.questionsFor === active;
+        block.hidden = !show;
+        block.classList.toggle('hidden', !show);
+        var fields = block.querySelectorAll('input, select, textarea');
+        for (var j = 0; j < fields.length; j++) fields[j].disabled = !show;
+      }
+    }
+
+    if (positionSelect) {
+      positionSelect.addEventListener('change', syncQuestionBlocks);
+      syncQuestionBlocks();
+    }
+
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        errorDiv.classList.add('hidden');
+        errorDiv.textContent = '';
+
+        var name = form.querySelector('#name').value.trim();
+        var email = form.querySelector('#email').value.trim();
+        var phone = form.querySelector('#phone').value.trim();
+        var position = form.querySelector('#position').value;
+        var message = form.querySelector('#message').value.trim();
+        var honeypot = form.querySelector('#website').value;
+
+        if (!name) {
+          window.showToast('Please enter your full name.', 'error');
+          form.querySelector('#name').focus();
+          return;
+        }
+        if (!email) {
+          window.showToast('Please enter your email address.', 'error');
+          form.querySelector('#email').focus();
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          window.showToast('That email address doesn\'t look right — please check it and try again.', 'error');
+          form.querySelector('#email').focus();
+          return;
+        }
+        if (!phone) {
+          window.showToast('Please enter your phone number.', 'error');
+          form.querySelector('#phone').focus();
+          return;
+        }
+        if (!position) {
+          window.showToast('Please select the position you\'re applying for.', 'error');
+          form.querySelector('#position').focus();
+          return;
+        }
+
+        // Vacancy-specific questions replaced the fixed licence radios: which ones are
+        // required now depends on the selected role, so the check is data-driven.
+        var activeBlock = activeQuestionBlock();
+        var missingAnswer = null;
+        if (activeBlock) {
+          var required = activeBlock.querySelectorAll('[data-required="true"]');
+          for (var ri = 0; ri < required.length; ri++) {
+            var field = required[ri];
+            var answered = field.type === 'checkbox' ? field.checked : String(field.value || '').trim();
+            if (!answered) {
+              missingAnswer = field;
+              break;
+            }
+          }
+        }
+        if (missingAnswer) {
+          var prompt = missingAnswer.type === 'checkbox'
+            ? 'Please confirm: ' + (missingAnswer.dataset.label || 'the required question')
+            : 'Please answer: ' + (missingAnswer.dataset.label || 'the required question');
+          window.showToast(prompt, 'error');
+          missingAnswer.focus();
+          return;
+        }
+
+        var consentBox = form.querySelector('#consent');
+        if (!consentBox.checked) {
+          window.showToast('Please agree to the privacy policy before submitting.', 'error');
+          consentBox.focus();
+          return;
+        }
+
+        var turnstileResponse = '';
+        var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (turnstileInput) {
+          turnstileResponse = turnstileInput.value;
+        }
+
+        if (!turnstileResponse) {
+          window.showToast('Please complete the security check before submitting your application.', 'warning');
+          return;
+        }
+
+        // Validate CV file if attached
+        var cvInput = form.querySelector('#cv');
+        var cvFile = cvInput && cvInput.files && cvInput.files[0];
+        if (cvFile) {
+          var maxSize = 5 * 1024 * 1024; // 5 MB
+          if (cvFile.size > maxSize) {
+            window.showToast('Your CV file is too large (' + (cvFile.size / 1024 / 1024).toFixed(1) + ' MB). Maximum allowed size is 5 MB — please compress it and try again.', 'error');
+            return;
+          }
+          var allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.rtf', '.odt'];
+          var ext = cvFile.name.toLowerCase().substring(cvFile.name.lastIndexOf('.'));
+          if (allowedTypes.indexOf(ext) === -1) {
+            window.showToast('That file type isn\'t accepted. Please upload your CV as a PDF, DOC, DOCX, TXT, RTF, or ODT.', 'error');
+            return;
+          }
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SUBMITTING...';
+
+        var formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('phone', phone);
+        formData.append('position', position);
+        formData.append('message', message);
+        formData.append('honeypot', honeypot);
+        formData.append('turnstileToken', turnstileResponse);
+        if (cvFile) {
+          formData.append('cv', cvFile);
+        }
+
+        // The answers always travel — Jay's email shows them even when the CRM is not in
+        // play. The posting id only exists in CRM mode; without it the handler skips the
+        // CRM and the application still goes out by email exactly as before.
+        if (activeBlock) {
+          var answerFields = activeBlock.querySelectorAll('[name^="q_"]');
+          for (var qi = 0; qi < answerFields.length; qi++) {
+            var answerField = answerFields[qi];
+            if (answerField.disabled) continue;
+            var answerValue = answerField.type === 'checkbox'
+              ? (answerField.checked ? 'Yes' : 'No')
+              : answerField.value;
+            formData.append(answerField.name, answerValue);
+            formData.append('label_' + answerField.name, answerField.dataset.label || answerField.name);
+          }
+        }
+        var postingId = selectedPostingId();
+        if (postingId) formData.append('posting_id', postingId);
+
+        fetch('/api/jobs/', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Accept': 'application/json'
+          }
+        })
+        .then(function(res) {
+          return res.text().then(function(text) {
+            var data = {};
+            if (text) {
+              try {
+                data = JSON.parse(text);
+              } catch (_e) {
+                data = {};
+              }
+            }
+
+            if (!res.ok) {
+              throw new Error((data && data.error) || ('Server returned ' + res.status));
+            }
+
+            return data;
+          });
+        })
+        .then(function(data) {
+          if (data.success) {
+            // Analytics-only event (NOT a conversion).
+            var eventId = (window.crypto && window.crypto.randomUUID)
+              ? window.crypto.randomUUID()
+              : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({
+              event: 'form_submission',
+              event_id: eventId,
+              form_name: 'job_application',
+              form_source: FORM_SOURCE,
+            });
+            window.location.href = '/jobs/thank-you/';
+          } else {
+            window.showToast(data.error || 'Something went wrong submitting your application. Please try again or call us on ' + PHONE + '.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'SUBMIT APPLICATION';
+            if (window.turnstile) { window.turnstile.reset(); }
+          }
+        })
+        .catch(function(err) {
+          console.error('Jobs form error:', err);
+          window.showToast('Connection error — please check your internet and try again, or call us on ' + PHONE + '.', 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'SUBMIT APPLICATION';
+        });
+      });
+    }
+  })();
+</script>

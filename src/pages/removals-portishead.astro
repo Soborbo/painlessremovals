@@ -76,7 +76,7 @@ const reviewProps = {
 };
 
 const title = "Portishead Removals | House Moves in Portishead";
-const description = `Portishead removal specialists — 11 miles from our Bristol depot. Port Marine apartments to Victorian Old Town, we know both halves. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+const description = `Portishead removal specialists — 11 miles from our Bristol depot via M5 J19. Port Marine apartments to Victorian Old Town, we know both halves of BS20.`;
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -149,7 +149,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       </h1>
 
       <div class="flex flex-col gap-2 mb-5 items-center">
-        <a href={`/instantquote?area=portishead`} class="btn-cta-orange">
+        <a href={`/instantquote/?area=portishead`} class="btn-cta-orange">
           GET YOUR FREE QUOTE NOW
         </a>
         <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
@@ -165,7 +165,8 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       name="areas/portishead-property-removal-van"
       pattern="FULL"
       alt="Painless Removals van at a property in Portishead"
-      loading="eager"
+      loading="eager"
+
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
   </div>
@@ -245,7 +246,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
           heading="Moving to or from Portishead?"
           description="Get a personalised quote — we factor in the distance from our depot automatically."
           buttonText="Get Your Portishead Removal Quote →"
-          buttonHref="/instantquote"
+          buttonHref="/instantquote/"
         />
       </div>
 

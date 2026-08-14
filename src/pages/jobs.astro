@@ -1,25 +1,37 @@
 ---
 /**
- * Jobs Page
+ * Jobs Page — /jobs/
  *
- * Careers page for Painless Removals.
- * Includes application form with Cloudflare Turnstile and honeypot spam protection.
+ * Careers hub for Painless Removals, targeting "removal jobs Bristol" searches.
+ * The hero surfaces the live vacancies immediately (CRM-driven); each links to
+ * its own /jobs/[slug]/ detail page which carries the JobPosting structured
+ * data. The open-application form stays here for people the current roles
+ * don't fit.
  */
 
 import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import ApplicationForm from '@/components/careers/ApplicationForm.astro';
 import { siteConfig } from '@/config/site.config';
 import { ref, breadcrumbs } from '@/utils/schema';
 import { fetchPostings } from '@/lib/careers/crm';
-import { EMPLOYMENT_LABELS, FALLBACK_POSTINGS } from '@/lib/careers/fallback';
+import { EMPLOYMENT_LABELS, FALLBACK_POSTINGS, withFallbackMeta } from '@/lib/careers/fallback';
 
 export const prerender = false;
 
 // Page metadata
-const pageTitle = "Jobs – Join the Painless Removals Team";
-const pageDescription = 'Looking for removal jobs in Bristol? Join the Painless Removals team. We are hiring a Removal Driver / Porter and a remote Operations Coordinator. Apply online today.';
+const pageTitle = "Removal Jobs in Bristol – Join Painless Removals";
+const pageDescription = 'Removal jobs in Bristol with Painless Removals — a family-run removals company since 1978. See our current driver, porter and office vacancies and apply online today.';
 
-// Turnstile site key
-const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+// Current roles — the CRM publishes them (edit a vacancy without a deploy); if it is
+// unreachable we render the long-standing roles instead. In fallback mode the
+// postings carry no id, so the application takes the email-only path.
+const roles = withFallbackMeta((await fetchPostings()) ?? FALLBACK_POSTINGS);
+
+// The page went from prerendered to on-demand so vacancy edits go live without a deploy.
+// `s-maxage` lets the edge serve the same HTML for five minutes — matching the CRM's own
+// cache TTL — so the common case costs no more than the static page did.
+Astro.response.headers.set('cache-control', 'public, max-age=0, s-maxage=300');
 
 // Benefits
 const benefits = [
@@ -30,13 +42,13 @@ const benefits = [
   },
   {
     icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
-    title: 'Competitive Pay',
-    description: 'Fair wages that reflect your hard work, plus tips on top. We value the people who make this company run.',
+    title: 'Real Living Wage',
+    description: 'We\'re an accredited Living Wage Employer. Fair pay that reflects your hard work, plus tips on top.',
   },
   {
     icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`,
     title: 'Stable Work',
-    description: 'We\'ve been going since 1978. Regular work with a company that\'s not going anywhere.',
+    description: 'We\'ve been going since 1978. Regular work with a Bristol company that\'s not going anywhere.',
   },
   {
     icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
@@ -45,15 +57,17 @@ const benefits = [
   },
 ];
 
-// Current roles — the CRM publishes them (edit a vacancy without a deploy); if it is
-// unreachable we render the long-standing three roles instead. In fallback mode the
-// postings carry no id, so the application takes the email-only path.
-const roles = (await fetchPostings()) ?? FALLBACK_POSTINGS;
-
-// The page went from prerendered to on-demand so vacancy edits go live without a deploy.
-// `s-maxage` lets the edge serve the same HTML for five minutes — matching the CRM's own
-// cache TTL — so the common case costs no more than the static page did.
-Astro.response.headers.set('cache-control', 'public, max-age=0, s-maxage=300');
+// The faces a candidate would actually work with — same photo set as /about,
+// compact grid here with a link through to the full bios.
+const teamMembers = [
+  { img: 'about/team/Jay-Newton', name: 'Jay Newton', role: 'Director' },
+  { img: 'about/team/Tom', name: 'Tom', role: 'Customer Relationships' },
+  { img: 'about/team/Tamara', name: 'Tamara', role: 'Packing Team Lead' },
+  { img: 'about/team/Pete', name: 'Pete', role: 'Removal Team Leader' },
+  { img: 'about/team/Mike', name: 'Mike', role: 'Removal Team Leader' },
+  { img: 'about/team/Laszlo', name: 'László', role: 'Marketing' },
+  { img: 'about/team/Richard', name: 'Richard', role: 'Business Development' },
+];
 
 // Company values
 const values = [
@@ -72,6 +86,17 @@ const pageSchema = [
     "url": `${siteConfig.brand.domain}/jobs/`,
     "publisher": ref.business(),
   },
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Current removal job vacancies in Bristol",
+    "itemListElement": roles.map((role, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": role.title,
+      "url": `${siteConfig.brand.domain}/jobs/${role.slug}/`,
+    })),
+  },
   breadcrumbs([
     { name: "Home", path: "/" },
     { name: "Jobs" },
@@ -82,7 +107,7 @@ const pageSchema = [
 <Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
 
   <!-- ============================================
-       HERO – Join the Team
+       HERO – Removal Jobs in Bristol + live vacancies
   ============================================ -->
   <section class="gradient-hero py-14 lg:py-20">
     <div class="container-wide text-center">
@@ -90,16 +115,34 @@ const pageSchema = [
         Careers at Painless Removals
       </p>
       <h1 class="text-3xl lg:text-5xl xl:text-6xl font-bold mb-6 max-w-3xl mx-auto">
-        Join the Painless Removals Team
+        Removal Jobs in Bristol
       </h1>
-      <p class="text-lg text-warm-gray max-w-2xl mx-auto mb-8 leading-relaxed">
+      <p class="text-lg text-warm-gray max-w-2xl mx-auto mb-10 leading-relaxed">
         We've been moving Bristol families since 1978. If you're hard-working, reliable, and
         like the idea of a job where no two days are the same — we'd love to hear from you.
       </p>
-      <a href="#application-form"
-        class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
-        Apply Now
-      </a>
+
+      {/* The vacancies are the first thing a job-seeker sees — each card goes
+          straight through to its own page with the full description and form. */}
+      <div class="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto text-left">
+        {roles.map((role) => (
+          <a href={`/jobs/${role.slug}/`}
+            class="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 no-underline hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
+            <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-3">
+              {role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType]}
+            </span>
+            <h2 class="text-xl font-bold text-primary-600 mb-2 group-hover:text-secondary-500 transition-colors">{role.title}</h2>
+            <p class="text-warm-gray text-sm leading-relaxed mb-4">{role.description.split('\n')[0].trim()}</p>
+            <span class="mt-auto inline-flex items-center gap-1 text-secondary-500 font-semibold text-sm group-hover:gap-2 transition-all">
+              View role &amp; apply <span aria-hidden="true">&rarr;</span>
+            </span>
+          </a>
+        ))}
+      </div>
+
+      <p class="text-warm-gray text-sm mt-8">
+        Nothing that fits? <a href="#application-form" class="text-primary-600 font-semibold underline hover:text-secondary-500">Send us an open application</a> — we're always looking for good people.
+      </p>
     </div>
   </section>
 
@@ -130,34 +173,105 @@ const pageSchema = [
   </section>
 
   <!-- ============================================
-       CURRENT ROLES
+       MEET THE TEAM – faces + life at Painless
   ============================================ -->
   <section class="section bg-white">
     <div class="container-wide">
       <div class="text-center mb-12">
-        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Current Roles</h2>
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">The Team You'd Be Joining</h2>
         <p class="text-warm-gray text-lg max-w-2xl mx-auto">
-          We're always looking for good people. See if one of these roles suits you.
+          Real people, not a faceless agency. These are the faces you'll see at our Filton
+          warehouse every morning — and out on removals across Bristol every day.
         </p>
       </div>
 
-      {/* Full-width blocks rather than narrow columns: these are complete job descriptions,
-          and three-across cards made them unreadable. `whitespace-pre-line` keeps the
-          paragraph breaks the CRM stores in the description text. */}
-      <div class="space-y-8 max-w-3xl mx-auto">
-        {roles.map((role) => (
-          <div class="bg-cream rounded-xl p-6 sm:p-8 border border-gray-100 flex flex-col">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-xl lg:text-2xl font-bold text-primary-600">{role.title}</h3>
+      <!-- Portraits -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4 sm:gap-5 mb-6 max-w-5xl mx-auto">
+        {teamMembers.map((member) => (
+          <div class="text-center">
+            <div class="aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-3 group">
+              <OptimizedPicture
+                name={member.img}
+                pattern="SIXTH"
+                alt={`${member.name}, ${member.role} at Painless Removals`}
+                loading="lazy"
+                decoding="async"
+                class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+              />
             </div>
-            <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-4">
+            <p class="font-bold text-primary-600 text-sm leading-tight">{member.name}</p>
+            <p class="text-warm-gray text-xs mt-0.5">{member.role}</p>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center mb-12">
+        <a href="/about/" class="inline-flex items-center gap-1 text-primary-600 font-semibold text-sm no-underline hover:text-secondary-500 hover:gap-2 transition-all">
+          Read everyone's full story on our About page <span aria-hidden="true">&rarr;</span>
+        </a>
+      </p>
+
+      <!-- Life at Painless — candid crew photos -->
+      <div class="grid sm:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto">
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 sm:row-span-2">
+          <OptimizedPicture
+            name="about/christmas-party"
+            pattern="THIRD"
+            alt="The Painless Removals team at their Christmas party"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 sm:col-span-2">
+          <OptimizedPicture
+            name="homepage/painless-removals-team"
+            pattern="TWO_THIRDS"
+            alt="The Painless Removals crew with our vans in Bristol"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover"
+          />
+        </div>
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 sm:col-span-2">
+          <OptimizedPicture
+            name="about/Bedminster-removal-six"
+            pattern="TWO_THIRDS"
+            alt="Painless Removals crew carrying furniture on a removal job in Bristol"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CURRENT ROLES
+  ============================================ -->
+  <section class="section bg-cream" id="current-roles" style="scroll-margin-top: 5rem;">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Current Removal Job Vacancies</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          From driver and porter jobs at our Filton base to office roles — see if one of
+          these suits you. Every vacancy has its own page with the full details.
+        </p>
+      </div>
+
+      <div class="space-y-6 max-w-3xl mx-auto">
+        {roles.map((role) => (
+          <div class="bg-white rounded-xl p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col">
+            <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-3">
               {role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType]}
             </span>
-            <p class="text-warm-gray text-sm leading-relaxed mb-5 whitespace-pre-line">{role.description}</p>
-            <div class="mt-auto">
+            <h3 class="text-xl lg:text-2xl font-bold text-primary-600 mb-2">{role.title}</h3>
+            <p class="text-warm-gray text-sm leading-relaxed mb-5">{role.description.split('\n')[0].trim()}</p>
+            <div class="mb-6">
               <p class="text-sm font-semibold text-primary-600 mb-2">What we're looking for:</p>
               <ul class="space-y-1.5">
-                {role.requirements.map((req) => (
+                {role.requirements.slice(0, 3).map((req) => (
                   <li class="flex items-start gap-2 text-sm text-warm-gray">
                     <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -167,8 +281,8 @@ const pageSchema = [
                 ))}
               </ul>
             </div>
-            <a href="#application-form" class="mt-6 text-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 font-semibold no-underline rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm">
-              Apply for this role
+            <a href={`/jobs/${role.slug}/`} class="mt-auto text-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 font-semibold no-underline rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm">
+              View full details &amp; apply
             </a>
           </div>
         ))}
@@ -177,157 +291,9 @@ const pageSchema = [
   </section>
 
   <!-- ============================================
-       APPLICATION FORM
+       APPLICATION FORM (open applications welcome)
   ============================================ -->
-  <section class="section bg-cream" id="application-form" style="scroll-margin-top: 5rem;">
-    <div class="container-narrow">
-      <div class="text-center mb-10">
-        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Looking for a Removals Job in North Bristol?</h2>
-        <div class="text-warm-gray text-lg max-w-xl mx-auto text-left space-y-4">
-          <p>
-            We're always on the lookout for reliable, capable people to join our team. Pick the role you're applying for below — each one asks a couple of extra questions so we can get back to you quickly. What we're looking for is set out in full with each vacancy above.
-          </p>
-          <p>Fill in the form, and we'll be in touch soon!</p>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl p-6 sm:p-8 shadow-sm border border-gray-100 max-w-2xl mx-auto">
-        <form id="jobs-form-el" class="space-y-5" novalidate data-phone={siteConfig.company.contact.phone}>
-          <!-- Honeypot -->
-          <div style="position: absolute; left: -9999px;" aria-hidden="true">
-            <label for="website">Leave this blank</label>
-            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
-          </div>
-
-          <!-- Name -->
-          <div>
-            <label for="name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Name <span class="text-secondary-500">*</span></label>
-            <input type="text" id="name" name="name" required autocomplete="name"
-              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
-          </div>
-
-          <!-- Email and Phone row -->
-          <div class="grid sm:grid-cols-2 gap-5">
-            <div>
-              <label for="email" class="block text-sm font-semibold text-primary-600 mb-1.5">Email Address <span class="text-secondary-500">*</span></label>
-              <input type="email" id="email" name="email" required autocomplete="email"
-                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
-            </div>
-            <div>
-              <label for="phone" class="block text-sm font-semibold text-primary-600 mb-1.5">Phone Number <span class="text-secondary-500">*</span></label>
-              <input type="tel" id="phone" name="phone" required autocomplete="tel"
-                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
-            </div>
-          </div>
-
-          <!-- Position -->
-          <div>
-            <label for="position" class="block text-sm font-semibold text-primary-600 mb-1.5">Position <span class="text-secondary-500">*</span></label>
-            <select id="position" name="position" required
-              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
-              <option value="">Select a position...</option>
-              {roles.map((role) => (
-                <option value={role.title} data-posting-id={role.id} data-slug={role.slug}>{role.title}</option>
-              ))}
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          {/* Vacancy-specific questions, including the driving licence — asking a remote
-              office role about licence categories made no sense, so the whole set is now
-              per-vacancy. The script shows the selected posting's block and disables the
-              rest, so one role's questions can never be submitted for another. */}
-          {roles.some((role) => role.questions.length > 0) && (
-            <div id="posting-questions">
-              {roles.map((role) => (
-                <div class="space-y-5 hidden" data-questions-for={role.slug} hidden>
-                  {role.questions.map((q) => (
-                    <div>
-                      {q.type === 'checkbox' ? (
-                        <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
-                          <input type="checkbox" id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
-                            disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
-                            class="w-4 h-4 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
-                          <span>{q.label}{q.required && <span class="text-secondary-500"> *</span>}</span>
-                        </label>
-                      ) : (
-                        <>
-                          <label for={`${role.slug}--q_${q.key}`} class="block text-sm font-semibold text-primary-600 mb-1.5">
-                            {q.label}{q.required && <span class="text-secondary-500"> *</span>}
-                          </label>
-                          {q.type === 'select' || q.type === 'radio' ? (
-                            <select id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
-                              disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
-                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
-                              <option value="">Please choose...</option>
-                              {(q.options ?? []).map((opt) => <option value={opt}>{opt}</option>)}
-                            </select>
-                          ) : q.type === 'textarea' ? (
-                            <textarea id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`} rows="4"
-                              disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
-                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
-                          ) : (
-                            <input type="text" id={`${role.slug}--q_${q.key}`} name={`q_${q.key}`}
-                              disabled data-required={q.required ? 'true' : undefined} data-label={q.label}
-                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
-                          )}
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
-
-
-          <!-- Message / Cover Letter -->
-          <div>
-            <label for="message" class="block text-sm font-semibold text-primary-600 mb-1.5">Tell Us About Yourself</label>
-            <textarea id="message" name="message" rows="5"
-              placeholder="A bit about your experience, why you'd like to join, availability..."
-              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
-          </div>
-
-          <!-- Cloudflare Turnstile -->
-          <div>
-            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
-          </div>
-
-          <!-- Error message area -->
-          <div id="form-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
-
-          <!-- CV upload -->
-          <div>
-            <label for="cv" class="block text-sm font-semibold text-primary-600 mb-1.5">Attach Your CV <span class="text-warm-gray font-normal">(optional)</span></label>
-            <input type="file" id="cv" name="cv"
-              accept=".pdf,.doc,.docx,.txt,.rtf,.odt"
-              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-600 hover:file:bg-primary-100 file:cursor-pointer" />
-            <p class="text-warm-gray text-xs mt-1.5">Accepted formats: PDF, DOC, DOCX, TXT, RTF, ODT. Maximum 5 MB.</p>
-          </div>
-
-          <!-- Consent -->
-          <div>
-            <fieldset>
-              <legend class="block text-sm font-semibold text-primary-600 mb-2">Consent <span class="text-secondary-500">*</span></legend>
-              <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
-                <input type="checkbox" id="consent" name="consent" required class="w-4 h-4 mt-0.5 text-primary-600 border-gray-300 rounded focus:ring-primary-500" />
-                <span>I agree to the <a href="/privacy-policy" class="text-primary-600 underline hover:text-primary-700">privacy policy</a>.</span>
-              </label>
-            </fieldset>
-          </div>
-
-          <!-- Submit -->
-          <div>
-            <button type="submit" id="submit-btn"
-              class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 cursor-pointer w-full sm:w-auto">
-              SUBMIT APPLICATION
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
+  <ApplicationForm roles={roles} source="jobs-page" />
 
   <!-- ============================================
        COMPANY VALUES
@@ -378,249 +344,5 @@ const pageSchema = [
       </a>
     </div>
   </section>
-
-  <!-- Cloudflare Turnstile script -->
-  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
-  <!-- Jobs form submission -->
-  <script is:inline>
-    (function() {
-      var form = document.getElementById('jobs-form-el');
-      var PHONE = form && form.dataset.phone || '0117 287 0082';
-      var errorDiv = document.getElementById('form-error');
-      var submitBtn = document.getElementById('submit-btn');
-
-      // The selected vacancy decides which extra-question block is live. Hidden blocks
-      // stay `disabled` so a role's questions can never be submitted for another role.
-      var positionSelect = form && form.querySelector('#position');
-      var questionBlocks = form ? form.querySelectorAll('[data-questions-for]') : [];
-
-      function selectedOption() {
-        if (!positionSelect) return null;
-        return (positionSelect.selectedOptions && positionSelect.selectedOptions[0]) || null;
-      }
-
-      // The CRM id is absent in fallback mode; the slug is always there, so the visible
-      // questions key off the slug and only the CRM forwarding depends on the id.
-      function selectedPostingId() {
-        var opt = selectedOption();
-        return (opt && opt.dataset.postingId) || '';
-      }
-
-      function selectedSlug() {
-        var opt = selectedOption();
-        return (opt && opt.dataset.slug) || '';
-      }
-
-      function activeQuestionBlock() {
-        var slug = selectedSlug();
-        return slug ? form.querySelector('[data-questions-for="' + slug + '"]') : null;
-      }
-
-      function syncQuestionBlocks() {
-        var active = selectedSlug();
-        for (var i = 0; i < questionBlocks.length; i++) {
-          var block = questionBlocks[i];
-          var show = Boolean(active) && block.dataset.questionsFor === active;
-          block.hidden = !show;
-          block.classList.toggle('hidden', !show);
-          var fields = block.querySelectorAll('input, select, textarea');
-          for (var j = 0; j < fields.length; j++) fields[j].disabled = !show;
-        }
-      }
-
-      if (positionSelect) {
-        positionSelect.addEventListener('change', syncQuestionBlocks);
-        syncQuestionBlocks();
-      }
-
-      if (form) {
-        form.addEventListener('submit', function(e) {
-          e.preventDefault();
-
-          errorDiv.classList.add('hidden');
-          errorDiv.textContent = '';
-
-          var name = form.querySelector('#name').value.trim();
-          var email = form.querySelector('#email').value.trim();
-          var phone = form.querySelector('#phone').value.trim();
-          var position = form.querySelector('#position').value;
-          var message = form.querySelector('#message').value.trim();
-          var honeypot = form.querySelector('#website').value;
-
-          if (!name) {
-            window.showToast('Please enter your full name.', 'error');
-            form.querySelector('#name').focus();
-            return;
-          }
-          if (!email) {
-            window.showToast('Please enter your email address.', 'error');
-            form.querySelector('#email').focus();
-            return;
-          }
-          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            window.showToast('That email address doesn\'t look right — please check it and try again.', 'error');
-            form.querySelector('#email').focus();
-            return;
-          }
-          if (!phone) {
-            window.showToast('Please enter your phone number.', 'error');
-            form.querySelector('#phone').focus();
-            return;
-          }
-          if (!position) {
-            window.showToast('Please select the position you\'re applying for.', 'error');
-            form.querySelector('#position').focus();
-            return;
-          }
-
-          // Vacancy-specific questions replaced the fixed licence radios: which ones are
-          // required now depends on the selected role, so the check is data-driven.
-          var activeBlock = activeQuestionBlock();
-          var missingAnswer = null;
-          if (activeBlock) {
-            var required = activeBlock.querySelectorAll('[data-required="true"]');
-            for (var ri = 0; ri < required.length; ri++) {
-              var field = required[ri];
-              var answered = field.type === 'checkbox' ? field.checked : String(field.value || '').trim();
-              if (!answered) {
-                missingAnswer = field;
-                break;
-              }
-            }
-          }
-          if (missingAnswer) {
-            var prompt = missingAnswer.type === 'checkbox'
-              ? 'Please confirm: ' + (missingAnswer.dataset.label || 'the required question')
-              : 'Please answer: ' + (missingAnswer.dataset.label || 'the required question');
-            window.showToast(prompt, 'error');
-            missingAnswer.focus();
-            return;
-          }
-
-          var consentBox = form.querySelector('#consent');
-          if (!consentBox.checked) {
-            window.showToast('Please agree to the privacy policy before submitting.', 'error');
-            consentBox.focus();
-            return;
-          }
-
-          var turnstileResponse = '';
-          var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
-          if (turnstileInput) {
-            turnstileResponse = turnstileInput.value;
-          }
-
-          if (!turnstileResponse) {
-            window.showToast('Please complete the security check before submitting your application.', 'warning');
-            return;
-          }
-
-          // Validate CV file if attached
-          var cvInput = form.querySelector('#cv');
-          var cvFile = cvInput && cvInput.files && cvInput.files[0];
-          if (cvFile) {
-            var maxSize = 5 * 1024 * 1024; // 5 MB
-            if (cvFile.size > maxSize) {
-              window.showToast('Your CV file is too large (' + (cvFile.size / 1024 / 1024).toFixed(1) + ' MB). Maximum allowed size is 5 MB — please compress it and try again.', 'error');
-              return;
-            }
-            var allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.rtf', '.odt'];
-            var ext = cvFile.name.toLowerCase().substring(cvFile.name.lastIndexOf('.'));
-            if (allowedTypes.indexOf(ext) === -1) {
-              window.showToast('That file type isn\'t accepted. Please upload your CV as a PDF, DOC, DOCX, TXT, RTF, or ODT.', 'error');
-              return;
-            }
-          }
-
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'SUBMITTING...';
-
-          var formData = new FormData();
-          formData.append('name', name);
-          formData.append('email', email);
-          formData.append('phone', phone);
-          formData.append('position', position);
-          formData.append('message', message);
-          formData.append('honeypot', honeypot);
-          formData.append('turnstileToken', turnstileResponse);
-          if (cvFile) {
-            formData.append('cv', cvFile);
-          }
-
-          // The answers always travel — Jay's email shows them even when the CRM is not in
-          // play. The posting id only exists in CRM mode; without it the handler skips the
-          // CRM and the application still goes out by email exactly as before.
-          if (activeBlock) {
-            var answerFields = activeBlock.querySelectorAll('[name^="q_"]');
-            for (var qi = 0; qi < answerFields.length; qi++) {
-              var answerField = answerFields[qi];
-              if (answerField.disabled) continue;
-              var answerValue = answerField.type === 'checkbox'
-                ? (answerField.checked ? 'Yes' : 'No')
-                : answerField.value;
-              formData.append(answerField.name, answerValue);
-              formData.append('label_' + answerField.name, answerField.dataset.label || answerField.name);
-            }
-          }
-          var postingId = selectedPostingId();
-          if (postingId) formData.append('posting_id', postingId);
-
-          fetch('/api/jobs', {
-            method: 'POST',
-            body: formData,
-            headers: {
-              'Accept': 'application/json'
-            }
-          })
-          .then(function(res) {
-            return res.text().then(function(text) {
-              var data = {};
-              if (text) {
-                try {
-                  data = JSON.parse(text);
-                } catch (_e) {
-                  data = {};
-                }
-              }
-
-              if (!res.ok) {
-                throw new Error((data && data.error) || ('Server returned ' + res.status));
-              }
-
-              return data;
-            });
-          })
-          .then(function(data) {
-            if (data.success) {
-              // Analytics-only event (NOT a conversion).
-              var eventId = (window.crypto && window.crypto.randomUUID)
-                ? window.crypto.randomUUID()
-                : ('id-' + Date.now() + '-' + Math.random().toString(36).slice(2));
-              window.dataLayer = window.dataLayer || [];
-              window.dataLayer.push({
-                event: 'form_submission',
-                event_id: eventId,
-                form_name: 'job_application',
-                form_source: 'jobs-page',
-              });
-              window.location.href = '/jobs/thank-you/';
-            } else {
-              window.showToast(data.error || 'Something went wrong submitting your application. Please try again or call us on ' + PHONE + '.', 'error');
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'SUBMIT APPLICATION';
-              if (window.turnstile) { window.turnstile.reset(); }
-            }
-          })
-          .catch(function(err) {
-            console.error('Jobs form error:', err);
-            window.showToast('Connection error — please check your internet and try again, or call us on ' + PHONE + '.', 'error');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'SUBMIT APPLICATION';
-          });
-        });
-      }
-    })();
-  </script>
 
 </Layout>

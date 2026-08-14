@@ -73,7 +73,7 @@ const reviewProps = {
 };
 
 const title = "Long Ashton Removals | House Movers";
-const description = `Long Ashton removal services — 4 miles from our Bristol depot. Village cottages to woodland properties near Ashton Court, military family specialists. ${siteConfig.company.rating.value}★ rated, ${siteConfig.company.insurance} insured.`;
+const description = `Long Ashton removal services — 4 miles from our Bristol depot. Village cottages to woodland properties near Ashton Court, military family specialists.`;
 
 const serviceSchema = {
   "@context": "https://schema.org",
@@ -143,7 +143,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       </h1>
 
       <div class="flex flex-col gap-2 mb-5 items-center">
-        <a href={`/instantquote?area=long-ashton`} class="btn-cta-orange">
+        <a href={`/instantquote/?area=long-ashton`} class="btn-cta-orange">
           GET YOUR FREE QUOTE NOW
         </a>
         <p class="text-warm-gray text-sm">Free, no risk, no obligation</p>
@@ -159,7 +159,8 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       name="areas/long-ashton-village-house-move"
       pattern="FULL"
       alt="Removal team working on a house move near Long Ashton village"
-      loading="eager"
+      loading="eager"
+
       class="absolute inset-0 w-full h-full object-cover object-center"
     />
   </div>
@@ -211,7 +212,7 @@ const schema = [serviceSchema, articleSchema, faqSchema];
       <div class="area-mobile-only py-6"><ReviewInline {...reviewProps} /></div>
 
       <div class="midcta-bleed">
-        <MidCTA heading="Moving from Long Ashton?" description="Free quote in about two minutes — at 4 miles away, we're practically your local removal company." buttonText="Get Your Long Ashton Quote →" buttonHref="/instantquote" />
+        <MidCTA heading="Moving from Long Ashton?" description="Free quote in about two minutes — at 4 miles away, we're practically your local removal company." buttonText="Get Your Long Ashton Quote →" buttonHref="/instantquote/" />
       </div>
 
       <div class="bg-cream rounded-xl px-6 py-10 md:py-14 mb-10 mt-10">

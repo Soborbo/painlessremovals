@@ -32,7 +32,7 @@ const sorted = [...lessons].sort((a, b) => a.order - b.order);
       return (
         <li class:list={['lesson-list-item', { 'is-active': isActive }]}>
           <a
-            href={`${baseUrl}/${lesson.slug}`}
+            href={`${baseUrl}/${lesson.slug}/`}
             aria-current={isActive ? 'page' : undefined}
           >
             <span class="lesson-number">{lesson.order}</span>

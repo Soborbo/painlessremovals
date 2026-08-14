@@ -109,7 +109,8 @@ async function main() {
 
       try {
         const meta = await sharp(srcPath).metadata();
-        const fallbackExt = getFallbackExt(ext, meta);
+        const stats = await sharp(srcPath).stats();
+        const fallbackExt = getFallbackExt(ext, stats);
         const isAlpha = fallbackExt === 'png';
 
         imageData[name] = {
@@ -197,12 +198,14 @@ function findImages(dir) {
   return results;
 }
 
-function getFallbackExt(ext, meta) {
+function getFallbackExt(ext, stats) {
   if (ext === '.webp') return 'webp';
   // Alpha-aware fallback (astro-images v3.1 §alpha-aware-fallback): decide by the
   // image's ACTUAL transparency, not its source extension. An opaque photo saved
   // as PNG must fall back to JPG (smaller); PNG is reserved for true-alpha assets.
-  if (meta.hasAlpha) return 'png';
+  // Must read stats().isOpaque, not metadata().hasAlpha — the latter is true for
+  // any RGBA file even when every pixel is opaque, which shipped 3 MB PNG photos.
+  if (!stats.isOpaque) return 'png';
   return 'jpg';
 }
 
