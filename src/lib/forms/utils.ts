@@ -34,6 +34,10 @@ export function isAllowedOrigin(origin: string): boolean {
 // Origin is absent or not allowlisted.
 export function requireAllowedOrigin(request: Request): boolean {
   const origin = request.headers.get('origin') || '';
+  // `astro dev` only: accept the local origin so forms can be exercised
+  // end-to-end locally. import.meta.env.DEV is compile-time false in
+  // production builds, so this branch does not exist in deployed code.
+  if (import.meta.env.DEV && /^http:\/\/localhost:\d+$/.test(origin)) return true;
   return !!origin && isAllowedOrigin(origin);
 }
 

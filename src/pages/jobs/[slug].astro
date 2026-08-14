@@ -1,0 +1,219 @@
+---
+/**
+ * Vacancy detail page — /jobs/[slug]/
+ *
+ * One page per published vacancy, CRM-driven like the /jobs hub. This is the
+ * SEO leaf page: it carries the JobPosting structured data (Google for Jobs
+ * eligibility for "removal jobs bristol"-type searches) and the application
+ * form arrives with the role preselected.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import OptimizedPicture from '@/components/OptimizedPicture.astro';
+import ApplicationForm from '@/components/careers/ApplicationForm.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+import { fetchPostings } from '@/lib/careers/crm';
+import { EMPLOYMENT_LABELS, FALLBACK_POSTINGS, withFallbackMeta } from '@/lib/careers/fallback';
+
+export const prerender = false;
+
+const roles = withFallbackMeta((await fetchPostings()) ?? FALLBACK_POSTINGS);
+const slug = Astro.params.slug ?? '';
+const role = roles.find((r) => r.slug === slug);
+
+// A stale or mistyped vacancy link should land the visitor on the live list,
+// not a dead end — the hub always renders something.
+if (!role) return Astro.redirect('/jobs/', 302);
+
+// Same edge cache policy as the hub — vacancy edits go live within the CRM's own TTL.
+Astro.response.headers.set('cache-control', 'public, max-age=0, s-maxage=300');
+
+const typeLabel = role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType];
+const locationLabel = role.remote ? 'Remote (UK) · Bristol-based company' : 'Bristol (Filton)';
+
+// First line of the description is the "meta line" (salary · hours · contract) —
+// reuse it as the meta description lead so SERP snippets carry the concrete terms.
+const metaLine = role.description.split('\n')[0].trim();
+const pageTitle = `${role.title} – Removal Jobs in Bristol`;
+const pageDescription = `Apply for ${role.title} at Painless Removals, Bristol's family-run removals company since 1978. ${metaLine}`.slice(0, 160);
+
+// JobPosting wants an HTML description; the CRM stores plain text with blank-line
+// paragraphs and "·" bullet lines, so escape + wrap is enough.
+const escapeText = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const descriptionHtml = role.description
+  .split(/\n{2,}/)
+  .map((p) => `<p>${escapeText(p.trim()).replace(/\n/g, '<br>')}</p>`)
+  .join('');
+
+const EMPLOYMENT_SCHEMA: Record<typeof role.employmentType, string> = {
+  full_time: 'FULL_TIME',
+  part_time: 'PART_TIME',
+  contract: 'CONTRACTOR',
+  temporary: 'TEMPORARY',
+};
+
+const pageSchema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    "title": role.title,
+    "description": descriptionHtml,
+    "employmentType": EMPLOYMENT_SCHEMA[role.employmentType],
+    "hiringOrganization": {
+      "@type": "Organization",
+      "name": siteConfig.company.name,
+      "sameAs": siteConfig.brand.domain,
+      "logo": `${siteConfig.brand.domain}/images/logo.svg`,
+    },
+    "jobLocation": {
+      "@type": "Place",
+      "address": {
+        "@type": "PostalAddress",
+        ...siteConfig.company.address,
+      },
+    },
+    ...(role.remote
+      ? {
+          "jobLocationType": "TELECOMMUTE",
+          "applicantLocationRequirements": { "@type": "Country", "name": "United Kingdom" },
+        }
+      : {}),
+    ...(role.datePosted ? { "datePosted": role.datePosted } : {}),
+    ...(role.salary
+      ? {
+          "baseSalary": {
+            "@type": "MonetaryAmount",
+            "currency": "GBP",
+            "value": {
+              "@type": "QuantitativeValue",
+              "minValue": role.salary.min,
+              "maxValue": role.salary.max,
+              "unitText": role.salary.unit,
+            },
+          },
+        }
+      : {}),
+    "directApply": true,
+    "industry": "Removals & Relocation",
+    "url": `${siteConfig.brand.domain}/jobs/${role.slug}/`,
+  },
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Jobs", path: "/jobs/" },
+    { name: role.title },
+  ]),
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={pageSchema}>
+
+  <!-- ============================================
+       HERO – Vacancy
+  ============================================ -->
+  <section class="gradient-hero py-14 lg:py-20">
+    <div class="container-wide">
+      <div class="max-w-3xl mx-auto text-center">
+        <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+          Removal Jobs in Bristol · Careers at Painless Removals
+        </p>
+        <h1 class="text-3xl lg:text-5xl font-bold mb-5">{role.title}</h1>
+        <div class="flex flex-wrap items-center justify-center gap-3 mb-8">
+          <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full">{typeLabel}</span>
+          <span class="inline-flex items-center gap-1.5 text-sm text-warm-gray">
+            <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            {locationLabel}
+          </span>
+        </div>
+        <a href="#application-form"
+          class="btn-cta-orange no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+          Apply for this Role
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ROLE DETAILS
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="grid lg:grid-cols-[1fr_360px] gap-10 max-w-5xl mx-auto">
+        <div>
+          <p class="text-warm-gray leading-relaxed whitespace-pre-line">{role.description}</p>
+        </div>
+
+        <aside class="space-y-6">
+          <div class="bg-cream rounded-xl p-6 border border-gray-100">
+            <p class="text-sm font-semibold text-primary-600 mb-3">What we're looking for:</p>
+            <ul class="space-y-2">
+              {role.requirements.map((req) => (
+                <li class="flex items-start gap-2 text-sm text-warm-gray">
+                  <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  </svg>
+                  <span>{req}</span>
+                </li>
+              ))}
+            </ul>
+            <a href="#application-form" class="mt-5 block text-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 font-semibold no-underline rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm">
+              Apply Now
+            </a>
+          </div>
+
+          <div class="rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+            <OptimizedPicture
+              name="homepage/painless-removals-team"
+              pattern="THIRD"
+              alt="The Painless Removals crew with one of our vans in Bristol"
+              loading="lazy"
+              decoding="async"
+              class="w-full h-auto"
+            />
+            <div class="bg-white p-4">
+              <p class="text-sm text-warm-gray leading-relaxed">
+                This is the team you'd be joining — a family-run Bristol removals company, moving people since 1978.
+                <a href="/about/" class="text-primary-600 font-semibold no-underline hover:text-secondary-500">Meet everyone &rarr;</a>
+              </p>
+            </div>
+          </div>
+
+          <a href="/jobs/" class="inline-flex items-center gap-1 text-primary-600 font-semibold text-sm no-underline hover:text-secondary-500 hover:gap-2 transition-all">
+            <span aria-hidden="true">&larr;</span> All removal jobs in Bristol
+          </a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       APPLICATION FORM (role preselected)
+  ============================================ -->
+  <ApplicationForm roles={roles} preselectSlug={role.slug} source="jobs-detail-page" heading={`Apply for ${role.title}`}>
+    <p slot="intro">
+      Fill in the form below — the questions for this role are already set up, and you can attach your CV. Jay reviews every application personally, and we'll be in touch soon.
+    </p>
+  </ApplicationForm>
+
+  <!-- ============================================
+       FINAL CTA
+  ============================================ -->
+  <section class="py-16 md:py-20 bg-white text-center">
+    <div class="container-wide">
+      <h2 class="mb-4">Got Questions About This Role?</h2>
+      <p class="text-warm-gray text-lg mb-8 max-w-xl mx-auto">
+        Give Jay a call. He's always happy to chat about what it's like to work at Painless Removals.
+      </p>
+
+      <a href={`tel:${siteConfig.company.contact.phone.replace(/\s/g, '')}`}
+        class="btn-cta-orange inline-flex items-center gap-3 no-underline duration-300 hover:shadow-orange-600/40 hover:text-white/90">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+        </svg>
+        Call {siteConfig.company.contact.phone}
+      </a>
+    </div>
+  </section>
+
+</Layout>
