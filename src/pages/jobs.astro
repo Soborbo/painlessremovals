@@ -109,26 +109,49 @@ const pageSchema = [
   <!-- ============================================
        HERO – Removal Jobs in Bristol + live vacancies
   ============================================ -->
-  <section class="gradient-hero py-8 lg:py-10">
+  <section class="gradient-hero py-6 lg:py-8">
     <div class="container-wide">
-      {/* Split hero: copy left, team photo right — natural aspect ratio (no
-          object-cover), so nobody gets cropped. Kept deliberately compact
-          (small paddings, capped photo width) so the two vacancy cards below
-          stay above the fold on a typical laptop screen. */}
-      <div class="grid lg:grid-cols-2 gap-8 items-center mb-8">
+      {/* Split hero, built to fit above the fold on desktop: LEFT column holds
+          the copy AND the two vacancy cards, RIGHT column is just the photo
+          (natural aspect ratio, nobody cropped). Paddings and type sizes are
+          deliberately tight — resist the urge to air it back out. */}
+      <div class="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
         <div class="text-center lg:text-left">
-          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-2">
             Careers at Painless Removals
           </p>
-          <h1 class="text-3xl lg:text-5xl font-bold mb-4">
+          <h1 class="text-3xl lg:text-4xl xl:text-5xl font-bold mb-3">
             Removal Jobs in Bristol
           </h1>
-          <p class="text-lg text-warm-gray max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+          <p class="text-base lg:text-lg text-warm-gray max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-6">
             We've been moving Bristol families since 1978. If you're hard-working, reliable, and
             like the idea of a job where no two days are the same — we'd love to hear from you.
           </p>
+
+          {/* The vacancies are the first thing a job-seeker sees — each card goes
+              straight through to its own page with the full description and form. */}
+          <div class="grid sm:grid-cols-2 gap-4 text-left">
+            {roles.map((role) => (
+              <a href={`/jobs/${role.slug}/`}
+                class="group bg-white rounded-xl p-5 shadow-sm border border-gray-100 no-underline hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-2.5">
+                  {role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType]}
+                </span>
+                <h2 class="text-lg font-bold text-primary-600 mb-1.5 group-hover:text-secondary-500 transition-colors">{role.title}</h2>
+                <p class="text-warm-gray text-sm leading-relaxed mb-3 line-clamp-3">{role.description.split('\n')[0].trim()}</p>
+                <span class="mt-auto inline-flex items-center gap-1 text-secondary-500 font-semibold text-sm group-hover:gap-2 transition-all">
+                  View role &amp; apply <span aria-hidden="true">&rarr;</span>
+                </span>
+              </a>
+            ))}
+          </div>
+
+          <p class="text-warm-gray text-sm mt-4">
+            Nothing that fits? <a href="#application-form" class="text-primary-600 font-semibold underline hover:text-secondary-500">Send us an open application</a> — we're always looking for good people.
+          </p>
         </div>
-        <div class="max-w-[340px] mx-auto w-full">
+
+        <div class="max-w-[400px] mx-auto w-full">
           <OptimizedPicture
             name="about/christmas-party"
             pattern="THIRD"
@@ -140,28 +163,6 @@ const pageSchema = [
           />
         </div>
       </div>
-
-      {/* The vacancies are the first thing a job-seeker sees — each card goes
-          straight through to its own page with the full description and form. */}
-      <div class="grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto text-left">
-        {roles.map((role) => (
-          <a href={`/jobs/${role.slug}/`}
-            class="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 no-underline hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col">
-            <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-3">
-              {role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType]}
-            </span>
-            <h2 class="text-xl font-bold text-primary-600 mb-2 group-hover:text-secondary-500 transition-colors">{role.title}</h2>
-            <p class="text-warm-gray text-sm leading-relaxed mb-4">{role.description.split('\n')[0].trim()}</p>
-            <span class="mt-auto inline-flex items-center gap-1 text-secondary-500 font-semibold text-sm group-hover:gap-2 transition-all">
-              View role &amp; apply <span aria-hidden="true">&rarr;</span>
-            </span>
-          </a>
-        ))}
-      </div>
-
-      <p class="text-warm-gray text-sm mt-8">
-        Nothing that fits? <a href="#application-form" class="text-primary-600 font-semibold underline hover:text-secondary-500">Send us an open application</a> — we're always looking for good people.
-      </p>
     </div>
   </section>
 
