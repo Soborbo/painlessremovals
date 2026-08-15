@@ -33,25 +33,29 @@ const roles = withFallbackMeta((await fetchPostings()) ?? FALLBACK_POSTINGS);
 // cache TTL — so the common case costs no more than the static page did.
 Astro.response.headers.set('cache-control', 'public, max-age=0, s-maxage=300');
 
-// Benefits
+// Benefits — each card carries a real crew photo instead of a generic icon.
 const benefits = [
   {
-    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+    img: 'areas/chepstow-team',
+    alt: 'The Painless Removals crew standing together by their van',
     title: 'Family-Run Team',
     description: 'We\'re a tight-knit crew, not a faceless corporation. Everyone knows your name and has your back.',
   },
   {
-    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    img: 'areas/brislington-property-removal-team',
+    alt: 'Painless Removals team members on a removal job in Bristol',
     title: 'Real Living Wage',
     description: 'We\'re an accredited Living Wage Employer. Fair pay that reflects your hard work, plus tips on top.',
   },
   {
-    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`,
-    title: 'Stable Work',
-    description: 'We\'ve been going since 1978. Regular work with a Bristol company that\'s not going anywhere.',
+    img: 'areas/clevedon-removal-team-working',
+    alt: 'Painless Removals crew working together on a move',
+    title: 'Respect & a Chance to Grow',
+    description: 'No experience needed — we\'re happy to train you. You\'ll join a genuinely friendly crew that feels more like a circle of mates than a corporate job, with a clear route up to team leader.',
   },
   {
-    icon: `<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
+    img: 'areas/thornbury-house-move-team',
+    alt: 'Painless Removals team on a house move',
     title: 'No Two Days the Same',
     description: 'Different homes, different people, different challenges every day. If you hate being stuck behind a desk, you\'ll love it.',
   },
@@ -167,33 +171,7 @@ const pageSchema = [
   </section>
 
   <!-- ============================================
-       WHY WORK WITH US
-  ============================================ -->
-  <section class="section bg-cream">
-    <div class="container-wide">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Why Work With Us</h2>
-        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
-          We're not just a removals company — we're a team that genuinely enjoys what we do.
-        </p>
-      </div>
-
-      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {benefits.map((benefit) => (
-          <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-center hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-            <div class="w-14 h-14 mx-auto mb-4 rounded-full bg-primary-50 flex items-center justify-center text-primary-600">
-              <Fragment set:html={benefit.icon} />
-            </div>
-            <h3 class="text-lg font-semibold text-primary-600 mb-2">{benefit.title}</h3>
-            <p class="text-warm-gray text-sm leading-relaxed">{benefit.description}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================
-       MEET THE TEAM – faces + life at Painless
+       MEET THE TEAM – straight below the hero
   ============================================ -->
   <section class="section bg-white">
     <div class="container-wide">
@@ -225,23 +203,105 @@ const pageSchema = [
         ))}
       </div>
 
-      <p class="text-center mb-12">
+      <p class="text-center">
         <a href="/about/" class="inline-flex items-center gap-1 text-primary-600 font-semibold text-sm no-underline hover:text-secondary-500 hover:gap-2 transition-all">
           Read everyone's full story on our About page <span aria-hidden="true">&rarr;</span>
         </a>
       </p>
+    </div>
+  </section>
 
-      {/* Life at Painless — the crew with the vans, shown at its natural aspect
-          ratio (no cropping). The team-dinner photo lives in the hero now. */}
-      <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 max-w-4xl mx-auto">
-        <OptimizedPicture
-          name="homepage/painless-removals-team"
-          pattern="TWO_THIRDS"
-          alt="The Painless Removals crew with our vans in Bristol"
-          loading="lazy"
-          decoding="async"
-          class="w-full h-auto"
-        />
+  <!-- ============================================
+       WHY WORK WITH US – photo cards
+  ============================================ -->
+  <section class="section bg-cream">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Why Work With Us</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          We're not just a removals company — we're a team that genuinely enjoys what we do.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {benefits.map((benefit) => (
+          <div class="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col group">
+            <div class="aspect-[4/3] overflow-hidden">
+              <OptimizedPicture
+                name={benefit.img}
+                pattern="QUARTER"
+                alt={benefit.alt}
+                loading="lazy"
+                decoding="async"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+            <div class="p-5 flex flex-col flex-1">
+              <h3 class="text-lg font-semibold text-primary-600 mb-2">{benefit.title}</h3>
+              <p class="text-warm-gray text-sm leading-relaxed">{benefit.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       LIFE AT PAINLESS – candid photos
+  ============================================ -->
+  <section class="section bg-white">
+    <div class="container-wide">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Life at Painless</h2>
+        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
+          From our Filton warehouse to long-distance moves past the Shard — a few snapshots
+          of what the everyday actually looks like.
+        </p>
+      </div>
+
+      {/* CSS-columns masonry: every photo keeps its natural aspect ratio, so
+          nobody gets cropped out — the browser balances the column heights. */}
+      <div class="columns-1 sm:columns-2 gap-4 sm:gap-5 max-w-5xl mx-auto">
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-4 sm:mb-5 break-inside-avoid">
+          <OptimizedPicture
+            name="homepage/painless-removals-team"
+            pattern="HALF"
+            alt="The Painless Removals crew with our vans in Bristol"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto"
+          />
+        </div>
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-4 sm:mb-5 break-inside-avoid">
+          <OptimizedPicture
+            name="office-removals/office-desk-reassembly-fixings-bristol"
+            pattern="HALF"
+            alt="A Painless Removals team member reassembling an office desk in Bristol"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto"
+          />
+        </div>
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-4 sm:mb-5 break-inside-avoid">
+          <OptimizedPicture
+            name="home-removals/Bristol-home-removals-service-1"
+            pattern="HALF"
+            alt="Painless Removals crew carrying out a home removal in Bristol"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto"
+          />
+        </div>
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-4 sm:mb-5 break-inside-avoid">
+          <OptimizedPicture
+            name="jobs/painless-van-london-shard"
+            pattern="HALF"
+            alt="Painless Removals van on a long-distance move in London by the Shard"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-auto"
+          />
+        </div>
       </div>
     </div>
   </section>
