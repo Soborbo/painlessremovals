@@ -110,17 +110,34 @@ const pageSchema = [
        HERO – Removal Jobs in Bristol + live vacancies
   ============================================ -->
   <section class="gradient-hero py-14 lg:py-20">
-    <div class="container-wide text-center">
-      <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
-        Careers at Painless Removals
-      </p>
-      <h1 class="text-3xl lg:text-5xl xl:text-6xl font-bold mb-6 max-w-3xl mx-auto">
-        Removal Jobs in Bristol
-      </h1>
-      <p class="text-lg text-warm-gray max-w-2xl mx-auto mb-10 leading-relaxed">
-        We've been moving Bristol families since 1978. If you're hard-working, reliable, and
-        like the idea of a job where no two days are the same — we'd love to hear from you.
-      </p>
+    <div class="container-wide">
+      {/* Split hero: copy left, team photo right — shown at its natural aspect
+          ratio (no object-cover), so nobody gets cropped out of the picture. */}
+      <div class="grid lg:grid-cols-2 gap-10 items-center mb-12">
+        <div class="text-center lg:text-left">
+          <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
+            Careers at Painless Removals
+          </p>
+          <h1 class="text-3xl lg:text-5xl xl:text-6xl font-bold mb-6">
+            Removal Jobs in Bristol
+          </h1>
+          <p class="text-lg text-warm-gray max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+            We've been moving Bristol families since 1978. If you're hard-working, reliable, and
+            like the idea of a job where no two days are the same — we'd love to hear from you.
+          </p>
+        </div>
+        <div class="max-w-md mx-auto w-full">
+          <OptimizedPicture
+            name="about/christmas-party"
+            pattern="HALF"
+            alt="The Painless Removals team together at a team dinner"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="w-full h-auto rounded-2xl shadow-lg"
+          />
+        </div>
+      </div>
 
       {/* The vacancies are the first thing a job-seeker sees — each card goes
           straight through to its own page with the full description and form. */}
@@ -211,30 +228,17 @@ const pageSchema = [
         </a>
       </p>
 
-      {/* Life at Painless — candid crew photos. The column widths match the two
-          images' aspect ratios (7:8 portrait and 3:2 landscape), so both rows
-          render at the same height WITHOUT cropping — nobody gets cut off. */}
-      <div class="grid sm:grid-cols-[7fr_12fr] gap-4 sm:gap-5 max-w-5xl mx-auto">
-        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100">
-          <OptimizedPicture
-            name="about/christmas-party"
-            pattern="THIRD"
-            alt="The Painless Removals team at their Christmas party"
-            loading="lazy"
-            decoding="async"
-            class="w-full h-full object-cover"
-          />
-        </div>
-        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100">
-          <OptimizedPicture
-            name="homepage/painless-removals-team"
-            pattern="TWO_THIRDS"
-            alt="The Painless Removals crew with our vans in Bristol"
-            loading="lazy"
-            decoding="async"
-            class="w-full h-full object-cover"
-          />
-        </div>
+      {/* Life at Painless — the crew with the vans, shown at its natural aspect
+          ratio (no cropping). The team-dinner photo lives in the hero now. */}
+      <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 max-w-4xl mx-auto">
+        <OptimizedPicture
+          name="homepage/painless-removals-team"
+          pattern="TWO_THIRDS"
+          alt="The Painless Removals crew with our vans in Bristol"
+          loading="lazy"
+          decoding="async"
+          class="w-full h-auto"
+        />
       </div>
     </div>
   </section>
