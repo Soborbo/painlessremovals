@@ -211,9 +211,11 @@ const pageSchema = [
         </a>
       </p>
 
-      <!-- Life at Painless — candid crew photos -->
-      <div class="grid sm:grid-cols-3 gap-4 sm:gap-5 max-w-5xl mx-auto">
-        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 sm:row-span-2">
+      {/* Life at Painless — candid crew photos. The column widths match the two
+          images' aspect ratios (7:8 portrait and 3:2 landscape), so both rows
+          render at the same height WITHOUT cropping — nobody gets cut off. */}
+      <div class="grid sm:grid-cols-[7fr_12fr] gap-4 sm:gap-5 max-w-5xl mx-auto">
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100">
           <OptimizedPicture
             name="about/christmas-party"
             pattern="THIRD"
@@ -223,7 +225,7 @@ const pageSchema = [
             class="w-full h-full object-cover"
           />
         </div>
-        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 sm:col-span-2">
+        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100">
           <OptimizedPicture
             name="homepage/painless-removals-team"
             pattern="TWO_THIRDS"
@@ -233,59 +235,6 @@ const pageSchema = [
             class="w-full h-full object-cover"
           />
         </div>
-        <div class="rounded-xl overflow-hidden shadow-sm border border-gray-100 sm:col-span-2">
-          <OptimizedPicture
-            name="about/Bedminster-removal-six"
-            pattern="TWO_THIRDS"
-            alt="Painless Removals crew carrying furniture on a removal job in Bristol"
-            loading="lazy"
-            decoding="async"
-            class="w-full h-full object-cover"
-          />
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================
-       CURRENT ROLES
-  ============================================ -->
-  <section class="section bg-cream" id="current-roles" style="scroll-margin-top: 5rem;">
-    <div class="container-wide">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl lg:text-4xl font-bold mb-4">Current Removal Job Vacancies</h2>
-        <p class="text-warm-gray text-lg max-w-2xl mx-auto">
-          From driver and porter jobs at our Filton base to office roles — see if one of
-          these suits you. Every vacancy has its own page with the full details.
-        </p>
-      </div>
-
-      <div class="space-y-6 max-w-3xl mx-auto">
-        {roles.map((role) => (
-          <div class="bg-white rounded-xl p-6 sm:p-8 border border-gray-100 shadow-sm flex flex-col">
-            <span class="inline-block bg-primary-100 text-primary-600 text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full w-fit mb-3">
-              {role.typeLabel ?? EMPLOYMENT_LABELS[role.employmentType]}
-            </span>
-            <h3 class="text-xl lg:text-2xl font-bold text-primary-600 mb-2">{role.title}</h3>
-            <p class="text-warm-gray text-sm leading-relaxed mb-5">{role.description.split('\n')[0].trim()}</p>
-            <div class="mb-6">
-              <p class="text-sm font-semibold text-primary-600 mb-2">What we're looking for:</p>
-              <ul class="space-y-1.5">
-                {role.requirements.slice(0, 3).map((req) => (
-                  <li class="flex items-start gap-2 text-sm text-warm-gray">
-                    <svg class="w-4 h-4 text-green-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    <span>{req}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <a href={`/jobs/${role.slug}/`} class="mt-auto text-center bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 font-semibold no-underline rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm">
-              View full details &amp; apply
-            </a>
-          </div>
-        ))}
       </div>
     </div>
   </section>
