@@ -109,16 +109,18 @@ const pageSchema = [
   <!-- ============================================
        HERO – Removal Jobs in Bristol + live vacancies
   ============================================ -->
-  <section class="gradient-hero py-14 lg:py-20">
+  <section class="gradient-hero py-8 lg:py-10">
     <div class="container-wide">
-      {/* Split hero: copy left, team photo right — shown at its natural aspect
-          ratio (no object-cover), so nobody gets cropped out of the picture. */}
-      <div class="grid lg:grid-cols-2 gap-10 items-center mb-12">
+      {/* Split hero: copy left, team photo right — natural aspect ratio (no
+          object-cover), so nobody gets cropped. Kept deliberately compact
+          (small paddings, capped photo width) so the two vacancy cards below
+          stay above the fold on a typical laptop screen. */}
+      <div class="grid lg:grid-cols-2 gap-8 items-center mb-8">
         <div class="text-center lg:text-left">
           <p class="text-primary-600 text-sm font-semibold uppercase tracking-wide mb-3">
             Careers at Painless Removals
           </p>
-          <h1 class="text-3xl lg:text-5xl xl:text-6xl font-bold mb-6">
+          <h1 class="text-3xl lg:text-5xl font-bold mb-4">
             Removal Jobs in Bristol
           </h1>
           <p class="text-lg text-warm-gray max-w-2xl mx-auto lg:mx-0 leading-relaxed">
@@ -126,10 +128,10 @@ const pageSchema = [
             like the idea of a job where no two days are the same — we'd love to hear from you.
           </p>
         </div>
-        <div class="max-w-md mx-auto w-full">
+        <div class="max-w-[340px] mx-auto w-full">
           <OptimizedPicture
             name="about/christmas-party"
-            pattern="HALF"
+            pattern="THIRD"
             alt="The Painless Removals team together at a team dinner"
             loading="eager"
             fetchpriority="high"
