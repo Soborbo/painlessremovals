@@ -181,15 +181,15 @@ const pageSchema = [
       </div>
     </div>
 
-    <!-- Right: Full-bleed image (desktop only) -->
-    <div class="hidden lg:block relative overflow-hidden">
+    {/* Right: photo at its natural 16:9 aspect, centred on the hero gradient —
+        the previous full-bleed object-cover cropped over half the image away. */}
+    <div class="hidden lg:flex gradient-hero items-center justify-center p-8 xl:p-12">
       <OptimizedPicture
         name="house-clearance/Bristol-clearance-service-2"
-        pattern="FULL"
+        pattern="HALF"
         alt="Eco-friendly house clearance service in Bristol – Painless Removals team clearing a property"
         loading="eager"
-
-        class="absolute inset-0 w-full h-full object-cover"
+        class="w-full h-auto max-w-xl rounded-2xl shadow-lg"
       />
     </div>
   </section>
@@ -219,14 +219,20 @@ const pageSchema = [
   <!-- ============================================
        SECTION 3: HOW IT WORKS (with intro image)
   ============================================ -->
-  <div class="relative lg:h-80 overflow-hidden">
-    <OptimizedPicture
-      name="house-clearance/Bristol-clearance-service"
-      pattern="FULL"
-      alt="Painless Removals team clearing a property in Bristol"
-      loading="lazy"
-      class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover"
-    />
+  {/* Contained at natural aspect — the old fixed-height full-bleed strip
+      (lg:h-80 at full width ≈ 3.2:1) cropped 40% off this 16:9 photo. */}
+  <div class="bg-white py-6">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="rounded-xl overflow-hidden shadow-sm">
+        <OptimizedPicture
+          name="house-clearance/Bristol-clearance-service"
+          pattern="FULL"
+          alt="Painless Removals team clearing a property in Bristol"
+          loading="lazy"
+          class="w-full h-auto"
+        />
+      </div>
+    </div>
   </div>
 
   <HowItWorks
@@ -244,15 +250,20 @@ const pageSchema = [
     <div>
       {benefits.map((benefit, index) => (
         <div class="grid lg:grid-cols-2">
-          <!-- Image (50% width, full height) -->
-          <div class={`relative lg:aspect-auto lg:min-h-[400px] overflow-hidden ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
-            <OptimizedPicture
-              name={benefit.imageName}
-              pattern="HALF"
-              alt={benefit.title}
-              loading="lazy"
-              class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover transition-transform duration-500 hover:scale-105"
-            />
+          {/* Image column: natural 16:9 aspect centred in the row — the old
+              full-bleed object-cover cropped 40-50% (people included) because
+              the row height follows the text column. Also visible on mobile
+              now (the absolute-positioned version collapsed to 0 height). */}
+          <div class={`flex items-center justify-center p-6 lg:p-10 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+            <div class="rounded-xl overflow-hidden shadow-sm w-full">
+              <OptimizedPicture
+                name={benefit.imageName}
+                pattern="HALF"
+                alt={benefit.title}
+                loading="lazy"
+                class="w-full h-auto transition-transform duration-500 hover:scale-105"
+              />
+            </div>
           </div>
           <!-- Text (50% width) -->
           <div class={`p-8 lg:p-12 xl:p-16 flex flex-col justify-center bg-white ${index % 2 === 1 ? 'lg:order-1' : ''}`}>
@@ -275,15 +286,17 @@ const pageSchema = [
   ============================================ -->
   <section class="bg-white">
     <div class="grid lg:grid-cols-2">
-      <!-- Image -->
-      <div class="relative lg:aspect-auto lg:min-h-[400px] overflow-hidden order-2">
-        <OptimizedPicture
-          name="house-clearance/Bristol-Hazardous-Waste"
-          pattern="HALF"
-          alt="Hazardous waste disposal handled safely and responsibly"
-          loading="lazy"
-          class="absolute inset-0 w-full h-auto lg:h-full lg:object-cover object-[center_30%] transition-transform duration-500 hover:scale-105"
-        />
+      {/* Natural aspect, centred — same de-cropping treatment as the benefit rows. */}
+      <div class="flex items-center justify-center p-6 lg:p-10 order-2">
+        <div class="rounded-xl overflow-hidden shadow-sm w-full">
+          <OptimizedPicture
+            name="house-clearance/Bristol-Hazardous-Waste"
+            pattern="HALF"
+            alt="Hazardous waste disposal handled safely and responsibly"
+            loading="lazy"
+            class="w-full h-auto transition-transform duration-500 hover:scale-105"
+          />
+        </div>
       </div>
       <!-- Text -->
       <div class="p-8 lg:p-12 xl:p-16 flex flex-col justify-center order-1">
