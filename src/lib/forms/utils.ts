@@ -65,6 +65,11 @@ export function stripNewlines(str: string): string {
   return String(str).replace(/[\r\n]/g, '');
 }
 
+// UK phone validation lives in ./phone so client islands (the calculator's
+// contact step) can import it without pulling the email/CORS helpers in here
+// into their bundle.
+export { isValidUkPhone } from './phone';
+
 export function json(data: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(data), {
     status,

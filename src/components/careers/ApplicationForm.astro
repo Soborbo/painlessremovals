@@ -389,7 +389,13 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
             }
 
             if (!res.ok) {
-              throw new Error((data && data.error) || ('Server returned ' + res.status));
+              // Tag server-supplied messages so the catch below can show them
+              // verbatim. Without this every 4xx surfaced as "Connection error
+              // — check your internet", which sent applicants with a rejected
+              // phone format away believing their signal was at fault.
+              var httpErr = new Error((data && data.error) || ('Server returned ' + res.status));
+              httpErr.fromServer = Boolean(data && data.error);
+              throw httpErr;
             }
 
             return data;
@@ -418,9 +424,18 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
         })
         .catch(function(err) {
           console.error('Jobs form error:', err);
-          window.showToast('Connection error — please check your internet and try again, or call us on ' + PHONE + '.', 'error');
+          window.showToast(
+            err && err.fromServer
+              ? err.message
+              : 'Connection error — please check your internet and try again, or call us on ' + PHONE + '.',
+            'error'
+          );
           submitBtn.disabled = false;
           submitBtn.textContent = 'SUBMIT APPLICATION';
+          // A Turnstile token is single-use and was consumed by the rejected
+          // request. Without this reset every retry failed verification, so one
+          // validation error locked the applicant out until a full page reload.
+          if (window.turnstile) { window.turnstile.reset(); }
         });
       });
     }

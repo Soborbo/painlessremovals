@@ -22,6 +22,7 @@ import {
   emailChrome,
   emailFooter,
   requireAllowedOrigin,
+  isValidUkPhone,
   PHONE,
   FROM_DEFAULT,
 } from '@/lib/forms/utils';
@@ -63,7 +64,7 @@ export const POST: APIRoute = async (context) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
       return json({ error: 'Please provide a valid email address for the client.' }, 400);
     }
-    if (!/^(?:\+44|0)\d{9,10}$/.test(clientPhone.replace(/\s/g, ''))) {
+    if (!isValidUkPhone(clientPhone)) {
       return json({ error: 'Please provide a valid UK phone number for the client.' }, 400);
     }
 

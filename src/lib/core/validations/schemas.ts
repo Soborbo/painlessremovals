@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod';
+import { isValidUkPhone } from '@/lib/forms/phone';
 
 /**
  * Recursion-safe unknown value: allows primitives, arrays, and objects
@@ -48,27 +49,22 @@ export const emailSchema = z
 /**
  * Phone validation (UK)
  *
- * Mirrors the calculator's client-side regex
- * (`Step11Contact.tsx:PHONE_REGEX`) so that a value passing the client
- * also passes the server. Any whitespace is stripped before the regex
- * runs so paste-with-spaces still validates. Calculator + callbacks
- * are UK-only flows; if a non-UK endpoint is added, define a
- * separate schema rather than loosening this one.
+ * Shares `isValidUkPhone` with the calculator's contact step, so a value
+ * passing the client also passes the server — they can no longer drift apart
+ * the way a duplicated regex did. Calculator + callbacks are UK-only flows;
+ * if a non-UK endpoint is added, define a separate schema rather than
+ * loosening this one.
  */
 export const phoneSchema = z
   .string()
   .trim()
   .min(8, 'Phone number too short')
   .max(20, 'Phone number too long')
+  // The stored value stays whitespace-stripped (unchanged for anything that
+  // already passed); only the accepted SET widens — see `isValidUkPhone`, which
+  // also tolerates brackets, hyphens, `0044` and the `+44 (0)7…` hybrid.
   .transform((v) => v.replace(/\s/g, ''))
-  .pipe(
-    z
-      .string()
-      .regex(
-        /^(?:\+44|0)\d{9,10}$/,
-        'Please enter a valid UK phone number'
-      )
-  );
+  .refine(isValidUkPhone, 'Please enter a valid UK phone number');
 
 /**
  * Name validation
