@@ -10,6 +10,7 @@
 import type { APIRoute } from 'astro';
 import { ALL_CODES } from '@/lib/errors/codes';
 import { sanitizeContext } from '@/lib/errors/sanitize';
+import { CODE_PATTERN } from '@/lib/errors/code-pattern';
 import { appendToSheet } from '@/lib/errors/sheets';
 import type { Severity } from '@/lib/errors/types';
 import { getCORSHeaders } from '@/lib/utils/cors';
@@ -19,7 +20,8 @@ import { env } from 'cloudflare:workers';
 export const prerender = false;
 
 // --- Constraints ---
-const CODE_PATTERN = /^[A-Z]{2,6}-[A-Z]{2,8}-\d{3}$/;
+// Shape gate for the `code` field — kept in sync with ALL_CODES by
+// `lib/errors/code-pattern.test.ts`. See that module for why it widened.
 const MAX_BODY_BYTES = 8192;
 const MAX_STRING_FIELD = 500;
 const MAX_CONTEXT_KEYS = 10;

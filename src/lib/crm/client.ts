@@ -143,7 +143,11 @@ export async function sendToCRM(
   };
   // Serialize ONCE — this exact string is what we sign and what we send.
   const rawBody = JSON.stringify(envelope);
-  const url = `${env.CRM_BASE_URL}${WEBHOOK_ENDPOINTS[surface].path}`;
+  // Trailing slashes are stripped: `CRM_BASE_URL` is a secret set by hand, and a
+  // stray `/` produced `https://host//api/webhooks/contact` — which still routes,
+  // but shows up as a double-slash path in the CRM's error log and makes the
+  // delivery harder to trace.
+  const url = `${env.CRM_BASE_URL!.replace(/\/+$/, '')}${WEBHOOK_ENDPOINTS[surface].path}`;
 
   // attempt 0 = first try; up to retryDelays.length retries after it.
   for (let attempt = 0; ; attempt++) {

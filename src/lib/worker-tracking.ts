@@ -31,7 +31,11 @@ interface TurnstileOptions {
   callback?: (token: string) => void;
   'expired-callback'?: () => void;
   'error-callback'?: () => void;
-  size?: 'normal' | 'compact' | 'invisible';
+  // `size` no longer has an 'invisible' member — Turnstile removed it and now
+  // THROWS on an unknown value. Deferred execution is expressed by
+  // `execution: 'execute'` + `appearance: 'interaction-only'` instead.
+  size?: 'normal' | 'compact' | 'flexible';
+  execution?: 'render' | 'execute';
   appearance?: 'always' | 'execute' | 'interaction-only';
 }
 
@@ -149,19 +153,35 @@ export async function getTurnstileToken(): Promise<string | undefined> {
       r.resolve(undefined);
     };
 
-    if (turnstileWidgetId !== undefined) {
-      // Subsequent calls — reset and re-execute the existing widget.
-      // The original callbacks delegate to the current pendingResolver above.
-      window.turnstile!.reset(turnstileWidgetId);
-      window.turnstile!.execute(container);
-    } else {
-      turnstileWidgetId = window.turnstile!.render(container, {
-        sitekey: import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
-        size: 'invisible',
-        callback: onCallback,
-        'error-callback': onError
-      });
-      window.turnstile!.execute(container);
+    // Turnstile's render() validates its options and THROWS on an unknown
+    // value. That throw escapes this Promise executor and REJECTS the token
+    // promise — which is how `size: 'invisible'` (a value Turnstile removed)
+    // silently killed the Meta CAPI leg site-wide. Contain it: a widget that
+    // cannot initialise degrades to "no token", exactly like a timeout.
+    try {
+      if (turnstileWidgetId !== undefined) {
+        // Subsequent calls — reset and re-execute the existing widget.
+        // The original callbacks delegate to the current pendingResolver above.
+        window.turnstile!.reset(turnstileWidgetId);
+        window.turnstile!.execute(container);
+      } else {
+        // Deferred, non-interactive execution: `execution: 'execute'` defers the
+        // challenge until execute() is called, `interaction-only` keeps the
+        // widget invisible unless the user actually has to solve something.
+        turnstileWidgetId = window.turnstile!.render(container, {
+          sitekey: import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
+          execution: 'execute',
+          appearance: 'interaction-only',
+          callback: onCallback,
+          'error-callback': onError
+        });
+        window.turnstile!.execute(container);
+      }
+    } catch (err) {
+      turnstileWidgetId = undefined;
+      console.error('[tracking] Turnstile render/execute failed', err);
+      trackError('TURN-LOAD-001', undefined, { page: 'worker-tracking' }, 'worker-tracking/getTurnstileToken');
+      onError();
     }
   });
 }
