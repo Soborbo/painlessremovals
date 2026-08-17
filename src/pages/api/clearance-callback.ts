@@ -7,7 +7,7 @@
 
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
-import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE } from '@/lib/forms/utils';
+import { requireAllowedOrigin, escapeHtml, sanitizePhoneForEmail, stripNewlines, json, PHONE, isValidUkPhone } from '@/lib/forms/utils';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import {
   sendGA4MP,
@@ -76,7 +76,7 @@ export const POST: APIRoute = async (context) => {
 
     if (!name || !phone || !email) return json({ error: 'Please fill in all required fields.' }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'Please provide a valid email address.' }, 400);
-    if (!/^(?:\+44|0)\d{9,10}$/.test(phone.replace(/\s/g, ''))) {
+    if (!isValidUkPhone(phone)) {
       return json({ error: 'Please provide a valid UK phone number.' }, 400);
     }
 

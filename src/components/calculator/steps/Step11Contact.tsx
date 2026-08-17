@@ -27,15 +27,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { isValidUkPhone } from '@/lib/forms/phone';
 
 
-// Validation patterns. The phone regex matches the server-side schema
-// in `core/validations/schemas.ts` AFTER stripping whitespace — both
-// sides accept the same set of normalized values, so a string that
-// passes here will also pass server-side validation.
-const PHONE_REGEX = /^(?:\+44|0)\d{9,10}$/;
+// Phone validation is shared with the server-side `phoneSchema` — both call
+// `isValidUkPhone`, so a number that passes here always passes server-side.
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const stripPhone = (s: string) => s.replace(/[\s\-()]/g, '');
 
 interface FormErrors {
   firstName?: string;
@@ -87,7 +84,7 @@ export function Step11Contact() {
     // Phone
     if (!phone.trim()) {
       newErrors.phone = 'Please enter your phone number';
-    } else if (!PHONE_REGEX.test(stripPhone(phone))) {
+    } else if (!isValidUkPhone(phone)) {
       newErrors.phone = 'Please enter a valid UK phone number';
     }
 
