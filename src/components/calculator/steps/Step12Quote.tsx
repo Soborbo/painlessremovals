@@ -25,7 +25,7 @@ import {
   saveState,
 } from '@/lib/calculator-store';
 import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
-import { generateFingerprint } from '@/lib/utils/fingerprint';
+import { quoteFingerprint } from '@/lib/utils/fingerprint';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -87,7 +87,8 @@ export function Step12Quote() {
       // quote-affecting input, and returning here must NOT reuse the
       // stale event_id — that would silently suppress the new quote's
       // conversion under the previous quote's fired-guard.
-      const quoteSignature = generateFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
+      // `quoteFingerprint` strips the volatile `completedAt` — see ResultPage.
+      const quoteSignature = quoteFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
       const stored = calculatorStore.get();
       const sameQuote = !!stored.completionEventId && stored.completionQuoteSignature === quoteSignature;
       const eventId = sameQuote ? stored.completionEventId! : generateUUID();

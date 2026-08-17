@@ -29,7 +29,7 @@ import { getCORSHeaders } from '@/lib/utils/cors';
 import { requireAllowedOrigin } from '@/lib/forms/utils';
 import { buildSignedQuoteUrl } from '@/lib/quote-url-server';
 import { createErrorResponse, formatError, generateErrorId } from '@/lib/utils/error';
-import { generateFingerprint } from '@/lib/utils/fingerprint';
+import { quoteFingerprint } from '@/lib/utils/fingerprint';
 import { kvGet, kvPut, safeKV } from '@/lib/utils/kv';
 import { logger } from '@/lib/utils/logger';
 import {
@@ -98,8 +98,13 @@ export const POST: APIRoute = async (context) => {
     // Get runtime config
     const runtimeConfig = getRuntimeConfig(env);
 
-    // Generate fingerprint (used as quote reference)
-    const fingerprint = generateFingerprint({
+    // Generate fingerprint (used as quote reference AND as the idempotency key
+    // below). `quoteFingerprint` strips the volatile `completedAt` the client
+    // re-mints per call — hashing it gave every double-click/StrictMode
+    // double-fire a fresh fingerprint, so the dedup below could never match.
+    // Same helper the client uses for `completionQuoteSignature`, so both
+    // sides keep hashing the same shape.
+    const fingerprint = quoteFingerprint({
       data: validated.data,
       totalPrice: validated.totalPrice,
     });

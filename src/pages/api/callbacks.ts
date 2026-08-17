@@ -31,7 +31,7 @@ import {
   ga4SessionIdFromRequest,
   pageLocationFromRequest,
 } from '@/lib/tracking/server';
-import { generateFingerprint } from '@/lib/utils/fingerprint';
+import { generateFingerprint, stripVolatile } from '@/lib/utils/fingerprint';
 import { getCORSHeaders } from '@/lib/utils/cors';
 import { requireAllowedOrigin } from '@/lib/forms/utils';
 import { generateErrorId } from '@/lib/utils/error';
@@ -239,11 +239,15 @@ export const POST: APIRoute = async (context) => {
     // delivery idempotent, so a client retry that re-POSTs identical data
     // dedupes on the CRM instead of creating a second lead.
     {
+      // `stripVolatile` on the data: the retry paths call getSubmissionData()
+      // again, which re-mints `completedAt` — hashing it made a POST and its
+      // own retry produce different ids, so the CRM saw two leads instead of
+      // deduping (exactly what this fingerprint exists to prevent).
       const fp = generateFingerprint({
         email: contactEmail,
         phone: contactPhone,
         reason: validated.callbackReason,
-        data: validated.data,
+        data: stripVolatile(validated.data),
       });
       const dataObj = (validated.data || {}) as Record<string, unknown>;
       const fromAddr = dataObj.fromAddress as { postcode?: string } | undefined;

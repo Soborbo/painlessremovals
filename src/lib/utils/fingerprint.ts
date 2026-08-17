@@ -45,6 +45,39 @@ export function generateFingerprint(data: unknown): string {
 }
 
 /**
+ * Fields that must NEVER feed a dedup fingerprint.
+ *
+ * `getSubmissionData()` mints `completedAt: new Date().toISOString()` on every
+ * call, so any hash that includes it rotates per call. Every dedup that hashed
+ * the raw submission data was therefore dead on arrival: the client's
+ * completion signature rotated per mount (a results-page refresh re-fired
+ * `quote_calculator_conversion` under a fresh event_id — double-counting in
+ * Ads/GA4/Meta), save-quote's KV idempotency never matched a double-click, and
+ * the callbacks CRM fingerprint differed between a POST and its own retry
+ * (duplicate lead). Strip volatile keys first — that is what `stripVolatile`
+ * and `quoteFingerprint` below are for.
+ */
+export const VOLATILE_FINGERPRINT_KEYS = ['completedAt'] as const;
+
+/** Shallow copy of `data` without the volatile keys (non-objects pass through). */
+export function stripVolatile<T>(data: T): T {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return data;
+  const out = { ...(data as Record<string, unknown>) };
+  for (const key of VOLATILE_FINGERPRINT_KEYS) delete out[key];
+  return out as T;
+}
+
+/**
+ * The canonical quote signature — one definition shared by the client
+ * (`completionQuoteSignature`) and the server (save-quote's KV dedup key and
+ * quote reference). Both sides MUST hash the same shape, so neither computes
+ * it by hand.
+ */
+export function quoteFingerprint(input: { data: unknown; totalPrice: unknown }): string {
+  return generateFingerprint({ data: stripVolatile(input.data), totalPrice: input.totalPrice });
+}
+
+/**
  * Generate rate limit key hash
  * Combines IP + UserAgent for better granularity
  */

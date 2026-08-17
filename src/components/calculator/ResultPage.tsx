@@ -25,7 +25,7 @@ import {
   type CalculatorState,
 } from '@/lib/calculator-store';
 import { encodeQuoteState } from '@/lib/quote-url';
-import { generateFingerprint } from '@/lib/utils/fingerprint';
+import { quoteFingerprint } from '@/lib/utils/fingerprint';
 import { calculateQuote, type QuoteResult } from '@/lib/calculator-logic';
 import { CALCULATOR_CONFIG } from '@/lib/calculator-config';
 import { getPackingSizeCategory } from '@/lib/constants';
@@ -403,7 +403,11 @@ export function ResultPage() {
     // date) and returns here, the fingerprint changes and a fresh event_id
     // is minted — otherwise the new quote's conversion would be silently
     // suppressed by the guard from the PREVIOUS quote's stale event_id.
-    const quoteSignature = generateFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
+    // `quoteFingerprint` (not `generateFingerprint`) — it strips the volatile
+    // `completedAt`, which getSubmissionData() re-mints on every call. Hashing
+    // it made the signature rotate per mount, so `sameQuote` was never true and
+    // a refresh re-fired the conversion under a fresh event_id.
+    const quoteSignature = quoteFingerprint({ data: submissionData, totalPrice: quote.totalPrice });
     const stored = calculatorStore.get();
     const sameQuote = !!stored.completionEventId && stored.completionQuoteSignature === quoteSignature;
     const eventId = sameQuote ? stored.completionEventId! : generateUUID();
