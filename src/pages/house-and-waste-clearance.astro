@@ -219,13 +219,17 @@ const pageSchema = [
   <!-- ============================================
        SECTION 3: HOW IT WORKS (with intro image)
   ============================================ -->
-  <div class="relative lg:h-80 overflow-hidden">
+  {/* Full-bleed divider band. At the old lg:h-80 the 16:9 photo showed only its
+      middle 32% — the crew's heads were cut off and all you saw was a hi-vis
+      back. Taller band + a top-weighted focal point keeps the same full-bleed
+      design but frames the faces and the item being carried. */}
+  <div class="relative lg:h-[520px] overflow-hidden">
     <OptimizedPicture
       name="house-clearance/Bristol-clearance-service"
       pattern="FULL"
       alt="Painless Removals team clearing a property in Bristol"
       loading="lazy"
-      class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover"
+      class="w-full h-auto lg:absolute lg:inset-0 lg:h-full lg:object-cover lg:object-[center_6%]"
     />
   </div>
 
