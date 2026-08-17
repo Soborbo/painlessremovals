@@ -100,11 +100,22 @@ export const POST: APIRoute = async (context) => {
       if (cvFile.size > MAX_FILE_SIZE) return json({ error: 'CV file is too large. Maximum size is 5 MB.' }, 400);
       const fileName = cvFile.name || '';
       const ext = fileName.toLowerCase().substring(fileName.lastIndexOf('.'));
-      // Require BOTH an allowed extension AND an allowed declared MIME type.
-      // An empty/absent file.type is no longer waved through — a browser
-      // uploading a genuine CV reliably sets the type, and accepting an
-      // empty type let arbitrary binaries pass under a renamed extension.
-      if (!ALLOWED_EXTENSIONS.includes(ext) || !ALLOWED_MIME_TYPES.includes(cvFile.type)) {
+      // The EXTENSION is the gate. The declared MIME type is a secondary sanity
+      // check that must tolerate the generic values mobile file pickers send:
+      // a .doc chosen from Google Drive / iOS Files commonly arrives as
+      // `application/octet-stream` or with no type at all. Requiring a specific
+      // MIME here rejected genuine CVs from phones.
+      //
+      // This is not a security downgrade: `file.type` is client-supplied, so an
+      // attacker sets it to whatever passes — the real protections are the
+      // extension allow-list, the 5 MB cap, and the fact that a CV is only ever
+      // stored and downloaded, never executed or interpreted.
+      const declaredType = (cvFile.type || '').toLowerCase();
+      const typeAcceptable =
+        declaredType === '' ||
+        declaredType === 'application/octet-stream' ||
+        ALLOWED_MIME_TYPES.includes(declaredType);
+      if (!ALLOWED_EXTENSIONS.includes(ext) || !typeAcceptable) {
         return json({ error: 'Invalid file type. Please upload a PDF, DOC, DOCX, TXT, RTF, or ODT file.' }, 400);
       }
       const arrayBuffer = await cvFile.arrayBuffer();
