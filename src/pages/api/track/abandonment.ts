@@ -134,8 +134,13 @@ export const POST: APIRoute = async (context) => {
     // sendBeacon POSTs same-origin carry cookies, so prefer the browser's
     // real GA4 client_id + session_id — that stitches the abandonment
     // into the user's live session (source/medium intact) instead of
-    // minting an Unassigned phantom user from IP+UA. The IP+UA-derived
-    // id stays as the consent-denied / cookieless fallback.
+    // minting an Unassigned phantom user from IP+UA. The IP+UA-derived id is
+    // now only a last resort for a request that has `_ga_<STREAM>` but no
+    // `_ga`: `sendGA4MP` drops any hit without a session_id, so a cookieless
+    // beacon is discarded instead of opening a `(not set)` phantom session.
+    // This is the biggest single loser of that gate (32 abandonment events
+    // landed in 0 real sessions), and acceptable — CLAUDE.md #6 already treats
+    // these numbers as directional.
     const ua = request.headers.get('User-Agent') || '';
     const clientId = ga4ClientIdFromRequest(request)
       ?? deriveClientId(`${ip}${ua}`.replace(/[^a-f0-9]/gi, '').padEnd(32, '0'));

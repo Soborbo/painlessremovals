@@ -177,6 +177,11 @@ export interface CalculatorState {
 
   // Tracking
   gclid: string | null;
+  // gbraid/wbraid come INSTEAD of gclid on iOS / in-app Google traffic. Kept as
+  // SEPARATE fields — Google Ads treats them as distinct identifiers and a
+  // gbraid written into the gclid field silently breaks Enhanced Conversions.
+  gbraid: string | null;
+  wbraid: string | null;
   fbclid: string | null;
   utmSource: string | null;
   utmMedium: string | null;
@@ -260,6 +265,8 @@ export const initialState: CalculatorState = {
   },
 
   gclid: null,
+  gbraid: null,
+  wbraid: null,
   fbclid: null,
   utmSource: null,
   utmMedium: null,
@@ -370,6 +377,9 @@ export const LocalStorageStateSchema = z.object({
   gclid: z.string().max(200).nullable(),
   // Optional so state saved before the fbclid/utm_term/utm_content capture
   // shipped still validates — a missing key must not void the whole session.
+  // Same reason for gbraid/wbraid, added later still.
+  gbraid: z.string().max(200).nullable().optional(),
+  wbraid: z.string().max(200).nullable().optional(),
   fbclid: z.string().max(200).nullable().optional(),
   utmSource: z.string().max(100).nullable(),
   utmMedium: z.string().max(100).nullable(),
@@ -797,6 +807,10 @@ export function initializeStore() {
       const params = new URLSearchParams(window.location.search);
       const stored = readAttribution();
       calculatorStore.setKey('gclid', params.get('gclid') || stored.gclid || null);
+      // Mutually exclusive with gclid — `captureUTMs` already dropped the stale
+      // siblings, so at most one of these three is ever non-null.
+      calculatorStore.setKey('gbraid', params.get('gbraid') || stored.gbraid || null);
+      calculatorStore.setKey('wbraid', params.get('wbraid') || stored.wbraid || null);
       // fbclid rides the same capture path as gclid — the gateway rebuilds the
       // Meta fbc from it when the _fbc cookie is absent (EMQ; audit 2026-07-17).
       calculatorStore.setKey('fbclid', params.get('fbclid') || stored.fbclid || null);
@@ -1323,6 +1337,8 @@ export function getSubmissionData() {
 
     // Tracking
     gclid: state.gclid,
+    gbraid: state.gbraid,
+    wbraid: state.wbraid,
     fbclid: state.fbclid,
     utmSource: state.utmSource,
     utmMedium: state.utmMedium,

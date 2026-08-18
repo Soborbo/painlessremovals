@@ -67,6 +67,12 @@ in Google Ads / GA4). Read `docs/tracking.md` for the full rationale.
    (`pageLocationFromRequest`) to `sendGA4MP` — a hit without
    `session_id` lands as Unassigned / "(not set)" in GA4 and never
    matches a gclid, so Ads sees 0 conversions for real leads.
+   `sendGA4MP` now ENFORCES this: a hit with no `session_id` (neither in
+   the options nor in every event's own params) is DROPPED, not sent.
+   Consequence: a cookieless conversion (consent denied, adblock, ITP,
+   first hit) is not observable in GA4 at all — that is deliberate. It
+   was never countable in Ads either, and sending it only manufactured
+   `(not set)` sessions.
 
 4b. **Every page that can fire a Worker dispatch needs the invisible
    Turnstile.** `sendToWorker` requires a Turnstile token; without the

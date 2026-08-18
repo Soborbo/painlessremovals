@@ -21,6 +21,10 @@ const FULL_ENV = {
   GA4_API_SECRET: 'ga4_secret',
 };
 
+// A hit with no session_id is dropped (it would open a phantom `(not set)`
+// session), so every test that expects a send has to supply one.
+const STITCHED = { sessionId: '1712345678' };
+
 let fetchMock: ReturnType<typeof vi.fn>;
 
 function lastBody(): any {
@@ -52,7 +56,7 @@ describe('sendGA4MP', () => {
   });
 
   it('POSTs to the MP collect endpoint with measurement_id + api_secret', async () => {
-    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'phone_conversion' }]);
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'phone_conversion' }], STITCHED);
     const url = lastUrl();
     expect(url).toContain('https://www.google-analytics.com/mp/collect');
     expect(url).toContain('measurement_id=G-05GFQ1XQFH');
@@ -60,11 +64,14 @@ describe('sendGA4MP', () => {
   });
 
   it('sends client_id and events in the body', async () => {
-    await sendGA4MP(FULL_ENV, 'cid.123', [{ name: 'phone_conversion', params: { value: 5 } }]);
+    await sendGA4MP(FULL_ENV, 'cid.123', [{ name: 'phone_conversion', params: { value: 5 } }], STITCHED);
     const body = lastBody();
     expect(body.client_id).toBe('cid.123');
     expect(body.events).toEqual([
-      { name: 'phone_conversion', params: { value: 5, engagement_time_msec: 1 } },
+      {
+        name: 'phone_conversion',
+        params: { session_id: STITCHED.sessionId, value: 5, engagement_time_msec: 1 },
+      },
     ]);
   });
 
@@ -93,26 +100,47 @@ describe('sendGA4MP', () => {
     expect(params.engagement_time_msec).toBe(100);
   });
 
-  it('omits session_id / page_location when not provided', async () => {
-    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }]);
-    const params = lastBody().events[0].params;
-    expect('session_id' in params).toBe(false);
-    expect('page_location' in params).toBe(false);
+  it('omits page_location when not provided', async () => {
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }], STITCHED);
+    expect('page_location' in lastBody().events[0].params).toBe(false);
+  });
+
+  // The `(not set)` phantom-session gate. An unstitched hit opened its own
+  // sourceless session in GA4 (21 `quote_calculator_complete_server` events
+  // in 1 orphan session, 32 `form_abandonment` in 0) and could never be
+  // matched to a gclid, so Google Ads never counted it either.
+  it('DROPS the hit entirely when no session_id is available', async () => {
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'form_abandonment' }]);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('still sends when the session_id rides in the event params instead of the options', async () => {
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x', params: { session_id: 'in-event' } }]);
+    expect(fetchMock).toHaveBeenCalled();
+    expect(lastBody().events[0].params.session_id).toBe('in-event');
+  });
+
+  it('drops the batch when only SOME events carry their own session_id', async () => {
+    await sendGA4MP(FULL_ENV, 'cid.1', [
+      { name: 'a', params: { session_id: 'in-event' } },
+      { name: 'b' },
+    ]);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('includes user_id only when provided', async () => {
-    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }], { userId: 'u-9' });
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }], { ...STITCHED, userId: 'u-9' });
     expect(lastBody().user_id).toBe('u-9');
   });
 
   it('omits user_id when not provided', async () => {
-    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }]);
+    await sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }], STITCHED);
     expect('user_id' in lastBody()).toBe(false);
   });
 
   it('never throws when fetch rejects', async () => {
     fetchMock.mockRejectedValueOnce(new Error('down'));
-    await expect(sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }])).resolves.toBeUndefined();
+    await expect(sendGA4MP(FULL_ENV, 'cid.1', [{ name: 'x' }], STITCHED)).resolves.toBeUndefined();
   });
 });
 

@@ -117,6 +117,11 @@ export const saveQuoteSchema = z.object({
   utm_term: z.string().max(100).optional(),
   utm_content: z.string().max(100).optional(),
   gclid: z.string().max(200).optional(),
+  // gbraid/wbraid replace gclid on iOS / in-app Google traffic. Without them
+  // here z.object strips them off the wire and the click ID never reaches the
+  // CRM or the gateway.
+  gbraid: z.string().max(200).optional(),
+  wbraid: z.string().max(200).optional(),
   fbclid: z.string().max(200).optional(),
 
   // Quote URL payload (for email link-back). The CLIENT sends the

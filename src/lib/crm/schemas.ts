@@ -149,6 +149,9 @@ export const intakeAttributionSchema = z.object({
   fbclid: z.string().max(200).optional(),
   msclkid: z.string().max(200).optional(),
   wbraid: z.string().max(200).optional(),
+  // gbraid was missing while wbraid was present — same iOS/in-app family, so
+  // the whole Google click-ID set now survives the z.object key strip.
+  gbraid: z.string().max(200).optional(),
   landing_page: z.string().max(500).optional(),
   session_id: z.string().max(120).optional(),
 });

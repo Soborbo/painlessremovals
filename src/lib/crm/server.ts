@@ -101,6 +101,9 @@ export interface QuoteLeadInput {
   utmMedium?: string;
   utmCampaign?: string;
   gclid?: string;
+  /** iOS / in-app Google click IDs — mutually exclusive with gclid. */
+  gbraid?: string;
+  wbraid?: string;
   fbclid?: string;
 }
 
@@ -128,6 +131,8 @@ export function deliverQuoteLead(
     utmMedium: input.utmMedium,
     utmCampaign: input.utmCampaign,
     gclid: input.gclid,
+    gbraid: input.gbraid,
+    wbraid: input.wbraid,
     fbclid: input.fbclid,
     // The client can't know the CRM pricing-version uuid; inject from env.
     pricingVersionId: env.CRM_PRICING_VERSION_ID,

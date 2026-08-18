@@ -21,8 +21,19 @@ const KEYS = [
   'utm_term',
   'utm_content',
   'gclid',
+  // gbraid/wbraid arrive INSTEAD of gclid when Google cannot set one (iOS /
+  // in-app webview traffic). Without them a mobile-heavy paid click reaches
+  // save-quote → CRM → gateway with no Google click ID at all.
+  'gbraid',
+  'wbraid',
   'fbclid',
 ] as const;
+
+// One ad click yields gclid OR gbraid OR wbraid — never two. A second click
+// later in the same session must not leave the previous click's sibling id
+// behind, or the outgoing payload carries two different clicks. Priority
+// matches the shared lib (`worker-tracking.ts`): gclid > gbraid > wbraid.
+const GOOGLE_CLICK_KEYS = ['gclid', 'gbraid', 'wbraid'] as const;
 
 export interface AttributionParams {
   utm_source?: string;
@@ -31,6 +42,8 @@ export interface AttributionParams {
   utm_term?: string;
   utm_content?: string;
   gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
   fbclid?: string;
   ref?: string;
   _landing?: string;
@@ -76,6 +89,17 @@ export function captureUTMs(): void {
     }
   }
 
+  // A fresh Google click ID invalidates its siblings from an earlier click.
+  const freshGoogleKey = GOOGLE_CLICK_KEYS.find((k) => params.get(k));
+  if (freshGoogleKey) {
+    for (const k of GOOGLE_CLICK_KEYS) {
+      if (k !== freshGoogleKey && stored[k]) {
+        delete stored[k];
+        updated = true;
+      }
+    }
+  }
+
   // Affiliate referral code — persist to both the session store and a
   // first-party cookie so it survives even if sessionStorage is unavailable.
   const ref = params.get('ref');
@@ -110,6 +134,8 @@ export function buildAttribution(): {
   utm_medium?: string;
   utm_campaign?: string;
   gclid?: string;
+  gbraid?: string;
+  wbraid?: string;
   fbclid?: string;
   landing_page?: string;
 } {
@@ -119,6 +145,8 @@ export function buildAttribution(): {
   if (a.utm_medium) out.utm_medium = a.utm_medium;
   if (a.utm_campaign) out.utm_campaign = a.utm_campaign;
   if (a.gclid) out.gclid = a.gclid;
+  if (a.gbraid) out.gbraid = a.gbraid;
+  if (a.wbraid) out.wbraid = a.wbraid;
   if (a.fbclid) out.fbclid = a.fbclid;
   if (typeof window !== 'undefined') {
     out.landing_page = (a._landing || window.location.pathname).slice(0, 500);

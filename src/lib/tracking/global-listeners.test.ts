@@ -56,11 +56,15 @@ describe('tel: click — post-quote monetary signal', () => {
       tel_target: '01172870082',
     });
     expect('source' in last).toBe(false);
+    // The gateway leg carries NO label at all: it bypasses `buildSafePush`,
+    // and the gateway forwarded a literal `source` to GA4 MP (audit 2026-08,
+    // P0-A). The label lives on the dataLayer as `cta_context` only.
     expect(dispatchWorkerConversion).toHaveBeenCalledWith(
       'phone_conversion',
       expect.any(String),
-      expect.objectContaining({ source: 'after_calculator', value: 850, currency: 'GBP', service: 'packing' }),
+      expect.objectContaining({ value: 850, currency: 'GBP', service: 'packing' }),
     );
+    expect(vi.mocked(dispatchWorkerConversion).mock.calls.at(-1)![2]).not.toHaveProperty('source');
   });
 
   it('omits value/currency/service (never value:0) when no recent quote exists', () => {

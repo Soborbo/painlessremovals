@@ -261,6 +261,8 @@ export const POST: APIRoute = async (context) => {
         utm_medium: asStr(dataObj.utmMedium),
         utm_campaign: asStr(dataObj.utmCampaign),
         gclid: asStr(dataObj.gclid),
+        gbraid: asStr(dataObj.gbraid),
+        wbraid: asStr(dataObj.wbraid),
         fbclid: asStr(dataObj.fbclid),
         landing_page: asStr(dataObj.landingPage),
         session_id: asStr(dataObj.sessionId),
@@ -308,6 +310,9 @@ export const POST: APIRoute = async (context) => {
           },
           attribution: {
             gclid: asStr(dataObj.gclid),
+            // Mutually exclusive with gclid — at most one is ever set.
+            gbraid: asStr(dataObj.gbraid),
+            wbraid: asStr(dataObj.wbraid),
             // fbclid lets the gateway rebuild fbc when the _fbc cookie is absent.
             fbclid: asStr(dataObj.fbclid),
             utm_source: asStr(dataObj.utmSource),

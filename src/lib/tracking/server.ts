@@ -45,6 +45,10 @@ export interface GA4MPEvent {
  * options (see `ga4SessionIdFromRequest` / `pageLocationFromRequest`)
  * — they are merged into every event's params unless the event
  * already carries its own value.
+ *
+ * A hit with NO session_id is DROPPED rather than sent (see the gate
+ * below) — it would open a phantom `(not set)` session and was never
+ * countable in Google Ads anyway.
  */
 export async function sendGA4MP(
   env: ServerEnv,
@@ -62,6 +66,30 @@ export async function sendGA4MP(
   const apiSecret = env.GA4_API_SECRET;
   if (!measurementId || !apiSecret) {
     logger.debug('GA4MP', 'Skipping send — measurement_id or api_secret missing');
+    return;
+  }
+
+  // No session_id → DO NOT SEND. Without it GA4 mints a brand-new session
+  // whose only traffic signal is nothing, so the hit lands as its own
+  // `(not set)` session — visibly so in the 2026-08 data: 21
+  // `quote_calculator_complete_server` events collapsed into 1 orphan
+  // session, 32 `form_abandonment` events into 0.
+  //
+  // Sending anyway was never a usable backstop: an unstitched hit cannot be
+  // tied to a gclid, so Google Ads never counted it. All it bought was an
+  // inflated session count and a diluted source report. The cost of this
+  // gate is real and accepted: a cookieless conversion (consent denied,
+  // adblock, ITP, first hit) is simply not observable in GA4.
+  //
+  // A caller may also carry `session_id` inside an event's own params (they
+  // win over the option) — that hit IS stitched, so it still goes out.
+  const hasSessionId =
+    !!options.sessionId
+    || (events.length > 0 && events.every((e) => e.params?.session_id !== undefined));
+  if (!hasSessionId) {
+    logger.debug('GA4MP', 'Skipping send — no session_id, the hit would open a phantom session', {
+      events: events.map((e) => e.name).join(','),
+    });
     return;
   }
 

@@ -466,6 +466,14 @@ export async function sendToWorker(payload: ConversionPayload): Promise<boolean>
   }
 }
 
+/**
+ * FIGYELEM — jelenleg HOLT KÓD (nincs hívója a repóban). Ha bekerül egy hívó,
+ * újratermeli az audit 2026-08 P0-A hibáját: a lenti dataLayer.push közvetlen,
+ * megkerüli a `tracking.ts` `buildSafePush` chokepointját, ezért a `source`
+ * GA4-foglalt manuális kampánykulcsként jut ki és session-forrássá lép elő.
+ * Hívás előtt vagy a `source`-t kell elhagyni, vagy a `trackEvent()`-et
+ * használni helyette.
+ */
 export async function trackConversion(
   eventName: string,
   params: {

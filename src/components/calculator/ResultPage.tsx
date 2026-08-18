@@ -512,6 +512,8 @@ export function ResultPage() {
         utm_term: state.utmTerm || undefined,
         utm_content: state.utmContent || undefined,
         gclid: state.gclid || undefined,
+        gbraid: state.gbraid || undefined,
+        wbraid: state.wbraid || undefined,
         fbclid: state.fbclid || undefined,
         quoteUrlPayload,
         event_id: eventId,
@@ -657,7 +659,6 @@ export function ResultPage() {
       const capiQueued = dispatchWorkerConversion('callback_conversion', eventId, {
         ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
-        source: 'after_calculator',
       });
 
       // dataLayer push + navigation via GTM's eventCallback (plus a safety

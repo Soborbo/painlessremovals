@@ -92,9 +92,11 @@ function onDocumentClick(e: Event): void {
 
   // Server-side leg: the Soborbo Worker (Meta CAPI), same event_id as the
   // dataLayer push above so Meta dedups browser + server. Raw user_data comes
-  // from the DOM side-channel; the Worker hashes it.
+  // from the DOM side-channel; the Worker hashes it. The `source` label is
+  // deliberately NOT passed on: this leg bypasses `buildSafePush`, and the
+  // gateway forwarded it to GA4 MP as a literal `source` param — which opened
+  // `standalone / (not set)` sessions on every cookieless hit.
   dispatchWorkerConversion(eventName, eventId, {
-    source,
     ...(recentQuote ? { value: recentQuote.value, currency: recentQuote.currency, service: recentQuote.service } : {}),
     userData: readUserDataFromDOM(),
   });

@@ -50,7 +50,19 @@ export interface WorkerConversionOptions {
   value?: number;
   currency?: string;
   service?: string;
-  source?: string;
+  /**
+   * SZÁNDÉKOSAN NINCS `source`. A belső riportcímke (`standalone` /
+   * `after_calculator`) a `source` GA4-foglalt manuális kampánykulcs nevén
+   * ment ki a gateway payloadban, a gateway pedig GA4 MP event-paraméterként
+   * továbbadta — süti nélküli (consent-denied / adblock / ITP) hiteknél ez
+   * nyitott egy sessiont, aminek a forrása maga a címke lett
+   * (`standalone / (not set)`, audit 2026-08 P0-A). A böngésző-ág
+   * `trackEvent`-je a `buildSafePush`-ban `cta_context`-re remapel, ez az ág
+   * viszont megkerüli azt a chokepointot. A címke elhagyva, nem átnevezve:
+   * a gateway `ConversionPayload` szerződése (`worker-tracking.ts`) nem ismer
+   * `cta_context` mezőt, és egy elutasított payload (400) NÉMÁN kilőné a Meta
+   * CAPI-lábat. A címke a dataLayeren `cta_context`-ként továbbra is megvan.
+   */
   /** Nyers PII; alapból a rejtett DOM side-channelből olvas. A Worker hash-eli. */
   userData?: UserData;
 }
@@ -88,7 +100,7 @@ export function dispatchWorkerConversion(
     event_time: Math.floor(Date.now() / 1000),
     ...(hasValue ? { value: opts.value, currency: opts.currency || 'GBP' } : {}),
     ...(opts.service ? { service: opts.service } : {}),
-    ...(opts.source ? { source: opts.source } : {}),
+    // Nincs `source` — lásd a WorkerConversionOptions kommentjét.
     user_data: opts.userData ?? readUserDataFromDOM(),
   };
 
