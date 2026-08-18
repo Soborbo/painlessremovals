@@ -288,7 +288,6 @@ export function SimpleCallbackForm() {
       // token mint, so navigation below waits for this promise too.
       const capiQueued = dispatchWorkerConversion('callback_conversion', eventId, {
         service,
-        source: 'standalone',
         userData,
       });
 

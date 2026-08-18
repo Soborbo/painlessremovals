@@ -41,6 +41,9 @@ export interface SubmissionMapInput {
   utmMedium?: string;
   utmCampaign?: string;
   gclid?: string;
+  /** iOS / in-app Google click IDs — mutually exclusive with gclid. */
+  gbraid?: string;
+  wbraid?: string;
   fbclid?: string;
   /** Pricing-version uuid injected from env; without it the quote block drops. */
   pricingVersionId?: string;
@@ -253,11 +256,14 @@ export function mapSubmissionToQuotePayload(
     gclid: input.gclid || asString(data.gclid),
     // Click IDs beyond gclid — the intake schema accepts them since the
     // 2026-07-17 audit (before that z.object stripped them silently).
-    // msclkid/wbraid have no top-level input; they ride in the data map when
-    // a future capture adds them.
+    // gbraid/wbraid are what Google sends INSTEAD of gclid on iOS / in-app
+    // traffic; they stay in their own fields (never folded into gclid, which
+    // would silently break Enhanced Conversions matching). msclkid still has
+    // no top-level input and rides in the data map only.
+    gbraid: input.gbraid || asString(data.gbraid),
+    wbraid: input.wbraid || asString(data.wbraid),
     fbclid: input.fbclid || asString(data.fbclid),
     msclkid: asString(data.msclkid),
-    wbraid: asString(data.wbraid),
     landing_page: asString(data.landingPage),
     session_id: asString(data.sessionId),
   });

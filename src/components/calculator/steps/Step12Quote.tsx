@@ -114,6 +114,8 @@ export function Step12Quote() {
         utm_term: state.utmTerm || undefined,
         utm_content: state.utmContent || undefined,
         gclid: state.gclid || undefined,
+        gbraid: state.gbraid || undefined,
+        wbraid: state.wbraid || undefined,
         fbclid: state.fbclid || undefined,
         event_id: eventId,
       };
@@ -236,7 +238,6 @@ export function Step12Quote() {
     dispatchWorkerConversion('phone_conversion', eventId, {
       ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
       service,
-      source: 'after_calculator',
     });
     window.location.href = `tel:${tel}`;
   };
@@ -289,7 +290,6 @@ export function Step12Quote() {
       dispatchWorkerConversion('callback_conversion', eventId, {
         ...(quoteVal ? { value: quoteVal, currency: 'GBP' } : {}),
         service,
-        source: 'after_calculator',
       });
 
       setCallbackStatus('success');

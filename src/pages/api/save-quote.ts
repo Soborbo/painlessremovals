@@ -284,6 +284,8 @@ export const POST: APIRoute = async (context) => {
         utmMedium: validated.utm_medium,
         utmCampaign: validated.utm_campaign,
         gclid: validated.gclid,
+        gbraid: validated.gbraid,
+        wbraid: validated.wbraid,
         fbclid: validated.fbclid,
       });
 
@@ -319,6 +321,9 @@ export const POST: APIRoute = async (context) => {
           },
           attribution: {
             gclid: validated.gclid,
+            // Mutually exclusive with gclid — at most one is ever set.
+            gbraid: validated.gbraid,
+            wbraid: validated.wbraid,
             // fbclid also lets the gateway rebuild fbc when the _fbc cookie is
             // absent (Meta only sets it on-site; the gateway's
             // buildFbcFromFbclid covers the landing-direct case).
@@ -372,6 +377,8 @@ export const POST: APIRoute = async (context) => {
             utm_medium: validated.utm_medium,
             utm_campaign: validated.utm_campaign,
             gclid: validated.gclid,
+            gbraid: validated.gbraid,
+            wbraid: validated.wbraid,
             fbclid: validated.fbclid,
             landing_page: asStr(data.landingPage),
             session_id: asStr(data.sessionId),
