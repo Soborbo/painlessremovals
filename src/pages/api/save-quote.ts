@@ -493,8 +493,10 @@ export const POST: APIRoute = async (context) => {
     // Prefer the browser's real GA4 client_id (same-origin POST carries the
     // `_ga` cookie) so the MP hit attaches to the same GA4 user as the
     // browser-side dataLayer push instead of minting a phantom user per
-    // fingerprint. Fingerprint-derived id remains the consent-denied /
-    // cookieless fallback.
+    // fingerprint. The fingerprint-derived id is now only a last resort for a
+    // request that has `_ga_<STREAM>` but no `_ga`: `sendGA4MP` drops any hit
+    // without a session_id, so a genuinely cookieless request sends nothing
+    // rather than opening a `(not set)` phantom session.
     //
     // session_id + page_location stitch the hit into the live browser
     // session so it inherits the session's source/medium/gclid instead
