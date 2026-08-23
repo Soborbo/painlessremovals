@@ -48,17 +48,6 @@ const schema = breadcrumbs([
             <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
           </div>
 
-          <fieldset id="type-block" class="hidden">
-            <legend class="block text-sm font-semibold text-primary-600 mb-2">What is this about? <span class="text-secondary-500">*</span></legend>
-            <!-- Kartyak, nem legordulo: ket-harom lehetosegnel a valasztek legyen LATHATO,
-                 ne egy kattintas mogott. A radio-input vegzi a munkat (billentyuzet, olvaso),
-                 a kartya csak a megjelenese. -->
-            <div id="type-options" class="grid gap-3 sm:grid-cols-2"></div>
-          </fieldset>
-
-          <!-- A valasztott tipus extra mezoi ide kerulnek (a CRM packjebol). -->
-          <div id="type-fields" class="space-y-5"></div>
-
           <div>
             <label for="name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Name <span class="text-secondary-500">*</span></label>
             <input type="text" id="name" name="name" required autocomplete="name" maxlength="120"
@@ -78,30 +67,40 @@ const schema = breadcrumbs([
             </div>
           </div>
           <p class="text-warm-gray text-sm -mt-2">Please leave at least one of the two, so we can come back to you.</p>
-
           <div class="grid sm:grid-cols-2 gap-5">
             <div>
-              <label for="jobNumber" class="block text-sm font-semibold text-primary-600 mb-1.5">Job Number <span class="font-normal text-warm-gray">(if you have it)</span></label>
-              <input type="text" id="jobNumber" name="jobNumber" maxlength="40" placeholder="e.g. JOB-2026-0123"
-                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+              <label for="invoiceNumber" class="block text-sm font-semibold text-primary-600 mb-1.5">Invoice Number <span class="font-normal text-warm-gray">(if you have it)</span></label>
+              <input type="text" id="invoiceNumber" name="invoiceNumber" maxlength="40" placeholder="e.g. INV-2026-0123" autocomplete="off"
+                class="w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
             </div>
             <div>
-              <label for="removalDate" class="block text-sm font-semibold text-primary-600 mb-1.5">Removal Date <span class="font-normal text-warm-gray">(if it relates to a move)</span></label>
-              <input type="date" id="removalDate" name="removalDate"
-                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+              <label for="occurredOn" class="block text-sm font-semibold text-primary-600 mb-1.5">When did the problem occur? <span class="text-secondary-500">*</span></label>
+              <!-- text-base (16px): iOS kulonben RANAGYIT a mezore fokuszkor. A natív dátum-
+                   mező mobilon sajat valasztot nyit; asztali gepen a showPicker() teszi, hogy
+                   a mezo BARMELY pontjara kattintva feljojjon a naptar, ne csak az ikonra. -->
+              <input type="date" id="occurredOn" name="occurredOn" required
+                class="w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
             </div>
           </div>
+
+          <fieldset id="type-block" class="hidden">
+            <legend class="block text-sm font-semibold text-primary-600 mb-2">What is this about? <span class="text-secondary-500">*</span></legend>
+            <!-- Kartyak, nem legordulo: ket-harom lehetosegnel a valasztek legyen LATHATO,
+                 ne egy kattintas mogott. A radio-input vegzi a munkat (billentyuzet, olvaso),
+                 a kartya csak a megjelenese. -->
+            <div id="type-options" class="grid gap-3 sm:grid-cols-2"></div>
+          </fieldset>
+
+          <!-- A valasztott tipus extra mezoi ide kerulnek (a CRM packjebol). -->
+          <div id="type-fields" class="space-y-5"></div>
+
+
 
           <div>
             <label for="description" class="block text-sm font-semibold text-primary-600 mb-1.5">What happened? <span class="text-secondary-500">*</span></label>
             <textarea id="description" name="description" rows="6" required maxlength="4000"
               placeholder="Tell us what went wrong, when it happened, and what you would like us to do about it."
               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
-            <p class="text-warm-gray text-sm mt-2">
-              If anything was damaged or lost, please attach photos below and, where possible,
-              reply to our confirmation email with proof of purchase — claims with evidence are
-              assessed faster.
-            </p>
           </div>
 
           <div>
@@ -112,6 +111,21 @@ const schema = breadcrumbs([
               class="w-full px-4 py-3 border border-gray-200 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-primary-50 file:text-primary-700 file:font-semibold hover:file:bg-primary-100" />
             <p id="photos-note" class="text-warm-gray text-sm mt-2">
               Photos of the damage help us assess a claim much faster. Up to 12 images, 10 MB each.
+            </p>
+          </div>
+
+          <div>
+            <label for="receipts" class="block text-sm font-semibold text-primary-600 mb-1.5">
+              Receipts <span class="font-normal text-warm-gray">(proof of purchase, up to 12)</span>
+            </label>
+            <!-- Kulon feltolto a bizonylatoknak: mas a szerepuk a karrendezesben, mint a
+                 kar-fotoknak, es a bizonylat tipikusan PDF-szkennelés — ezert itt a PDF is
+                 elfogadott, mig a kar-fotok mindig kepek. -->
+            <input type="file" id="receipts" name="receipts" accept="image/*,application/pdf" multiple
+              class="w-full px-4 py-3 text-base border border-gray-200 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-primary-50 file:text-primary-700 file:font-semibold hover:file:bg-primary-100" />
+            <p class="text-warm-gray text-sm mt-2">
+              A receipt or invoice for the item, as a photo or PDF scan. Claims with proof of
+              purchase are assessed faster.
             </p>
           </div>
 
@@ -136,6 +150,23 @@ const schema = breadcrumbs([
             <h2 class="text-2xl font-bold font-heading text-primary-700 mb-2">Thank you — we have it.</h2>
             <p class="text-gray-700">
               Your complaint has been logged and someone will be in touch within 24 hours.
+            </p>
+          </div>
+
+          <!-- Csak akkor latszik, ha a bejelentes a T&C 7 napos ablakan kivul erkezett.
+               A hangnem SZANDEKOSAN nagyon udvarias: aki ide ir, mar mergessen — egy szaraz
+               "lekeste a hataridot" ebbol nyilvanos egycsillagost csinal. Nem utasitunk el
+               semmit, csak eloreveteljuk, mit jelenthet ez, hogy ne erje meglepetes. -->
+          <div id="late-notice" class="hidden mt-8 bg-amber-50 border border-amber-200 rounded-xl p-6 text-left">
+            <h3 class="text-lg font-bold font-heading text-amber-900 mb-2">One thing to mention</h3>
+            <p class="text-amber-900 text-sm leading-relaxed">
+              Our Terms &amp; Conditions ask for damage or loss to be reported within seven days
+              of the move, and it looks like a little more time has passed than that. We would
+              still much rather hear from you than not, so your report is with the team and we
+              will look at it properly. We only wanted to flag it now, rather than surprise you
+              later: where a claim falls outside that window we may have less room to put things
+              right, particularly if our insurers need to be involved. If there was a reason the
+              delay could not be helped, do tell us — we will take it into account.
             </p>
           </div>
 
@@ -171,6 +202,15 @@ const schema = breadcrumbs([
 
       var form = document.getElementById('complaint-form-el');
       if (!form) return;
+
+      // Asztali bongeszoben a datum-mezo csak az ikonra kattintva nyilik; a showPicker()
+      // teszi, hogy a mezo barmely pontja mukodjon. Mobilon a natív valaszto amugy is jon,
+      // es a duplan hivott showPicker() ott csendben eldobodik (ezert a try/catch).
+      var dateEl = document.getElementById('occurredOn');
+      if (dateEl && typeof dateEl.showPicker === 'function') {
+        dateEl.addEventListener('focus', function () { try { dateEl.showPicker(); } catch (e) {} });
+        dateEl.addEventListener('click', function () { try { dateEl.showPicker(); } catch (e) {} });
+      }
 
       var CARD_BASE = 'block cursor-pointer rounded-lg border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary-500 ';
       var CARD_ON = 'border-primary-500 bg-primary-50';
@@ -281,8 +321,8 @@ const schema = breadcrumbs([
         var name = form.querySelector('#name').value.trim();
         var email = form.querySelector('#email').value.trim();
         var phone = form.querySelector('#phone').value.trim();
-        var jobNumber = form.querySelector('#jobNumber').value.trim();
-        var removalDate = form.querySelector('#removalDate').value;
+        var invoiceNumber = form.querySelector('#invoiceNumber').value.trim();
+        var occurredOn = form.querySelector('#occurredOn').value;
         var description = form.querySelector('#description').value.trim();
         var honeypot = form.querySelector('#website').value;
 
@@ -292,6 +332,10 @@ const schema = breadcrumbs([
         }
         if (!email && !phone) {
           showError('Please leave an email address or a phone number so we can reply.');
+          return;
+        }
+        if (!occurredOn) {
+          showError('Please tell us when the problem occurred.');
           return;
         }
 
@@ -305,22 +349,25 @@ const schema = breadcrumbs([
 
         // Kliensoldali kapu: a szerver ugyanezt ujra ellenorzi (a bongeszonek sosem hiszunk),
         // de itt azonnal, halozati kor nelkul tudjuk megmondani, hogy tul sok vagy tul nagy.
-        var photoInput = form.querySelector('#photos');
-        var photos = photoInput && photoInput.files ? Array.prototype.slice.call(photoInput.files) : [];
-        if (photos.length > 12) {
-          showError('Please attach at most 12 photos.');
+        function filesOf(id) {
+          var el = form.querySelector(id);
+          return el && el.files ? Array.prototype.slice.call(el.files) : [];
+        }
+        var photos = filesOf('#photos');
+        var receipts = filesOf('#receipts');
+        if (photos.length > 12 || receipts.length > 12) {
+          showError('Please attach at most 12 photos and 12 receipts.');
           return;
         }
-        for (var i = 0; i < photos.length; i++) {
-          if (photos[i].size > 10 * 1024 * 1024) {
-            showError('Each photo must be under 10 MB. "' + photos[i].name + '" is too large.');
-            return;
-          }
+        var tooBig = photos.concat(receipts).filter(function (f) { return f.size > 10 * 1024 * 1024; })[0];
+        if (tooBig) {
+          showError('Each file must be under 10 MB. "' + tooBig.name + '" is too large.');
+          return;
         }
 
         btn.disabled = true;
         var original = btn.textContent;
-        btn.textContent = photos.length > 0 ? 'UPLOADING...' : 'SENDING...';
+        btn.textContent = photos.length + receipts.length > 0 ? 'UPLOADING...' : 'SENDING...';
 
         var payload = {
           type: TYPES.length > 0 ? (selectedType() || null) : null,
@@ -328,21 +375,22 @@ const schema = breadcrumbs([
           name: name,
           email: email || null,
           phone: phone || null,
-          jobNumber: jobNumber || null,
-          removalDate: removalDate || null,
+          jobNumber: invoiceNumber || null,
+          occurredOn: occurredOn || null,
           description: description,
           honeypot: honeypot,
           turnstileToken: turnstileResponse
         };
 
         var init;
-        if (photos.length > 0) {
+        if (photos.length + receipts.length > 0) {
           var fd = new FormData();
           Object.keys(payload).forEach(function (k) {
             if (payload[k] === null || payload[k] === undefined) return;
             fd.set(k, k === 'answers' ? JSON.stringify(payload[k]) : payload[k]);
           });
           photos.forEach(function (f) { fd.append('photos', f); });
+          receipts.forEach(function (f) { fd.append('receipts', f); });
           // Content-Type-ot SZANDEKOSAN nem allitunk: a bongeszo teszi ra a boundary-t.
           init = { method: 'POST', body: fd };
         } else {
@@ -360,6 +408,12 @@ const schema = breadcrumbs([
           .then(function (r) {
             if (r.ok && r.data && r.data.success) {
               form.classList.add('hidden');
+              // A szerver mondja meg, hogy a 7 napos ablakon kivul vagyunk-e — nem itt
+              // szamoljuk, kulonben a ket oldal szabalya elcsuszhatna.
+              if (r.data.late) {
+                var late = document.getElementById('late-notice');
+                if (late) late.classList.remove('hidden');
+              }
               successBox.classList.remove('hidden');
               return;
             }

@@ -28,6 +28,10 @@ export interface ComplaintForwardInput {
   description: string;
   /** A bejelentohoz csatolt fotok, valtozatlanul tovabbitva. A CRM ujrakodolja oket. */
   photos?: File[];
+  /** Az esemeny napja (ISO) — ebbol szamol a CRM a 7 napos ablakra. */
+  occurredOn?: string | null;
+  /** Bizonylatok (szamla, blokk) — kep vagy PDF; kulon a kar-fotoktol. */
+  receipts?: File[];
   /** A CRM packjebol valasztott panasz-tipus kulcsa (a lista is onnan jott). */
   type?: string | null;
   /** A tipus extra mezoinek valaszai; a semat a CRM sajat packje adja, ujra validalva. */
@@ -64,13 +68,19 @@ async function forwardAuthHeaders(): Promise<Record<string, string>> {
 }
 
 /** Mirrors a validated complaint into the CRM. Never throws. */
-export async function forwardComplaint(input: ComplaintForwardInput): Promise<boolean> {
+export interface ForwardResult {
+  ok: boolean;
+  /** A CRM szerint a bejelentes a 7 napos ablakon KIVUL erkezett (koszono-oldal jelzi). */
+  late: boolean;
+}
+
+export async function forwardComplaint(input: ComplaintForwardInput): Promise<ForwardResult> {
   const base = crmBase();
-  if (!base) return false;
+  if (!base) return { ok: false, late: false };
 
   // Fotoval multipart, nelkule JSON. A `buildBody` ujra fut minden probalkozasnal: egy
   // mar elolvasott File-stream nem jatszhato ujra, es a FormData ujraepitese olcso.
-  const hasPhotos = (input.photos?.length ?? 0) > 0;
+  const hasPhotos = (input.photos?.length ?? 0) + (input.receipts?.length ?? 0) > 0;
   const buildBody = (): BodyInit => {
     if (!hasPhotos) {
       return JSON.stringify({
@@ -78,6 +88,7 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
         email: input.email,
         phone: input.phone,
         job_number: input.jobNumber,
+        occurred_on: input.occurredOn ?? null,
         description: input.description,
         type: input.type ?? null,
         answers: input.answers ?? {},
@@ -89,11 +100,13 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
     if (input.email) form.set('email', input.email);
     if (input.phone) form.set('phone', input.phone);
     if (input.jobNumber) form.set('job_number', input.jobNumber);
+    if (input.occurredOn) form.set('occurred_on', input.occurredOn);
     form.set('description', input.description);
     if (input.type) form.set('type', input.type);
     form.set('answers', JSON.stringify(input.answers ?? {}));
     form.set('consent', 'true');
     for (const photo of input.photos ?? []) form.append('photos', photo);
+    for (const receipt of input.receipts ?? []) form.append('receipts', receipt);
     return form;
   };
 
@@ -109,7 +122,10 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
           : { 'content-type': 'application/json', ...(await forwardAuthHeaders()) },
         body: buildBody(),
       });
-      if (res.ok) return true;
+      if (res.ok) {
+        const data = (await res.json().catch(() => ({}))) as { late?: boolean };
+        return { ok: true, late: Boolean(data.late) };
+      }
       lastError = `http_${res.status}`;
       // A 4xx other than 429 is our bug or the reporter's data — retrying an
       // invalid_input just burns the same error three times.
@@ -125,5 +141,5 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
   logger.error('Complaints', 'CRM complaint forward FAILED — complaint exists only in email', {
     error: lastError,
   });
-  return false;
+  return { ok: false, late: false };
 }

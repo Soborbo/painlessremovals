@@ -33,27 +33,32 @@ const MAX_BODY_BYTES = 130 * 1024 * 1024;
  * A torzs ketfele lehet: JSON (foto nelkul) vagy multipart (fotokkal). A mezonevek
  * azonosak, ezert a lenti validacio nem tud rola, melyik uton jott.
  */
-async function readBody(request: Request): Promise<{ body: ComplaintBody; photos: File[] }> {
+async function readBody(request: Request): Promise<{ body: ComplaintBody; photos: File[]; receipts: File[] }> {
   const ctype = request.headers.get('content-type') || '';
   if (!ctype.includes('multipart/form-data')) {
-    return { body: await request.json() as ComplaintBody, photos: [] };
+    return { body: await request.json() as ComplaintBody, photos: [], receipts: [] };
   }
   const form = await request.formData();
   const str = (k: string): string | undefined => {
     const v = form.get(k);
     return typeof v === 'string' && v.trim().length > 0 ? v : undefined;
   };
-  const photos: File[] = [];
-  for (const v of form.getAll('photos')) {
-    if (v instanceof File && v.size > 0) photos.push(v);
-  }
+  const pick = (field: string): File[] => {
+    const out: File[] = [];
+    for (const v of form.getAll(field)) {
+      if (v instanceof File && v.size > 0) out.push(v);
+    }
+    return out;
+  };
+  const photos = pick('photos');
+  const receipts = pick('receipts');
   return {
     body: {
       name: str('name'),
       email: str('email'),
       phone: str('phone'),
       jobNumber: str('jobNumber'),
-      removalDate: str('removalDate'),
+      occurredOn: str('occurredOn'),
       type: str('type'),
       // Multipart alatt nincs strukturalt objektum — a valaszok JSON-stringkent jonnek.
       answers: JSON.parse(str('answers') || '{}') as Record<string, unknown>,
@@ -62,6 +67,7 @@ async function readBody(request: Request): Promise<{ body: ComplaintBody; photos
       turnstileToken: str('turnstileToken'),
     },
     photos,
+    receipts,
   };
 }
 
@@ -74,7 +80,7 @@ interface ComplaintBody {
   email?: string;
   phone?: string;
   jobNumber?: string;
-  removalDate?: string;
+  occurredOn?: string;
   type?: string;
   answers?: Record<string, unknown>;
   description?: string;
@@ -107,25 +113,31 @@ export const POST: APIRoute = async (context) => {
 
     let body: ComplaintBody;
     let photos: File[];
+    let receipts: File[];
     try {
       const read = await readBody(request);
       body = read.body;
       photos = read.photos;
+      receipts = read.receipts;
     } catch {
       return json({ error: 'Invalid request body.' }, 400);
     }
 
     // A bongeszo mar szurt, de neki sosem hiszunk: a szerveren ujra dontunk.
-    if (photos.length > MAX_PHOTOS) {
-      return json({ error: `Please attach at most ${MAX_PHOTOS} photos.` }, 400);
+    if (photos.length > MAX_PHOTOS || receipts.length > MAX_PHOTOS) {
+      return json({ error: `Please attach at most ${MAX_PHOTOS} photos and ${MAX_PHOTOS} receipts.` }, 400);
     }
-    if (photos.some((f) => f.size > MAX_PHOTO_BYTES)) {
-      return json({ error: 'Each photo must be under 10 MB.' }, 400);
+    if ([...photos, ...receipts].some((f) => f.size > MAX_PHOTO_BYTES)) {
+      return json({ error: 'Each file must be under 10 MB.' }, 400);
     }
     if (photos.some((f) => !f.type.startsWith('image/'))) {
       return json({ error: 'Photos must be image files.' }, 400);
     }
-    const { name, email, phone, jobNumber, removalDate, type, answers, description, honeypot, turnstileToken } = body;
+    // A bizonylat lehet PDF-szkennelés is — ott a kép MELLETT a PDF is elfogadott.
+    if (receipts.some((f) => !f.type.startsWith('image/') && f.type !== 'application/pdf')) {
+      return json({ error: 'Receipts must be images or PDF files.' }, 400);
+    }
+    const { name, email, phone, jobNumber, occurredOn, type, answers, description, honeypot, turnstileToken } = body;
 
     // Honeypot — silent "success" so the bot learns nothing.
     if (honeypot) return json({ success: true, silent: true });
@@ -147,7 +159,7 @@ export const POST: APIRoute = async (context) => {
     if (phone && !isValidUkPhone(phone)) {
       return json({ error: 'Please provide a valid UK phone number.' }, 400);
     }
-    const movedOn = removalDate && /^\d{4}-\d{2}-\d{2}$/.test(removalDate) ? removalDate : null;
+    const movedOn = occurredOn && /^\d{4}-\d{2}-\d{2}$/.test(occurredOn) ? occurredOn : null;
 
     if (!turnstileToken) {
       return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
@@ -197,7 +209,7 @@ export const POST: APIRoute = async (context) => {
                 <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">What happened</td><td style="padding: 8px 0; white-space: pre-wrap;">${escapeHtml(description)}</td></tr>
               </table>
               <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
-              ${photos.length > 0 ? `<p style="font-size: 13px; color: #3b6587; margin: 12px 0 0;"><strong>${photos.length}</strong> photo(s) attached — view them on the complaint in the CRM.</p>` : ''}
+              ${photos.length + receipts.length > 0 ? `<p style="font-size: 13px; color: #3b6587; margin: 12px 0 0;"><strong>${photos.length}</strong> photo(s) and <strong>${receipts.length}</strong> receipt(s) attached — view them on the complaint in the CRM.</p>` : ''}
               <p style="font-size: 12px; color: #9ca3af; margin: 0;">Submitted from painlessremovals.com/complaints at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}. A copy is in the CRM under Complaints, with a 24h first-response SLA.</p>
             </div>
           </div>`,
@@ -212,18 +224,20 @@ export const POST: APIRoute = async (context) => {
 
     // The CRM is the system of record, but never the delivery guarantee — a
     // failure here is logged inside forwardComplaint and does not fail the request.
-    const mirrored = await forwardComplaint({
+    const forward = await forwardComplaint({
       name,
       email: email ?? null,
       phone: phone ?? null,
       jobNumber: jobNumber?.trim() || null,
       description: movedOn ? `Removal date: ${movedOn}\n\n${description}` : description,
       photos,
+      receipts,
+      occurredOn: movedOn,
       type: type ?? null,
       answers: answers ?? {},
     });
 
-    return json({ success: true, mirrored });
+    return json({ success: true, mirrored: forward.ok, late: forward.late });
   } catch (err) {
     const errorId = generateErrorId();
     logger.error('Complaint', 'Unhandled error', { errorId, error: err instanceof Error ? err.message : String(err) });
