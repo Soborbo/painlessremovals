@@ -54,6 +54,9 @@ async function readBody(request: Request): Promise<{ body: ComplaintBody; photos
       phone: str('phone'),
       jobNumber: str('jobNumber'),
       removalDate: str('removalDate'),
+      type: str('type'),
+      // Multipart alatt nincs strukturalt objektum — a valaszok JSON-stringkent jonnek.
+      answers: JSON.parse(str('answers') || '{}') as Record<string, unknown>,
       description: str('description'),
       honeypot: str('honeypot'),
       turnstileToken: str('turnstileToken'),
@@ -72,6 +75,8 @@ interface ComplaintBody {
   phone?: string;
   jobNumber?: string;
   removalDate?: string;
+  type?: string;
+  answers?: Record<string, unknown>;
   description?: string;
   honeypot?: string;
   turnstileToken?: string;
@@ -120,7 +125,7 @@ export const POST: APIRoute = async (context) => {
     if (photos.some((f) => !f.type.startsWith('image/'))) {
       return json({ error: 'Photos must be image files.' }, 400);
     }
-    const { name, email, phone, jobNumber, removalDate, description, honeypot, turnstileToken } = body;
+    const { name, email, phone, jobNumber, removalDate, type, answers, description, honeypot, turnstileToken } = body;
 
     // Honeypot — silent "success" so the bot learns nothing.
     if (honeypot) return json({ success: true, silent: true });
@@ -214,6 +219,8 @@ export const POST: APIRoute = async (context) => {
       jobNumber: jobNumber?.trim() || null,
       description: movedOn ? `Removal date: ${movedOn}\n\n${description}` : description,
       photos,
+      type: type ?? null,
+      answers: answers ?? {},
     });
 
     return json({ success: true, mirrored });

@@ -28,6 +28,10 @@ export interface ComplaintForwardInput {
   description: string;
   /** A bejelentohoz csatolt fotok, valtozatlanul tovabbitva. A CRM ujrakodolja oket. */
   photos?: File[];
+  /** A CRM packjebol valasztott panasz-tipus kulcsa (a lista is onnan jott). */
+  type?: string | null;
+  /** A tipus extra mezoinek valaszai; a semat a CRM sajat packje adja, ujra validalva. */
+  answers?: Record<string, unknown>;
 }
 
 function crmBase(): string | null {
@@ -75,6 +79,8 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
         phone: input.phone,
         job_number: input.jobNumber,
         description: input.description,
+        type: input.type ?? null,
+        answers: input.answers ?? {},
         consent: true,
       });
     }
@@ -84,6 +90,8 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
     if (input.phone) form.set('phone', input.phone);
     if (input.jobNumber) form.set('job_number', input.jobNumber);
     form.set('description', input.description);
+    if (input.type) form.set('type', input.type);
+    form.set('answers', JSON.stringify(input.answers ?? {}));
     form.set('consent', 'true');
     for (const photo of input.photos ?? []) form.append('photos', photo);
     return form;
