@@ -48,12 +48,13 @@ const schema = breadcrumbs([
             <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
           </div>
 
-          <div id="type-block" class="hidden">
-            <label for="complaintType" class="block text-sm font-semibold text-primary-600 mb-1.5">What is this about? <span class="text-secondary-500">*</span></label>
-            <select id="complaintType" name="complaintType"
-              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors bg-white"></select>
-            <p id="type-hint" class="text-warm-gray text-sm mt-2"></p>
-          </div>
+          <fieldset id="type-block" class="hidden">
+            <legend class="block text-sm font-semibold text-primary-600 mb-2">What is this about? <span class="text-secondary-500">*</span></legend>
+            <!-- Kartyak, nem legordulo: ket-harom lehetosegnel a valasztek legyen LATHATO,
+                 ne egy kattintas mogott. A radio-input vegzi a munkat (billentyuzet, olvaso),
+                 a kartya csak a megjelenese. -->
+            <div id="type-options" class="grid gap-3 sm:grid-cols-2"></div>
+          </fieldset>
 
           <!-- A valasztott tipus extra mezoi ide kerulnek (a CRM packjebol). -->
           <div id="type-fields" class="space-y-5"></div>
@@ -171,15 +172,23 @@ const schema = breadcrumbs([
       var form = document.getElementById('complaint-form-el');
       if (!form) return;
 
+      var CARD_BASE = 'block cursor-pointer rounded-lg border p-4 transition-colors focus-within:ring-2 focus-within:ring-primary-500 ';
+      var CARD_ON = 'border-primary-500 bg-primary-50';
+      var CARD_OFF = 'border-gray-200 bg-white hover:border-primary-300';
+
       // ---- Panasz-tipusok a CRM-bol ----------------------------------------
       // Egyetlen forras: a tipusok es a mezoik a CRM packjeben elnek (per kliens config).
       // Ha a lekeres barmiert nem sikerul, a valaszto REJTVE marad es az urlap ugyanugy
       // bekuldheto — a bejelentes soha nem bukhat el azon, hogy a lista nem toltodott be.
       var TYPES = [];
       var typeBlock = document.getElementById('type-block');
-      var typeSelect = document.getElementById('complaintType');
-      var typeHint = document.getElementById('type-hint');
+      var typeOptions = document.getElementById('type-options');
       var typeFields = document.getElementById('type-fields');
+
+      function selectedType() {
+        var el = typeOptions ? typeOptions.querySelector('input[name="complaintType"]:checked') : null;
+        return el ? el.value : '';
+      }
 
       function fieldHtml(f) {
         var id = 'tf_' + f.key;
@@ -208,13 +217,18 @@ const schema = breadcrumbs([
       }
 
       function renderType() {
-        var t = TYPES.filter(function (x) { return x.key === typeSelect.value; })[0];
-        typeHint.textContent = t ? t.hint : '';
+        var key = selectedType();
+        var t = TYPES.filter(function (x) { return x.key === key; })[0];
         typeFields.innerHTML = t ? t.fields.map(fieldHtml).join('') : '';
+        // A kivalasztott kartya lathatoan is kiemelkedjen (a radio maga rejtve van).
+        Array.prototype.forEach.call(typeOptions.querySelectorAll('[data-type-card]'), function (card) {
+          var on = card.getAttribute('data-type-card') === key;
+          card.className = CARD_BASE + (on ? CARD_ON : CARD_OFF);
+        });
       }
 
       function collectAnswers() {
-        var t = TYPES.filter(function (x) { return x.key === (typeSelect ? typeSelect.value : ''); })[0];
+        var t = TYPES.filter(function (x) { return x.key === selectedType(); })[0];
         if (!t) return {};
         var out = {};
         t.fields.forEach(function (f) {
@@ -236,11 +250,17 @@ const schema = breadcrumbs([
         .then(function (d) {
           if (!d || !d.types || d.types.length < 2) return; // egyetlen tipusnal a valaszto csak zaj
           TYPES = d.types;
-          typeSelect.innerHTML = TYPES.map(function (t) {
-            return '<option value="' + t.key + '">' + t.label + '</option>';
+          typeOptions.innerHTML = TYPES.map(function (t, i) {
+            return (
+              '<label data-type-card="' + t.key + '" class="' + CARD_BASE + (i === 0 ? CARD_ON : CARD_OFF) + '">' +
+                '<input type="radio" name="complaintType" value="' + t.key + '" class="sr-only"' + (i === 0 ? ' checked' : '') + ' />' +
+                '<span class="block font-semibold text-primary-700">' + t.label + '</span>' +
+                '<span class="block text-sm text-warm-gray mt-1">' + t.hint + '</span>' +
+              '</label>'
+            );
           }).join('');
           typeBlock.classList.remove('hidden');
-          typeSelect.addEventListener('change', renderType);
+          typeOptions.addEventListener('change', renderType);
           renderType();
         })
         .catch(function () { /* a valaszto rejtve marad; az urlap mukodik */ });
@@ -303,7 +323,7 @@ const schema = breadcrumbs([
         btn.textContent = photos.length > 0 ? 'UPLOADING...' : 'SENDING...';
 
         var payload = {
-          type: (TYPES.length > 0 && typeSelect) ? typeSelect.value : null,
+          type: TYPES.length > 0 ? (selectedType() || null) : null,
           answers: collectAnswers(),
           name: name,
           email: email || null,
