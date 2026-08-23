@@ -26,8 +26,6 @@ export interface ComplaintForwardInput {
   phone: string | null;
   jobNumber: string | null;
   description: string;
-  /** The complainant's own read of how bad it is; the CRM maps it to severity. */
-  selfAssessed: 'minor' | 'needs_fix' | 'major';
 }
 
 function crmBase(): string | null {
@@ -70,7 +68,6 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
     phone: input.phone,
     job_number: input.jobNumber,
     description: input.description,
-    self_assessed: input.selfAssessed,
     consent: true,
   });
 

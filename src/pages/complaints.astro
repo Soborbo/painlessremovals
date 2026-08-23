@@ -25,19 +25,13 @@ const schema = breadcrumbs([
   { name: 'Home', path: '/' },
   { name: 'Complaints', path: '/complaints/' },
 ]);
-
-const SEVERITIES = [
-  { value: 'minor', label: 'Minor, but worth mentioning' },
-  { value: 'needs_fix', label: 'Needs fixing' },
-  { value: 'major', label: 'Serious problem' },
-];
 ---
 
 <Layout title={pageTitle} description={pageDescription} schema={schema}>
   <section class="bg-primary-700 text-white py-12 md:py-16">
-    <div class="container-wide">
+    <div class="container-wide text-center">
       <h1 class="text-3xl md:text-4xl font-bold font-heading mb-3">Tell us what went wrong</h1>
-      <p class="text-lg text-gray-100 max-w-2xl">
+      <p class="text-lg text-gray-100 max-w-2xl mx-auto">
         We would much rather hear it from you than read it later. Every complaint goes
         straight to the team, and we aim to come back to you within 24 hours.
       </p>
@@ -74,10 +68,17 @@ const SEVERITIES = [
           </div>
           <p class="text-warm-gray text-sm -mt-2">Please leave at least one of the two, so we can come back to you.</p>
 
-          <div>
-            <label for="jobNumber" class="block text-sm font-semibold text-primary-600 mb-1.5">Job Number <span class="font-normal text-warm-gray">(if you have it)</span></label>
-            <input type="text" id="jobNumber" name="jobNumber" maxlength="40" placeholder="e.g. JOB-2026-0123"
-              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="jobNumber" class="block text-sm font-semibold text-primary-600 mb-1.5">Job Number <span class="font-normal text-warm-gray">(if you have it)</span></label>
+              <input type="text" id="jobNumber" name="jobNumber" maxlength="40" placeholder="e.g. JOB-2026-0123"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+            <div>
+              <label for="removalDate" class="block text-sm font-semibold text-primary-600 mb-1.5">Removal Date <span class="font-normal text-warm-gray">(if it relates to a move)</span></label>
+              <input type="date" id="removalDate" name="removalDate"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
           </div>
 
           <div>
@@ -85,19 +86,11 @@ const SEVERITIES = [
             <textarea id="description" name="description" rows="6" required maxlength="4000"
               placeholder="Tell us what went wrong, when it happened, and what you would like us to do about it."
               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+            <p class="text-warm-gray text-sm mt-2">
+              If anything was damaged or lost, please reply to our confirmation email with photos
+              and, where possible, proof of purchase — claims with evidence are assessed faster.
+            </p>
           </div>
-
-          <fieldset>
-            <legend class="block text-sm font-semibold text-primary-600 mb-2">How serious is it?</legend>
-            <div class="space-y-2">
-              {SEVERITIES.map((s, i) => (
-                <label class="flex items-center gap-2 text-gray-700">
-                  <input type="radio" name="severity" value={s.value} checked={i === 1} class="text-primary-600 focus:ring-primary-500" />
-                  {s.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
 
           <div>
             <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
@@ -122,6 +115,18 @@ const SEVERITIES = [
           </p>
         </div>
       </div>
+
+      <div class="mt-8 bg-white/60 border border-gray-200 rounded-xl p-6">
+        <h2 class="text-lg font-bold font-heading text-primary-700 mb-2">What happens next</h2>
+        <p class="text-gray-700 text-sm leading-relaxed">
+          We aim to acknowledge your complaint within 24 hours and to come back to you with a
+          response as quickly as we can. We may contact you for more detail, or to arrange an
+          inspection, before we agree how to put things right. Where a complaint involves damage
+          or loss, it is assessed against our Terms &amp; Conditions and, where necessary,
+          referred to our insurers — so submitting this form does not by itself guarantee
+          compensation.
+        </p>
+      </div>
     </div>
   </section>
 
@@ -130,6 +135,14 @@ const SEVERITIES = [
 
   <script is:inline>
     (function () {
+      // Email & phone scraping defence — azonos a contact.astro-eval.
+      var ph = ['0','1','1','7',' ','2','8','7',' ','0','0','8','2'];
+      var phClean = ph.join('').replace(/\s/g, '');
+      var phDisplay = ph.join('');
+      document.querySelectorAll('[data-contact="phone-inline"]').forEach(function (el) {
+        el.innerHTML = '<a href="tel:' + phClean + '" class="font-semibold">' + phDisplay + '</a>';
+      });
+
       var form = document.getElementById('complaint-form-el');
       if (!form) return;
       var errorBox = document.getElementById('complaint-error');
@@ -149,8 +162,8 @@ const SEVERITIES = [
         var email = form.querySelector('#email').value.trim();
         var phone = form.querySelector('#phone').value.trim();
         var jobNumber = form.querySelector('#jobNumber').value.trim();
+        var removalDate = form.querySelector('#removalDate').value;
         var description = form.querySelector('#description').value.trim();
-        var severityEl = form.querySelector('input[name="severity"]:checked');
         var honeypot = form.querySelector('#website').value;
 
         if (!name || description.length < 10) {
@@ -182,8 +195,8 @@ const SEVERITIES = [
             email: email || null,
             phone: phone || null,
             jobNumber: jobNumber || null,
+            removalDate: removalDate || null,
             description: description,
-            severity: severityEl ? severityEl.value : 'needs_fix',
             honeypot: honeypot,
             turnstileToken: turnstileResponse
           })

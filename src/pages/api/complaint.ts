@@ -24,22 +24,17 @@ import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
-const SEVERITIES = ['minor', 'needs_fix', 'major'] as const;
-type Severity = (typeof SEVERITIES)[number];
-
-const SEVERITY_LABEL: Record<Severity, string> = {
-  minor: 'Minor, but worth mentioning',
-  needs_fix: 'Needs fixing',
-  major: 'Serious problem',
-};
+// A sulyossagot SZANDEKOSAN nem a bejelento allitja: az osztalyozas a panaszt kezelo
+// admin dontese a CRM-ben (egy feldult ugyfel onertekelese nem prioritasi bemenet).
+// A CRM Zod-semaja ennek hianyaban a kozepso fokozatot veszi fel.
 
 interface ComplaintBody {
   name?: string;
   email?: string;
   phone?: string;
   jobNumber?: string;
+  removalDate?: string;
   description?: string;
-  severity?: string;
   honeypot?: string;
   turnstileToken?: string;
 }
@@ -67,7 +62,7 @@ export const POST: APIRoute = async (context) => {
     } catch {
       return json({ error: 'Invalid request body.' }, 400);
     }
-    const { name, email, phone, jobNumber, description, severity, honeypot, turnstileToken } = body;
+    const { name, email, phone, jobNumber, removalDate, description, honeypot, turnstileToken } = body;
 
     // Honeypot — silent "success" so the bot learns nothing.
     if (honeypot) return json({ success: true, silent: true });
@@ -89,7 +84,7 @@ export const POST: APIRoute = async (context) => {
     if (phone && !isValidUkPhone(phone)) {
       return json({ error: 'Please provide a valid UK phone number.' }, 400);
     }
-    const selfAssessed: Severity = SEVERITIES.includes(severity as Severity) ? severity as Severity : 'needs_fix';
+    const movedOn = removalDate && /^\d{4}-\d{2}-\d{2}$/.test(removalDate) ? removalDate : null;
 
     if (!turnstileToken) {
       return json({ error: 'Security verification is required. Please complete the CAPTCHA.' }, 400);
@@ -115,6 +110,7 @@ export const POST: APIRoute = async (context) => {
     const contactRows = [
       email ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Email</td><td style="padding: 8px 0;"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>` : '',
       phone ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Phone</td><td style="padding: 8px 0;"><a href="tel:${escapeHtml(sanitizePhoneForEmail(phone))}">${escapeHtml(phone)}</a></td></tr>` : '',
+      movedOn ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Removal date</td><td style="padding: 8px 0;">${escapeHtml(movedOn)}</td></tr>` : '',
       jobNumber ? `<tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Job number</td><td style="padding: 8px 0;">${escapeHtml(jobNumber)}</td></tr>` : '',
     ].join('');
 
@@ -125,7 +121,7 @@ export const POST: APIRoute = async (context) => {
         from: 'Painless Removals Website <noreply@painlessremovals.com>',
         to: ['hello@painlessremovals.com'],
         ...(email ? { reply_to: email } : {}),
-        subject: `COMPLAINT: ${stripNewlines(name)} – ${SEVERITY_LABEL[selfAssessed]}`,
+        subject: `COMPLAINT: ${stripNewlines(name)}`,
         html: `
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto;">
             <div style="background: #7f1d1d; padding: 20px 24px; border-radius: 8px 8px 0 0;">
@@ -135,7 +131,6 @@ export const POST: APIRoute = async (context) => {
               <table style="width: 100%; border-collapse: collapse;">
                 <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; width: 120px; vertical-align: top;">Name</td><td style="padding: 8px 0;">${escapeHtml(name)}</td></tr>
                 ${contactRows}
-                <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">Severity</td><td style="padding: 8px 0;">${SEVERITY_LABEL[selfAssessed]}</td></tr>
                 <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">What happened</td><td style="padding: 8px 0; white-space: pre-wrap;">${escapeHtml(description)}</td></tr>
               </table>
               <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
@@ -158,8 +153,7 @@ export const POST: APIRoute = async (context) => {
       email: email ?? null,
       phone: phone ?? null,
       jobNumber: jobNumber?.trim() || null,
-      description,
-      selfAssessed,
+      description: movedOn ? `Removal date: ${movedOn}\n\n${description}` : description,
     });
 
     return json({ success: true, mirrored });
