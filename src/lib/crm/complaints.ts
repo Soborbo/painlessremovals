@@ -26,6 +26,8 @@ export interface ComplaintForwardInput {
   phone: string | null;
   jobNumber: string | null;
   description: string;
+  /** A bejelentohoz csatolt fotok, valtozatlanul tovabbitva. A CRM ujrakodolja oket. */
+  photos?: File[];
 }
 
 function crmBase(): string | null {
@@ -62,14 +64,30 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
   const base = crmBase();
   if (!base) return false;
 
-  const body = JSON.stringify({
-    name: input.name,
-    email: input.email,
-    phone: input.phone,
-    job_number: input.jobNumber,
-    description: input.description,
-    consent: true,
-  });
+  // Fotoval multipart, nelkule JSON. A `buildBody` ujra fut minden probalkozasnal: egy
+  // mar elolvasott File-stream nem jatszhato ujra, es a FormData ujraepitese olcso.
+  const hasPhotos = (input.photos?.length ?? 0) > 0;
+  const buildBody = (): BodyInit => {
+    if (!hasPhotos) {
+      return JSON.stringify({
+        name: input.name,
+        email: input.email,
+        phone: input.phone,
+        job_number: input.jobNumber,
+        description: input.description,
+        consent: true,
+      });
+    }
+    const form = new FormData();
+    form.set('name', input.name);
+    if (input.email) form.set('email', input.email);
+    if (input.phone) form.set('phone', input.phone);
+    if (input.jobNumber) form.set('job_number', input.jobNumber);
+    form.set('description', input.description);
+    form.set('consent', 'true');
+    for (const photo of input.photos ?? []) form.append('photos', photo);
+    return form;
+  };
 
   let lastError = 'unknown';
   for (let attempt = 0; ; attempt++) {
@@ -77,8 +95,11 @@ export async function forwardComplaint(input: ComplaintForwardInput): Promise<bo
       const res = await fetch(`${base}/api/public/complaint`, {
         method: 'POST',
         // Re-signed per attempt: the CRM only accepts a ±300s timestamp.
-        headers: { 'content-type': 'application/json', ...(await forwardAuthHeaders()) },
-        body,
+        // Multipart eseten a boundary-t a runtime teszi ra — content-type-ot NEM allitunk.
+        headers: hasPhotos
+          ? await forwardAuthHeaders()
+          : { 'content-type': 'application/json', ...(await forwardAuthHeaders()) },
+        body: buildBody(),
       });
       if (res.ok) return true;
       lastError = `http_${res.status}`;

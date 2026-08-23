@@ -24,6 +24,44 @@ import { generateErrorId } from '@/lib/utils/error';
 
 export const prerender = false;
 
+const MAX_PHOTOS = 12;
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+/** 12 x 10 MB + mezok, felfele kerekitve — a kapu a torzs BEOLVASASA ELOTT dont. */
+const MAX_BODY_BYTES = 130 * 1024 * 1024;
+
+/**
+ * A torzs ketfele lehet: JSON (foto nelkul) vagy multipart (fotokkal). A mezonevek
+ * azonosak, ezert a lenti validacio nem tud rola, melyik uton jott.
+ */
+async function readBody(request: Request): Promise<{ body: ComplaintBody; photos: File[] }> {
+  const ctype = request.headers.get('content-type') || '';
+  if (!ctype.includes('multipart/form-data')) {
+    return { body: await request.json() as ComplaintBody, photos: [] };
+  }
+  const form = await request.formData();
+  const str = (k: string): string | undefined => {
+    const v = form.get(k);
+    return typeof v === 'string' && v.trim().length > 0 ? v : undefined;
+  };
+  const photos: File[] = [];
+  for (const v of form.getAll('photos')) {
+    if (v instanceof File && v.size > 0) photos.push(v);
+  }
+  return {
+    body: {
+      name: str('name'),
+      email: str('email'),
+      phone: str('phone'),
+      jobNumber: str('jobNumber'),
+      removalDate: str('removalDate'),
+      description: str('description'),
+      honeypot: str('honeypot'),
+      turnstileToken: str('turnstileToken'),
+    },
+    photos,
+  };
+}
+
 // A sulyossagot SZANDEKOSAN nem a bejelento allitja: az osztalyozas a panaszt kezelo
 // admin dontese a CRM-ben (egy feldult ugyfel onertekelese nem prioritasi bemenet).
 // A CRM Zod-semaja ennek hianyaban a kozepso fokozatot veszi fel.
@@ -52,15 +90,35 @@ export const POST: APIRoute = async (context) => {
     }
 
     const ctype = request.headers.get('content-type') || '';
-    if (!ctype.includes('application/json')) {
+    if (!ctype.includes('application/json') && !ctype.includes('multipart/form-data')) {
       return json({ error: 'Invalid content type.' }, 415);
     }
 
+    // Meret-kapu a torzs BEOLVASASA ELOTT: egy tul nagy feltoltes ne is keruljon memoriaba.
+    const declared = Number(request.headers.get('content-length') || '0');
+    if (declared > MAX_BODY_BYTES) {
+      return json({ error: 'Those photos are too large. Please attach fewer or smaller images.' }, 413);
+    }
+
     let body: ComplaintBody;
+    let photos: File[];
     try {
-      body = await request.json() as ComplaintBody;
+      const read = await readBody(request);
+      body = read.body;
+      photos = read.photos;
     } catch {
       return json({ error: 'Invalid request body.' }, 400);
+    }
+
+    // A bongeszo mar szurt, de neki sosem hiszunk: a szerveren ujra dontunk.
+    if (photos.length > MAX_PHOTOS) {
+      return json({ error: `Please attach at most ${MAX_PHOTOS} photos.` }, 400);
+    }
+    if (photos.some((f) => f.size > MAX_PHOTO_BYTES)) {
+      return json({ error: 'Each photo must be under 10 MB.' }, 400);
+    }
+    if (photos.some((f) => !f.type.startsWith('image/'))) {
+      return json({ error: 'Photos must be image files.' }, 400);
     }
     const { name, email, phone, jobNumber, removalDate, description, honeypot, turnstileToken } = body;
 
@@ -134,6 +192,7 @@ export const POST: APIRoute = async (context) => {
                 <tr><td style="padding: 8px 0; font-weight: 600; color: #3b6587; vertical-align: top;">What happened</td><td style="padding: 8px 0; white-space: pre-wrap;">${escapeHtml(description)}</td></tr>
               </table>
               <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 16px 0;" />
+              ${photos.length > 0 ? `<p style="font-size: 13px; color: #3b6587; margin: 12px 0 0;"><strong>${photos.length}</strong> photo(s) attached — view them on the complaint in the CRM.</p>` : ''}
               <p style="font-size: 12px; color: #9ca3af; margin: 0;">Submitted from painlessremovals.com/complaints at ${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}. A copy is in the CRM under Complaints, with a 24h first-response SLA.</p>
             </div>
           </div>`,
@@ -154,6 +213,7 @@ export const POST: APIRoute = async (context) => {
       phone: phone ?? null,
       jobNumber: jobNumber?.trim() || null,
       description: movedOn ? `Removal date: ${movedOn}\n\n${description}` : description,
+      photos,
     });
 
     return json({ success: true, mirrored });

@@ -87,8 +87,20 @@ const schema = breadcrumbs([
               placeholder="Tell us what went wrong, when it happened, and what you would like us to do about it."
               class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
             <p class="text-warm-gray text-sm mt-2">
-              If anything was damaged or lost, please reply to our confirmation email with photos
-              and, where possible, proof of purchase — claims with evidence are assessed faster.
+              If anything was damaged or lost, please attach photos below and, where possible,
+              reply to our confirmation email with proof of purchase — claims with evidence are
+              assessed faster.
+            </p>
+          </div>
+
+          <div>
+            <label for="photos" class="block text-sm font-semibold text-primary-600 mb-1.5">
+              Photos <span class="font-normal text-warm-gray">(up to 12)</span>
+            </label>
+            <input type="file" id="photos" name="photos" accept="image/*" multiple
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-primary-50 file:text-primary-700 file:font-semibold hover:file:bg-primary-100" />
+            <p id="photos-note" class="text-warm-gray text-sm mt-2">
+              Photos of the damage help us assess a claim much faster. Up to 12 images, 10 MB each.
             </p>
           </div>
 
@@ -183,24 +195,54 @@ const schema = breadcrumbs([
           return;
         }
 
+        // Kliensoldali kapu: a szerver ugyanezt ujra ellenorzi (a bongeszonek sosem hiszunk),
+        // de itt azonnal, halozati kor nelkul tudjuk megmondani, hogy tul sok vagy tul nagy.
+        var photoInput = form.querySelector('#photos');
+        var photos = photoInput && photoInput.files ? Array.prototype.slice.call(photoInput.files) : [];
+        if (photos.length > 12) {
+          showError('Please attach at most 12 photos.');
+          return;
+        }
+        for (var i = 0; i < photos.length; i++) {
+          if (photos[i].size > 10 * 1024 * 1024) {
+            showError('Each photo must be under 10 MB. "' + photos[i].name + '" is too large.');
+            return;
+          }
+        }
+
         btn.disabled = true;
         var original = btn.textContent;
-        btn.textContent = 'SENDING...';
+        btn.textContent = photos.length > 0 ? 'UPLOADING...' : 'SENDING...';
 
-        fetch('/api/complaint', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: name,
-            email: email || null,
-            phone: phone || null,
-            jobNumber: jobNumber || null,
-            removalDate: removalDate || null,
-            description: description,
-            honeypot: honeypot,
-            turnstileToken: turnstileResponse
-          })
-        })
+        var payload = {
+          name: name,
+          email: email || null,
+          phone: phone || null,
+          jobNumber: jobNumber || null,
+          removalDate: removalDate || null,
+          description: description,
+          honeypot: honeypot,
+          turnstileToken: turnstileResponse
+        };
+
+        var init;
+        if (photos.length > 0) {
+          var fd = new FormData();
+          Object.keys(payload).forEach(function (k) {
+            if (payload[k] !== null && payload[k] !== undefined) fd.set(k, payload[k]);
+          });
+          photos.forEach(function (f) { fd.append('photos', f); });
+          // Content-Type-ot SZANDEKOSAN nem allitunk: a bongeszo teszi ra a boundary-t.
+          init = { method: 'POST', body: fd };
+        } else {
+          init = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          };
+        }
+
+        fetch('/api/complaint', init)
           .then(function (res) {
             return res.json().then(function (data) { return { ok: res.ok, data: data }; });
           })
