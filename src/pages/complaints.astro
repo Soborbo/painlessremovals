@@ -1,0 +1,214 @@
+---
+/**
+ * Complaints Page
+ *
+ * A private channel for an unhappy customer to reach us directly. The form
+ * emails hello@ and mirrors into the CRM (24h first-response SLA, admins
+ * notified) — see `api/complaint.ts`.
+ *
+ * Deliberately NOT tracked: a complaint is not a lead, and pushing it into the
+ * dataLayer would count an unhappy customer as a conversion. No `noindex`
+ * either — people should be able to find this page instead of writing a public
+ * one-star review.
+ */
+
+import Layout from '@/layouts/Layout.astro';
+import { siteConfig } from '@/config/site.config';
+import { breadcrumbs } from '@/utils/schema';
+
+const pageTitle = 'Complaints – Tell Us What Went Wrong';
+const pageDescription = `Something not right with your move? Tell Painless Removals directly and we will respond within 24 hours. Call ${siteConfig.company.contact.phone} or use the form.`;
+
+const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+
+const schema = breadcrumbs([
+  { name: 'Home', path: '/' },
+  { name: 'Complaints', path: '/complaints/' },
+]);
+
+const SEVERITIES = [
+  { value: 'minor', label: 'Minor, but worth mentioning' },
+  { value: 'needs_fix', label: 'Needs fixing' },
+  { value: 'major', label: 'Serious problem' },
+];
+---
+
+<Layout title={pageTitle} description={pageDescription} schema={schema}>
+  <section class="bg-primary-700 text-white py-12 md:py-16">
+    <div class="container-wide">
+      <h1 class="text-3xl md:text-4xl font-bold font-heading mb-3">Tell us what went wrong</h1>
+      <p class="text-lg text-gray-100 max-w-2xl">
+        We would much rather hear it from you than read it later. Every complaint goes
+        straight to the team, and we aim to come back to you within 24 hours.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-12 md:py-16 bg-gray-50">
+    <div class="container-wide max-w-3xl">
+      <div class="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-10">
+        <form id="complaint-form-el" class="space-y-5" novalidate>
+          <!-- Honeypot – hidden from humans, bots fill it -->
+          <div style="position: absolute; left: -9999px;" aria-hidden="true">
+            <label for="website">Leave this blank</label>
+            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div>
+            <label for="name" class="block text-sm font-semibold text-primary-600 mb-1.5">Your Name <span class="text-secondary-500">*</span></label>
+            <input type="text" id="name" name="name" required autocomplete="name" maxlength="120"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="email" class="block text-sm font-semibold text-primary-600 mb-1.5">Email Address</label>
+              <input type="email" id="email" name="email" autocomplete="email" maxlength="200"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-semibold text-primary-600 mb-1.5">Phone Number</label>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" maxlength="40"
+                class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+            </div>
+          </div>
+          <p class="text-warm-gray text-sm -mt-2">Please leave at least one of the two, so we can come back to you.</p>
+
+          <div>
+            <label for="jobNumber" class="block text-sm font-semibold text-primary-600 mb-1.5">Job Number <span class="font-normal text-warm-gray">(if you have it)</span></label>
+            <input type="text" id="jobNumber" name="jobNumber" maxlength="40" placeholder="e.g. JOB-2026-0123"
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
+          </div>
+
+          <div>
+            <label for="description" class="block text-sm font-semibold text-primary-600 mb-1.5">What happened? <span class="text-secondary-500">*</span></label>
+            <textarea id="description" name="description" rows="6" required maxlength="4000"
+              placeholder="Tell us what went wrong, when it happened, and what you would like us to do about it."
+              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-y"></textarea>
+          </div>
+
+          <fieldset>
+            <legend class="block text-sm font-semibold text-primary-600 mb-2">How serious is it?</legend>
+            <div class="space-y-2">
+              {SEVERITIES.map((s, i) => (
+                <label class="flex items-center gap-2 text-gray-700">
+                  <input type="radio" name="severity" value={s.value} checked={i === 1} class="text-primary-600 focus:ring-primary-500" />
+                  {s.label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div>
+            <div class="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="light" data-language="en"></div>
+          </div>
+
+          <div id="complaint-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"></div>
+
+          <div>
+            <button type="submit" id="complaint-submit-btn" class="btn-cta-orange cursor-pointer w-full sm:w-auto">
+              SEND COMPLAINT
+            </button>
+            <p class="text-warm-gray text-sm mt-3">
+              Prefer to talk? Call <span data-contact="phone-inline"><noscript>0117 287 0082</noscript></span>
+            </p>
+          </div>
+        </form>
+
+        <div id="complaint-success" class="hidden text-center py-6">
+          <h2 class="text-2xl font-bold font-heading text-primary-700 mb-2">Thank you — we have it.</h2>
+          <p class="text-gray-700">
+            Your complaint has been logged and someone will be in touch within 24 hours.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cloudflare Turnstile script -->
+  <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+  <script is:inline>
+    (function () {
+      var form = document.getElementById('complaint-form-el');
+      if (!form) return;
+      var errorBox = document.getElementById('complaint-error');
+      var successBox = document.getElementById('complaint-success');
+      var btn = document.getElementById('complaint-submit-btn');
+
+      function showError(msg) {
+        errorBox.textContent = msg;
+        errorBox.classList.remove('hidden');
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorBox.classList.add('hidden');
+
+        var name = form.querySelector('#name').value.trim();
+        var email = form.querySelector('#email').value.trim();
+        var phone = form.querySelector('#phone').value.trim();
+        var jobNumber = form.querySelector('#jobNumber').value.trim();
+        var description = form.querySelector('#description').value.trim();
+        var severityEl = form.querySelector('input[name="severity"]:checked');
+        var honeypot = form.querySelector('#website').value;
+
+        if (!name || description.length < 10) {
+          showError('Please tell us your name and describe what happened.');
+          return;
+        }
+        if (!email && !phone) {
+          showError('Please leave an email address or a phone number so we can reply.');
+          return;
+        }
+
+        var turnstileResponse = '';
+        var turnstileInput = form.querySelector('[name="cf-turnstile-response"]');
+        if (turnstileInput) turnstileResponse = turnstileInput.value;
+        if (!turnstileResponse) {
+          showError('Please complete the security check and try again.');
+          return;
+        }
+
+        btn.disabled = true;
+        var original = btn.textContent;
+        btn.textContent = 'SENDING...';
+
+        fetch('/api/complaint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            email: email || null,
+            phone: phone || null,
+            jobNumber: jobNumber || null,
+            description: description,
+            severity: severityEl ? severityEl.value : 'needs_fix',
+            honeypot: honeypot,
+            turnstileToken: turnstileResponse
+          })
+        })
+          .then(function (res) {
+            return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+          })
+          .then(function (r) {
+            if (r.ok && r.data && r.data.success) {
+              form.classList.add('hidden');
+              successBox.classList.remove('hidden');
+              return;
+            }
+            showError((r.data && r.data.error) || 'Something went wrong. Please try again.');
+            btn.disabled = false;
+            btn.textContent = original;
+            if (window.turnstile) window.turnstile.reset();
+          })
+          .catch(function () {
+            showError('Network error. Please check your connection and try again.');
+            btn.disabled = false;
+            btn.textContent = original;
+            if (window.turnstile) window.turnstile.reset();
+          });
+      });
+    })();
+  </script>
+</Layout>
