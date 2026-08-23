@@ -21,6 +21,11 @@ const pageDescription = `Something not right with your move? Tell Painless Remov
 
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
 
+// A datum-valaszto felso korlatja a mai nap: a "mikor tortent?" jovobeli datummal
+// ertelmetlen. A lap statikus, ezert ez a BUILD napja — a kliensoldali ellenorzes
+// (lent) az igazi kapu, a szerver pedig harmadszor is elutasitja.
+const todayIso = new Date().toISOString().slice(0, 10);
+
 const schema = breadcrumbs([
   { name: 'Home', path: '/' },
   { name: 'Complaints', path: '/complaints/' },
@@ -78,7 +83,7 @@ const schema = breadcrumbs([
               <!-- text-base (16px): iOS kulonben RANAGYIT a mezore fokuszkor. A natív dátum-
                    mező mobilon sajat valasztot nyit; asztali gepen a showPicker() teszi, hogy
                    a mezo BARMELY pontjara kattintva feljojjon a naptar, ne csak az ikonra. -->
-              <input type="date" id="occurredOn" name="occurredOn" required
+              <input type="date" id="occurredOn" name="occurredOn" required max={todayIso}
                 class="w-full px-4 py-3 text-base border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" />
             </div>
           </div>
@@ -207,6 +212,12 @@ const schema = breadcrumbs([
       // teszi, hogy a mezo barmely pontja mukodjon. Mobilon a natív valaszto amugy is jon,
       // es a duplan hivott showPicker() ott csendben eldobodik (ezert a try/catch).
       var dateEl = document.getElementById('occurredOn');
+      if (dateEl) {
+        // A lap statikus: a szerver-oldali `max` a BUILD napja. Futasidoben a MAI napra
+        // igazitjuk, kulonben egy hetekkel kesobb betoltott oldalon jovobeli datum is
+        // valaszthato lenne.
+        dateEl.max = new Date().toISOString().slice(0, 10);
+      }
       if (dateEl && typeof dateEl.showPicker === 'function') {
         dateEl.addEventListener('focus', function () { try { dateEl.showPicker(); } catch (e) {} });
         dateEl.addEventListener('click', function () { try { dateEl.showPicker(); } catch (e) {} });
@@ -336,6 +347,10 @@ const schema = breadcrumbs([
         }
         if (!occurredOn) {
           showError('Please tell us when the problem occurred.');
+          return;
+        }
+        if (occurredOn > new Date().toISOString().slice(0, 10)) {
+          showError('That date is in the future — please tell us when the problem actually happened.');
           return;
         }
 
