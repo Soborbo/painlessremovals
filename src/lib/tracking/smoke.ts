@@ -16,6 +16,7 @@
  * A másnapi ellenőrzés a gateway napi digestjében fut (SMOKE_SITES).
  */
 import {
+  buildConsentSources,
   sendGatewayConversion,
   resolveTestEventCode,
   type GatewayEnv,
@@ -51,6 +52,16 @@ export async function runDailySmokeLead(env: GatewayEnv): Promise<void> {
       ad_storage: 'GRANTED',
       analytics_storage: 'GRANTED',
     },
+    // A napi VERZIÓ-SZÍVHANG. A smoke az egyetlen esemény, ami determinisztikusan,
+    // naponta végigmegy a szerver-ingressen — tehát ez tudja bizonyítani, hogy ez
+    // a site MELYIK könyvtárat futtatja, anélkül hogy szerves konverzióra kellene
+    // várni. A cron-nak nincs sütije, ezért a források őszintén NULL-ok; az
+    // állítás itt kizárólag a `client_lib_version`.
+    //
+    // Egy megállapítást ez KIVÁLT: a TRK-910-006 (elavult kliens-lib), mert a
+    // jelentett verzió a gateway minimuma alatt van. Ez IGAZ, információs
+    // szintű, és pontosan a mérendő tény — nem zaj, hanem a jel.
+    consentSources: buildConsentSources(null),
     eventSourceUrl: 'https://painlessremovals.com/__smoke',
     testEventCode,
   });
