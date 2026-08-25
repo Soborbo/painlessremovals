@@ -19,6 +19,7 @@ import {
 } from '@/lib/features/security/payload-limit';
 import { checkRateLimit, createRateLimitResponse } from '@/lib/features/security/rate-limit';
 import { syncQuoteToImve } from '@/lib/features/imve';
+import { callbackCrmEventId } from '@/lib/crm/format';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
@@ -270,7 +271,9 @@ export const POST: APIRoute = async (context) => {
       const attribution = Object.values(attributionEntries).some((v) => v !== undefined)
         ? attributionEntries
         : undefined;
-      const crmEventId = `cb-${fp.slice(0, 40)}`;
+      // Capped to the gateway's 40-char event_id contract: `cb-` + a full 40-hex
+      // sha1 was 43 chars, and the CRM's forwarded conversion got a hard 400 for it.
+      const crmEventId = callbackCrmEventId(fp);
       deliverCallbackLead(env, getWaitUntil(context.locals), {
         fullName: contactName,
         email: contactEmail,
@@ -278,6 +281,9 @@ export const POST: APIRoute = async (context) => {
         message: validated.callbackReason,
         propertyPostcode: fromAddr?.postcode,
         eventId: crmEventId,
+        // The browser UUID rides along so the CRM's own conversion leg shares the
+        // Pixel's (event_name, event_id) pair — without it the CRM leg is a 2nd Lead.
+        trackingEventId: validated.event_id,
         attribution,
       });
 

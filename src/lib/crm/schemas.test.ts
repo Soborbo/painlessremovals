@@ -6,6 +6,7 @@ import {
   callbackWebhookSchema,
   affiliateWebhookSchema,
   partnerRegisterWebhookSchema,
+  webhookEnvelopeSchema,
 } from './schemas';
 
 const goodCustomer = {
@@ -182,5 +183,33 @@ describe('partnerRegisterWebhookSchema', () => {
       },
     });
     expect(r.success).toBe(false);
+  });
+});
+
+describe('webhookEnvelopeSchema.tracking_event_id', () => {
+  const envelope = {
+    event_id: 'cb-bb15625ea0573d68ca7797911ac201152297250',
+    source: 'website',
+    company_id: '11111111-1111-1111-1111-111111111111',
+  };
+
+  it('is optional (older callers keep working)', () => {
+    expect(webhookEnvelopeSchema.safeParse(envelope).success).toBe(true);
+  });
+
+  it('accepts the browser UUID (36 chars, gateway charset)', () => {
+    const r = webhookEnvelopeSchema.safeParse({
+      ...envelope,
+      tracking_event_id: '3f1c2b7a-1111-4222-8333-444455556666',
+    });
+    expect(r.success).toBe(true);
+  });
+
+  it('rejects an id the gateway would 400 (over 40 chars / bad charset)', () => {
+    expect(
+      webhookEnvelopeSchema.safeParse({ ...envelope, tracking_event_id: 'cb-bb15625ea0573d68ca7797911ac201152297250d' })
+        .success,
+    ).toBe(false);
+    expect(webhookEnvelopeSchema.safeParse({ ...envelope, tracking_event_id: 'x:y' }).success).toBe(false);
   });
 });

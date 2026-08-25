@@ -62,6 +62,12 @@ export interface SendToCRMOptions {
   eventId?: string;
   /** Envelope `source`; defaults to env override or "website". */
   source?: string;
+  /**
+   * Envelope `tracking_event_id`: the browser-minted conversion id, when it differs
+   * from the idempotency `eventId` (calculator callbacks). Lets the CRM dedupe its
+   * initial-conversion leg against the Pixel + the site's own gateway leg.
+   */
+  trackingEventId?: string;
   /** Backoff schedule (ms). Overridable for tests. */
   retryDelaysMs?: number[];
   /** Injectable for tests; defaults to global fetch. */
@@ -139,6 +145,7 @@ export async function sendToCRM(
     event_id: eventId,
     source,
     company_id: env.CRM_COMPANY_ID,
+    ...(options.trackingEventId ? { tracking_event_id: options.trackingEventId } : {}),
     ...payload,
   };
   // Serialize ONCE — this exact string is what we sign and what we send.

@@ -48,12 +48,13 @@ function deliver(
   payload: Record<string, unknown>,
   eventId: string,
   source?: string,
+  trackingEventId?: string,
 ): void {
   if (!isCRMConfigured(env)) {
     logger.error('CRM', 'Lead not delivered — CRM not configured', { surface, eventId });
     return;
   }
-  const promise = sendToCRMWithMirror(env, surface, payload, { eventId, source })
+  const promise = sendToCRMWithMirror(env, surface, payload, { eventId, source, trackingEventId })
     .then((res) => {
       if (!res.ok) {
         logger.error('CRM', 'Server-side delivery failed', {
@@ -163,6 +164,12 @@ export interface CallbackLeadInput {
   message?: string;
   propertyPostcode?: string;
   eventId?: string;
+  /**
+   * The browser-minted conversion id (the same UUID the Pixel push and the site's
+   * own gateway leg carry). Travels as envelope `tracking_event_id` so the CRM's
+   * initial-conversion leg dedupes instead of counting a second Lead.
+   */
+  trackingEventId?: string;
   /** Marketing attribution (gclid/utm/landing) captured on the site. */
   attribution?: CallbackWebhookPayload['attribution'];
   /**
@@ -208,5 +215,5 @@ export function deliverCallbackLead(
     });
     return;
   }
-  deliver(env, waitUntil, 'callback', parsed.data, eventId, input.source);
+  deliver(env, waitUntil, 'callback', parsed.data, eventId, input.source, input.trackingEventId);
 }
