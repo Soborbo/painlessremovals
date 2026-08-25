@@ -23,6 +23,7 @@ import { callbackCrmEventId } from '@/lib/crm/format';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
+  buildConsentSources,
   readConsentFromCookie,
   readMetaCookies,
   splitFullName,
@@ -329,6 +330,7 @@ export const POST: APIRoute = async (context) => {
           // Consent Mode state from the CookieYes cookie on this POST — becomes the
           // lead's explicit consent-receipt in the gateway ledger (offline-upload gate).
           consent: readConsentFromCookie(context.request.headers.get('Cookie')),
+          consentSources: buildConsentSources(context.request.headers.get('Cookie')),
           fbp: metaCookies.fbp,
           fbc: metaCookies.fbc,
           clientId: ga4ClientIdFromRequest(context.request),
