@@ -68,11 +68,21 @@ function adStorageGranted(): boolean {
   return adStorageConsent() === 'granted';
 }
 
+import { normalizePhone as canonicalNormalizePhone } from '@/lib/soborbo-tracking/persistence';
+
 export { adStorageGranted };
 
 declare global {
   interface Window {
-    dataLayer?: Array<Record<string, unknown>>;
+    /**
+     * A KANONIKUS csomag alakjával egyezik (`Record<string, unknown>[]`, NEM
+     * opcionális). Az F9/4 vendorolásakor derült ki, hogy a két deklaráció
+     * ütközött: a TypeScript ugyanarra a globálisra nem enged kétféle
+     * modifikátort (TS2687/TS2717), tehát a kanonikus mag be sem fordult
+     * volna. A futásidejű védelem VÁLTOZATLAN: minden hívó helyen marad a
+     * `window.dataLayer = window.dataLayer || []` őrzés.
+     */
+    dataLayer: Record<string, unknown>[];
     fbq?: (...args: unknown[]) => void;
     gtag?: (...args: unknown[]) => void;
   }
@@ -428,44 +438,31 @@ function stripTrunkPrefix(plus: string): string {
 }
 
 /**
- * Telefon → E.164.
+ * Telefon → E.164. **A KANONIKUS CSOMAG IMPLEMENTÁCIÓJÁRA DELEGÁL** (F9/4).
  *
- * ── EZ EGY NÉMA, ÉLES HIBA VOLT ──────────────────────────────────────────────
- * Két baja volt, és mindkettő ugyanoda vezetett: a böngésző MÁS számot
- * hash-elt, mint a szerver, tehát a Meta Pixel és a CAPI KÉT KÜLÖN EMBERT
- * látott ugyanabban a látogatóban. A dedup elromlott, a match-minőség némán
- * esett — miközben minden mérőszám zöld volt.
+ * ── Miért delegálás, és nem saját kód ────────────────────────────────────────
+ * Ez a függvény korábban a fork saját implementációja volt, és NÉMÁN eltért a
+ * szervertől: a `+44 (0)7123-456.789` alakból a böngésző `+4407123456.789`-et
+ * csinált, a szerver `+447123456789`-et. A Meta Pixel és a CAPI ugyanarról a
+ * látogatóról KÉT KÜLÖN hash-elt identitást adott — a user matching, az EMQ és
+ * az Enhanced Conversions match-rate némán romlott. (A dedup ép volt: az az
+ * `(event_name, event_id)` páron áll.)
  *
- *   1. A takarítás nem vitte el a PONTOT (`.`), pedig a CLAUDE.md 1. pontja
- *      kimondja: „Strip ALL whitespace, dashes, parentheses, dots".
- *   2. A `+`-szal kezdődő szám KORAI RETURN-nel kilépett, tehát a `(0)`-ból
- *      maradt trunk-nulla bent ragadt.
+ * A javítás önmagában nem elég: amíg KÉT implementáció létezik ugyanarra a
+ * szabályra, a szétcsúszás bármikor megismételhető. Ezért innentől EGY forrás
+ * van — a vendorolt kanonikus csomag (`src/lib/soborbo-tracking/`), amelynek
+ * bitazonosságát a Serverside `check:vendored --paths=lib/` igazolja.
  *
- *   bemenet:  +44 (0)7123-456.789
- *   böngésző: +4407123456.789     ← ez ment a Pixelnek
- *   szerver:  +447123456789       ← ez ment a CAPI-nak
- *
- * A kanonikus csomag ezt a #87-ben javította; ez a fork sosem kapta meg. A
- * `parity-harness.test.ts` első futása találta meg.
+ * Az ÜRES bemenet szándékosan itt marad: a kanonikus `normalizePhone('')`
+ * `'+44'`-et adna (nincs üres-őre), a hívók viszont üres stringre üres
+ * stringet várnak — ezt a `normalize.test.ts` régóta rögzíti.
  */
 export function normalizePhoneE164(
   phone: string,
   countryCode: CountryCode = DEFAULT_COUNTRY,
 ): string {
   if (!phone) return '';
-  let cleaned = phone.replace(/[\s\-().]/g, '');
-  if (cleaned.startsWith('+')) return stripTrunkPrefix(cleaned.replace(/[^\d+]/g, ''));
-  if (countryCode === 'GB') {
-    if (cleaned.startsWith('0')) cleaned = `+44${cleaned.slice(1)}`;
-    else if (cleaned.startsWith('44')) cleaned = `+${cleaned}`;
-    else cleaned = `+44${cleaned}`;
-  } else {
-    if (cleaned.startsWith('06')) cleaned = `+36${cleaned.slice(2)}`;
-    else if (cleaned.startsWith('0')) cleaned = `+36${cleaned.slice(1)}`;
-    else if (cleaned.startsWith('36')) cleaned = `+${cleaned}`;
-    else cleaned = `+36${cleaned}`;
-  }
-  return cleaned;
+  return canonicalNormalizePhone(phone, countryCode);
 }
 
 export function normalizeUserData(
