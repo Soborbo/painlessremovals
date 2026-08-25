@@ -271,6 +271,13 @@ export type PartnerRegisterWebhookPayload = z.infer<typeof partnerRegisterWebhoo
 
 export const webhookEnvelopeSchema = z.object({
   event_id: z.string().min(8, 'event_id too short').max(120, 'event_id too long'),
+  // The browser-minted conversion id (Pixel↔CAPI dedup) when `event_id` is a
+  // separate, content-derived idempotency key (calculator callbacks). Must already
+  // satisfy the gateway contract — the CRM forwards it verbatim.
+  tracking_event_id: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{1,40}$/, 'tracking_event_id must satisfy the gateway contract')
+    .optional(),
   source: z.string().min(1).max(40),
   company_id: uuidField('company_id must be a uuid'),
 });
