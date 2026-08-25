@@ -39,44 +39,17 @@ interface TurnstileOptions {
   appearance?: 'always' | 'execute' | 'interaction-only';
 }
 
-export interface UserData {
-  email?: string;
-  phone_number?: string;
-  first_name?: string;
-  last_name?: string;
-  city?: string;
-  street?: string;
-  postal_code?: string;
-  country?: string;
-  // Stabil user/cookie azonosító (Meta external_id → EMQ-javítás). A Worker
-  // hash-eli; ugyanezt az értéket add a böngésző Pixelnek is a dedup miatt.
-  external_id?: string;
-}
-
-export type ConsentSignal = 'GRANTED' | 'DENIED' | 'UNSPECIFIED';
-
-export interface ConsentState {
-  ad_user_data?: ConsentSignal;
-  ad_personalization?: ConsentSignal;
-  ad_storage?: ConsentSignal;
-  analytics_storage?: ConsentSignal;
-}
-
-export type AttributionParams = Record<string, string>;
-
-export interface ConversionPayload {
-  event_name: string;
-  event_id: string;
-  event_time: number;
-  value?: number;
-  currency?: string;
-  source?: string;
-  service?: string;
-  user_data?: UserData;
-  event_source_url?: string;
-  consent?: ConsentState;
-  attribution?: AttributionParams;
-}
+// A TÍPUSOK is a kanonikus csomagból jönnek (F9/3.4). Korábban itt SAJÁT,
+// szó szerint azonos deklarációk álltak — két helyen ugyanaz a szerződés, ami
+// pont úgy tud némán szétcsúszni, ahogy az implementációk tették. A site
+// hívási pontjai változatlanul innen importálhatják őket.
+export type {
+  UserData,
+  ConsentSignal,
+  ConsentState,
+  AttributionParams,
+  ConversionPayload,
+} from '@/lib/soborbo-tracking/gateway';
 
 let cachedTurnstileToken: string | undefined;
 let cachedTokenExpiresAt = 0;
@@ -205,314 +178,31 @@ export function prewarmTurnstileToken(): void {
   }, 500);
 }
 
-function getCookie(name: string): string | undefined {
-  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-  return match ? decodeURIComponent(match[2]) : undefined;
-}
-
-function extractGAClientId(gaCookie: string | undefined): string | undefined {
-  if (!gaCookie) return undefined;
-  // _ga formátum: GA1.<domain-szint>.<clientid-1>.<clientid-2>. A client_id mindig
-  // az UTOLSÓ két szegmens (#8) — slice(-2) robusztus a GA1.1/GA1.2/GA1.3 prefix
-  // variánsokra, szemben a fix [2]/[3] indexszel.
-  const parts = gaCookie.split('.');
-  return parts.length >= 4 ? parts.slice(-2).join('.') : undefined;
-}
-
-// GA4 session id a `_ga_<STREAM>` cookie-ból. Két formátumot kell kezelni:
-//   GS1: `GS1.1.<session_id>.<...>`
-//   GS2: `GS2.1.s<session_id>$o..$g..`  ← 2025-05-06 óta az új session-ök defaultja
-// A GS2-nél a session_id elé egy literál `s` kerül. Az opcionális `s`-t és a
-// több jegyű verzió/slot szegmenseket is kezeljük. Nélküle az MP-event nem
-// jelenik meg rendesen a GA4 riportokban.
-function extractGASessionId(): string | undefined {
-  const match = document.cookie.match(/_ga_[A-Z0-9]+=GS\d+\.\d+\.s?(\d+)/);
-  return match ? match[1] : undefined;
-}
-
-// Consent Mode v2 állapot. Forrás-sorrend:
-//   1) window.__trackingConsent (explicit override, pl. teszthez)
-//   2) CookieYes `cookieyes-consent` cookie (GTM-ből betöltött CMP)
-// Hiányában undefined → a Worker a SiteConfig.require_consent szerint dönt
-// (EEA-n állítsd require_consent:true-ra → fail-closed cookie/döntés hiányában).
+// ─────────────────────────────────────────────────────────────────────────────
+// TRANSZPORT — a KANONIKUS csomagra delegálva (F9/3.4)
+// ─────────────────────────────────────────────────────────────────────────────
 //
-// CookieYes cookie formátum:
-//   consentid:..,consent:yes,necessary:yes,functional:yes,analytics:yes,
-//   performance:yes,advertisement:yes,other:yes   (elutasításnál :no)
-// Consent Mode v2 leképezés (CookieYes hivatalos):
-//   advertisement → ad_storage + ad_user_data + ad_personalization
-//   analytics     → analytics_storage
-function getConsentState(): ConsentState | undefined {
-  if (typeof window === 'undefined') return undefined;
+// Ez a szakasz korábban ~270 sor SAJÁT implementáció volt: süti-olvasás,
+// GA client/session id, consent-állapot, attribúció-tár, klikk-ID kezelés és a
+// beacon/fetch küldés. Mindegyiknek volt kanonikus párja a
+// `soborbo-tracking` csomagban — vagyis a site MÁSODIK transport authority-t
+// tartott fenn ugyanarra a feladatra. Pontosan ez a forkolódás forrása: két
+// implementáció ugyanarra a szabályra előbb-utóbb két igazságot mond.
+//
+// Amit a csere HOZ (a kanonikus payload a mai SZUPERHALMAZA):
+//   · `consent_sources` — a böngésző-láb is jelenti a kliens-verziót, tehát a
+//     ledgerben látszani fog, hogy ez a láb már a kanonikus 6.4.0-t futtatja;
+//   · `consent_id` (saját CMP alatt), `storage_read_blocked*` telemetria;
+//   · a `_fbp`/`_fbc` olvasás a marketing-consent kapun megy (PECR), nem egy
+//     második, kapuzatlan `getCookie` úton;
+//   · a Google klikk-ID-k kölcsönös kizárása (csomag 6.4.0 — ezt a fork már
+//     tudta, és a delegálás ELŐTT vittük fel a kanonikusba, hogy a csere ne
+//     legyen regresszió).
+//
+// Amit a csere NEM változtat: az `event_id`, az esemény-nevek, a szerver-only
+// némítás és a `ConversionPayload` szerződés (a két interfész bitre azonos volt).
+//
+// A Turnstile-blokk FENT SZÁNDÉKOSAN MARAD: az a site SAJÁT `/api/contact/`
+// végpontjának bot-védelme, NEM a gateway törölt Turnstile-kapuja.
 
-  const override = (window as unknown as { __trackingConsent?: ConsentState }).__trackingConsent;
-  if (override && typeof override === 'object') return override;
-
-  const raw = getCookie('cookieyes-consent');
-  if (!raw) return undefined;
-
-  const map: Record<string, string> = {};
-  for (const part of raw.split(',')) {
-    const idx = part.indexOf(':');
-    if (idx > 0) map[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
-  }
-  // Ha nincs kategória-kulcs, nem CookieYes-cookie → ne találgassunk.
-  if (map.advertisement === undefined && map.analytics === undefined) return undefined;
-
-  const sig = (yes: boolean): ConsentSignal => (yes ? 'GRANTED' : 'DENIED');
-  const adGranted = map.advertisement === 'yes';
-  return {
-    ad_user_data: sig(adGranted),
-    ad_personalization: sig(adGranted),
-    ad_storage: sig(adGranted),
-    analytics_storage: sig(map.analytics === 'yes')
-  };
-}
-
-// ── Univerzális attribúció-gyűjtés ──────────────────────────────────────────
-// Minden bevett click ID + UTM, az URL-ből + `_gcl_aw` cookie fallbackkel,
-// localStorage-ban perzisztálva (a konverzió gyakran másik oldalon történik,
-// mint a landing). Last-touch nyer a click ID-knél/UTM-eknél; a landing-kontextus
-// (landing_page, referrer) first-touch.
-const ATTR_STORAGE_KEY = '__sb_attribution';
-const ATTR_CLICK_PARAMS = [
-  'gclid',
-  'gbraid',
-  'wbraid',
-  'gclsrc',
-  'gad_source',
-  'dclid',
-  'fbclid',
-  'msclkid',
-  'ttclid',
-  'li_fat_id',
-  'twclid'
-];
-const ATTR_UTM_PARAMS = [
-  'utm_source',
-  'utm_medium',
-  'utm_campaign',
-  'utm_term',
-  'utm_content',
-  'utm_id',
-  'utm_source_platform',
-  'utm_creative_format',
-  'utm_marketing_tactic'
-];
-
-function readStoredAttribution(): AttributionParams {
-  try {
-    const raw = localStorage.getItem(ATTR_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as AttributionParams) : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeStoredAttribution(a: AttributionParams): void {
-  try {
-    localStorage.setItem(ATTR_STORAGE_KEY, JSON.stringify(a));
-  } catch {
-    // localStorage tiltva (privacy mód) — best-effort, csendben kihagyjuk.
-  }
-}
-
-// gclid a `_gcl_aw` cookie-ból (formátum: GCL.<ts>.<gclid>) — fallback, ha az
-// URL-ben már nincs gclid (pl. a felhasználó belső oldalon konvertál).
-function gclidFromCookie(): string | undefined {
-  const c = getCookie('_gcl_aw');
-  if (!c) return undefined;
-  const parts = c.split('.');
-  return parts.length >= 3 ? parts.slice(2).join('.') : undefined;
-}
-
-// Google click IDs are MUTUALLY EXCLUSIVE: one click yields gclid OR gbraid OR wbraid,
-// never several. This store merged per key, so a returning paid visitor kept the
-// PREVIOUS click's ID alongside the new one and the conversion payload carried two IDs
-// from two different clicks — which the offline upload rejects. So: as soon as the fresh
-// source carries ANY Google click ID, its siblings are dropped. `fbclid`/`msclkid` are
-// other networks and stay untouched.
-const GOOGLE_CLICK_KEYS = ['gclid', 'gbraid', 'wbraid'] as const;
-
-function dropStaleGoogleClickIds(
-  stored: AttributionParams,
-  fresh: AttributionParams,
-): AttributionParams {
-  if (!GOOGLE_CLICK_KEYS.some((k) => fresh[k])) {
-    // No fresh Google click ID. A legacy store may still hold several from the
-    // buggy era — keep `gclid` (the dominant, non-iOS form) and drop the siblings.
-    const present = GOOGLE_CLICK_KEYS.filter((k) => stored[k]);
-    if (present.length < 2) return stored;
-    const keep = present.includes('gclid') ? 'gclid' : present[0];
-    const healed = { ...stored };
-    for (const k of GOOGLE_CLICK_KEYS) if (k !== keep) delete healed[k];
-    return healed;
-  }
-  const cleaned = { ...stored };
-  for (const k of GOOGLE_CLICK_KEYS) if (!fresh[k]) delete cleaned[k];
-  return cleaned;
-}
-
-/**
- * A friss forrásból determinisztikusan EGY Google klikk-ID marad (gclid > gbraid > wbraid).
- * HELYBEN módosít: a hívó `fresh` objektuma `const`, és a felesleges kulcsokat TÖRÖLNI kell.
- */
-function keepSingleGoogleClickId(fresh: AttributionParams): void {
-  const present = GOOGLE_CLICK_KEYS.filter((k) => fresh[k]);
-  if (present.length < 2) return;
-  const keep = present.includes('gclid') ? 'gclid' : present[0];
-  for (const k of GOOGLE_CLICK_KEYS) if (k !== keep) delete fresh[k];
-}
-
-export function collectAttribution(): AttributionParams {
-  const stored = readStoredAttribution();
-  const fresh: AttributionParams = {};
-
-  // Ad-consent kapu: a click ID-k ad-azonosítók → CSAK ad-consent mellett
-  // gyűjtjük/tároljuk/küldjük (ePrivacy/TCF). UTM/landing analitikai metaadat.
-  // Consent hiányában (még nincs döntés) fail-closed → nincs click ID.
-  const consent = getConsentState();
-  const adGranted =
-    consent?.ad_user_data === 'GRANTED' || consent?.ad_storage === 'GRANTED';
-
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (adGranted) {
-      for (const k of ATTR_CLICK_PARAMS) {
-        const v = params.get(k);
-        if (v) fresh[k] = v;
-      }
-    }
-    for (const k of ATTR_UTM_PARAMS) {
-      const v = params.get(k);
-      if (v) fresh[k] = v;
-    }
-  } catch {
-    // no-op
-  }
-
-  // Ebből a függvényből CSAK EGY Google klikk-ID mehet ki. Két őr, ebben a sorrendben:
-  //  1. Maga az URL is hozhat többet (redirect / tag-manager artefakt) — egyre szűkítjük.
-  //  2. A `_gcl_aw` cookie-fallback NEM futhat, ha az URL már hozott Google klikk-ID-t.
-  //     Különben egy visszatérő látogató ?gbraid=… landolásánál a régi gclid-cookie is
-  //     FRISSNEK számítana, a `dropStaleGoogleClickIds` pedig mindkettőt megtartaná (az
-  //     csak a `stored`-ból metsz) — és a payload két különböző kattintás azonosítóját vinné.
-  keepSingleGoogleClickId(fresh);
-  if (adGranted && !GOOGLE_CLICK_KEYS.some((k) => fresh[k])) {
-    const g = gclidFromCookie();
-    if (g) fresh.gclid = g;
-  }
-
-  // Last-touch: a friss URL-jelek felülírják a tároltat. A friss Google klikk-ID a
-  // tárolt TESTVÉREIT is kiüti (lásd dropStaleGoogleClickIds).
-  const merged: AttributionParams = { ...dropStaleGoogleClickIds(stored, fresh), ...fresh };
-
-  // Ad-consent visszavonva/hiányzik → a korábban tárolt click ID-ket is dobjuk
-  // (ne perzisztáljon/menjen ad-azonosító consent nélkül).
-  if (!adGranted) {
-    for (const k of ATTR_CLICK_PARAMS) delete merged[k];
-  }
-
-  // First-touch landing-kontextus (nem írjuk felül, ha már megvan).
-  if (!merged.landing_page) merged.landing_page = window.location.href;
-  if (!merged.referrer && document.referrer) merged.referrer = document.referrer;
-
-  writeStoredAttribution(merged);
-  return merged;
-}
-
-export async function sendToWorker(payload: ConversionPayload): Promise<boolean> {
-  // Turnstile-token NINCS TÖBBÉ: a gateway nem validálja (a böngésző-ág kapuja
-  // az Origin allow-list + rate limit), tehát a token-mint csak latency és egy
-  // néma kiesés-osztály volt — pont ez okozta a 2026-06-28→07-13 outage-et
-  // (token-hiba → eldobott klikk-konverziók). A dispatch tokentől függetlenül megy.
-  const fbp = getCookie('_fbp');
-  const fbc = getCookie('_fbc');
-  const clientId = extractGAClientId(getCookie('_ga'));
-  const sessionId = extractGASessionId();
-
-  const body = JSON.stringify({
-    ...payload,
-    fbp,
-    fbc,
-    client_id: clientId,
-    session_id: sessionId,
-    consent: payload.consent || getConsentState(),
-    attribution: payload.attribution || collectAttribution(),
-    event_source_url: payload.event_source_url || location.href
-  });
-
-  if (typeof navigator.sendBeacon === 'function') {
-    try {
-      const blob = new Blob([body], { type: 'application/json' });
-      const queued = navigator.sendBeacon('/api/event/conversion', blob);
-      if (queued) return true;
-    } catch {
-      // Fall through to fetch
-    }
-  }
-
-  try {
-    await fetch('/api/event/conversion', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-      keepalive: true
-    });
-    return true;
-  } catch (err) {
-    console.warn('[tracking] sendToWorker failed', err);
-    return false;
-  }
-}
-
-/**
- * FIGYELEM — jelenleg HOLT KÓD (nincs hívója a repóban). Ha bekerül egy hívó,
- * újratermeli az audit 2026-08 P0-A hibáját: a lenti dataLayer.push közvetlen,
- * megkerüli a `tracking.ts` `buildSafePush` chokepointját, ezért a `source`
- * GA4-foglalt manuális kampánykulcsként jut ki és session-forrássá lép elő.
- * Hívás előtt vagy a `source`-t kell elhagyni, vagy a `trackEvent()`-et
- * használni helyette.
- */
-export async function trackConversion(
-  eventName: string,
-  params: {
-    event_id?: string;
-    value?: number;
-    currency?: string;
-    source?: string;
-    service?: string;
-    user_data?: UserData;
-    consent?: ConsentState;
-  } = {}
-): Promise<void> {
-  const eventId = params.event_id || generateUUID();
-  const eventTime = Math.floor(Date.now() / 1000);
-
-  // 1. Existing kliens GTM dataLayer push (Meta Pixel browser-side dedup-hoz).
-  // PII NEM kerül dataLayer-be — CLAUDE.md #15.
-  if (typeof window !== 'undefined') {
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({
-      event: eventName,
-      event_id: eventId,
-      ...(params.value !== undefined && { value: params.value }),
-      ...(params.currency && { currency: params.currency }),
-      ...(params.source && { source: params.source }),
-      ...(params.service && { service: params.service })
-    });
-  }
-
-  // 2. Server-side Worker dispatch (PII a body-ban, hash-elve a Worker-ben).
-  await sendToWorker({
-    event_name: eventName,
-    event_id: eventId,
-    event_time: eventTime,
-    value: params.value,
-    currency: params.currency,
-    source: params.source,
-    service: params.service,
-    user_data: params.user_data,
-    consent: params.consent
-  });
-}
+export { collectAttribution, sendToWorker } from '@/lib/soborbo-tracking/gateway';
