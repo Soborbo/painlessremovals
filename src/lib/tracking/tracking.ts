@@ -404,13 +404,57 @@ export function readUserDataFromDOM(): UserData {
 
 export type CountryCode = 'GB' | 'HU';
 
+/**
+ * Országhívó-kódok, amelyek TÉNYLEGESEN trunk-`0`-t használnak.
+ *
+ * FIGYELEM: csak az kerülhet ide, aki tényleg így hív. Olaszország,
+ * Spanyolország, Csehország, Szlovákia, Lengyelország MEGTARTJA a vezető
+ * nullát — őket felvenni ide adatrontás lenne.
+ */
+const TRUNK_PREFIX_DIAL_CODES = new Set(['44', '36', '49', '33', '31', '32', '43', '41', '40']);
+
+/**
+ * `+CC0…` → `+CC…`. A `+44 (0)7123 456 789` írásmód a UK-ban általános, és
+ * E.164-ben a hívókód utáni `0` SOHA nem érvényes.
+ */
+function stripTrunkPrefix(plus: string): string {
+  for (const codeLen of [3, 2]) {
+    const candidate = plus.slice(1, 1 + codeLen);
+    if (TRUNK_PREFIX_DIAL_CODES.has(candidate) && plus.length > 1 + codeLen && plus[1 + codeLen] === '0') {
+      return '+' + candidate + plus.slice(2 + codeLen);
+    }
+  }
+  return plus;
+}
+
+/**
+ * Telefon → E.164.
+ *
+ * ── EZ EGY NÉMA, ÉLES HIBA VOLT ──────────────────────────────────────────────
+ * Két baja volt, és mindkettő ugyanoda vezetett: a böngésző MÁS számot
+ * hash-elt, mint a szerver, tehát a Meta Pixel és a CAPI KÉT KÜLÖN EMBERT
+ * látott ugyanabban a látogatóban. A dedup elromlott, a match-minőség némán
+ * esett — miközben minden mérőszám zöld volt.
+ *
+ *   1. A takarítás nem vitte el a PONTOT (`.`), pedig a CLAUDE.md 1. pontja
+ *      kimondja: „Strip ALL whitespace, dashes, parentheses, dots".
+ *   2. A `+`-szal kezdődő szám KORAI RETURN-nel kilépett, tehát a `(0)`-ból
+ *      maradt trunk-nulla bent ragadt.
+ *
+ *   bemenet:  +44 (0)7123-456.789
+ *   böngésző: +4407123456.789     ← ez ment a Pixelnek
+ *   szerver:  +447123456789       ← ez ment a CAPI-nak
+ *
+ * A kanonikus csomag ezt a #87-ben javította; ez a fork sosem kapta meg. A
+ * `parity-harness.test.ts` első futása találta meg.
+ */
 export function normalizePhoneE164(
   phone: string,
   countryCode: CountryCode = DEFAULT_COUNTRY,
 ): string {
   if (!phone) return '';
-  let cleaned = phone.replace(/[\s\-()]/g, '');
-  if (cleaned.startsWith('+')) return cleaned;
+  let cleaned = phone.replace(/[\s\-().]/g, '');
+  if (cleaned.startsWith('+')) return stripTrunkPrefix(cleaned.replace(/[^\d+]/g, ''));
   if (countryCode === 'GB') {
     if (cleaned.startsWith('0')) cleaned = `+44${cleaned.slice(1)}`;
     else if (cleaned.startsWith('44')) cleaned = `+${cleaned}`;
