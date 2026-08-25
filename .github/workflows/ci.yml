@@ -1,0 +1,34 @@
+# painlessremovals — PR-kapu.
+#
+# Eddig a repót KIZÁRÓLAG a Workers Builds gátolta: az valódi Linux `npm ci`-t
+# futtat, tehát elkapta a lockfile-hibát is — de deploy-build, vagyis lassú és
+# késői jel, és a típus/teszt-hibákat nem méri. Ez a job az olcsó, korai kapu.
+#
+# A `check:lockfile` SZÁNDÉKOSAN az `npm ci` ELŐTT fut: ugyanazt a hibát méri,
+# de egy másodperc alatt és MEGNEVEZETT okkal, az npm hibafala helyett.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Lockfile-teljesség (Windows↔Linux csapda)
+        run: node scripts/check-lockfile-complete.mjs
+      - name: Install
+        run: npm ci
+      - name: Type-check
+        run: npm run typecheck
+      - name: Test
+        run: npx vitest run
