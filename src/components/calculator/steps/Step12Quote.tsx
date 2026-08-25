@@ -43,6 +43,7 @@ import {
   markViewContentFired,
   hasViewContentFired,
   generateUUID,
+  buildAttribution,
 } from '@/lib/tracking';
 
 type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -108,15 +109,11 @@ export function Step12Quote() {
         email: state.contact?.email,
         phone: state.contact?.phone,
         language: 'en' as const,
-        utm_source: state.utmSource || undefined,
-        utm_medium: state.utmMedium || undefined,
-        utm_campaign: state.utmCampaign || undefined,
-        utm_term: state.utmTerm || undefined,
-        utm_content: state.utmContent || undefined,
-        gclid: state.gclid || undefined,
-        gbraid: state.gbraid || undefined,
-        wbraid: state.wbraid || undefined,
-        fbclid: state.fbclid || undefined,
+        // Az attribúció forrása a consent-aware `buildAttribution()`, NEM a
+        // kalkulátor state — az nem attribúció-authority (lásd
+        // calculator-store `stripAttribution`). Így egy consent-döntés nélküli
+        // klikk-ID nem hagyja el a böngészőt ezen az úton sem.
+        ...buildAttribution(),
         event_id: eventId,
       };
 
@@ -197,7 +194,9 @@ export function Step12Quote() {
         "There was a problem saving your quote. Don't worry - your quote is still valid!"
       );
     }
-  }, [quote, state.contact, state.utmSource, state.utmMedium, state.utmCampaign, state.gclid, state.serviceType]);
+  // Lásd fent: az attribúció submitkor a buildAttribution()-ből jön, nem a
+  // state-ből — a régi attribúció-dependency-k konstans null-ok lennének.
+  }, [quote, state.contact, state.serviceType]);
 
   // Auto-submit quote on mount (only once)
   useEffect(() => {

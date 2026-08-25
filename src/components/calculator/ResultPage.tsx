@@ -44,6 +44,7 @@ import {
   markViewContentFired,
   hasViewContentFired,
   generateUUID,
+  buildAttribution,
 } from '@/lib/tracking';
 
 type SubmissionStatus = 'idle' | 'submitting' | 'success' | 'error';
@@ -506,15 +507,11 @@ export function ResultPage() {
         email: state.contact?.email,
         phone: state.contact?.phone,
         language: 'en' as const,
-        utm_source: state.utmSource || undefined,
-        utm_medium: state.utmMedium || undefined,
-        utm_campaign: state.utmCampaign || undefined,
-        utm_term: state.utmTerm || undefined,
-        utm_content: state.utmContent || undefined,
-        gclid: state.gclid || undefined,
-        gbraid: state.gbraid || undefined,
-        wbraid: state.wbraid || undefined,
-        fbclid: state.fbclid || undefined,
+        // Az attribúció forrása a consent-aware `buildAttribution()`, NEM a
+        // kalkulátor state — az nem attribúció-authority (lásd
+        // calculator-store `stripAttribution`). Így egy consent-döntés nélküli
+        // klikk-ID nem hagyja el a böngészőt ezen az úton sem.
+        ...buildAttribution(),
         quoteUrlPayload,
         event_id: eventId,
       };
@@ -584,7 +581,10 @@ export function ResultPage() {
         }
       }, 3000);
     }
-  }, [submissionStatus, quote, state.contact, state.utmSource, state.utmMedium, state.utmCampaign, state.utmTerm, state.utmContent, state.gclid, state.fbclid, state.serviceType]);
+  // Az attribúció már nem a state-ből jön (buildAttribution a submitkor olvas),
+  // ezért nem is dependency — a régi state.utm*/state.gclid hivatkozások
+  // mostantól konstans null-ok lennének, vagyis félrevezető függőségek.
+  }, [submissionStatus, quote, state.contact, state.serviceType]);
 
   // Auto-submit on mount (skip if loading screen is showing — we wait for attribution)
   useEffect(() => {

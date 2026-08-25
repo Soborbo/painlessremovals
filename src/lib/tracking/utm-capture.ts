@@ -218,12 +218,20 @@ export function buildAttribution(): {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
   gclid?: string;
   gbraid?: string;
   wbraid?: string;
   fbclid?: string;
   landing_page?: string;
 } {
+  // A friss URL-jelet NEM a boot-sorrendre bízzuk: a capture idempotens, és
+  // UNKNOWN alatt is biztonságos (csak a memória-puffert tölti). Enélkül egy
+  // olyan hívó, amelyik a boot előtt/nélkül submitál, elveszítené az aktuális
+  // oldal attribúcióját.
+  captureUTMs();
+
   // A DRÓT külön szabály a TÁROLÁSTÓL. A tárolás PECR-kérdés (mit írunk az
   // eszközre); ez itt azt dönti el, mit küldünk a saját CRM-ünknek. A kanonikus
   // `collectAttribution` szabályát követjük, hogy a két láb ne mondjon mást:
@@ -235,6 +243,8 @@ export function buildAttribution(): {
   if (a.utm_source) out.utm_source = a.utm_source;
   if (a.utm_medium) out.utm_medium = a.utm_medium;
   if (a.utm_campaign) out.utm_campaign = a.utm_campaign;
+  if (a.utm_term) out.utm_term = a.utm_term;
+  if (a.utm_content) out.utm_content = a.utm_content;
   if (consent === 'GRANTED') {
     if (a.gclid) out.gclid = a.gclid;
     if (a.gbraid) out.gbraid = a.gbraid;
