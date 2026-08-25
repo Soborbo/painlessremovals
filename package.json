@@ -17,7 +17,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:clickids": "npx tsx scripts/verify-tracking-clickids.mjs"
+    "verify:clickids": "npx tsx scripts/verify-tracking-clickids.mjs",
+    "check:lockfile": "node scripts/check-lockfile-complete.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.1.3",
