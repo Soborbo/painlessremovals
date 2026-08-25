@@ -42,6 +42,7 @@ import {
 import { deliverQuoteLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
+  buildConsentSources,
   readConsentFromCookie,
   readMetaCookies,
   splitFullName,
@@ -340,6 +341,7 @@ export const POST: APIRoute = async (context) => {
           // lead, which is what later authorises (or lawfully blocks) the offline
           // Enhanced-Conversions upload.
           consent: readConsentFromCookie(context.request.headers.get('Cookie')),
+          consentSources: buildConsentSources(context.request.headers.get('Cookie')),
           fbp: metaCookies.fbp,
           fbc: metaCookies.fbc,
           clientId: ga4ClientIdFromRequest(context.request),

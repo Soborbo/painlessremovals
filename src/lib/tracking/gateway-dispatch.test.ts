@@ -4,6 +4,8 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   buildGatewayPayload,
   sendGatewayConversion,
+  buildConsentSources,
+  BACKEND_LIB_VERSION,
   isGatewayConfigured,
   gatewayBaseUrl,
   splitFullName,
@@ -67,6 +69,22 @@ describe('gateway config', () => {
 });
 
 describe('buildGatewayPayload', () => {
+  it('sends consent_sources when the caller supplies it — this is what ends the NULL telemetry', () => {
+    const p = buildGatewayPayload({
+      ...baseInput,
+      consentSources: buildConsentSources('cookieyes-consent=consent%3Ayes%2Canalytics%3Ayes%2Cadvertisement%3Ano'),
+    });
+    const sources = p.consent_sources as Record<string, unknown>;
+    expect(sources).toBeDefined();
+    expect(sources.client_lib_version).toBe(BACKEND_LIB_VERSION);
+    expect(sources.source_used).toBe('cookieyes_cookie');
+    expect(sources.cookie).toEqual({ analytics: true, marketing: false });
+  });
+
+  it('omits consent_sources entirely when the caller does not supply it (no invented telemetry)', () => {
+    expect(buildGatewayPayload(baseInput)).not.toHaveProperty('consent_sources');
+  });
+
   it('sends NO turnstile_token (the per-site token is the auth)', () => {
     expect(buildGatewayPayload(baseInput)).not.toHaveProperty('turnstile_token');
   });

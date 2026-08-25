@@ -19,6 +19,7 @@ import {
 import { getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
+  buildConsentSources,
   readConsentFromCookie,
   readMetaCookies,
   splitFullName,
@@ -244,6 +245,7 @@ export const POST: APIRoute = async (context) => {
         // lead's explicit consent-receipt in the gateway ledger. Without it the
         // gateway's `require_consent` default silently consent-skips the Meta leg.
         consent: readConsentFromCookie(request.headers.get('Cookie')),
+        consentSources: buildConsentSources(request.headers.get('Cookie')),
         fbp: metaCookies.fbp,
         fbc: metaCookies.fbc,
         clientId,

@@ -141,6 +141,98 @@ export function readConsentFromCookie(cookieHeader: string | null): ConsentState
 }
 
 /**
+ * A KÖNYVTÁR-VERZIÓ, amit ez a backend jelent a gateway-nek.
+ *
+ * SZÁNDÉKOSAN nem a kanonikus `soborbo-tracking` csomag verziószáma: ez a
+ * könyvtár a csomag FORKJA (a Serverside `check-vendored-copy` riportja szerint
+ * a kiadás 27 fájljából 22 nincs is meg benne). Egy kanonikus-nak látszó
+ * verziószám itt HAZUDNA — pont azt a driftet fedné el, amit a
+ * `client_lib_version` mérni hivatott.
+ *
+ * A `0.0.0-` előtag ezért nem kozmetika: a gateway `MIN_CLIENT_LIB_VERSION`-je
+ * 6.1.0, tehát ez az érték IGAZ módon vált ki `TRK-910-006`-ot (elavult
+ * kliens-lib). Az a megállapítás információs szintű (a napi consent-riport egy
+ * sora, nem riasztás) — és pontosan a valóságot mondja: ez a site nem a
+ * kanonikus könyvtárat futtatja. Amikor a migráció megtörténik, ez az érték a
+ * csomag valódi verziójára vált, és a ledger sorai NULL → `0.0.0-painless-fork`
+ * → `6.3.0` úton haladnak. Ez a migráció KÍVÜLRŐL, gépileg igazolható jele.
+ */
+export const BACKEND_LIB_VERSION = '0.0.0-painless-fork';
+
+export interface ConsentSourceSnapshot {
+  analytics: boolean | null;
+  marketing: boolean | null;
+}
+
+export interface ConsentSourcesPayload {
+  cookie: ConsentSourceSnapshot;
+  api: ConsentSourceSnapshot;
+  source_used: 'cookieyes_cookie' | 'cookieyes_api' | 'override' | 'server_cookie' | 'sbo_cookie' | 'none';
+  client_lib_version: string;
+  raw_cookie?: string;
+}
+
+/** A nyers sütiből ennyi megy a receiptre — a teljes érték sosem. */
+const RAW_COOKIE_MAX = 200;
+
+/**
+ * A backend SAJÁT olvasata a CookieYes sütiről, telemetriaként.
+ *
+ * NEM változtat azon, hogy mi megy el és mi nem — a `readConsentFromCookie`
+ * változatlanul állítja elő a `consent` blokkot. Ez csak MEGMONDJA, mit látott
+ * ez a láb.
+ *
+ * A `null` azt jelenti: az a forrás nem volt elérhető. SOHA nem helyettesítjük
+ * alapértelmezéssel — a NULL-minta MAGA a bizonyíték (süti nélküli kérés =
+ * olyan döntés aláírása, ami még nem született meg vagy nem tárolódott).
+ */
+export function buildConsentSources(cookieHeader: string | null | undefined): ConsentSourcesPayload {
+  const unavailable: ConsentSourceSnapshot = { analytics: null, marketing: null };
+  let raw: string | undefined;
+  if (cookieHeader) {
+    for (const part of cookieHeader.split(';')) {
+      const idx = part.indexOf('=');
+      if (idx < 0) continue;
+      if (part.slice(0, idx).trim() !== 'cookieyes-consent') continue;
+      try {
+        raw = decodeURIComponent(part.slice(idx + 1).trim());
+      } catch {
+        // Rossz percent-kódolás: a telemetria sem dobhat a lead-útvonalon.
+        raw = part.slice(idx + 1).trim();
+      }
+      break;
+    }
+  }
+  if (!raw) {
+    return {
+      cookie: unavailable,
+      // Nincs böngésző ezen az úton, tehát a CookieYes JS API sosem olvasható.
+      api: unavailable,
+      source_used: 'none',
+      client_lib_version: BACKEND_LIB_VERSION,
+    };
+  }
+
+  const map: Record<string, string> = {};
+  for (const part of raw.split(',')) {
+    const idx = part.indexOf(':');
+    if (idx > 0) map[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
+  }
+  const cookie: ConsentSourceSnapshot = {
+    analytics: map.analytics === undefined ? null : map.analytics === 'yes',
+    marketing: map.advertisement === undefined ? null : map.advertisement === 'yes',
+  };
+  const present = cookie.analytics !== null || cookie.marketing !== null;
+  return {
+    cookie,
+    api: unavailable,
+    source_used: present ? 'cookieyes_cookie' : 'none',
+    client_lib_version: BACKEND_LIB_VERSION,
+    raw_cookie: raw.slice(0, RAW_COOKIE_MAX),
+  };
+}
+
+/**
  * Meta browser identifiers from the inbound request's Cookie header — the SAME
  * `_fbp`/`_fbc` cookies the browser leg reads (`worker-tracking.ts`
  * `sendToWorker`), so the two legs hand Meta the same identity. Forwarding them
@@ -238,6 +330,20 @@ export interface GatewayConversionInput {
    */
   consent?: ConsentState;
   /**
+   * Phase D consent-source TELEMETRY (`buildConsentSources`). Does NOT change
+   * what is sent or gated — it reports WHAT this backend saw, and with which
+   * library version.
+   *
+   * WHY IT MATTERS HERE: the gateway is reached over a service binding, so it
+   * never sees the end user's Cookie header — on the server ingress its own read
+   * is always NULL. Every high-value conversion on this site travels that path.
+   * Without this block the gateway records NULL sources AND a NULL
+   * `client_lib_version`, which is exactly the state measured on 2026-08-25:
+   * of 1392 consent receipts fleet-wide, 1391 carried no version at all, so the
+   * `TRK-910-006` (outdated client lib) guard could never fire.
+   */
+  consentSources?: ConsentSourcesPayload;
+  /**
    * Meta browser IDs from the request's `_fbp`/`_fbc` cookies
    * (`readMetaCookies`). Pass-through PLAIN — never hashed (CLAUDE.md #1).
    * `fbc` should only ever be the real cookie value; when it is absent the
@@ -322,6 +428,7 @@ export function buildGatewayPayload(input: GatewayConversionInput): Record<strin
     user_data: userData && Object.keys(userData).length > 0 ? userData : undefined,
     attribution: attribution && Object.keys(attribution).length > 0 ? attribution : undefined,
     consent: input.consent,
+    consent_sources: input.consentSources,
     // Top-level, like the browser leg sends them — the gateway reads
     // `payload.fbp` / `payload.fbc`, not user_data (it builds user_data itself).
     fbp: input.fbp,

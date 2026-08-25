@@ -29,6 +29,7 @@ import { sanitizeSubjectPart } from '@/lib/core/email/templates/helpers';
 import { deliverCallbackLead, getWaitUntil } from '@/lib/crm/server';
 import {
   deliverGatewayConversion,
+  buildConsentSources,
   readConsentFromCookie,
   readMetaCookies,
   splitFullName,
@@ -198,6 +199,7 @@ if (ref && /^[A-Z0-9]{6,16}$/i.test(ref)) {
             // for returning visitors. Without it the gateway's `require_consent`
             // default silently consent-skips the Meta leg.
             consent: readConsentFromCookie(Astro.request.headers.get('Cookie')),
+            consentSources: buildConsentSources(Astro.request.headers.get('Cookie')),
             fbp: metaCookies.fbp,
             fbc: metaCookies.fbc,
             eventSourceUrl: Astro.url.href,
