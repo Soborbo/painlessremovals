@@ -28,6 +28,12 @@ jobs:
         run: node scripts/check-lockfile-complete.mjs
       - name: Install
         run: npm ci
+      # Az `astro sync` generálja a .astro/types.d.ts-t (gitignore-olt), amiből az
+      # `astro:content` kollekciók típusa jön. Nélküle a getCollection() `any`-t ad,
+      # és a tsc implicit-any hibákkal áll meg — nem a forrás hibája, hanem hiányzó
+      # generált típus. Helyben azért nem látszik, mert ott a mappa már megvan.
+      - name: Astro sync (generált típusok)
+        run: npx astro sync
       - name: Type-check
         run: npm run typecheck
       - name: Test
