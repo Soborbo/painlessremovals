@@ -38,3 +38,8 @@ jobs:
         run: npm run typecheck
       - name: Test
         run: npx vitest run
+      # A klikk-ID-ellenőrző MÁR LÉTEZETT és MÁR PIROS VOLT, amikor a böngésző-
+      # transzport a kanonikus magra állt (#52) — csak épp semmi nem futtatta.
+      # Egy check, amit a kapu nem hív, nem kapu. Ezért innentől CI-lépés.
+      - name: Google klikk-ID kizárás (verify:clickids)
+        run: npm run verify:clickids
