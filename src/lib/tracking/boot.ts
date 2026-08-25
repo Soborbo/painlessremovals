@@ -8,7 +8,12 @@
 import { cleanupLegacyQuoteState } from './conversion-state';
 import { initGlobalListeners } from './global-listeners';
 import { restoreUserDataFromStorage, setUserDataOnDOM } from './tracking';
-import { captureUTMs, readAffiliateCode, buildAttribution } from './utm-capture';
+import {
+  captureUTMs,
+  readAffiliateCode,
+  buildAttribution,
+  syncAttributionOnConsentChange
+} from './utm-capture';
 import { dispatchWorkerConversion } from './worker-dispatch';
 import { prewarmTurnstileToken } from '@/lib/worker-tracking';
 import { pushLeadToCRM } from '@/lib/crm/push-lead';
@@ -25,6 +30,10 @@ restoreUserDataFromStorage();
 // and a revocation purges the at-rest copy immediately.
 document.addEventListener('cookieyes_consent_update', () => {
   restoreUserDataFromStorage();
+  // A `pr_tracking` is marketing-scoped: a grant pillanatában íródik ki a
+  // pre-consent memória-puffer (enélkül a `?gclid=…` landolás + banner-Accept
+  // úton a klikk-ID elveszne), egy visszavonás pedig itt takarít.
+  syncAttributionOnConsentChange();
 });
 // The 60-min upgrade-window state machine is retired (quote conversion now
 // fires inline at completion) — drop any state blob it left behind.

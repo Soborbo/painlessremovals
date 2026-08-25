@@ -18,9 +18,21 @@ function land(search: string): void {
   captureUTMs();
 }
 
+/**
+ * Ezek az esetek a KLIKK-ID SZEMANTIKÁT mérik, nem a consent-kaput — az a
+ * `utm-capture-consent.test.ts` dolga. A `pr_tracking` viszont mostantól
+ * marketing-scoped, ezért a grant itt előfeltétel: nélküle a store üres marad,
+ * és a tesztek a rossz okból buknának.
+ */
 beforeEach(() => {
   sessionStorage.clear();
   window.history.replaceState({}, '', '/');
+  (window as unknown as Record<string, unknown>).__trackingConsent = {
+    ad_user_data: 'GRANTED',
+    ad_personalization: 'GRANTED',
+    ad_storage: 'GRANTED',
+    analytics_storage: 'GRANTED'
+  };
 });
 
 describe('captureUTMs — Google click IDs', () => {

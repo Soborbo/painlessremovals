@@ -23,7 +23,7 @@ import type { PackingSizeCategory } from './constants';
 import { trackError } from '@/lib/errors/tracker';
 import { generateUUID } from '@/lib/tracking/uuid';
 import { markActiveFormsAsHandedOff } from '@/lib/tracking/form-tracking';
-import { readAttribution } from '@/lib/tracking/utm-capture';
+import { readAttribution, resolveClickIdFields } from '@/lib/tracking/utm-capture';
 import type {
   PropertySize,
   OfficeSize,
@@ -806,11 +806,14 @@ export function initializeStore() {
     if (!state.sessionId) {
       const params = new URLSearchParams(window.location.search);
       const stored = readAttribution();
-      calculatorStore.setKey('gclid', params.get('gclid') || stored.gclid || null);
-      // Mutually exclusive with gclid — `captureUTMs` already dropped the stale
-      // siblings, so at most one of these three is ever non-null.
-      calculatorStore.setKey('gbraid', params.get('gbraid') || stored.gbraid || null);
-      calculatorStore.setKey('wbraid', params.get('wbraid') || stored.wbraid || null);
+      // A három Google klikk-ID kölcsönösen kizáró, és a döntés NEM itt lakik:
+      // a közös primitív adja (URL > tároló, gclid > gbraid > wbraid). Mezőnként
+      // választva egy `?gclid=A` URL + `{gbraid: B}` tároló mellett KETTŐ került
+      // a save-quote → CRM útra.
+      const clickIds = resolveClickIdFields(params, stored);
+      calculatorStore.setKey('gclid', clickIds.gclid);
+      calculatorStore.setKey('gbraid', clickIds.gbraid);
+      calculatorStore.setKey('wbraid', clickIds.wbraid);
       // fbclid rides the same capture path as gclid — the gateway rebuilds the
       // Meta fbc from it when the _fbc cookie is absent (EMQ; audit 2026-07-17).
       calculatorStore.setKey('fbclid', params.get('fbclid') || stored.fbclid || null);
