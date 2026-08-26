@@ -24,6 +24,7 @@ import { trackError } from '@/lib/errors/tracker';
 import { generateUUID } from '@/lib/tracking/uuid';
 import { markActiveFormsAsHandedOff } from '@/lib/tracking/form-tracking';
 import { buildAttribution } from '@/lib/tracking/utm-capture';
+import { emailSchema } from '@/lib/core/validations/schemas';
 import type {
   PropertySize,
   OfficeSize,
@@ -370,7 +371,14 @@ export const LocalStorageStateSchema = z.object({
     firstName: z.string().max(100),
     lastName: z.string().max(100),
     phone: z.string().max(20),
-    email: z.string().max(255),
+    // A restore-határ ELFOGADÁSI szabálya ugyanaz, mint a beviteli kapué és a
+    // szerveré: `emailSchema` (trim → lowercase → `z.email()` → 254 OKTET →
+    // identity-őr). Egy `z.string().max(255)` UTF-16 kódegységben mért, tehát
+    // gyengébb volt, mint a kapu — a manipulált `sessionStorage` bizalmi
+    // határán ez második authority. Az `emailSchema` transzformál is, így egy
+    // nem-kanonikus alak (`"  User@Example.COM  "`) kanonizálva áll vissza.
+    // Az üres string a Step11 ELŐTTI legitim állapot, ezért marad érvényes.
+    email: z.union([z.literal(''), emailSchema]),
     gdprConsent: z.boolean(),
     marketingConsent: z.boolean(),
   }),
