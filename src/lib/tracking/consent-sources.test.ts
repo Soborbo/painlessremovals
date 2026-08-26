@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { CLIENT_LIB_VERSION as VENDORED_CLIENT_LIB_VERSION } from '@/lib/soborbo-tracking/config';
 import {
   buildConsentSources,
   readConsentFromCookie,
@@ -41,11 +42,23 @@ describe('buildConsentSources', () => {
     expect(s.cookie.analytics).not.toBe(false);
   });
 
-  it('a fork-jelölt verzió a gateway minimuma ALATT van — szándékosan', () => {
-    // Ha ez valaha kanonikus-nak látszó számra változna anélkül, hogy a
-    // könyvtárat tényleg lecseréltük volna, a drift megint láthatatlan lenne.
-    expect(BACKEND_LIB_VERSION).toMatch(/^0\.0\.0-/);
-    expect(BACKEND_LIB_VERSION).toContain('fork');
+  /**
+   * EZ A GUARD KORÁBBAN `0.0.0-painless-fork`-ot követelt, és jó okkal: amíg a
+   * szerver-láb saját implementációt futtatott, egy kanonikus-nak LÁTSZÓ szám
+   * pont azt a driftet fedte volna el, amit a `client_lib_version` mérni hivatott.
+   *
+   * A feltétele az F9/3.4 szerver-szeletével teljesült: a payload-építés, a
+   * süti-olvasók, a transzport, a retry és az auth mind a kanonikus magé.
+   *
+   * A guard nem eltűnt, hanem ERŐSEBB LETT. A régi változat egy kézzel írt
+   * literált követelt — azt bárki átírhatta volna a könyvtár cseréje nélkül. Az
+   * új azt köti le, hogy a JELENTETT szám a VENDOROLT MAGBÓL származzon: a
+   * szerver- és a böngésző-fél verziójának egyeznie kell. Ezt nem lehet
+   * kézírással kielégíteni — csak azzal, hogy tényleg a magot futtatjuk.
+   */
+  it('a jelentett verzió a VENDOROLT magé, nem kézzel karbantartott literál', () => {
+    expect(BACKEND_LIB_VERSION).toBe(VENDORED_CLIENT_LIB_VERSION);
+    expect(BACKEND_LIB_VERSION).not.toMatch(/fork/);
   });
 
   it('kiolvassa a CookieYes kategóriákat, és a hiányzót NULL-on hagyja', () => {

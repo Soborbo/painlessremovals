@@ -52,11 +52,9 @@ import type { WaitUntil } from '@/lib/crm/server';
  */
 import {
   buildGatewayPayload as canonicalBuildGatewayPayload,
-  buildConsentSources as canonicalBuildConsentSources,
-  resolveTestEventCode,
+  sendGatewayConversion as canonicalSendGatewayConversion,
   type GatewayConversionInput as CanonicalGatewayConversionInput,
-  type ConsentSourcesPayload,
-  type SboCookieReadOptions,
+  type GatewayEnv as CanonicalGatewayEnv,
 } from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
 
 export {
@@ -64,6 +62,7 @@ export {
   readMetaCookies,
   resolveTestEventCode,
   readGa4IdsFromCookie,
+  buildConsentSources,
   type GatewayFetcher,
   type ConsentSignal,
   type ConsentState,
@@ -134,45 +133,35 @@ export interface GatewayEnv {
 /**
  * A KÖNYVTÁR-VERZIÓ, amit ez a backend jelent a gateway-nek.
  *
- * SZÁNDÉKOSAN nem a kanonikus `soborbo-tracking` csomag verziószáma: ez a
- * könyvtár a csomag FORKJA (a Serverside `check-vendored-copy` riportja szerint
- * a kiadás 27 fájljából 22 nincs is meg benne). Egy kanonikus-nak látszó
- * verziószám itt HAZUDNA — pont azt a driftet fedné el, amit a
- * `client_lib_version` mérni hivatott.
+ * ── Miért nem kézzel írt szám ────────────────────────────────────────────────
+ * Ez a mező a `consent_receipts.client_lib_version`-be megy, és az EGYETLEN
+ * gépi jelünk arról, mi fut valójában a site-on. Egy kézzel karbantartott
+ * literál pontosan azt a driftet tudná elfedni, amit mérni hivatott — ezért a
+ * vendorolt kanonikus magból SZÁRMAZTATJUK. Ha a mag verziója változik, ez
+ * együtt mozdul; ha valaki a magot kicseréli, de a számot nem, az lehetetlen.
  *
- * A `0.0.0-` előtag ezért nem kozmetika: a gateway `MIN_CLIENT_LIB_VERSION`-je
- * 6.1.0, tehát ez az érték IGAZ módon vált ki `TRK-910-006`-ot (elavult
- * kliens-lib). Az a megállapítás információs szintű (a napi consent-riport egy
- * sora, nem riasztás) — és pontosan a valóságot mondja: ez a site nem a
- * kanonikus könyvtárat futtatja. Amikor a migráció megtörténik, ez az érték a
- * csomag valódi verziójára vált, és a ledger sorai NULL → `0.0.0-painless-fork`
- * → `6.3.0` úton haladnak. Ez a migráció KÍVÜLRŐL, gépileg igazolható jele.
+ * ── Miért NEM `0.0.0-painless-fork` többé ────────────────────────────────────
+ * Volt. A fork-jelölő igaz állítás volt, amíg a szerver-láb SAJÁT
+ * implementációt futtatott, és szándékosan a gateway `MIN_CLIENT_LIB_VERSION`-je
+ * (6.1.0) alatt maradt, hogy valósan kiváltson egy információs `TRK-910-006`-ot.
+ *
+ * Az F9/3.4 szerver-szelete után ez már nem igaz: a payload-építés, a
+ * süti-olvasók, a transzport, a retry-politika és az auth MIND a kanonikus magé.
+ *
+ * Ami site-lokális maradt, az nem könyvtár-logika:
+ *   · `GatewayEnv` — a site env-változóinak NEVEI (a binding itt `EVENT_GATEWAY`)
+ *   · `gatewayBaseUrl` / `isGatewayConfigured` — config-politika
+ *   · `deliverGatewayConversion` — logging + `waitUntil` burkoló
+ *   · `splitFullName` — nincs kanonikus párja
+ *   · `toCanonicalEnv` / `toCanonicalInput` — a fenti nevek leképezése
+ *
+ * Ezért a szám mostantól a magé. A ledger sorai a
+ * `NULL → 0.0.0-painless-fork → 6.6.x` úton haladtak — ez a váltás a migráció
+ * kívülről, gépileg igazolható jele.
  */
-export const BACKEND_LIB_VERSION = '0.0.0-painless-fork';
+export { BACKEND_LIB_VERSION } from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
+import { BACKEND_LIB_VERSION } from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
 
-/**
- * A CONSENT-FORRÁS TELEMETRIA — kanonikus olvasó, IGAZ verziószámmal.
- *
- * A mag `buildConsentSources`-a a SAJÁT `BACKEND_LIB_VERSION`-jét írja a
- * receiptre (`6.6.1`). Ezen a site-on ez HAZUGSÁG lenne: a payload-építő és a
- * süti-olvasók már a kanonikus magé, de a TRANSZPORT — a `GatewayEnv`, a
- * binding-feloldás és a `sendGatewayConversion` — még a fork. Egy `6.6.1`-es
- * receipt pont azt a maradék driftet fedné el, amit a `client_lib_version`
- * mérni hivatott, ráadásul a legdrágább helyen: a küldő-úton él a néma nulla.
- *
- * Ezért a burkoló visszaírja a site igaz értékét. Ez a szám akkor vált
- * `6.6.1`-re, amikor a transzport is átment — az a lépés deploy-koordinációt
- * igényel (a binding neve `EVENT_GATEWAY` ↔ `GATEWAY`), nem kódcserét.
- */
-export function buildConsentSources(
-  cookieHeader: string | null | undefined,
-  opts: SboCookieReadOptions = {},
-): ConsentSourcesPayload {
-  return {
-    ...canonicalBuildConsentSources(cookieHeader, opts),
-    client_lib_version: BACKEND_LIB_VERSION,
-  };
-}
 
 
 
@@ -206,30 +195,53 @@ export interface GatewayConversionInput extends CanonicalGatewayConversionInput 
 
 
 /**
- * A payload-építő a kanonikus magé; ez a burkoló csak a site-specifikus
- * kiegészítést végzi:
- *   · a `clientId`/`sessionId` régi neveket a kanonikus `ga4*` nevekre képezi,
- *   · a `service`-t visszateszi a payloadra (a kanonikus nem ismeri).
+ * A payload-építő a kanonikus magé. Ez a burkoló egyetlen dolgot csinál: a
+ * `clientId`/`sessionId` RÉGI NEVEKET a kanonikus `ga4*` nevekre képezi, hogy az
+ * öt hívási pont ne változzon.
  *
- * Az érték/pénznem szabálya ezzel a KANONIKUSÉ lett: `value` csak akkor megy ki,
- * ha van hozzá 3-betűs `currency` is — a korábbi néma `'GBP'`-alapértelmezés
- * megszűnt. Minden élő hívási pont ma is explicit currency-t ad, tehát ez nem
- * változtat kimenő konverziót; a szigorítás célja, hogy egy másik piacra másolt
- * modul ne küldjön csendben rossz pénznemet.
+ * A `service`-t 6.6.2 óta a kanonikus payload-építő maga emitálja — a
+ * böngésző-láb eddig is küldte, a gateway fogyasztja, csak a szerver-lábból
+ * hiányzott. Innentől nem kell visszatenni.
+ *
+ * Az érték/pénznem szabálya a KANONIKUSÉ: `value` csak érvényes 3-betűs
+ * `currency`-vel megy ki, néma `'GBP'`-alapértelmezés nincs. Minden élő hívó ma
+ * is explicit currency-t ad.
  */
 export function buildGatewayPayload(input: GatewayConversionInput): Record<string, unknown> {
-  const { service, clientId, sessionId, ...rest } = input;
-  const payload = canonicalBuildGatewayPayload({
+  return canonicalBuildGatewayPayload(toCanonicalInput(input));
+}
+
+/** A site régi mezőnevei → a kanonikus input. */
+function toCanonicalInput(input: GatewayConversionInput): CanonicalGatewayConversionInput {
+  const { clientId, sessionId, ...rest } = input;
+  return {
     ...rest,
     ga4ClientId: rest.ga4ClientId ?? clientId,
     ga4SessionId: rest.ga4SessionId ?? sessionId,
-  });
-  if (service) payload.service = service;
-  return payload;
+  };
 }
 
-const DEFAULT_RETRY_DELAYS_MS = [1000, 5000];
-const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+/**
+ * A SITE ENV → KANONIKUS ENV. Ez a leképezés váltja ki a deploy-koordinációt.
+ *
+ * Két néven múlt az egész: a service binding itt `EVENT_GATEWAY`
+ * (`wrangler.toml`), a kanonikus magban `GATEWAY`. A binding ÁTNEVEZÉSE
+ * deployt igényelne, és egy rosszul időzített deploy néma nullát adna — a
+ * kanonikus küldő nem találná a bindingot, a lead-végpont továbbra is 200-at
+ * adna, a gateway pedig sosem látná az eventet. Egy leképezés a hívás
+ * pillanatában ugyanezt megoldja, kockázat nélkül.
+ *
+ * A `SITE_URL`-be a site `TRACKING_GATEWAY_URL` felülírását is belehajtjuk: a
+ * kanonikus `gatewayBaseUrl` csak `SITE_URL`-t néz, tehát enélkül a felülírás
+ * némán elveszne.
+ */
+function toCanonicalEnv(env: GatewayEnv): CanonicalGatewayEnv {
+  return {
+    ...env,
+    GATEWAY: env.EVENT_GATEWAY,
+    SITE_URL: gatewayBaseUrl(env),
+  };
+}
 
 export function gatewayBaseUrl(env: GatewayEnv): string | undefined {
   const raw = env.TRACKING_GATEWAY_URL || env.SITE_URL;
@@ -241,9 +253,9 @@ export function isGatewayConfigured(env: GatewayEnv): boolean {
 }
 
 /**
- * Splits a single "full name" field into first/last for Meta's `fn`/`ln`.
- * We send RAW values — the gateway is the single normalizer (CLAUDE.md #1), so
- * lowercasing/trimming here would just be a second, drift-prone copy of it.
+ * Egyetlen „teljes név" mezőt bont first/last-ra a Meta `fn`/`ln`-jéhez.
+ * NYERS értéket küldünk — a gateway az egyetlen normalizáló (CLAUDE.md 1.),
+ * tehát a lowercase/trim itt csak egy második, sodródásra hajlamos másolat lenne.
  */
 export function splitFullName(full?: string): { first_name?: string; last_name?: string } {
   const parts = (full ?? '').trim().split(/\s+/).filter(Boolean);
@@ -252,8 +264,19 @@ export function splitFullName(full?: string): { first_name?: string; last_name?:
   return { first_name: parts[0], last_name: parts.slice(1).join(' ') };
 }
 
-
-
+/**
+ * A KÜLDÉS a kanonikus magé (6.6.2): URL, auth-fejléc, retry-politika és a
+ * 400/401/403/404 „ez a mi hibánk, ne retry-old" szabály mind onnan jön.
+ *
+ * Ami itt marad, az a site-specifikus ENV-leképezés (`toCanonicalEnv`) és a
+ * régi mezőnevek (`toCanonicalInput`) — semmi több.
+ *
+ * Egy viselkedés SZÁNDÉKOSAN szigorodott: binding nélkül a kanonikus küldő
+ * `gateway_not_configured`-t ad, nem esik vissza `globalThis.fetch`-re. A
+ * korábbi fallback on-zone amúgy is NÉMA NULLA volt (a Cloudflare loop-védelme
+ * rövidre zárja a saját zónánk route-jára menő subrequestet), csak épp
+ * észrevétlenül — a `deliverGatewayConversion` mostantól hangosan logolja.
+ */
 export async function sendGatewayConversion(
   env: GatewayEnv,
   input: GatewayConversionInput,
@@ -263,80 +286,10 @@ export async function sendGatewayConversion(
     retryDelaysMs?: number[];
   } = {},
 ): Promise<GatewayResult> {
-  const base = gatewayBaseUrl(env);
-  if (!env.TRACKING_GATEWAY_TOKEN || !base) {
-    return { ok: false, error: 'gateway_not_configured', retriable: false, attempts: 0 };
-  }
-
-  // Service binding first — see GatewayEnv.EVENT_GATEWAY. The global-fetch fallback
-  // only works from OFF-zone callers; on-zone it silently never reaches the gateway.
-  const fetchImpl =
-    opts.fetchImpl ??
-    (env.EVENT_GATEWAY
-      ? (((url, init) => env.EVENT_GATEWAY!.fetch(url, init as RequestInit)) as FetchLike)
-      : ((globalThis.fetch as unknown) as FetchLike));
-  const sleepImpl = opts.sleepImpl ?? defaultSleep;
-  const delays = opts.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
-
-  // NOT `/api/event/conversion` — that is the BROWSER path, and it is the one the
-  // zone's WAF rate-limiting rule matches (on the Free plan a rule can only match
-  // on Path, so this separate route is the only way to exempt us). Server-side
-  // conversions all leave from a single Worker egress IP, so an IP-keyed limit
-  // would throttle exactly the conversions that carry money.
-  //
-  // The gateway refuses this route without a valid per-site token — no browser
-  // fallback — so the exemption cannot be abused as a rate-limit bypass.
-  const url = `${base}/api/event/conversion-server`;
-  const body = JSON.stringify(
-    buildGatewayPayload({
-      ...input,
-      testEventCode: input.testEventCode ?? resolveTestEventCode(env, input.userData?.email),
-    }),
-  );
-  const headers = {
-    'content-type': 'application/json',
-    'x-admin-token': env.TRACKING_GATEWAY_TOKEN,
-  };
-
-  let attempts = 0;
-  let lastError = 'unknown';
-  let lastStatus: number | undefined;
-
-  for (let i = 0; i <= delays.length; i++) {
-    attempts++;
-    try {
-      const res = await fetchImpl(url, { method: 'POST', headers, body });
-      lastStatus = res.status;
-
-      // The gateway answers 204 on every accepted event (CLAUDE.md #12).
-      if (res.status === 204 || (res.status >= 200 && res.status < 300)) {
-        return { ok: true, status: res.status, attempts };
-      }
-
-      // 400/401/403/404 are OUR misconfiguration (invalid payload since the
-      // gateway Run 6 returns 400 to authenticated callers, bad token, no KV
-      // site-config), not a transient fault. Retrying cannot fix them — fail
-      // loud instead, so the failure is visible rather than silently swallowed
-      // like the browser leg used to do.
-      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404) {
-        return {
-          ok: false,
-          status: res.status,
-          error: `gateway_rejected_${res.status}`,
-          retriable: false,
-          attempts,
-        };
-      }
-
-      lastError = `gateway_status_${res.status}`;
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
-    }
-
-    if (i < delays.length) await sleepImpl(delays[i]);
-  }
-
-  return { ok: false, status: lastStatus, error: lastError, retriable: true, attempts };
+  return canonicalSendGatewayConversion(toCanonicalEnv(env), toCanonicalInput(input), {
+    ...opts,
+    fetchImpl: opts.fetchImpl as unknown as GatewayFetcher['fetch'] | undefined,
+  });
 }
 
 /**

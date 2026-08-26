@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { BACKEND_LIB_VERSION } from './gateway-dispatch';
 
 /**
  * A NAPI VERZIÓ-SZÍVHANG.
@@ -51,7 +52,12 @@ describe('napi smoke — verzió-szívhang', () => {
     expect(sent).toHaveLength(1);
     const sources = sent[0].consentSources as Record<string, unknown> | undefined;
     expect(sources, 'a smoke consentSources nélkül ment — a szívhang megszűnt').toBeDefined();
-    expect(String(sources!.client_lib_version)).toMatch(/^0\.0\.0-/);
+    // A szívhang lényege nem egy konkrét szám, hanem hogy a ledger AZT lássa,
+    // ami itt tényleg fut. Ezért a jelentett értéket a modul saját
+    // konstansához kötjük — az pedig a vendorolt magból származik, tehát a
+    // lánc végig gépi: vendorolt mag → BACKEND_LIB_VERSION → receipt.
+    expect(String(sources!.client_lib_version)).toBe(BACKEND_LIB_VERSION);
+    expect(String(sources!.client_lib_version)).not.toMatch(/fork/);
   });
 
   it('a cron-nak nincs sütije, ezért a források ŐSZINTÉN NULL-ok — nem kitalált „nem"', async () => {
