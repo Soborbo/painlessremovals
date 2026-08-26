@@ -43,6 +43,7 @@ import {
   markViewContentFired,
   hasViewContentFired,
   generateUUID,
+  claimContactConversion,
   buildAttribution,
 } from '@/lib/tracking';
 
@@ -224,7 +225,14 @@ export function Step12Quote() {
   // value:0 — the CAPI leg strips zeros, desyncing browser + server).
   const handleBookNow = () => {
     const tel = CALCULATOR_CONFIG.company.phone.replace(/\s/g, '');
-    const eventId = generateUUID();
+    // A7: the SAME session-dedup authority as the global `tel:` listener —
+    // a repeat phone intent (either path) dials but books no second
+    // conversion on either leg.
+    const eventId = claimContactConversion('phone');
+    if (!eventId) {
+      window.location.href = `tel:${tel}`;
+      return;
+    }
     const service = state.serviceType || 'removal';
     const quoteVal = quote?.totalPrice;
     trackEvent('phone_conversion', {

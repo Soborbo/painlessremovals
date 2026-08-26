@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 
 vi.mock('./worker-dispatch', () => ({ dispatchWorkerConversion: vi.fn() }));
 vi.mock('./conversion-state', () => ({ getRecentQuoteDetails: vi.fn() }));
@@ -27,7 +27,16 @@ function click(href: string): void {
   a.remove();
 }
 
+// A7: contact clicks are session-deduped per kind, and several cases below
+// click `tel:` — give every case a fresh session (Date past the 30-min
+// canonical session timeout) so the dedup starts clean.
+let clock = Date.UTC(2026, 7, 26, 12, 0, 0);
+vi.useFakeTimers({ toFake: ['Date'] });
+afterAll(() => vi.useRealTimers());
+
 beforeEach(() => {
+  clock += 24 * 60 * 60 * 1000;
+  vi.setSystemTime(clock);
   (window as any).dataLayer = [];
   vi.mocked(dispatchWorkerConversion).mockClear();
   vi.mocked(getRecentQuoteDetails).mockReset();

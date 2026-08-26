@@ -1,7 +1,12 @@
 /**
  * Page-level click + scroll listeners.
  *
- * - phone/email/whatsapp link clicks → their own conversion events
+ * - phone/email/whatsapp link clicks → their own conversion events,
+ *   SESSION-DEDUPED per kind via `claimContactConversion` (A7, 2026-08-26:
+ *   tel → tel → tel = 1 phone conversion; the same authority gates the
+ *   programmatic `Step12Quote.handleBookNow` dial, so the two paths can't
+ *   double-book one intent). A repeat click still navigates/dials — only
+ *   the tracking legs are suppressed.
  *   (`source: after_calculator` is a reporting label only — the quote
  *   conversion fires separately, at completion). If a quote was just
  *   completed, the click also carries that quote's value/currency/
@@ -16,10 +21,10 @@
  * weight.
  */
 
+import { claimContactConversion, type ContactClickKind } from './click-dedup';
 import { getRecentQuoteDetails } from './conversion-state';
 import { readUserDataFromDOM, trackEvent } from './tracking';
 import { dispatchWorkerConversion } from './worker-dispatch';
-import { generateUUID } from './uuid';
 
 let installed = false;
 
@@ -52,15 +57,19 @@ function onDocumentClick(e: Event): void {
   const href = link.getAttribute('href') || '';
 
   let eventName: string | null = null;
+  let kind: ContactClickKind | null = null;
   let extras: Record<string, unknown> = {};
 
   if (href.startsWith('tel:')) {
     eventName = 'phone_conversion';
+    kind = 'phone';
     extras = { tel_target: href.slice(4) };
   } else if (href.startsWith('mailto:')) {
     eventName = 'email_conversion';
+    kind = 'email';
   } else if (/(?:^|\/\/)(?:[^/]*\.)?(wa\.me|whatsapp\.com)/i.test(href)) {
     eventName = 'whatsapp_conversion';
+    kind = 'whatsapp';
   } else {
     // Instant Quote CTA click — analytics only, NOT a conversion. Counts
     // intent on every page that links into the calculator; handles both
@@ -74,7 +83,10 @@ function onDocumentClick(e: Event): void {
     return;
   }
 
-  const eventId = generateUUID();
+  // Session-dedup: first click of this kind gets a fresh event_id, a repeat
+  // gets null → neither leg fires (the link still navigates/dials).
+  const eventId = claimContactConversion(kind);
+  if (!eventId) return;
   // event_id is fresh — the quote conversion already fired at completion
   // and this click is its own conversion. Its value/currency/service ride
   // along ONLY when a quote was just completed (recent-quote cache);
