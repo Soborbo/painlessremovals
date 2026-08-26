@@ -46,13 +46,23 @@ let clock = Date.UTC(2026, 7, 26, 12, 0, 0);
 vi.useFakeTimers({ toFake: ['Date'] });
 afterAll(() => vi.useRealTimers());
 
-async function fresh() {
+/** CookieYes JS API szimuláció — a kanonikus consent-kapuk ezt olvassák. */
+function setConsent(state: 'unknown' | 'granted' | 'denied' | 'marketing-only'): void {
+  const w = window as unknown as { getCkyConsent?: () => { categories: Record<string, boolean> } };
+  if (state === 'unknown') { delete w.getCkyConsent; return; }
+  const ads = state !== 'denied';
+  const analytics = state === 'granted';
+  w.getCkyConsent = () => ({ categories: { necessary: true, functional: false, analytics, performance: false, advertisement: ads } });
+}
+
+async function fresh(consent: 'unknown' | 'granted' | 'denied' = 'granted') {
   // Új session: a kanonikus session-timeout (30 perc) fölé tekerünk.
   clock += 24 * 60 * 60 * 1000;
   vi.setSystemTime(clock);
   (window as any).dataLayer = [];
   document.body.innerHTML = '';
   dispatch.mockClear();
+  setConsent(consent);
   initGlobalListeners(); // once-guard: a 2. hívástól no-op
   return { dispatch, claim };
 }
@@ -111,5 +121,59 @@ describe('A7 — kontakt-kattintás session-dedup', () => {
     // Az e-mail szándék független: friss claim.
     expect(claim('email')).toEqual(expect.any(String));
     expect(claim('email')).toBeNull();
+  });
+});
+
+/**
+ * HOTFIX (#57 után, P0): a dedup-slot CSAK ténylegesen mérhető kattintásra
+ * fogyhat el. Az eredeti #57 consenttől függetlenül azonnal `markClickFired`-et
+ * hívott → consent ELŐTTI kattintás elfogyasztotta a slotot, a consent UTÁNI
+ * (első valóban mérhető) kattintás pedig `null`-t kapott: az érvényes konverzió
+ * ELVESZETT. A „legalább egy láb jogosult" predikátum a meglévő kanonikus
+ * `hasAnyConsent()` (analytics VAGY marketing GRANTED; UNKNOWN prodban
+ * fail-closed → false). Új consent-authority-t ez a modul NEM vezet be.
+ */
+describe('A7 hotfix — a slot csak mérhető kattintásra fogy el', () => {
+  it('UNKNOWN consent tel: → tüzel (a lábak downstream döntenek), de a slot NEM fogy el', async () => {
+    const { dispatch } = await fresh('unknown');
+    click('tel:01172870082');
+    click('tel:01172870082');
+    // Változatlan viselkedés consent nélkül: a lábak pusholnak, a GTM consent
+    // mode / a Worker require_consent dönt — a dedup itt NEM avatkozik be.
+    expect(pushes('phone_conversion')).toHaveLength(2);
+    expect(dispatches(dispatch, 'phone_conversion')).toHaveLength(2);
+  });
+
+  it('UNKNOWN → marketing-only GRANT ugyanabban a sessionben: a consent utáni tel: TÜZEL és elfogyasztja a slotot; a harmadik elnyomva', async () => {
+    // MIÉRT marketing-only: egy analytics-grant a kanonikus getSession()-t
+    // memóriáról sessionStorage-ra váltja → ÚJ session-id → új dedup-kulcs, ami
+    // a hibát elfedné. Marketing-only grant alatt a session-id NEM változik,
+    // tehát a consent előtti markClickFired ténylegesen elnyeli a consent utáni
+    // — első MÉRHETŐ (Meta CAPI-jogosult) — kattintást. Ez a valós Painless-eset
+    // a CookieYes kategória-választásnál.
+    const { dispatch } = await fresh('unknown');
+    click('tel:01172870082');                       // consent előtt
+    expect(pushes('phone_conversion')).toHaveLength(1);
+
+    setConsent('marketing-only');                   // ugyanaz a session
+    click('tel:01172870082');                       // első MÉRHETŐ kattintás
+    expect(pushes('phone_conversion')).toHaveLength(2);
+    expect(dispatches(dispatch, 'phone_conversion')).toHaveLength(2);
+
+    click('tel:01172870082');                       // ismétlés → elnyomva
+    expect(pushes('phone_conversion')).toHaveLength(2);
+    expect(dispatches(dispatch, 'phone_conversion')).toHaveLength(2);
+    expect(claim('phone')).toBeNull();              // a programozott út is látja
+  });
+
+  it('DENIED consent: nincs jogosult láb → a slot nem fogy el (a mai viselkedés marad)', async () => {
+    await fresh('denied');
+    click('tel:01172870082');
+    click('tel:01172870082');
+    expect(pushes('phone_conversion')).toHaveLength(2);
+    setConsent('granted');
+    click('tel:01172870082');
+    expect(pushes('phone_conversion')).toHaveLength(3);
+    expect(claim('phone')).toBeNull();
   });
 });

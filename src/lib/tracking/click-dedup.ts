@@ -14,6 +14,9 @@
  * consent-helyzetben egy reload után kevésbé tartós. Ez A6 (consent-policy)
  * terület, SZÁNDÉKOSAN nem ez a modul dolga.
  *
+ * Amit viszont EZ a modul garantál (#57 hotfix): a slot csak olyan kattintásra
+ * fogy el, ahol legalább egy tracking-láb consent-jogosult (`hasAnyConsent`).
+ *
  * Amit ez a modul NEM hoz: kanonikus event-neveket, consent-kaput, payloadot,
  * gateway-szemantikát. A hívó (`global-listeners` DOM-út, `Step12Quote.
  * handleBookNow` programozott út) a saját belső nevével és kétlábas
@@ -21,6 +24,7 @@
  * event_id-vel.
  */
 
+import { hasAnyConsent } from '@/lib/soborbo-tracking/consent';
 import { hasClickFired, markClickFired } from '@/lib/soborbo-tracking/events';
 import { generateUUID } from './uuid';
 
@@ -39,6 +43,14 @@ export type ContactClickKind = 'phone' | 'email' | 'whatsapp';
 export function claimContactConversion(kind: ContactClickKind): string | null {
   if (typeof window === 'undefined') return null;
   if (hasClickFired(kind)) return null;
-  markClickFired(kind);
+  // INVARIÁNS: a slotot CSAK ténylegesen mérhető kattintás fogyaszthatja el.
+  // Consent nélkül (UNKNOWN — prodban fail-closed — vagy DENIED) egyik láb sem
+  // könyvel valódi ad-konverziót: a lábak továbbra is tüzelnek (a GTM consent
+  // mode / a Worker `require_consent` dönt, mint eddig), de a slot NEM fogy el.
+  // Különben a consent ELŐTTI kattintás elnyelné a consent UTÁNI — első valóban
+  // mérhető — kattintást, és az érvényes konverzió elveszne (#57 hotfix). A
+  // predikátum a MEGLÉVŐ kanonikus consent-döntés (analytics VAGY marketing
+  // GRANTED); ez a modul nem vezet be saját consent-authority-t.
+  if (hasAnyConsent()) markClickFired(kind);
   return generateUUID();
 }
