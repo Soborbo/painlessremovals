@@ -17,23 +17,31 @@ import {
   USER_DATA_TTL_MS,
 } from './config';
 import { generateUUID } from './uuid';
+import { getMarketingConsentState } from '@/lib/soborbo-tracking/gateway';
 
 /**
- * Ad-storage consent as a three-state decision. The distinction between
- * `denied` and `unknown` matters: at boot time GTM hasn't loaded yet, so
- * the only visible signal is the GTMHead consent DEFAULT (denied) — that
- * is NOT a user decision. Treating it as one used to purge the persisted
- * PII side-channel on every page-load, even for fully-consented users
- * (CookieYes pushes its `update: granted` long after boot).
+ * Ad-storage consent as a three-state decision.
  *
- * Decision sources, in order:
- *   1. `google_tag_data.ics` with an explicit UPDATE entry — the CMP has
- *      spoken (granted/denied).
- *   2. The `cookieyes-consent` cookie — survives across page-loads, so
- *      it's readable at boot before GTM/CookieYes initialise
- *      (`advertisement:yes|no`).
- *   3. Neither → `unknown` (first visit, banner not yet answered, or
- *      too early in the page lifecycle to tell).
+ * ── Hol dől el, és hol NEM ───────────────────────────────────────────────────
+ * A DÖNTÉS a kanonikus csomagé (`getMarketingConsentState()`, 6.5.0). Ez a
+ * függvény már csak ADAPTER: a csomag `GRANTED/DENIED/UNKNOWN` állapotát
+ * fordítja le a site publikus szerződésére. Korábban a site SAJÁT
+ * CookieYes-süti parsert és saját háromállapotú logikát tartott fenn —
+ * ugyanarra a kérdésre kétféle kód, vagyis második authority.
+ *
+ * Egy tier maradt itt, és ez SZÁNDÉKOS:
+ *
+ *   `google_tag_data.ics` UPDATE — a GTM Consent Mode jele. A kanonikus mag
+ *   ezt NEM modellezi (ő a saját sütijét, a CookieYes-sütit és a CookieYes JS
+ *   API-t nézi). Ha csendben eldobnánk, egy oldal ÉLETE SORÁN hozott
+ *   banner-döntést csak a süti-olvasáson keresztül látnánk meg — pont azt a
+ *   jelet veszítenénk el, amiért ez a tier eredetileg bekerült.
+ *
+ * Amiért a DEFAULT bejegyzés nem elég: boot-időben a GTM még nem töltött be,
+ * az egyetlen látható jel a GTMHead consent DEFAULT (denied) — az NEM
+ * felhasználói döntés. Döntésnek véve minden oldalbetöltésen kiürítettük a
+ * perzisztált PII side-channelt, teljesen konszenzusos felhasználóknál is
+ * (a CookieYes az `update: granted`-et jóval a boot után pusholja).
  */
 export type ConsentDecision = 'granted' | 'denied' | 'unknown';
 
@@ -50,17 +58,15 @@ export function adStorageConsent(): ConsentDecision {
   } catch {
     // ignore
   }
-  try {
-    const match = document.cookie.match(/(?:^|;\s*)cookieyes-consent=([^;]+)/);
-    if (match) {
-      const raw = decodeURIComponent(match[1]!);
-      if (/(?:^|,)advertisement:yes(?:,|$)/.test(raw)) return 'granted';
-      if (/(?:^|,)advertisement:no(?:,|$)/.test(raw)) return 'denied';
-    }
-  } catch {
-    // ignore
+
+  switch (getMarketingConsentState()) {
+    case 'GRANTED':
+      return 'granted';
+    case 'DENIED':
+      return 'denied';
+    default:
+      return 'unknown';
   }
-  return 'unknown';
 }
 
 /** Back-compat boolean gate: persist PII at rest only on an explicit grant. */

@@ -37,6 +37,11 @@ function denyAdStorage() {
 }
 
 beforeEach(() => {
+  // A consent-jelek GLOBÁLISAK: ha egy eset beállítja a CookieYes JS API-t vagy
+  // a kanonikus override-ot, a következő eset „unknown" fixture-je csendben
+  // grantté válna. Minden forrást nullázunk, nem csak az ICS-t.
+  delete (window as any).getCkyConsent;
+  delete (window as any).__trackingConsent;
   localStorage.clear();
   document.getElementById(USER_DATA_ELEMENT_ID)?.remove();
   (window as any).dataLayer = undefined;
@@ -199,6 +204,53 @@ describe('adStorageConsent — three-state decision', () => {
     document.cookie = 'cookieyes-consent=consentid:abc,advertisement:no';
     grantAdStorage();
     expect(adStorageConsent()).toBe('granted');
+  });
+});
+
+/**
+ * A CONSENT-OSZTÁLYOZÁS AUTHORITYJE A KANONIKUS CSOMAG (6.5.0).
+ *
+ * A fenti hét eset a SZERZŐDÉST rögzíti — az alábbiak azt, hogy a döntést már
+ * nem itt hozzuk meg. A site saját háromállapotú resolvere és a kanonikus
+ * `getMarketingConsentState()` ugyanazt a kérdést válaszolta meg kétféle
+ * kóddal; a 6.5.0 óta ez felesleges második authority.
+ *
+ * EGY tier marad site-oldali, és ez SZÁNDÉKOS: a `google_tag_data.ics` UPDATE
+ * bejegyzése (GTM Consent Mode) olyan jel, amit a kanonikus mag NEM modellez.
+ * A csendes eldobása azt jelentené, hogy egy oldal ÉLETE SORÁN hozott
+ * banner-döntést csak a süti-olvasáson keresztül látnánk meg.
+ */
+describe('adStorageConsent — a döntés a kanonikus magé', () => {
+  it('a CookieYes JS API grantje ELÉG, süti nélkül is', () => {
+    // Ezt a site saját resolvere NEM tudta: nála csak az ICS és a SÜTI volt
+    // forrás, tehát a „JS API már mondja, a süti még nincs kiírva" ablakban
+    // `unknown`-t adott — miközben a gateway ugyanabban a pillanatban már
+    // grantként dolgozott. Két láb, két igazság.
+    (window as unknown as Record<string, unknown>).getCkyConsent = () => ({
+      categories: { advertisement: true, analytics: true }
+    });
+    expect(adStorageConsent()).toBe('granted');
+  });
+
+  it('a kanonikus override-ot is tiszteletben tartja', () => {
+    (window as unknown as Record<string, unknown>).__trackingConsent = {
+      ad_user_data: 'DENIED',
+      ad_personalization: 'DENIED',
+      ad_storage: 'DENIED',
+      analytics_storage: 'DENIED'
+    };
+    expect(adStorageConsent()).toBe('denied');
+  });
+
+  it('nem tart saját CookieYes-süti parsert', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const source = readFileSync(join(process.cwd(), 'src/lib/tracking/tracking.ts'), 'utf8');
+    expect(
+      /cookieyes-consent/.test(source),
+      'a site újra saját CookieYes-süti parsert kapott'
+    ).toBe(false);
+    expect(source).toContain('getMarketingConsentState');
   });
 });
 
