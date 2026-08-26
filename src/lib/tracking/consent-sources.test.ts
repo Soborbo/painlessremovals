@@ -65,6 +65,33 @@ describe('buildConsentSources', () => {
     expect(() => buildConsentSources('cookieyes-consent=%E0%A4%A')).not.toThrow();
   });
 
+  /**
+   * A „nem dob" MÉG NEM MONDJA MEG, MIRE DEGRADÁL — és pont ez csúszott át egyszer.
+   *
+   * A fenti eset csak a kivétel hiányát állítja. Amikor a szerver-láb a kanonikus
+   * magra váltott, a mag először MINDKÉT hívót „adjunk undefined-et"-re vitte, és
+   * ez a teszt VÁLTOZATLANUL ZÖLD MARADT — miközben egy hibás escape-et tartalmazó
+   * sütiből a mellette álló, olvasható `advertisement:yes` némán elveszett volna.
+   *
+   * A helyes viselkedés hívónként MÁS, ugyanarra a bemenetre:
+   *   · a KAPU (readConsentFromCookie) fail closed — sérült stringből nem
+   *     olvasunk ki jogalapot;
+   *   · a TELEMETRIA (buildConsentSources) a NYERS értékre esik vissza és
+   *     tovább jelent — a `kulcs:érték,` alak nem igényel dekódolást.
+   */
+  it('a telemetria MEGŐRZI a döntést, ha a nyers értékből még kiolvasható', () => {
+    const cookie = 'cookieyes-consent=consentid:abc%E0,advertisement:yes,analytics:yes';
+    // Előbb bizonyítjuk, hogy a bemenet őrizetlenül tényleg dobna.
+    expect(() => decodeURIComponent('consentid:abc%E0,advertisement:yes')).toThrow();
+
+    const out = buildConsentSources(cookie);
+    expect(out.source_used).toBe('cookieyes_cookie');
+    expect(out.cookie).toEqual({ analytics: true, marketing: true });
+
+    // ...a KAPU ugyanerre a bemenetre viszont fail closed marad.
+    expect(readConsentFromCookie(cookie)).toBeUndefined();
+  });
+
   it('NEM tér el attól, amit a döntési ág lát ugyanazon a sütin', () => {
     // A telemetria és a KAPU két külön kódút. Ha széttartanak, a receipt mást
     // állítana, mint ami történt — pont az a hibaosztály, amit mérni akarunk.
