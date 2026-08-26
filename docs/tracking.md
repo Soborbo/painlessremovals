@@ -86,6 +86,8 @@ to pair browser Pixel + server CAPI hits.
 | `callback_conversion`            | callback form submitted (navigation via `trackEventBeforeNavigate`) | `value`, `currency`, `service`, `source` |
 | `contact_form_submit`            | contact form success on /contact (fires the live Ads "Contact form submit" awct tag, GA4 event + Meta Contact) | `form_source` |
 | `phone_conversion`               | tel: click OR programmatic phone dial after quote | `value`, `currency`, `service`, `source`, `tel_target` |
+
+> **Session-dedup (A7, 2026-08-26):** phone / email / whatsapp conversions fire **once per kind per session** — `tel → tel → tel` = 1 `phone_conversion`, `tel → mailto` = 1 phone + 1 email. Both the global `tel:` listener and the programmatic `Step12Quote.handleBookNow` dial go through the same `claimContactConversion()` authority (`lib/tracking/click-dedup.ts`, backed by the canonical `hasClickFired/markClickFired`). A repeat click still dials/navigates; only the dataLayer + Worker legs are suppressed. Counting raw repeat taps, if ever wanted, is a separate analytics-only event — not N conversions.
 | `email_conversion`               | mailto: click | `source` |
 | `whatsapp_conversion`            | click on `wa.me` / `whatsapp.com` link | `source` |
 | `attribution_selected`           | user picks a source on the loading-screen card | `attribution_source` |

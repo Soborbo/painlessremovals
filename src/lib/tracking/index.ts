@@ -41,6 +41,8 @@ export {
 
 export { initGlobalListeners } from './global-listeners';
 
+export { claimContactConversion, type ContactClickKind } from './click-dedup';
+
 export { dispatchWorkerConversion } from './worker-dispatch';
 
 export { generateUUID } from './uuid';
