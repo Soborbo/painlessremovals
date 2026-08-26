@@ -23,7 +23,7 @@ import type { PackingSizeCategory } from './constants';
 import { trackError } from '@/lib/errors/tracker';
 import { generateUUID } from '@/lib/tracking/uuid';
 import { markActiveFormsAsHandedOff } from '@/lib/tracking/form-tracking';
-import { readAttribution } from '@/lib/tracking/utm-capture';
+import { buildAttribution } from '@/lib/tracking/utm-capture';
 import type {
   PropertySize,
   OfficeSize,
@@ -762,6 +762,41 @@ export function syncStepFromUrl() {
   }
 }
 
+/**
+ * A kalkulátor state ATTRIBÚCIÓ-MEZŐI — a típusban kompatibilitásból maradnak,
+ * de sem a memóriabeli store, sem a `sessionStorage` snapshot nem lehet a
+ * forrásuk. Két okból:
+ *
+ *  1. TÁROLÁS. A snapshotot a `saveState()` MINDEN lépésváltásnál kiírja. Ha
+ *     ide bekerülne a klikk-ID, az egy második pre-consent tároló út lenne a
+ *     `pr_tracking` mellett — pont az, amit az utm-capture consent-kapuja lezárt.
+ *  2. DRÓT. A Step12 / ResultPage ebből építi a `/api/save-quote` payloadot,
+ *     ami a CRM-be és a gateway attribution-jébe megy. Egy consent-döntés
+ *     nélküli klikk-ID tehát ELHAGYNÁ a böngészőt, akkor is, ha a gateway
+ *     később blokkolja a hirdetési deliveryt.
+ *
+ * A `stripAttribution` ezért a persistálás HATÁRÁN áll: bármi is került a
+ * store-ba (régi snapshot, jövőbeli hívó), a lemezre nem jut ki.
+ */
+const ATTRIBUTION_KEYS = [
+  'gclid',
+  'gbraid',
+  'wbraid',
+  'fbclid',
+  'utmSource',
+  'utmMedium',
+  'utmCampaign',
+  'utmTerm',
+  'utmContent',
+  'landingPage'
+] as const;
+
+function stripAttribution(state: CalculatorState): CalculatorState {
+  const out = { ...state };
+  for (const k of ATTRIBUTION_KEYS) out[k] = null;
+  return out;
+}
+
 const SESSION_KEY = 'painless_calc_state';
 
 /**
@@ -783,9 +818,12 @@ export function initializeStore() {
           const result = LocalStorageStateSchema.partial().safeParse(raw);
           if (result.success) {
             for (const [key, value] of Object.entries(result.data)) {
-              if (value !== undefined) {
-                calculatorStore.setKey(key as keyof CalculatorState, value as never);
-              }
+              if (value === undefined) continue;
+              // Egy a javítás ELŐTT kiírt snapshot még hordozhat klikk-ID-t.
+              // Nem élesztjük újra: az attribúció forrása submitkor a
+              // consent-aware `buildAttribution()`, nem ez a blob.
+              if ((ATTRIBUTION_KEYS as readonly string[]).includes(key)) continue;
+              calculatorStore.setKey(key as keyof CalculatorState, value as never);
             }
           } else {
             // Silently discard invalid state rather than crash the calculator.
@@ -804,22 +842,13 @@ export function initializeStore() {
     // traffic keeps its gclid all the way into save-quote → CRM.
     const state = calculatorStore.get();
     if (!state.sessionId) {
-      const params = new URLSearchParams(window.location.search);
-      const stored = readAttribution();
-      calculatorStore.setKey('gclid', params.get('gclid') || stored.gclid || null);
-      // Mutually exclusive with gclid — `captureUTMs` already dropped the stale
-      // siblings, so at most one of these three is ever non-null.
-      calculatorStore.setKey('gbraid', params.get('gbraid') || stored.gbraid || null);
-      calculatorStore.setKey('wbraid', params.get('wbraid') || stored.wbraid || null);
-      // fbclid rides the same capture path as gclid — the gateway rebuilds the
-      // Meta fbc from it when the _fbc cookie is absent (EMQ; audit 2026-07-17).
-      calculatorStore.setKey('fbclid', params.get('fbclid') || stored.fbclid || null);
-      calculatorStore.setKey('utmSource', params.get('utm_source') || stored.utm_source || null);
-      calculatorStore.setKey('utmMedium', params.get('utm_medium') || stored.utm_medium || null);
-      calculatorStore.setKey('utmCampaign', params.get('utm_campaign') || stored.utm_campaign || null);
-      calculatorStore.setKey('utmTerm', params.get('utm_term') || stored.utm_term || null);
-      calculatorStore.setKey('utmContent', params.get('utm_content') || stored.utm_content || null);
-      calculatorStore.setKey('landingPage', stored._landing || window.location.pathname);
+      // ATTRIBÚCIÓ ITT NINCS — ez szándékos. A kalkulátor state nem
+      // attribúció-forrás: van SAJÁT `sessionStorage` snapshotja, amit a
+      // `saveState()` minden lépésváltásnál kiír, tehát ha ide beleírnánk a
+      // klikk-ID-ket, az egy MÁSODIK pre-consent tároló út lenne a
+      // `pr_tracking` mellett — és a Step12 payload rajta keresztül a drótra is
+      // kivinné őket. Az attribúciót submitkor a consent-aware
+      // `buildAttribution()` adja (lásd `getSubmissionData`).
       // generateUUID falls back to getRandomValues / Math.random when
       // crypto.randomUUID is missing — iOS Safari only got it in 15.4.
       calculatorStore.setKey('sessionId', generateUUID());
@@ -839,7 +868,7 @@ export function initializeStore() {
 export function saveState() {
   if (typeof window !== 'undefined') {
     try {
-      sessionStorage.setItem(SESSION_KEY, JSON.stringify(calculatorStore.get()));
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(stripAttribution(calculatorStore.get())));
     } catch { /* storage full or unavailable */ }
   }
 }
@@ -1306,6 +1335,7 @@ export function setContact(contact: Partial<ContactData>) {
 export function getSubmissionData() {
   const state = calculatorStore.get();
   const quote = quoteResult.get();
+  const attribution = buildAttribution();
 
   return {
     // Form data
@@ -1335,17 +1365,18 @@ export function getSubmissionData() {
       breakdown: quote.breakdown,
     } : null,
 
-    // Tracking
-    gclid: state.gclid,
-    gbraid: state.gbraid,
-    wbraid: state.wbraid,
-    fbclid: state.fbclid,
-    utmSource: state.utmSource,
-    utmMedium: state.utmMedium,
-    utmCampaign: state.utmCampaign,
-    utmTerm: state.utmTerm,
-    utmContent: state.utmContent,
-    landingPage: state.landingPage,
+    // Tracking — az EGYETLEN forrás a consent-aware `buildAttribution()`.
+    // A kalkulátor state-je itt szándékosan nem szerepel: nem ő az authority.
+    gclid: attribution.gclid ?? null,
+    gbraid: attribution.gbraid ?? null,
+    wbraid: attribution.wbraid ?? null,
+    fbclid: attribution.fbclid ?? null,
+    utmSource: attribution.utm_source ?? null,
+    utmMedium: attribution.utm_medium ?? null,
+    utmCampaign: attribution.utm_campaign ?? null,
+    utmTerm: attribution.utm_term ?? null,
+    utmContent: attribution.utm_content ?? null,
+    landingPage: attribution.landing_page ?? null,
     sessionId: state.sessionId,
     startedAt: state.startedAt,
     completedAt: new Date().toISOString(),
