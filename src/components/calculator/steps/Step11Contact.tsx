@@ -28,11 +28,11 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { isValidUkPhone } from '@/lib/forms/phone';
+import { validateEmailField } from '@/lib/forms/email';
 
 
 // Phone validation is shared with the server-side `phoneSchema` — both call
 // `isValidUkPhone`, so a number that passes here always passes server-side.
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface FormErrors {
   firstName?: string;
@@ -88,11 +88,16 @@ export function Step11Contact() {
       newErrors.phone = 'Please enter a valid UK phone number';
     }
 
-    // Email
-    if (!email.trim()) {
-      newErrors.email = 'Please enter your email address';
-    } else if (!EMAIL_REGEX.test(email)) {
-      newErrors.email = 'Please enter a valid email address';
+    // Email — a döntés NEM itt lakik. A `validateEmailField` magát az
+    // `emailSchema`-t futtatja, vagyis a kliens definíció szerint ugyanazt
+    // fogadja el, amit a `/api/save-quote` határa. Korábban két külön szabály
+    // volt, és MINDKÉT irányban rés: egy 254 karakteres, de 500+ oktetes
+    // multibyte cím végigment a kalkulátoron és csak a submitnál bukott el,
+    // egy vágólapról beillesztett `"  User@Example.COM  "` pedig itt bukott el,
+    // pedig az API elfogadta volna.
+    const emailError = validateEmailField(email);
+    if (emailError) {
+      newErrors.email = emailError;
     }
 
     // GDPR/Terms
