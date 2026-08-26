@@ -75,6 +75,7 @@ function adStorageGranted(): boolean {
 }
 
 import { normalizePhone as canonicalNormalizePhone } from '@/lib/soborbo-tracking/persistence';
+import { normalizeEmailIdentity } from '@/lib/soborbo-tracking/email-identity';
 
 export { adStorageGranted };
 
@@ -476,7 +477,12 @@ export function normalizeUserData(
   countryCode: CountryCode = DEFAULT_COUNTRY,
 ): UserData {
   const out: UserData = { country: countryCode };
-  if (input.email) out.email = input.email.toLowerCase().trim();
+  // Az e-mail-identitás szabálya a KANONIKUS magé (6.6.0):
+  // trim → lowercase → `@`-őr → >254 OKTET esetén ELDOBÁS, sosem csonkítás.
+  // Ugyanezt a modult importálja a Worker `hash.ts` is, tehát a böngésző-Pixel
+  // és a CAPI/offline láb bitre ugyanazt a stringet hasheli.
+  const email = normalizeEmailIdentity(input.email);
+  if (email) out.email = email;
   if (input.phone_number) out.phone_number = normalizePhoneE164(input.phone_number, countryCode);
   if (input.first_name) out.first_name = input.first_name.toLowerCase().trim();
   if (input.last_name) out.last_name = input.last_name.toLowerCase().trim();

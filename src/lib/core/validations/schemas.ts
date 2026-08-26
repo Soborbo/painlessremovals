@@ -6,6 +6,10 @@
 
 import { z } from 'zod';
 import { isValidUkPhone } from '@/lib/forms/phone';
+import {
+  EMAIL_IDENTITY_MAX_OCTETS,
+  normalizeEmailIdentity
+} from '@/lib/soborbo-tracking/email-identity';
 
 /**
  * Recursion-safe unknown value: allows primitives, arrays, and objects
@@ -43,7 +47,15 @@ export const emailSchema = z
     z
       .email('Invalid email address')
       .min(5, 'Email too short')
-      .max(255, 'Email too long')
+      // RFC 5321: a mailbox gyakorlati maximuma 254 OKTET. A karakter-alapú
+      // `.max()` olcsó előszűrő; a tényleges határt a `refine` adja, mert egy
+      // ékezetes helyi rész UTF-8-ban két oktet karakterenként.
+      .max(EMAIL_IDENTITY_MAX_OCTETS, 'Email too long')
+      // A FORM HATÁRA ÉS AZ IDENTITY-RÉTEG HATÁRA NEM CSÚSZHAT SZÉT. Ha a form
+      // elfogad egy címet, amit a `normalizeEmailIdentity` utána eldob, akkor
+      // keletkezik egy lead, aminek SOHA nem lesz `em` azonosítója — némán,
+      // mert a felhasználó felé minden sikeresnek látszik.
+      .refine((value) => normalizeEmailIdentity(value) !== undefined, 'Email too long')
   );
 
 /**
