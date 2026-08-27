@@ -16,7 +16,7 @@
  */
 
 import { sendToWorker } from '@/lib/worker-tracking';
-import { readUserDataFromDOM, type UserData } from './tracking';
+import { readUserDataForDispatch, type UserData } from './tracking';
 
 /** Belső event-név → Worker kanonikus event-név. */
 const CANONICAL_EVENT: Record<string, string> = {
@@ -101,7 +101,7 @@ export function dispatchWorkerConversion(
     ...(hasValue ? { value: opts.value, currency: opts.currency || 'GBP' } : {}),
     ...(opts.service ? { service: opts.service } : {}),
     // Nincs `source` — lásd a WorkerConversionOptions kommentjét.
-    user_data: opts.userData ?? readUserDataFromDOM(),
+    user_data: opts.userData ?? readUserDataForDispatch(),
   };
 
   // A Turnstile-várakozás megszűnt: a gateway nem validál Turnstile-t, a

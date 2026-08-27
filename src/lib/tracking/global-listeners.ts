@@ -23,7 +23,7 @@
 
 import { claimContactConversion, type ContactClickKind } from './click-dedup';
 import { getRecentQuoteDetails } from './conversion-state';
-import { readUserDataFromDOM, trackEvent } from './tracking';
+import { readUserDataForDispatch, trackEvent } from './tracking';
 import { dispatchWorkerConversion } from './worker-dispatch';
 
 let installed = false;
@@ -110,7 +110,7 @@ function onDocumentClick(e: Event): void {
   // `standalone / (not set)` sessions on every cookieless hit.
   dispatchWorkerConversion(eventName, eventId, {
     ...(recentQuote ? { value: recentQuote.value, currency: recentQuote.currency, service: recentQuote.service } : {}),
-    userData: readUserDataFromDOM(),
+    userData: readUserDataForDispatch(),
   });
 }
 
