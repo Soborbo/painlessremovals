@@ -21,6 +21,12 @@ export {
 } from './tracking';
 
 export {
+  buildQuoteUserData,
+  type ContactLike,
+  type QuoteAddresses,
+} from './user-data-source';
+
+export {
   fireQuoteConversion,
   fireQuoteCompletedEvent,
   wasQuoteCompletedRecently,

@@ -36,7 +36,7 @@ import { trackError } from '@/lib/errors/tracker';
 import {
   trackEvent,
   setUserDataOnDOM,
-  normalizeUserData,
+  buildQuoteUserData,
   dispatchWorkerConversion,
   fireQuoteConversion,
   fireQuoteCompletedEvent,
@@ -137,15 +137,12 @@ export function Step12Quote() {
       // avoids a double lead when the quote is saved from two surfaces.
 
       // Push PII to the DOM side-channel for GTM User-Provided Data
-      // variable. NEVER through dataLayer.
+      // variable. NEVER through dataLayer. A mezőkészlet a `buildQuoteUserData`
+      // szerződése (D1) — ide bemásolt leképezés NE kerüljön vissza: pont az
+      // vesztette el az irányítószámot mind a három hívóhelyen.
       if (state.contact) {
         setUserDataOnDOM(
-          normalizeUserData({
-            email: state.contact.email,
-            phone_number: state.contact.phone,
-            first_name: state.contact.firstName,
-            last_name: state.contact.lastName,
-          }),
+          buildQuoteUserData(state.contact, { from: state.fromAddress, to: state.toAddress }),
         );
       }
 

@@ -260,11 +260,18 @@ describe('setUserDataOnDOM / readUserDataFromDOM round-trip', () => {
     grantAdStorage();
     const data = {
       email: 'a@b.com', phone_number: '+447700900123', first_name: 'John',
-      last_name: 'Smith', city: 'Bristol', street: '12 High St',
+      last_name: 'Smith', city: 'Bristol',
       postal_code: 'BS1 2AB', country: 'GB',
     };
     setUserDataOnDOM(data);
     expect(readUserDataFromDOM()).toEqual(data);
+  });
+
+  it('a `street`-et NEM írja ki és nem is olvassa vissza (6.6.3: kikerült a szerződésből)', () => {
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com', street: '12 High St' } as Record<string, string>);
+    expect(readUserDataFromDOM()).toEqual({ email: 'a@b.com' });
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)?.dataset.street).toBeUndefined();
   });
 
   // A fixture SZÁNDÉKOSAN `grant`: ez az eset a verbatim tárolásról szól, nem a

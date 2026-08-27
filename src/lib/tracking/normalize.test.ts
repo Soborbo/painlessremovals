@@ -99,10 +99,17 @@ describe('normalizeUserData', () => {
     expect(out.last_name).toBe('smith');
   });
 
-  it('lowercases and trims city and street', () => {
-    const out = normalizeUserData({ city: '  Bristol ', street: ' 12 High St ' });
+  it('lowercases and trims city', () => {
+    const out = normalizeUserData({ city: '  Bristol ' });
     expect(out.city).toBe('bristol');
-    expect(out.street).toBe('12 high st');
+  });
+
+  // A `street` a 6.6.3-ban a kanonikus szerződésből is kikerült: a Worker
+  // `PlainUserDataPayload`-ja SOSEM fogadta, tehát az utcanév minden
+  // konverzióval kiment a hálózatra, hogy a túloldalon a földre essen.
+  it('a `street`-et eldobja — a Worker nem fogadja, a hálózatra se tegyük ki', () => {
+    const out = normalizeUserData({ street: ' 12 High St ' } as Record<string, string>);
+    expect(out).not.toHaveProperty('street');
   });
 
   it('uppercases postal code and removes all spaces', () => {
