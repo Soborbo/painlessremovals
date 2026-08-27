@@ -11,6 +11,7 @@ import {
   clearUserDataOnDOM,
 } from './tracking';
 import { USER_DATA_ELEMENT_ID, USER_DATA_STORAGE_KEY, USER_DATA_TTL_MS } from './config';
+import { purgeMarketingStorage } from '@/lib/soborbo-tracking/persistence';
 
 /**
  * Regression net for the browser-side PII guard (rule #1) and the consent-
@@ -266,8 +267,10 @@ describe('setUserDataOnDOM / readUserDataFromDOM round-trip', () => {
     expect(readUserDataFromDOM()).toEqual(data);
   });
 
+  // A fixture SZÁNDÉKOSAN `grant`: ez az eset a verbatim tárolásról szól, nem a
+  // consentről. (Korábban `deny` volt — akkor a DOM-írás még kapuzatlan volt.)
   it('stores values verbatim (no normalization in the side-channel)', () => {
-    denyAdStorage();
+    grantAdStorage();
     setUserDataOnDOM({ email: 'Mixed@Case.COM' });
     expect(readUserDataFromDOM().email).toBe('Mixed@Case.COM');
   });
@@ -277,7 +280,7 @@ describe('setUserDataOnDOM / readUserDataFromDOM round-trip', () => {
   });
 
   it('only writes the provided fields', () => {
-    denyAdStorage();
+    grantAdStorage();
     setUserDataOnDOM({ email: 'a@b.com' });
     expect(readUserDataFromDOM()).toEqual({ email: 'a@b.com' });
   });
@@ -294,11 +297,25 @@ describe('consent gating of at-rest persistence', () => {
     expect(typeof blob.savedAt).toBe('number');
   });
 
-  it('keeps PII on the DOM but NOT in localStorage when consent is denied', () => {
+  // MEGFORDULT (PII-P0). Korábban: „keeps PII on the DOM but NOT in localStorage".
+  // A rejtett elem tracking-oldalcsatorna, nem a quote teljesítéséhez kell —
+  // DENIED alatt nincs jogalap olvashatóan tartani, és ugyanezeken az oldalakon
+  // consent-kapu nélküli session-replay (Clarity) fut.
+  it('writes NEITHER the DOM NOR localStorage when consent is denied', () => {
     denyAdStorage();
     setUserDataOnDOM({ email: 'a@b.com' });
-    expect(readUserDataFromDOM().email).toBe('a@b.com');
+    expect(readUserDataFromDOM()).toEqual({});
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
     expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
+  });
+
+  it('a DENIED írás a KORÁBBAN kiírt DOM-elemet is elviszi, nem csak kihagyja', () => {
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com' });
+    expect(readUserDataFromDOM().email).toBe('a@b.com');
+    denyAdStorage();
+    setUserDataOnDOM({ first_name: 'John' });
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
   });
 
   it('merges successive writes in localStorage (earlier fields not wiped)', () => {
@@ -310,23 +327,37 @@ describe('consent gating of at-rest persistence', () => {
     expect(blob.data.phone_number).toBe('+447700900123');
   });
 
-  it('purges the at-rest copy when consent is later revoked', () => {
+  it('purges the at-rest copy AND the DOM element when consent is later revoked', () => {
     grantAdStorage();
     setUserDataOnDOM({ email: 'a@b.com' });
     denyAdStorage();
     setUserDataOnDOM({ first_name: 'John' });
     expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
   });
 
-  it('under UNKNOWN consent: writes the DOM but neither persists nor purges an existing blob', () => {
+  // RÉSZBEN MEGFORDULT (PII-P0): a DOM-írás elmarad, az at-rest ág VÁLTOZATLAN.
+  // A kettő szándékosan válik szét — lásd a lenti „unknown ≠ denied" esetet.
+  it('under UNKNOWN consent: writes NO new PII to the DOM, and neither persists nor purges an existing blob', () => {
     grantAdStorage();
     setUserDataOnDOM({ email: 'a@b.com' }); // consented persist on an earlier page
-    delete (window as any).google_tag_data; // fresh page, consent not yet readable
+    document.getElementById(USER_DATA_ELEMENT_ID)?.remove(); // fresh page-load
+    delete (window as any).google_tag_data; // consent not yet readable
     setUserDataOnDOM({ first_name: 'John' });
-    expect(readUserDataFromDOM().first_name).toBe('John'); // DOM write happens
+    expect(readUserDataFromDOM()).toEqual({}); // no new DOM write…
     const blob = JSON.parse(localStorage.getItem(USER_DATA_STORAGE_KEY)!);
-    expect(blob.data.email).toBe('a@b.com'); // existing blob survives…
-    expect(blob.data.first_name).toBeUndefined(); // …but no new persist without a grant
+    expect(blob.data.email).toBe('a@b.com'); // …existing blob survives…
+    expect(blob.data.first_name).toBeUndefined(); // …and no new persist without a grant
+  });
+
+  it('unknown ≠ denied: az UNKNOWN írás LÉTRE SEM hozza az elemet, de nem is takarít', () => {
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com' });
+    document.getElementById(USER_DATA_ELEMENT_ID)?.remove();
+    delete (window as any).google_tag_data;
+    setUserDataOnDOM({ email: 'c@d.com' });
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
+    expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).not.toBeNull();
   });
 });
 
@@ -348,6 +379,18 @@ describe('restoreUserDataFromStorage', () => {
     restoreUserDataFromStorage();
     expect(readUserDataFromDOM()).toEqual({});
     expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
+  });
+
+  // Ez a VISSZAVONÁS útja: a `boot.ts` a `cookieyes_consent_update` eseményre
+  // ezt a függvényt hívja. Eddig csak a localStorage-ot vitte, a nyers PII a
+  // DOM-ban maradt a lap további életére.
+  it('a visszavonás a DOM-elemet is elviszi, nem csak az at-rest másolatot', () => {
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com' });
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).not.toBeNull();
+    denyAdStorage();
+    restoreUserDataFromStorage();
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
   });
 
   it('does NOT purge storage while consent is still unknown (boot before GTM/CMP loads)', () => {
@@ -388,5 +431,22 @@ describe('clearUserDataOnDOM', () => {
     expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
     expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
     expect(readUserDataFromDOM()).toEqual({});
+  });
+});
+
+describe('a site bejelentkezik a kanonikus visszavonás-takarításra', () => {
+  // A mechanizmus a magé (`registerMarketingPurgeHook` + `purgeMarketingStorage`),
+  // a POLICY a site-é: a mag a SAJÁT `__sb_user_data__` elemét takarítja, a
+  // painless rejtett eleme (`__pl_user_data__`) külön tár. Enélkül a
+  // consent-visszavonás egyik útja sem érte el a site oldalcsatornáját.
+  it('purgeMarketingStorage() kiüti a painless DOM-elemét ÉS az at-rest másolatot', () => {
+    grantAdStorage();
+    setUserDataOnDOM({ email: 'a@b.com' });
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).not.toBeNull();
+
+    purgeMarketingStorage();
+
+    expect(document.getElementById(USER_DATA_ELEMENT_ID)).toBeNull();
+    expect(localStorage.getItem(USER_DATA_STORAGE_KEY)).toBeNull();
   });
 });
