@@ -199,11 +199,15 @@ describe('INV-E · a szerver-láb NEM viszi tovább a `source` címkét', () => 
 
 describe('F9/3.4 — a böngésző-láb a KANONIKUS transzporton megy', () => {
   it('a kimenő payload jelenti a kliens-verziót — ez a migráció gépi bizonyítéka', async () => {
-    // A szerver-láb a #48 óta jelent (`0.0.0-painless-fork`), a böngésző-láb
-    // eddig SEMMIT. A transzport-csere után a kanonikus `collectConsentSources`
-    // fut, tehát a ledger böngésző-ingress sorain megjelenik a CSOMAG verziója.
-    // A migráció így lábanként követhető, emberi állítás nélkül:
-    //   szerver: 0.0.0-painless-fork   böngésző: 6.4.x
+    // A szerver-láb a #48 óta jelent, a böngésző-láb eddig SEMMIT. A
+    // transzport-csere után a kanonikus `collectConsentSources` fut, tehát a
+    // ledger böngésző-ingress sorain is megjelenik a CSOMAG verziója.
+    //
+    // A migráció így lábanként követhető, emberi állítás nélkül. Az út:
+    //   szerver:  NULL → 0.0.0-painless-fork → a csomag verziója
+    //   böngésző: NULL → a csomag verziója
+    // Az F9/3.4 szerver-szelete óta MINDKÉT láb a vendorolt magot jelenti — a
+    // fork-jelölő elfogyott, mert a fork is elfogyott.
     const eventId = trackEvent('phone_conversion', {});
     await dispatchWorkerConversion('phone_conversion', eventId, {});
 

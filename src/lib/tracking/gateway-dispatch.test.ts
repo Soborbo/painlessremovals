@@ -89,6 +89,22 @@ describe('buildGatewayPayload', () => {
     expect(buildGatewayPayload(baseInput)).not.toHaveProperty('turnstile_token');
   });
 
+  /**
+   * A `service` A DRÓTON — nem elég a buildGatewayPayload-on pinnelni.
+   *
+   * A kanonikus `sendGatewayConversion` a SAJÁT `buildGatewayPayload`-ját hívja,
+   * nem a hívó modulét. Ha a szerver-láb egy nap teljesen a kanonikus küldőre
+   * delegál, a payload-szintű pin ZÖLD MARADNA, miközben a `service` lecsúszik a
+   * dróton — pontosan az a néma vesztés, amit ez a modul mérni hivatott.
+   *
+   * Ez a teszt a TÉNYLEGESEN KIMENŐ BODY-t nézi.
+   */
+  it('carries `service` ON THE WIRE, not just in the payload builder', async () => {
+    const captured: { url?: string; init?: any } = {};
+    await sendGatewayConversion(env, baseInput, { fetchImpl: okFetch(captured) });
+    expect(JSON.parse(captured.init.body).service).toBe('removal');
+  });
+
   it('carries the browser event_id verbatim (Meta dedupes on it)', () => {
     const p = buildGatewayPayload(baseInput);
     expect(p.event_id).toBe('a1b2c3d4-0000-4000-8000-000000000001');
@@ -112,6 +128,36 @@ describe('buildGatewayPayload', () => {
     const p = buildGatewayPayload(baseInput);
     expect(p.value).toBe(850);
     expect(p.currency).toBe('GBP');
+  });
+
+  /**
+   * A `service` MEZŐ — a kanonikus magra váltás egyetlen NÉMA veszteségpontja.
+   *
+   * A kanonikus `buildGatewayPayload` (soborbo-tracking 6.6.0) NEM emitál
+   * `service`-t: az a mezőkészlet webshop-bérlőkre készült (`contents`,
+   * `content_ids`, `order_id`), a lead-gen `service` nincs benne. A painless
+   * viszont HÁROM élő hívási pontról küldi (`save-quote.ts` ×2,
+   * `thank-you-callback.astro`).
+   *
+   * Egy vak csere ezt csendben elejtené: nincs kivétel, nincs piros build —
+   * a mező egyszerűen nem lenne ott a payloadon. Ez a teszt azért van, hogy a
+   * csere pillanatában PIROSSÁ váljon, ne pedig hónapokkal később egy hiányzó
+   * dimenzió formájában.
+   *
+   * (A gateway-oldali fogyasztó ma egyetlen hely: `src/lib/ga4.ts` →
+   * `params.service`. Az a láb a CLAUDE.md 8. pontja szerint dormant, tehát a
+   * mező NEM ledger-adat. Ettől még a payload alakja szerződés — a megőrzés
+   * döntés kérdése, nem véletlené.)
+   */
+  it('carries `service` — a canonical swap would silently drop it', () => {
+    const p = buildGatewayPayload(baseInput);
+    expect(p.service).toBe('removal');
+
+    const noService = buildGatewayPayload({
+      eventName: 'callback_request_submitted',
+      eventId: 'e1',
+    });
+    expect(noService).not.toHaveProperty('service');
   });
 
   it('sends RAW PII — the gateway is the single normalizer (CLAUDE.md #1)', () => {

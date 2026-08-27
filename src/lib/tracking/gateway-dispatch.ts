@@ -21,10 +21,63 @@
 import { logger } from '@/lib/utils/logger';
 import type { WaitUntil } from '@/lib/crm/server';
 
-/** Minimal shape of a Cloudflare service binding (Fetcher). */
-export interface GatewayFetcher {
-  fetch: (input: string, init?: RequestInit) => Promise<Response>;
-}
+/**
+ * ── A SZERVER-LÁB MAGJA A KANONIKUS CSOMAGÉ (F9/3.4, szerver-szelet) ─────────
+ *
+ * Ami innen ELTŰNT, az nem veszett el: a `readConsentFromCookie`,
+ * `readMetaCookies`, `resolveTestEventCode`, `buildConsentSources` és a payload-
+ * építő mostantól a vendorolt `soborbo-tracking@6.6.0` szerver-backendjéből jön.
+ * Ezek TISZTA függvények — nincs env-, binding- vagy zóna-függésük —, ezért a
+ * delegálás kockázata nulla, a haszna viszont az, hogy a szabály egy helyen él.
+ *
+ * Ami SZÁNDÉKOSAN ITT MARADT, és miért:
+ *
+ *   `GatewayEnv` / `gatewayBaseUrl` / `isGatewayConfigured` / `sendGatewayConversion`
+ *       Ezek a site DEPLOY-KÖTÖTT tényeire épülnek, és a kanonikus alak MÁS:
+ *         · a binding neve itt `EVENT_GATEWAY` (wrangler.toml), a kanonikusban `GATEWAY`
+ *         · a `TRACKING_GATEWAY_URL` felülírás a kanonikusban NEM létezik
+ *         · a kanonikus `isGatewayConfigured` MEGKÖVETELI a bindingot
+ *       Egy vak csere itt nem fordítási hibát adna, hanem NÉMA NULLÁT: a
+ *       kanonikus küldő `env.GATEWAY`-t keresne, nem találná, és a lead-végpont
+ *       továbbra is 200-at adna, miközben a gateway sosem látja az eventet.
+ *       Ezek átvétele deploy-koordinációt igényel (binding-átnevezés), nem
+ *       kódcserét — ezért külön szelet.
+ *
+ *   `splitFullName`, `deliverGatewayConversion`, `service`
+ *       Nincs kanonikus párjuk. A `service`-t három élő hívási pont küldi
+ *       (`save-quote.ts` ×2, `thank-you-callback.astro`); a kanonikus payload-
+ *       építő nem ismeri, ezért a burkoló teszi vissza. Két teszt pinneli — az
+ *       egyik a DRÓTON, mert a builder-szintű pin egy teljes delegálásnál
+ *       zölden hazudna.
+ */
+import {
+  buildGatewayPayload as canonicalBuildGatewayPayload,
+  sendGatewayConversion as canonicalSendGatewayConversion,
+  type GatewayConversionInput as CanonicalGatewayConversionInput,
+  type GatewayEnv as CanonicalGatewayEnv,
+} from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
+
+export {
+  readConsentFromCookie,
+  readMetaCookies,
+  resolveTestEventCode,
+  readGa4IdsFromCookie,
+  buildConsentSources,
+  type GatewayFetcher,
+  type ConsentSignal,
+  type ConsentState,
+  type GatewayEventName,
+  type GatewayUserData,
+  type GatewayResult,
+  type ConsentSourceSnapshot,
+  type ConsentSourcesPayload,
+} from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
+
+import type {
+  GatewayFetcher,
+  GatewayResult,
+  GatewayEventName,
+} from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
 
 export interface GatewayEnv {
   /**
@@ -75,201 +128,44 @@ export interface GatewayEnv {
   TRACKING_TEST_EVENT_CODE?: string;
 }
 
-/**
- * Returns the Meta test-event code iff this lead is the designated synthetic one.
- * Case/whitespace-insensitive: the address is typed into a real form by hand.
- */
-export function resolveTestEventCode(env: GatewayEnv, email?: string): string | undefined {
-  const marker = env.TRACKING_TEST_LEAD_EMAIL?.trim().toLowerCase();
-  const code = env.TRACKING_TEST_EVENT_CODE?.trim();
-  if (!marker || !code || !email) return undefined;
-  return email.trim().toLowerCase() === marker ? code : undefined;
-}
 
-/**
- * Consent Mode v2 state from the CookieYes cookie — the SAME source, and the same
- * mapping, the browser lib uses (`worker-tracking.ts` `getConsentState`). Reading
- * it server-side means the two legs always agree about the user's choice.
- *
- * CookieYes format:
- *   consentid:..,consent:yes,necessary:yes,analytics:yes,advertisement:yes,...
- * Mapping (CookieYes official):
- *   advertisement → ad_storage + ad_user_data + ad_personalization
- *   analytics     → analytics_storage
- *
- * Returns undefined when the cookie is absent or is not a CookieYes cookie — we do
- * NOT guess. The gateway then applies `require_consent`, and the consent-receipt it
- * writes carries no explicit signal, which downstream (offline lead-status upload)
- * is never treated as consent evidence.
- */
-export function readConsentFromCookie(cookieHeader: string | null): ConsentState | undefined {
-  if (!cookieHeader) return undefined;
-
-  let raw: string | undefined;
-  for (const part of cookieHeader.split(';')) {
-    const idx = part.indexOf('=');
-    if (idx < 0) continue;
-    if (part.slice(0, idx).trim() === 'cookieyes-consent') {
-      try {
-        raw = decodeURIComponent(part.slice(idx + 1).trim());
-      } catch {
-        // Malformed percent-encoding (e.g. a truncated `%` sequence) throws
-        // URIError — a bad cookie must degrade to "no explicit signal", never
-        // 500 the lead endpoint that carries it.
-        return undefined;
-      }
-      break;
-    }
-  }
-  if (!raw) return undefined;
-
-  const map: Record<string, string> = {};
-  for (const part of raw.split(',')) {
-    const idx = part.indexOf(':');
-    if (idx > 0) map[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
-  }
-  if (map.advertisement === undefined && map.analytics === undefined) return undefined;
-
-  const sig = (yes: boolean): ConsentSignal => (yes ? 'GRANTED' : 'DENIED');
-  const adGranted = map.advertisement === 'yes';
-  return {
-    ad_user_data: sig(adGranted),
-    ad_personalization: sig(adGranted),
-    ad_storage: sig(adGranted),
-    analytics_storage: sig(map.analytics === 'yes'),
-  };
-}
 
 /**
  * A KÖNYVTÁR-VERZIÓ, amit ez a backend jelent a gateway-nek.
  *
- * SZÁNDÉKOSAN nem a kanonikus `soborbo-tracking` csomag verziószáma: ez a
- * könyvtár a csomag FORKJA (a Serverside `check-vendored-copy` riportja szerint
- * a kiadás 27 fájljából 22 nincs is meg benne). Egy kanonikus-nak látszó
- * verziószám itt HAZUDNA — pont azt a driftet fedné el, amit a
- * `client_lib_version` mérni hivatott.
+ * ── Miért nem kézzel írt szám ────────────────────────────────────────────────
+ * Ez a mező a `consent_receipts.client_lib_version`-be megy, és az EGYETLEN
+ * gépi jelünk arról, mi fut valójában a site-on. Egy kézzel karbantartott
+ * literál pontosan azt a driftet tudná elfedni, amit mérni hivatott — ezért a
+ * vendorolt kanonikus magból SZÁRMAZTATJUK. Ha a mag verziója változik, ez
+ * együtt mozdul; ha valaki a magot kicseréli, de a számot nem, az lehetetlen.
  *
- * A `0.0.0-` előtag ezért nem kozmetika: a gateway `MIN_CLIENT_LIB_VERSION`-je
- * 6.1.0, tehát ez az érték IGAZ módon vált ki `TRK-910-006`-ot (elavult
- * kliens-lib). Az a megállapítás információs szintű (a napi consent-riport egy
- * sora, nem riasztás) — és pontosan a valóságot mondja: ez a site nem a
- * kanonikus könyvtárat futtatja. Amikor a migráció megtörténik, ez az érték a
- * csomag valódi verziójára vált, és a ledger sorai NULL → `0.0.0-painless-fork`
- * → `6.3.0` úton haladnak. Ez a migráció KÍVÜLRŐL, gépileg igazolható jele.
+ * ── Miért NEM `0.0.0-painless-fork` többé ────────────────────────────────────
+ * Volt. A fork-jelölő igaz állítás volt, amíg a szerver-láb SAJÁT
+ * implementációt futtatott, és szándékosan a gateway `MIN_CLIENT_LIB_VERSION`-je
+ * (6.1.0) alatt maradt, hogy valósan kiváltson egy információs `TRK-910-006`-ot.
+ *
+ * Az F9/3.4 szerver-szelete után ez már nem igaz: a payload-építés, a
+ * süti-olvasók, a transzport, a retry-politika és az auth MIND a kanonikus magé.
+ *
+ * Ami site-lokális maradt, az nem könyvtár-logika:
+ *   · `GatewayEnv` — a site env-változóinak NEVEI (a binding itt `EVENT_GATEWAY`)
+ *   · `gatewayBaseUrl` / `isGatewayConfigured` — config-politika
+ *   · `deliverGatewayConversion` — logging + `waitUntil` burkoló
+ *   · `splitFullName` — nincs kanonikus párja
+ *   · `toCanonicalEnv` / `toCanonicalInput` — a fenti nevek leképezése
+ *
+ * Ezért a szám mostantól a magé. A ledger sorai a
+ * `NULL → 0.0.0-painless-fork → 6.6.x` úton haladtak — ez a váltás a migráció
+ * kívülről, gépileg igazolható jele.
  */
-export const BACKEND_LIB_VERSION = '0.0.0-painless-fork';
+export { BACKEND_LIB_VERSION } from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
+import { BACKEND_LIB_VERSION } from '@/lib/soborbo-tracking/server/backend/gateway-dispatch';
 
-export interface ConsentSourceSnapshot {
-  analytics: boolean | null;
-  marketing: boolean | null;
-}
 
-export interface ConsentSourcesPayload {
-  cookie: ConsentSourceSnapshot;
-  api: ConsentSourceSnapshot;
-  source_used: 'cookieyes_cookie' | 'cookieyes_api' | 'override' | 'server_cookie' | 'sbo_cookie' | 'none';
-  client_lib_version: string;
-  raw_cookie?: string;
-}
 
-/** A nyers sütiből ennyi megy a receiptre — a teljes érték sosem. */
-const RAW_COOKIE_MAX = 200;
 
-/**
- * A backend SAJÁT olvasata a CookieYes sütiről, telemetriaként.
- *
- * NEM változtat azon, hogy mi megy el és mi nem — a `readConsentFromCookie`
- * változatlanul állítja elő a `consent` blokkot. Ez csak MEGMONDJA, mit látott
- * ez a láb.
- *
- * A `null` azt jelenti: az a forrás nem volt elérhető. SOHA nem helyettesítjük
- * alapértelmezéssel — a NULL-minta MAGA a bizonyíték (süti nélküli kérés =
- * olyan döntés aláírása, ami még nem született meg vagy nem tárolódott).
- */
-export function buildConsentSources(cookieHeader: string | null | undefined): ConsentSourcesPayload {
-  const unavailable: ConsentSourceSnapshot = { analytics: null, marketing: null };
-  let raw: string | undefined;
-  if (cookieHeader) {
-    for (const part of cookieHeader.split(';')) {
-      const idx = part.indexOf('=');
-      if (idx < 0) continue;
-      if (part.slice(0, idx).trim() !== 'cookieyes-consent') continue;
-      try {
-        raw = decodeURIComponent(part.slice(idx + 1).trim());
-      } catch {
-        // Rossz percent-kódolás: a telemetria sem dobhat a lead-útvonalon.
-        raw = part.slice(idx + 1).trim();
-      }
-      break;
-    }
-  }
-  if (!raw) {
-    return {
-      cookie: unavailable,
-      // Nincs böngésző ezen az úton, tehát a CookieYes JS API sosem olvasható.
-      api: unavailable,
-      source_used: 'none',
-      client_lib_version: BACKEND_LIB_VERSION,
-    };
-  }
 
-  const map: Record<string, string> = {};
-  for (const part of raw.split(',')) {
-    const idx = part.indexOf(':');
-    if (idx > 0) map[part.slice(0, idx).trim()] = part.slice(idx + 1).trim();
-  }
-  const cookie: ConsentSourceSnapshot = {
-    analytics: map.analytics === undefined ? null : map.analytics === 'yes',
-    marketing: map.advertisement === undefined ? null : map.advertisement === 'yes',
-  };
-  const present = cookie.analytics !== null || cookie.marketing !== null;
-  return {
-    cookie,
-    api: unavailable,
-    source_used: present ? 'cookieyes_cookie' : 'none',
-    client_lib_version: BACKEND_LIB_VERSION,
-    raw_cookie: raw.slice(0, RAW_COOKIE_MAX),
-  };
-}
-
-/**
- * Meta browser identifiers from the inbound request's Cookie header — the SAME
- * `_fbp`/`_fbc` cookies the browser leg reads (`worker-tracking.ts`
- * `sendToWorker`), so the two legs hand Meta the same identity. Forwarding them
- * on the server leg is what lifts EMQ for consent-granted users whose browser
- * leg never fired (the exact audit finding: em+fbc moves EMQ 3 → 7).
- *
- * Values are passed RAW (CLAUDE.md #1: fbp/fbc are pass-through plain, never
- * hashed, never normalized). We do NOT synthesize an fbc here when only an
- * fbclid is known — the gateway itself rebuilds fbc from `attribution.fbclid`
- * (`buildFbcFromFbclid`), and a second, drifting reconstruction would race it.
- *
- * Same degradation posture as `readConsentFromCookie`: a malformed cookie must
- * yield `{}` — never throw into the lead endpoint that carries it.
- */
-export function readMetaCookies(cookieHeader: string | null): { fbp?: string; fbc?: string } {
-  if (!cookieHeader) return {};
-
-  const out: { fbp?: string; fbc?: string } = {};
-  for (const part of cookieHeader.split(';')) {
-    const idx = part.indexOf('=');
-    if (idx < 0) continue;
-    const name = part.slice(0, idx).trim();
-    if (name !== '_fbp' && name !== '_fbc') continue;
-    let value: string;
-    try {
-      value = decodeURIComponent(part.slice(idx + 1).trim());
-    } catch {
-      // Truncated percent-encoding throws URIError — skip the bad cookie,
-      // keep any healthy one.
-      continue;
-    }
-    if (!value) continue;
-    if (name === '_fbp') out.fbp = value;
-    else out.fbc = value;
-  }
-  return out;
-}
 
 /** Loose fetch shape so test mocks and Node's fetch both assign. */
 export type FetchLike = (
@@ -277,107 +173,75 @@ export type FetchLike = (
   init: { method: string; headers: Record<string, string>; body: string },
 ) => Promise<Response>;
 
-/** Canonical gateway event names (see Serverside `src/events.json`). */
-export type GatewayEventName =
-  | 'quote_calculator_submitted'
-  | 'callback_request_submitted'
-  | 'contact_form_submitted';
 
-export type ConsentSignal = 'GRANTED' | 'DENIED';
 
-export interface ConsentState {
-  ad_user_data: ConsentSignal;
-  ad_personalization: ConsentSignal;
-  ad_storage: ConsentSignal;
-  analytics_storage: ConsentSignal;
-}
 
-export interface GatewayUserData {
-  email?: string;
-  phone_number?: string;
-  first_name?: string;
-  last_name?: string;
-  city?: string;
-  postal_code?: string;
-  country?: string;
-}
 
-export interface GatewayConversionInput {
-  eventName: GatewayEventName;
-  /**
-   * MUST be the same id the browser used for this conversion (the one that goes
-   * to the Meta Pixel via the dataLayer). A different id here does not "add" a
-   * conversion — it DOUBLE-COUNTS the Lead, because Meta dedupes on the
-   * (event_name, event_id) pair.
-   */
-  eventId: string;
-  /** Stable CRM-side lead key, so the gateway ledger row joins the CRM lead. */
-  leadId?: string;
-  value?: number;
-  currency?: string;
+/**
+ * A site bemeneti alakja: a kanonikus input + három site-specifikus mező.
+ *
+ * A `clientId` / `sessionId` a kanonikusban `ga4ClientId` / `ga4SessionId` néven
+ * él — ugyanaz a szemantika, más név. A burkoló képezi le őket, hogy az öt
+ * hívási pont ne változzon; a régi nevek maradnak a site szerződése.
+ */
+export interface GatewayConversionInput extends CanonicalGatewayConversionInput {
+  /** Lead-gen szolgáltatás-címke. Nincs kanonikus párja — a burkoló adja vissza. */
   service?: string;
-  source?: string;
-  userData?: GatewayUserData;
-  /** Click IDs + UTMs already lifted out of the calculator state. */
-  attribution?: Record<string, string | undefined>;
-  /**
-   * Consent Mode v2 state read from the CookieYes cookie on the inbound request
-   * (`readConsentFromCookie`). Without it the gateway falls back to the site's
-   * `require_consent` default, and the consent-receipt it writes for the lead
-   * carries NO explicit signal — which the offline lead-status loop refuses to
-   * treat as consent evidence. Sending the real signal is what makes the later
-   * Enhanced-Conversions upload provably lawful.
-   */
-  consent?: ConsentState;
-  /**
-   * Phase D consent-source TELEMETRY (`buildConsentSources`). Does NOT change
-   * what is sent or gated — it reports WHAT this backend saw, and with which
-   * library version.
-   *
-   * WHY IT MATTERS HERE: the gateway is reached over a service binding, so it
-   * never sees the end user's Cookie header — on the server ingress its own read
-   * is always NULL. Every high-value conversion on this site travels that path.
-   * Without this block the gateway records NULL sources AND a NULL
-   * `client_lib_version`, which is exactly the state measured on 2026-08-25:
-   * of 1392 consent receipts fleet-wide, 1391 carried no version at all, so the
-   * `TRK-910-006` (outdated client lib) guard could never fire.
-   */
-  consentSources?: ConsentSourcesPayload;
-  /**
-   * Meta browser IDs from the request's `_fbp`/`_fbc` cookies
-   * (`readMetaCookies`). Pass-through PLAIN — never hashed (CLAUDE.md #1).
-   * `fbc` should only ever be the real cookie value; when it is absent the
-   * gateway reconstructs one from `attribution.fbclid` itself.
-   */
-  fbp?: string;
-  fbc?: string;
+  /** A kanonikus `ga4ClientId` régi neve ezen a site-on. */
   clientId?: string;
+  /** A kanonikus `ga4SessionId` régi neve ezen a site-on. */
   sessionId?: string;
-  eventSourceUrl?: string;
-  /**
-   * The REAL end-user's IP/UA, read from the inbound request headers. Without
-   * these the gateway would attribute the conversion to our own Worker's egress
-   * IP/UA — wrong geo and a measurably worse Meta EMQ.
-   */
-  clientIpAddress?: string;
-  clientUserAgent?: string;
-  /**
-   * Meta Test-stream override, honoured by the gateway only on the authenticated
-   * server ingress. Resolved from the lead's email — see `resolveTestEventCode`.
-   */
-  testEventCode?: string;
 }
 
-export interface GatewayResult {
-  ok: boolean;
-  status?: number;
-  error?: string;
-  retriable?: boolean;
-  attempts: number;
+
+/**
+ * A payload-építő a kanonikus magé. Ez a burkoló egyetlen dolgot csinál: a
+ * `clientId`/`sessionId` RÉGI NEVEKET a kanonikus `ga4*` nevekre képezi, hogy az
+ * öt hívási pont ne változzon.
+ *
+ * A `service`-t 6.6.2 óta a kanonikus payload-építő maga emitálja — a
+ * böngésző-láb eddig is küldte, a gateway fogyasztja, csak a szerver-lábból
+ * hiányzott. Innentől nem kell visszatenni.
+ *
+ * Az érték/pénznem szabálya a KANONIKUSÉ: `value` csak érvényes 3-betűs
+ * `currency`-vel megy ki, néma `'GBP'`-alapértelmezés nincs. Minden élő hívó ma
+ * is explicit currency-t ad.
+ */
+export function buildGatewayPayload(input: GatewayConversionInput): Record<string, unknown> {
+  return canonicalBuildGatewayPayload(toCanonicalInput(input));
 }
 
-const DEFAULT_RETRY_DELAYS_MS = [1000, 5000];
-const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+/** A site régi mezőnevei → a kanonikus input. */
+function toCanonicalInput(input: GatewayConversionInput): CanonicalGatewayConversionInput {
+  const { clientId, sessionId, ...rest } = input;
+  return {
+    ...rest,
+    ga4ClientId: rest.ga4ClientId ?? clientId,
+    ga4SessionId: rest.ga4SessionId ?? sessionId,
+  };
+}
+
+/**
+ * A SITE ENV → KANONIKUS ENV. Ez a leképezés váltja ki a deploy-koordinációt.
+ *
+ * Két néven múlt az egész: a service binding itt `EVENT_GATEWAY`
+ * (`wrangler.toml`), a kanonikus magban `GATEWAY`. A binding ÁTNEVEZÉSE
+ * deployt igényelne, és egy rosszul időzített deploy néma nullát adna — a
+ * kanonikus küldő nem találná a bindingot, a lead-végpont továbbra is 200-at
+ * adna, a gateway pedig sosem látná az eventet. Egy leképezés a hívás
+ * pillanatában ugyanezt megoldja, kockázat nélkül.
+ *
+ * A `SITE_URL`-be a site `TRACKING_GATEWAY_URL` felülírását is belehajtjuk: a
+ * kanonikus `gatewayBaseUrl` csak `SITE_URL`-t néz, tehát enélkül a felülírás
+ * némán elveszne.
+ */
+function toCanonicalEnv(env: GatewayEnv): CanonicalGatewayEnv {
+  return {
+    ...env,
+    GATEWAY: env.EVENT_GATEWAY,
+    SITE_URL: gatewayBaseUrl(env),
+  };
+}
 
 export function gatewayBaseUrl(env: GatewayEnv): string | undefined {
   const raw = env.TRACKING_GATEWAY_URL || env.SITE_URL;
@@ -389,9 +253,9 @@ export function isGatewayConfigured(env: GatewayEnv): boolean {
 }
 
 /**
- * Splits a single "full name" field into first/last for Meta's `fn`/`ln`.
- * We send RAW values — the gateway is the single normalizer (CLAUDE.md #1), so
- * lowercasing/trimming here would just be a second, drift-prone copy of it.
+ * Egyetlen „teljes név" mezőt bont first/last-ra a Meta `fn`/`ln`-jéhez.
+ * NYERS értéket küldünk — a gateway az egyetlen normalizáló (CLAUDE.md 1.),
+ * tehát a lowercase/trim itt csak egy második, sodródásra hajlamos másolat lenne.
  */
 export function splitFullName(full?: string): { first_name?: string; last_name?: string } {
   const parts = (full ?? '').trim().split(/\s+/).filter(Boolean);
@@ -400,50 +264,19 @@ export function splitFullName(full?: string): { first_name?: string; last_name?:
   return { first_name: parts[0], last_name: parts.slice(1).join(' ') };
 }
 
-/** Drops undefined/empty entries so we never ship empty strings as PII. */
-function compact(obj: object): Record<string, unknown> {
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (v !== undefined && v !== null && v !== '') out[k] = v;
-  }
-  return out;
-}
-
-export function buildGatewayPayload(input: GatewayConversionInput): Record<string, unknown> {
-  // CLAUDE.md #3: never send `value: 0` — Meta logs it as a real value and it
-  // skews ROAS. Omit value AND currency together when there is no money value.
-  const hasValue = typeof input.value === 'number' && Number.isFinite(input.value) && input.value > 0;
-
-  const userData = input.userData ? compact(input.userData) : undefined;
-  const attribution = input.attribution ? compact(input.attribution) : undefined;
-
-  return compact({
-    event_name: input.eventName,
-    event_id: input.eventId,
-    event_time: Math.floor(Date.now() / 1000),
-    lead_id: input.leadId,
-    ...(hasValue ? { value: input.value, currency: input.currency || 'GBP' } : {}),
-    service: input.service,
-    source: input.source,
-    user_data: userData && Object.keys(userData).length > 0 ? userData : undefined,
-    attribution: attribution && Object.keys(attribution).length > 0 ? attribution : undefined,
-    consent: input.consent,
-    consent_sources: input.consentSources,
-    // Top-level, like the browser leg sends them — the gateway reads
-    // `payload.fbp` / `payload.fbc`, not user_data (it builds user_data itself).
-    fbp: input.fbp,
-    fbc: input.fbc,
-    client_id: input.clientId,
-    session_id: input.sessionId,
-    event_source_url: input.eventSourceUrl,
-    client_ip_address: input.clientIpAddress,
-    client_user_agent: input.clientUserAgent,
-    test_event_code: input.testEventCode,
-    // NOTE: no `turnstile_token`. There is no browser in this call path; the
-    // per-site X-Admin-Token is what authorises us past the Turnstile gate.
-  });
-}
-
+/**
+ * A KÜLDÉS a kanonikus magé (6.6.2): URL, auth-fejléc, retry-politika és a
+ * 400/401/403/404 „ez a mi hibánk, ne retry-old" szabály mind onnan jön.
+ *
+ * Ami itt marad, az a site-specifikus ENV-leképezés (`toCanonicalEnv`) és a
+ * régi mezőnevek (`toCanonicalInput`) — semmi több.
+ *
+ * Egy viselkedés SZÁNDÉKOSAN szigorodott: binding nélkül a kanonikus küldő
+ * `gateway_not_configured`-t ad, nem esik vissza `globalThis.fetch`-re. A
+ * korábbi fallback on-zone amúgy is NÉMA NULLA volt (a Cloudflare loop-védelme
+ * rövidre zárja a saját zónánk route-jára menő subrequestet), csak épp
+ * észrevétlenül — a `deliverGatewayConversion` mostantól hangosan logolja.
+ */
 export async function sendGatewayConversion(
   env: GatewayEnv,
   input: GatewayConversionInput,
@@ -453,80 +286,10 @@ export async function sendGatewayConversion(
     retryDelaysMs?: number[];
   } = {},
 ): Promise<GatewayResult> {
-  const base = gatewayBaseUrl(env);
-  if (!env.TRACKING_GATEWAY_TOKEN || !base) {
-    return { ok: false, error: 'gateway_not_configured', retriable: false, attempts: 0 };
-  }
-
-  // Service binding first — see GatewayEnv.EVENT_GATEWAY. The global-fetch fallback
-  // only works from OFF-zone callers; on-zone it silently never reaches the gateway.
-  const fetchImpl =
-    opts.fetchImpl ??
-    (env.EVENT_GATEWAY
-      ? (((url, init) => env.EVENT_GATEWAY!.fetch(url, init as RequestInit)) as FetchLike)
-      : ((globalThis.fetch as unknown) as FetchLike));
-  const sleepImpl = opts.sleepImpl ?? defaultSleep;
-  const delays = opts.retryDelaysMs ?? DEFAULT_RETRY_DELAYS_MS;
-
-  // NOT `/api/event/conversion` — that is the BROWSER path, and it is the one the
-  // zone's WAF rate-limiting rule matches (on the Free plan a rule can only match
-  // on Path, so this separate route is the only way to exempt us). Server-side
-  // conversions all leave from a single Worker egress IP, so an IP-keyed limit
-  // would throttle exactly the conversions that carry money.
-  //
-  // The gateway refuses this route without a valid per-site token — no browser
-  // fallback — so the exemption cannot be abused as a rate-limit bypass.
-  const url = `${base}/api/event/conversion-server`;
-  const body = JSON.stringify(
-    buildGatewayPayload({
-      ...input,
-      testEventCode: input.testEventCode ?? resolveTestEventCode(env, input.userData?.email),
-    }),
-  );
-  const headers = {
-    'content-type': 'application/json',
-    'x-admin-token': env.TRACKING_GATEWAY_TOKEN,
-  };
-
-  let attempts = 0;
-  let lastError = 'unknown';
-  let lastStatus: number | undefined;
-
-  for (let i = 0; i <= delays.length; i++) {
-    attempts++;
-    try {
-      const res = await fetchImpl(url, { method: 'POST', headers, body });
-      lastStatus = res.status;
-
-      // The gateway answers 204 on every accepted event (CLAUDE.md #12).
-      if (res.status === 204 || (res.status >= 200 && res.status < 300)) {
-        return { ok: true, status: res.status, attempts };
-      }
-
-      // 400/401/403/404 are OUR misconfiguration (invalid payload since the
-      // gateway Run 6 returns 400 to authenticated callers, bad token, no KV
-      // site-config), not a transient fault. Retrying cannot fix them — fail
-      // loud instead, so the failure is visible rather than silently swallowed
-      // like the browser leg used to do.
-      if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 404) {
-        return {
-          ok: false,
-          status: res.status,
-          error: `gateway_rejected_${res.status}`,
-          retriable: false,
-          attempts,
-        };
-      }
-
-      lastError = `gateway_status_${res.status}`;
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
-    }
-
-    if (i < delays.length) await sleepImpl(delays[i]);
-  }
-
-  return { ok: false, status: lastStatus, error: lastError, retriable: true, attempts };
+  return canonicalSendGatewayConversion(toCanonicalEnv(env), toCanonicalInput(input), {
+    ...opts,
+    fetchImpl: opts.fetchImpl as unknown as GatewayFetcher['fetch'] | undefined,
+  });
 }
 
 /**
