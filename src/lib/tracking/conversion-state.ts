@@ -20,7 +20,7 @@
  * subsequent clicks.
  */
 
-import { readUserDataFromDOM, trackEvent } from './tracking';
+import { readUserDataForDispatch, trackEvent } from './tracking';
 import { dispatchWorkerConversion } from './worker-dispatch';
 import {
   CURRENCY,
@@ -154,7 +154,7 @@ export function fireQuoteConversion(input: {
     value: input.value,
     currency,
     service: input.service,
-    userData: readUserDataFromDOM(),
+    userData: readUserDataForDispatch(),
   });
 
   // Reporting breadcrumb for subsequent phone/email/whatsapp/callback

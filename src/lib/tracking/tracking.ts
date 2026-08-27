@@ -15,6 +15,7 @@ import {
   USER_DATA_ELEMENT_ID,
   USER_DATA_STORAGE_KEY,
   USER_DATA_TTL_MS,
+  USER_DATA_INPAGE_WINDOW_MS,
 } from './config';
 import { generateUUID } from './uuid';
 import { getMarketingConsentState } from '@/lib/soborbo-tracking/gateway';
@@ -286,6 +287,36 @@ function writeUserDataToDOMElement(data: UserData): void {
   if (data.city) el.dataset.city = data.city;
   if (data.postal_code) el.dataset.postalCode = data.postal_code;
   if (data.country) el.dataset.country = data.country;
+  armInPageWindow();
+}
+
+/**
+ * AZ IN-PAGE EXPOZÍCIÓS ABLAK ŐRE.
+ *
+ * A rejtett elem eddig a lap teljes életére kint maradt. Ez a GTM-nek nem
+ * kellett — a `JS - User Data Object` a tag tüzelésekor olvas, nem a lap
+ * végén —, a nyers PII-nak viszont annyi expozíciót adott, amennyi csak van.
+ *
+ * SZÁNDÉKOSAN csak az ELEMET viszi el, az at-rest másolatot nem: az egy MÁSIK
+ * tár, MÁSIK kérdésre, saját 24 órás ablakkal. A kettő összekeverése az egyik
+ * irányban néma PII-szivárgás, a másikban halott klikk-konverzió.
+ */
+let inPageWindowTimer: ReturnType<typeof setTimeout> | null = null;
+
+function armInPageWindow(): void {
+  if (typeof window === 'undefined') return;
+  if (inPageWindowTimer !== null) clearTimeout(inPageWindowTimer);
+  inPageWindowTimer = setTimeout(() => {
+    inPageWindowTimer = null;
+    // CSAK az elem — a localStorage-blob a saját TTL-je szerint él tovább.
+    try { document.getElementById(USER_DATA_ELEMENT_ID)?.remove(); } catch { /* a takarítás sosem dobhat */ }
+  }, USER_DATA_INPAGE_WINDOW_MS);
+}
+
+function cancelInPageWindow(): void {
+  if (inPageWindowTimer === null) return;
+  clearTimeout(inPageWindowTimer);
+  inPageWindowTimer = null;
 }
 
 /**
@@ -404,6 +435,10 @@ export function restoreUserDataFromStorage(): void {
 
 export function clearUserDataOnDOM(): void {
   if (typeof document === 'undefined') return;
+  // PURGE, nem ablak-lejárat: mindkét tárat elviszi. A függőben lévő
+  // in-page időzítőt is leszereljük — nincs mit takarítania, és egy
+  // következő írás úgyis újraindítja.
+  cancelInPageWindow();
   document.getElementById(USER_DATA_ELEMENT_ID)?.remove();
   if (typeof localStorage !== 'undefined') {
     try {
@@ -423,6 +458,31 @@ export function clearUserDataOnDOM(): void {
 // exportál — ebben a fájlban SZÁNDÉKOSAN nem hívjuk, mert a regisztráció csak
 // egyszer, a modul kiértékelésekor fut.)
 registerMarketingPurgeHook(clearUserDataOnDOM);
+
+/**
+ * A KONVERZIÓ-DISPATCH identitás-forrása — a KÉT tár helyes sorrendben.
+ *
+ * A `readUserDataFromDOM()` szerződése változatlan (a GTM-expozíciót tükrözi),
+ * de a szerver-lábnak MÁS a kérdése: „mi a látogató identitása MOST", nem az,
+ * hogy „mit lát épp a GTM". A kettő az in-page ablak lejárta után szétválik.
+ *
+ * Sorrend és indok:
+ *   1. DOM — a FRISS akvizíció itt van (a submit épp most írta ki), és ez
+ *      nyer a tárolt fölött.
+ *   2. at-rest — a késleltetett klikk (más oldal, percekkel-órákkal később)
+ *      innen kapja az identitást. Ez a §8-ban bizonyított C-eset: enélkül az
+ *      in-page ablak rövidítése halott klikk-konverziókat csinálna.
+ *
+ * A fallback `granted`-hez kötött, nem tágabb a mai viselkedésnél: a boot-időbeli
+ * `restoreUserDataFromStorage()` is csak explicit grantnél hidratál, tehát
+ * `unknown`/`denied` alatt a klikk eddig is identitás nélkül ment.
+ */
+export function readUserDataForDispatch(): UserData {
+  const fromDom = readUserDataFromDOM();
+  if (Object.keys(fromDom).length > 0) return fromDom;
+  if (adStorageConsent() !== 'granted') return {};
+  return readUserDataFromStorage();
+}
 
 export function readUserDataFromDOM(): UserData {
   if (typeof document === 'undefined') return {};

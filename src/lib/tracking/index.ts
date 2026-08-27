@@ -10,6 +10,7 @@ export {
   setUserDataOnDOM,
   clearUserDataOnDOM,
   readUserDataFromDOM,
+  readUserDataForDispatch,
   restoreUserDataFromStorage,
   adStorageConsent,
   normalizePhoneE164,

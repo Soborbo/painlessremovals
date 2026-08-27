@@ -31,8 +31,9 @@ export const QUOTE_STATE_KEY = 'pl_quote_state';
  *  in `window.dataLayer`). */
 export const USER_DATA_ELEMENT_ID = '__pl_user_data__';
 
-/** localStorage key for the persisted user data side-channel. The DOM
- *  element is per-page-load only; this key survives navigations so a
+/** localStorage key for the persisted user data side-channel. A DOM-elem
+ *  ennél RÖVIDEBB ideig él: csak az in-page expozíciós ablak végéig
+ *  (`USER_DATA_INPAGE_WINDOW_MS`); this key survives navigations so a
  *  conversion dispatched on a LATER page (phone click after leaving the
  *  quote page) still carries user data into the Meta CAPI payload.
  *  Consent-gated: persisted only on an explicit ad_storage grant. Same
@@ -53,3 +54,23 @@ export const VIEW_CONTENT_FIRED_KEY = 'pl_view_content_fired';
  *  longer than the realistic window in which a later-page conversion
  *  dispatch would still need it. */
 export const USER_DATA_TTL_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * IN-PAGE EXPOZÍCIÓS ABLAK — meddig maradhat a nyers PII OLVASHATÓ A LAPON.
+ *
+ * Ez NEM ugyanaz a kérdés, mint a `USER_DATA_TTL_MS`, és nem is verseng vele:
+ *
+ *   ez az ablak  = „meddig lássa a GTM a rejtett elemet, miután a tagek
+ *                   elolvasták" → a DOM-elem élettartama
+ *   a 24 órás TTL = „meddig élhet az identitás egy KÉSŐBBI oldalon történő
+ *                   konverzióhoz" → a localStorage-blob élettartama
+ *
+ * Az 5 másodperc a kanonikus mag bevált értéke. Minden új írás ÚJRAINDÍTJA az
+ * ablakot, tehát a többlépcsős űrlap nem eshet ki alóla.
+ *
+ * ⚠️ Az ablak lejárta a DOM-elemet viszi el, az at-rest másolatot NEM. A
+ * késleltetett klikk-konverzió ezért a `readUserDataForDispatch()`-en keresztül
+ * az at-rest tárra esik vissza — enélkül ez a rövidítés pont azt az identitást
+ * ölné meg, amiért a 24 órás ablak létezik.
+ */
+export const USER_DATA_INPAGE_WINDOW_MS = 5_000;
