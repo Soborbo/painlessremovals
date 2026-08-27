@@ -74,7 +74,10 @@ function adStorageGranted(): boolean {
   return adStorageConsent() === 'granted';
 }
 
-import { normalizePhone as canonicalNormalizePhone } from '@/lib/soborbo-tracking/persistence';
+import {
+  normalizePhone as canonicalNormalizePhone,
+  registerMarketingPurgeHook,
+} from '@/lib/soborbo-tracking/persistence';
 import { normalizeEmailIdentity } from '@/lib/soborbo-tracking/email-identity';
 
 export { adStorageGranted };
@@ -297,6 +300,11 @@ function writeUserDataToDOMElement(data: UserData): void {
  *
  * Each call merges with previously-stored fields rather than replacing
  * the whole blob, so earlier-step data isn't wiped by later steps.
+ *
+ * MINDKÉT tár ad_storage-consenthez kötött — a DOM-elem is, nem csak a
+ * localStorage. A háromállapotú kapu a függvény törzsében van kifejtve.
+ * Ez NEM viszi el a lead-et: a business-adat a form saját POST-bodyjában
+ * megy a CRM-nek, ez a rejtett elem kizárólag tracking-oldalcsatorna.
  */
 interface StoredUserData {
   data: UserData;
@@ -305,22 +313,30 @@ interface StoredUserData {
 
 export function setUserDataOnDOM(data: UserData): void {
   if (typeof document === 'undefined') return;
-  writeUserDataToDOMElement(data);
 
-  // At-rest persistence is gated on ad_storage consent. Without an
-  // explicit grant, PII still lives on the DOM for as long as the page
-  // is open (so the immediate Meta CAPI mirror works), but we do NOT
-  // write it to localStorage where it would survive into future
-  // sessions. Purge the at-rest copy only on an explicit DENIAL —
-  // `unknown` (consent state not yet readable) must not destroy data a
-  // consented user persisted on an earlier page.
+  // A DOM-ág ÉS az at-rest ág ugyanarra a háromállapotú consentre épül, de NEM
+  // ugyanúgy reagál az `unknown`-ra — ezért egy kapu, két külön következmény:
+  //
+  //   GRANTED → DOM-írás + at-rest perzisztencia (a teljes mai granted út)
+  //   UNKNOWN → NINCS új DOM-írás, de az at-rest másolatot SEM bántjuk
+  //   DENIED  → azonnali purge: a DOM-elem ÉS a localStorage-kulcs is megy
+  //
+  // Miért nem ír UNKNOWN alatt (ez a változás): a rejtett elem tracking
+  // oldalcsatorna, nem a quote teljesítéséhez szükséges business data, tehát
+  // nem-esszenciális — olvasható consent nélkül nincs jogalap kiírni. Ugyanezen
+  // oldalak DOM-ját egy consent-kapu nélküli session-replay is olvassa.
+  //
+  // Miért NEM töröl UNKNOWN alatt (ez marad): boot-időben a CMP még nem
+  // töltött be, tehát minden oldalbetöltés `unknown`-nal indul. Ha ezt
+  // tagadásnak vennénk, a konszenzusos felhasználó perzisztált adatát
+  // törölnénk minden lapon — ez egyszer már megtörtént, van rá teszt.
   const consent = adStorageConsent();
   if (consent !== 'granted') {
-    if (consent === 'denied' && typeof localStorage !== 'undefined') {
-      try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
-    }
+    if (consent === 'denied') clearUserDataOnDOM();
     return;
   }
+
+  writeUserDataToDOMElement(data);
 
   if (typeof localStorage !== 'undefined') {
     try {
@@ -376,9 +392,11 @@ export function restoreUserDataFromStorage(): void {
   if (typeof document === 'undefined') return;
   const consent = adStorageConsent();
   if (consent !== 'granted') {
-    if (consent === 'denied' && typeof localStorage !== 'undefined') {
-      try { localStorage.removeItem(USER_DATA_STORAGE_KEY); } catch { /* ignore */ }
-    }
+    // Ez a VISSZAVONÁS útja is: a `boot.ts` a `cookieyes_consent_update`
+    // eseményre ezt hívja. Eddig csak az at-rest másolatot vitte, a nyers
+    // e-mail/telefon pedig a DOM-ban maradt a lap további életére — pont
+    // abban a pillanatban, amikor a látogató azt kérte, hogy ne maradjon.
+    if (consent === 'denied') clearUserDataOnDOM();
     return;
   }
   const data = readUserDataFromStorage();
@@ -397,6 +415,16 @@ export function clearUserDataOnDOM(): void {
     }
   }
 }
+
+// A MECHANIZMUS a kanonikus magé, a POLICY a site-é. A mag visszavonáskor a
+// SAJÁT ephemeral EC-oldalcsatornáját (`__sb_user_data__`) takarítja — a
+// painless rejtett eleme (`__pl_user_data__`) külön tár, saját kulccsal és
+// saját mezőkészlettel, tehát külön be kell jelentkeznie a takarításra.
+// Modul-szintű mellékhatás, mint a magban: aki a side-channelt importálja, az
+// a takarítását is megkapja. (Teszt-izolációhoz a mag `clearMarketingPurgeHooks`-ot
+// exportál — ebben a fájlban SZÁNDÉKOSAN nem hívjuk, mert a regisztráció csak
+// egyszer, a modul kiértékelésekor fut.)
+registerMarketingPurgeHook(clearUserDataOnDOM);
 
 export function readUserDataFromDOM(): UserData {
   if (typeof document === 'undefined') return {};
