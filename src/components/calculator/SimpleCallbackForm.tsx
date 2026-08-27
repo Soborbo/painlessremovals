@@ -21,7 +21,7 @@ import { trackError } from '@/lib/errors/tracker';
 import {
   trackEventBeforeNavigate,
   setUserDataOnDOM,
-  normalizeUserData,
+  buildQuoteUserData,
   dispatchWorkerConversion,
   generateUUID,
   trackFormStart,
@@ -265,13 +265,12 @@ export function SimpleCallbackForm() {
 
       trackFormSubmitted(FORM_ID);
 
-      // PII goes to a hidden DOM side-channel, never to dataLayer.
-      const userData = normalizeUserData({
-        email: contact.email,
-        phone_number: contact.phone,
-        first_name: contact.firstName,
-        last_name: contact.lastName,
-      });
+      // PII goes to a hidden DOM side-channel, never to dataLayer. Ez az
+      // ÖNÁLLÓ visszahívás — a látogató kihagyta a kalkulátort, tehát nincs
+      // címe: a közös termelő itt az ötös készletet adja, `postal_code` nélkül.
+      // Szándékosan nem a kalkulátor-store-ból pótoljuk: az egy MÁSIK látogatás
+      // címe lenne.
+      const userData = buildQuoteUserData(contact);
       setUserDataOnDOM(userData);
 
       // Standalone callback — the user skipped the calculator, so there's

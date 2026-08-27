@@ -37,7 +37,7 @@ import {
   trackEvent,
   trackEventBeforeNavigate,
   setUserDataOnDOM,
-  normalizeUserData,
+  buildQuoteUserData,
   dispatchWorkerConversion,
   fireQuoteConversion,
   fireQuoteCompletedEvent,
@@ -428,15 +428,11 @@ export function ResultPage() {
         calculatorStore.setKey('quoteId', result.quoteId);
       }
 
-      // PII to DOM side-channel (never dataLayer).
+      // PII to DOM side-channel (never dataLayer). A mezőkészlet a
+      // `buildQuoteUserData` szerződése (D1).
       if (state.contact) {
         setUserDataOnDOM(
-          normalizeUserData({
-            email: state.contact.email,
-            phone_number: state.contact.phone,
-            first_name: state.contact.firstName,
-            last_name: state.contact.lastName,
-          }),
+          buildQuoteUserData(state.contact, { from: state.fromAddress, to: state.toAddress }),
         );
       }
 
@@ -634,15 +630,12 @@ export function ResultPage() {
       if (!response.ok) throw new Error('Failed to submit callback request');
       setCallbackStatus('success');
 
-      // Push contact PII to DOM side-channel for GTM UPD variable.
+      // Push contact PII to DOM side-channel for GTM UPD variable. Ugyanaz a
+      // szerződés, mint a quote-completion ágon — a visszahívás is a
+      // kalkulátor-oldalon történik, tehát a cím is a kezünkben van.
       if (state.contact) {
         setUserDataOnDOM(
-          normalizeUserData({
-            email: state.contact.email,
-            phone_number: state.contact.phone,
-            first_name: state.contact.firstName,
-            last_name: state.contact.lastName,
-          }),
+          buildQuoteUserData(state.contact, { from: state.fromAddress, to: state.toAddress }),
         );
       }
 

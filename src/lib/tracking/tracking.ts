@@ -261,7 +261,6 @@ export interface UserData {
   first_name?: string;
   last_name?: string;
   city?: string;
-  street?: string;
   postal_code?: string;
   country?: string;
 }
@@ -285,7 +284,6 @@ function writeUserDataToDOMElement(data: UserData): void {
   if (data.first_name) el.dataset.firstName = data.first_name;
   if (data.last_name) el.dataset.lastName = data.last_name;
   if (data.city) el.dataset.city = data.city;
-  if (data.street) el.dataset.street = data.street;
   if (data.postal_code) el.dataset.postalCode = data.postal_code;
   if (data.country) el.dataset.country = data.country;
 }
@@ -437,7 +435,6 @@ export function readUserDataFromDOM(): UserData {
   if (d.firstName) out.first_name = d.firstName;
   if (d.lastName) out.last_name = d.lastName;
   if (d.city) out.city = d.city;
-  if (d.street) out.street = d.street;
   if (d.postalCode) out.postal_code = d.postalCode;
   if (d.country) out.country = d.country;
   return out;
@@ -515,7 +512,6 @@ export function normalizeUserData(
   if (input.first_name) out.first_name = input.first_name.toLowerCase().trim();
   if (input.last_name) out.last_name = input.last_name.toLowerCase().trim();
   if (input.city) out.city = input.city.toLowerCase().trim();
-  if (input.street) out.street = input.street.toLowerCase().trim();
   if (input.postal_code) out.postal_code = input.postal_code.toUpperCase().replace(/\s/g, '');
   return out;
 }
